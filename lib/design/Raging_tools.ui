@@ -33,7 +33,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="vram_explorer">
      <attribute name="title">
@@ -271,8 +271,8 @@
          <widget class="QLabel" name="portrait">
           <property name="geometry">
            <rect>
-            <x>50</x>
-            <y>180</y>
+            <x>40</x>
+            <y>80</y>
             <width>461</width>
             <height>461</height>
            </rect>
@@ -281,7 +281,7 @@
            <string/>
           </property>
           <property name="pixmap">
-           <pixmap>../character parameters editor/images/large/chara_up_chips_l_000.png</pixmap>
+           <pixmap>../character_parameters_editor/images/large/chara_up_chips_l_000.png</pixmap>
           </property>
           <property name="scaledContents">
            <bool>true</bool>
@@ -290,8 +290,8 @@
          <widget class="QFrame" name="panel">
           <property name="geometry">
            <rect>
-            <x>100</x>
-            <y>480</y>
+            <x>90</x>
+            <y>380</y>
             <width>681</width>
             <height>201</height>
            </rect>
@@ -315,7 +315,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -337,7 +337,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -356,7 +356,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -375,7 +375,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -394,7 +394,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -413,7 +413,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -432,7 +432,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -451,7 +451,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -470,7 +470,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -489,7 +489,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -508,7 +508,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -527,7 +527,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -546,7 +546,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -565,7 +565,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -584,7 +584,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -603,7 +603,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -622,7 +622,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -641,7 +641,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -660,7 +660,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -679,7 +679,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -698,7 +698,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -717,7 +717,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -736,7 +736,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -755,7 +755,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -774,7 +774,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -793,7 +793,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -812,7 +812,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -831,7 +831,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -850,7 +850,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -869,7 +869,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -888,7 +888,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -907,7 +907,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -926,7 +926,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -945,7 +945,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -964,7 +964,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -983,7 +983,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1002,7 +1002,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1021,7 +1021,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1040,7 +1040,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1059,7 +1059,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1078,7 +1078,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1097,7 +1097,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1116,7 +1116,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1135,7 +1135,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1154,7 +1154,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1173,7 +1173,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1192,7 +1192,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1211,7 +1211,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1230,7 +1230,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1249,7 +1249,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1268,7 +1268,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1287,7 +1287,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1306,7 +1306,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1325,7 +1325,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1344,7 +1344,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1363,7 +1363,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1382,7 +1382,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1401,7 +1401,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1420,7 +1420,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1439,7 +1439,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1458,7 +1458,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1477,7 +1477,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1496,7 +1496,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1515,7 +1515,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1534,7 +1534,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1553,7 +1553,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -1563,8 +1563,8 @@
          <widget class="QFrame" name="panel2">
           <property name="geometry">
            <rect>
-            <x>430</x>
-            <y>20</y>
+            <x>510</x>
+            <y>150</y>
             <width>191</width>
             <height>221</height>
            </rect>
@@ -1588,7 +1588,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/pl_transform.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_transform.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1610,7 +1610,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1629,7 +1629,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1648,7 +1648,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1667,7 +1667,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1686,7 +1686,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character parameters editor/images/fourSlot/tx_transform_US.png</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/tx_transform_US.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
