@@ -26,7 +26,7 @@ class VEV:
 	# Current selected texture in the list view
 	current_selected_texture = 0
 	# Temp folder name
-	temp_folder = "temp_" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
 
 	# Paths where are the files
 	spr_file_path_original = ""

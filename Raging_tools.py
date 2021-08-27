@@ -1004,7 +1004,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if CPEV.character_list_edited:
 
             # Create the output name
-            basename = os.path.basename(CPEV.pak_file_path_original).replace(".pak",
+            extension = CPEV.pak_file_path_original.split(".")[-1]
+            basename = os.path.basename(CPEV.pak_file_path_original).replace("."+extension,
                                                                              datetime.now().
                                                                              strftime("_%d-%m-%Y_%H-%M-%S"))
 
@@ -1015,7 +1016,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             if path_output_file:
 
-                pak_export_path = CPEV.pak_file_path.replace(".pak", "_m.pak")
+                pak_export_path = CPEV.pak_file_path.replace("."+extension, "_m."+extension)
                 copyfile(CPEV.pak_file_path, pak_export_path)
 
                 # We open the file decrypted

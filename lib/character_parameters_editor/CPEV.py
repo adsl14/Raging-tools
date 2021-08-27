@@ -4,7 +4,7 @@ from lib.packages import datetime, os
 class CPEV:
 
     # Temp folder name
-    temp_folder = "temp_" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+    temp_folder = "temp_CPE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
     # Path files
     pak_file_path_original = ""
     pak_file_path = ""
