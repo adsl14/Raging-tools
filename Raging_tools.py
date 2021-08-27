@@ -486,6 +486,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.mipMapsImageText.setVisible(True)
         self.sizeImageText.setVisible(True)
 
+        # Open the tab
+        self.tabWidget.setCurrentIndex(0)
+
     def action_save_sprvram_logic(self):
 
         if not VEV.tx2_datas:
@@ -720,7 +723,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open pak file
         CPEV.pak_file_path_original = \
-            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "PAK files (*.pak)")[0]
+            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "PAK files (*.pak *.zpak)")[0]
 
         # Check if the user has selected a pak format file
         if not os.path.exists(CPEV.pak_file_path_original):
@@ -823,6 +826,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.transSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
                                                                  index=transformations[3], trans_slot_panel_index=3)
         self.transPanel.setVisible(True)
+
+        # Open the tab
+        self.tabWidget.setCurrentIndex(1)
 
     def action_change_character(self, event, index=None, modify_slot_transform=False):
 
