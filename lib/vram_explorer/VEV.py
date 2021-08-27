@@ -3,7 +3,7 @@ from lib.vram_explorer.classes.SprpStruct import SprpStruct
 from lib.vram_explorer.classes.StpkStruct import StpkStruct
 
 
-class VramExplorerVars:
+class VEV:
 
 	# types of spr file
 	# STPZ and STPK file

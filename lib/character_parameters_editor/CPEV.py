@@ -1,6 +1,7 @@
 from lib.packages import datetime, os
 
-class CharacterParametersEditorVars:
+
+class CPEV:
 
     # Temp folder name
     temp_folder = "temp_" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
@@ -12,9 +13,9 @@ class CharacterParametersEditorVars:
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
 
     # path images
-    path_small_images = os.path.join("lib", "images", "small")
-    path_large_images = os.path.join("lib", "images", "large")
-    path_fourSlot_images = os.path.join("lib", "images", "fourSlot")
+    path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
+    path_large_images = os.path.join("lib", "character_parameters_editor", "images", "large")
+    path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
     # base position transformations
@@ -41,4 +42,5 @@ class CharacterParametersEditorVars:
     characters_with_trans = [0, 5, 8, 17, 22, 24, 27, 29, 31, 34, 40, 48, 58, 63, 67, 79, 82, 85, 88]
     # Store what transformations has the character originally
     characters_with_trans_index = [[1, 2, 3], [6, 7], [9, 10], [18, 19, 20], [23], [25, 26], [28], [30], [32, 33],
-                                   [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86], [89]]
+                                   [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86],
+                                   [89]]
