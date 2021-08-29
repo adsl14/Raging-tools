@@ -19,8 +19,7 @@ class CPEV:
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
     # base position transformations
-    base_pos_trans = 66723
-
+    base_pos_trans = 66720
     # number of bytes between each character
     sizeTrans = 33
 
@@ -28,13 +27,14 @@ class CPEV:
     mini_portraits_image = []
 
     # portraits object for the Select Character window
-    chara_selected_character_window = 100
+    previous_chara_selected_character_window = 100
     mini_portraits_image_select_chara_window = []
 
     # List of character with their data from the file
     character_list = []
-    chara_selected = 0  # Index of the char selected in the program
-    trans_slot_panel_selected = 0  # Slot thas is being edited
+    chara_selected = 0  # Index of the char selected in the main panel
+    trans_slot_panel_selected = 0  # Slot thas is being edited for the transformations
+    fusion_slot_panel_selected = 0 # Slot that is being edited for the fusions
     # Array of the characters that has been edited
     character_list_edited = []
 

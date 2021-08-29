@@ -5,6 +5,22 @@ from lib.vram_explorer.classes.Tx2Data import Tx2Data
 from lib.vram_explorer.classes.Tx2dInfo import Tx2dInfo
 
 
+def initialize_ve(main_window):
+    # Buttons
+    main_window.exportButton.clicked.connect(main_window.action_export_logic)
+    main_window.exportAllButton.clicked.connect(main_window.action_export_all_logic)
+    main_window.importButton.clicked.connect(main_window.action_import_logic)
+    main_window.exportButton.setVisible(False)
+    main_window.exportAllButton.setVisible(False)
+    main_window.importButton.setVisible(False)
+
+    # Labels
+    main_window.encodingImageText.setVisible(False)
+    main_window.mipMapsImageText.setVisible(False)
+    main_window.sizeImageText.setVisible(False)
+    main_window.fileNameText.setVisible(False)
+
+
 def change_endian(data):
 
     data = data.hex()

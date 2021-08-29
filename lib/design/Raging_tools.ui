@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>952</width>
-    <height>855</height>
+    <height>853</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -271,10 +271,10 @@
          <widget class="QLabel" name="portrait">
           <property name="geometry">
            <rect>
-            <x>40</x>
-            <y>80</y>
-            <width>461</width>
-            <height>461</height>
+            <x>0</x>
+            <y>300</y>
+            <width>271</width>
+            <height>271</height>
            </rect>
           </property>
           <property name="text">
@@ -287,11 +287,11 @@
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QFrame" name="panel">
+         <widget class="QFrame" name="mainPanel">
           <property name="geometry">
            <rect>
-            <x>90</x>
-            <y>380</y>
+            <x>0</x>
+            <y>500</y>
             <width>681</width>
             <height>201</height>
            </rect>
@@ -1560,13 +1560,13 @@
            </property>
           </widget>
          </widget>
-         <widget class="QFrame" name="panel2">
+         <widget class="QFrame" name="transformPanel">
           <property name="geometry">
            <rect>
-            <x>510</x>
-            <y>150</y>
+            <x>0</x>
+            <y>40</y>
             <width>191</width>
-            <height>221</height>
+            <height>181</height>
            </rect>
           </property>
           <property name="frameShape">
@@ -1575,32 +1575,13 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <widget class="QLabel" name="transPanel">
-           <property name="geometry">
-            <rect>
-             <x>-36</x>
-             <y>-10</y>
-             <width>251</width>
-             <height>231</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/pl_transform.png</pixmap>
-           </property>
-           <property name="scaledContents">
-            <bool>false</bool>
-           </property>
-          </widget>
           <widget class="QLabel" name="transSlotPanel0">
            <property name="enabled">
             <bool>true</bool>
            </property>
            <property name="geometry">
             <rect>
-             <x>28</x>
+             <x>33</x>
              <y>75</y>
              <width>61</width>
              <height>61</height>
@@ -1619,7 +1600,7 @@
           <widget class="QLabel" name="transSlotPanel1">
            <property name="geometry">
             <rect>
-             <x>60</x>
+             <x>65</x>
              <y>43</y>
              <width>61</width>
              <height>61</height>
@@ -1638,7 +1619,7 @@
           <widget class="QLabel" name="transSlotPanel2">
            <property name="geometry">
             <rect>
-             <x>94</x>
+             <x>99</x>
              <y>75</y>
              <width>61</width>
              <height>61</height>
@@ -1657,8 +1638,8 @@
           <widget class="QLabel" name="transSlotPanel3">
            <property name="geometry">
             <rect>
-             <x>60</x>
-             <y>110</y>
+             <x>65</x>
+             <y>108</y>
              <width>61</width>
              <height>61</height>
             </rect>
@@ -1676,7 +1657,7 @@
           <widget class="QLabel" name="transText">
            <property name="geometry">
             <rect>
-             <x>26</x>
+             <x>30</x>
              <y>10</y>
              <width>131</width>
              <height>21</height>
@@ -1691,6 +1672,1160 @@
            <property name="scaledContents">
             <bool>true</bool>
            </property>
+          </widget>
+          <widget class="QLabel" name="transPanel">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>35</y>
+             <width>141</width>
+             <height>141</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_transform.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <zorder>transPanel</zorder>
+          <zorder>transText</zorder>
+          <zorder>transSlotPanel1</zorder>
+          <zorder>transSlotPanel0</zorder>
+          <zorder>transSlotPanel2</zorder>
+          <zorder>transSlotPanel3</zorder>
+         </widget>
+         <widget class="QFrame" name="detransEffect">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>0</y>
+            <width>261</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QComboBox" name="detransEffectValue">
+           <property name="geometry">
+            <rect>
+             <x>170</x>
+             <y>10</y>
+             <width>73</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>UNK0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK4</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK6</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QLabel" name="detransEffectText">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Detransformation effect/Ki:</string>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="transPartner">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>40</y>
+            <width>261</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="transPartnerText">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>20</y>
+             <width>161</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Trasformation partner:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="transPartnerValue">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>10</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="amount_ki_per_transformation">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>100</y>
+            <width>261</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="amount_ki_per_transformation_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>181</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Amount Ki per transformation:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_trans1_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_trans1_value">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_trans2_value">
+           <property name="geometry">
+            <rect>
+             <x>60</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_trans2_text">
+           <property name="geometry">
+            <rect>
+             <x>60</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>2</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_trans3_value">
+           <property name="geometry">
+            <rect>
+             <x>120</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_trans3_text">
+           <property name="geometry">
+            <rect>
+             <x>120</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>3</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_trans4_value">
+           <property name="geometry">
+            <rect>
+             <x>180</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_trans4_text">
+           <property name="geometry">
+            <rect>
+             <x>180</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>4</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="animation_per_transformation">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>180</y>
+            <width>261</width>
+            <height>111</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="animation_per_transformation_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>181</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Animation per transformation:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_trans1_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>40</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_trans2_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>80</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>2</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_trans3_text">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>40</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>3</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_trans4_text">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>80</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>4</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="trans1_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>40</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Transform</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Return</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="trans3_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>40</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Transform</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Return</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="trans2_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>80</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Transform</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Return</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="trans4_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>80</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Transform</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Return</string>
+            </property>
+           </item>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="partnerPotara">
+          <property name="geometry">
+           <rect>
+            <x>680</x>
+            <y>0</y>
+            <width>181</width>
+            <height>51</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="partnerPotara_text">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>20</y>
+             <width>121</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Partner potara:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="partnerPotara_value">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>10</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="partnerMetamoran">
+          <property name="geometry">
+           <rect>
+            <x>680</x>
+            <y>60</y>
+            <width>181</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="partnerMetamoran_text">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>121</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Partner metamoran:</string>
+           </property>
+          </widget>
+          <widget class="QLabel" name="partnerMetamoran_value">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>0</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="fusionPanel">
+          <property name="geometry">
+           <rect>
+            <x>450</x>
+            <y>40</y>
+            <width>171</width>
+            <height>181</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="fusiSlotPanel0">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="geometry">
+            <rect>
+             <x>33</x>
+             <y>75</y>
+             <width>61</width>
+             <height>61</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fusiSlotPanel1">
+           <property name="geometry">
+            <rect>
+             <x>65</x>
+             <y>43</y>
+             <width>61</width>
+             <height>61</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fusiSlotPanel2">
+           <property name="geometry">
+            <rect>
+             <x>99</x>
+             <y>75</y>
+             <width>61</width>
+             <height>61</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fusiSlotPanel3">
+           <property name="geometry">
+            <rect>
+             <x>65</x>
+             <y>108</y>
+             <width>61</width>
+             <height>61</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fusiPanelText">
+           <property name="geometry">
+            <rect>
+             <x>56</x>
+             <y>10</y>
+             <width>81</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/tx_fusion_US.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="fusiPanel">
+           <property name="geometry">
+            <rect>
+             <x>30</x>
+             <y>35</y>
+             <width>141</width>
+             <height>141</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_fusion.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+          </widget>
+          <zorder>fusiPanel</zorder>
+          <zorder>fusiSlotPanel0</zorder>
+          <zorder>fusiSlotPanel1</zorder>
+          <zorder>fusiSlotPanel2</zorder>
+          <zorder>fusiSlotPanel3</zorder>
+          <zorder>fusiPanelText</zorder>
+         </widget>
+         <widget class="QFrame" name="amount_ki_per_fusion">
+          <property name="geometry">
+           <rect>
+            <x>620</x>
+            <y>100</y>
+            <width>251</width>
+            <height>81</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="amount_ki_per_fusion_text">
+           <property name="geometry">
+            <rect>
+             <x>70</x>
+             <y>10</y>
+             <width>131</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Amount Ki per fusion:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_fusion1_text">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_fusion1_value">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_fusion2_value">
+           <property name="geometry">
+            <rect>
+             <x>80</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_fusion2_text">
+           <property name="geometry">
+            <rect>
+             <x>80</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>2</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_fusion3_value">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_fusion3_text">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>3</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="amountKi_fusion4_value">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>50</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+          </widget>
+          <widget class="QLabel" name="amountKi_fusion4_text">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>30</y>
+             <width>41</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>4</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="animation_per_fusion">
+          <property name="geometry">
+           <rect>
+            <x>620</x>
+            <y>180</y>
+            <width>251</width>
+            <height>111</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="animation_per_fusion_text">
+           <property name="geometry">
+            <rect>
+             <x>80</x>
+             <y>10</y>
+             <width>131</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Animation per fusion:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_fusion1_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>40</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>1</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_fusion2_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>80</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>2</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_fusion3_text">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>40</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>3</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QLabel" name="animation_fusion4_text">
+           <property name="geometry">
+            <rect>
+             <x>130</x>
+             <y>80</y>
+             <width>16</width>
+             <height>20</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>4</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::PlainText</enum>
+           </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="fusion1_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>40</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Fusion</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="fusion3_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>40</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Fusion</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="fusion2_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>80</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Fusion</string>
+            </property>
+           </item>
+          </widget>
+          <widget class="QComboBox" name="fusion4_animation_value">
+           <property name="geometry">
+            <rect>
+             <x>150</x>
+             <y>80</y>
+             <width>91</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Fusion</string>
+            </property>
+           </item>
           </widget>
          </widget>
         </widget>
