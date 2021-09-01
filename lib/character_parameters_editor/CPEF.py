@@ -7,7 +7,7 @@ def initialize_cpe(main_window, QtWidgets):
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
-    for i in range(0, 62):
+    for i in range(0, 66):
         index_chara = CPEV.mini_portraits_image[i].objectName().split("_")[1]
         CPEV.mini_portraits_image[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_0" +
                                                                     index_chara + ".bmp")))
@@ -17,7 +17,7 @@ def initialize_cpe(main_window, QtWidgets):
                                                                          modify_slot_transform=True)
         CPEV.mini_portraits_image[i].setDisabled(True)
 
-    for i in range(62, len(CPEV.mini_portraits_image)):
+    for i in range(66, len(CPEV.mini_portraits_image)):
         CPEV.mini_portraits_image[i].setStyleSheet("QLabel {border : 3px solid grey;}")
         CPEV.mini_portraits_image[i].setVisible(False)
 
@@ -99,6 +99,12 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.trans4_animation_value.currentIndexChanged.connect(lambda: main_window.
                                                                    on_animation_per_transformation_changed
                                                                    (animation_per_transformation=3))
+    # Hide items
+    for i in [2, 3, 5, 7, 8, 9, 10, 11]:
+        main_window.trans1_animation_value.view().setRowHidden(i, True)
+        main_window.trans2_animation_value.view().setRowHidden(i, True)
+        main_window.trans3_animation_value.view().setRowHidden(i, True)
+        main_window.trans4_animation_value.view().setRowHidden(i, True)
 
     # Set partner potara
     main_window.partnerPotara_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))

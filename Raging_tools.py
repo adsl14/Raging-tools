@@ -734,7 +734,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.character_list.append(character)
 
         # Enable the characters portraits
-        for i in range(0, 62):
+        for i in range(0, 66):
             CPEV.mini_portraits_image[i].setEnabled(True)
 
         # We're changing the character in the main panel (avoid combo box code)

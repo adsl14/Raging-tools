@@ -292,7 +292,7 @@
            <rect>
             <x>0</x>
             <y>500</y>
-            <width>681</width>
+            <width>721</width>
             <height>201</height>
            </rect>
           </property>
@@ -1144,8 +1144,8 @@
           <widget class="QLabel" name="label_82">
            <property name="geometry">
             <rect>
-             <x>440</x>
-             <y>80</y>
+             <x>600</x>
+             <y>40</y>
              <width>41</width>
              <height>41</height>
             </rect>
@@ -1391,7 +1391,7 @@
           <widget class="QLabel" name="label_54">
            <property name="geometry">
             <rect>
-             <x>600</x>
+             <x>640</x>
              <y>40</y>
              <width>41</width>
              <height>41</height>
@@ -1410,7 +1410,7 @@
           <widget class="QLabel" name="label_57">
            <property name="geometry">
             <rect>
-             <x>600</x>
+             <x>640</x>
              <y>160</y>
              <width>41</width>
              <height>41</height>
@@ -1429,7 +1429,7 @@
           <widget class="QLabel" name="label_56">
            <property name="geometry">
             <rect>
-             <x>600</x>
+             <x>640</x>
              <y>120</y>
              <width>41</width>
              <height>41</height>
@@ -1448,7 +1448,7 @@
           <widget class="QLabel" name="label_55">
            <property name="geometry">
             <rect>
-             <x>600</x>
+             <x>640</x>
              <y>80</y>
              <width>41</width>
              <height>41</height>
@@ -1467,8 +1467,84 @@
           <widget class="QLabel" name="label_99">
            <property name="geometry">
             <rect>
-             <x>640</x>
+             <x>680</x>
              <y>120</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_53">
+           <property name="geometry">
+            <rect>
+             <x>600</x>
+             <y>160</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_95">
+           <property name="geometry">
+            <rect>
+             <x>600</x>
+             <y>120</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_94">
+           <property name="geometry">
+            <rect>
+             <x>600</x>
+             <y>80</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <widget class="QLabel" name="label_75">
+           <property name="geometry">
+            <rect>
+             <x>440</x>
+             <y>80</y>
              <width>41</width>
              <height>41</height>
             </rect>
