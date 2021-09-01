@@ -1,6 +1,7 @@
 class Character:
 	def __init__(self):
 		self.position_visual_parameters = 0
+		self.aura_size = 0
 		self.color_lightning = 0
 		self.glow_lightning = 0
 

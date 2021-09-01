@@ -4,7 +4,6 @@ from lib.design.select_chara import Ui_Dialog
 
 
 def initialize_cpe(main_window, QtWidgets):
-
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
@@ -25,6 +24,12 @@ def initialize_cpe(main_window, QtWidgets):
     # Set the the big portrait image
     main_window.portrait.setVisible(False)
 
+    # Set the aura size
+    main_window.aura_size_text.setDisabled(True)
+    main_window.aura_size_text.setDisabled(True)
+    main_window.aura_size_value.setDisabled(True)
+    main_window.aura_size_value.valueChanged.connect(main_window.on_aura_size_changed)
+
     # Set the color lightning
     main_window.color_lightning_text.setDisabled(True)
     main_window.color_lightning_value.setDisabled(True)
@@ -34,6 +39,7 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.glow_lightning_text.setDisabled(True)
     main_window.glow_lightning_value.setDisabled(True)
     main_window.glow_lightning_value.currentIndexChanged.connect(main_window.on_glow_lightning_changed)
+    main_window.glow_lightning_value.view().setRowHidden(3, True)  # Hide item with ID 3
 
     # Set the transform panel
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
@@ -62,14 +68,14 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.amountKi_trans2_value.setDisabled(True)
     main_window.amountKi_trans3_value.setDisabled(True)
     main_window.amountKi_trans4_value.setDisabled(True)
-    main_window.amountKi_trans1_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_trans_changed(amount_ki_trans_index=0))
-    main_window.amountKi_trans2_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_trans_changed(amount_ki_trans_index=1))
-    main_window.amountKi_trans3_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_trans_changed(amount_ki_trans_index=2))
-    main_window.amountKi_trans4_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_trans_changed(amount_ki_trans_index=3))
+    main_window.amountKi_trans1_value.valueChanged.connect(lambda: main_window.
+                                                           on_amount_ki_trans_changed(amount_ki_trans_index=0))
+    main_window.amountKi_trans2_value.valueChanged.connect(lambda: main_window.
+                                                           on_amount_ki_trans_changed(amount_ki_trans_index=1))
+    main_window.amountKi_trans3_value.valueChanged.connect(lambda: main_window.
+                                                           on_amount_ki_trans_changed(amount_ki_trans_index=2))
+    main_window.amountKi_trans4_value.valueChanged.connect(lambda: main_window.
+                                                           on_amount_ki_trans_changed(amount_ki_trans_index=3))
 
     # Set the animation per transformation
     main_window.animation_per_transformation_text.setDisabled(True)
@@ -81,14 +87,18 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.trans3_animation_value.setDisabled(True)
     main_window.animation_trans4_text.setDisabled(True)
     main_window.trans4_animation_value.setDisabled(True)
-    main_window.trans1_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_transformation_changed(animation_per_transformation=0))
-    main_window.trans2_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_transformation_changed(animation_per_transformation=1))
-    main_window.trans3_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_transformation_changed(animation_per_transformation=2))
-    main_window.trans4_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_transformation_changed(animation_per_transformation=3))
+    main_window.trans1_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                   on_animation_per_transformation_changed
+                                                                   (animation_per_transformation=0))
+    main_window.trans2_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                   on_animation_per_transformation_changed
+                                                                   (animation_per_transformation=1))
+    main_window.trans3_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                   on_animation_per_transformation_changed
+                                                                   (animation_per_transformation=2))
+    main_window.trans4_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                   on_animation_per_transformation_changed
+                                                                   (animation_per_transformation=3))
 
     # Set partner potara
     main_window.partnerPotara_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -112,14 +122,14 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.amountKi_fusion2_value.setDisabled(True)
     main_window.amountKi_fusion3_value.setDisabled(True)
     main_window.amountKi_fusion4_value.setDisabled(True)
-    main_window.amountKi_fusion1_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_fusion_changed(amount_ki_fusion_index=0))
-    main_window.amountKi_fusion2_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_fusion_changed(amount_ki_fusion_index=1))
-    main_window.amountKi_fusion3_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_fusion_changed(amount_ki_fusion_index=2))
-    main_window.amountKi_fusion4_value.valueChanged.connect \
-    (lambda: main_window.on_amount_ki_fusion_changed(amount_ki_fusion_index=3))
+    main_window.amountKi_fusion1_value.valueChanged.connect(lambda: main_window.
+                                                            on_amount_ki_fusion_changed(amount_ki_fusion_index=0))
+    main_window.amountKi_fusion2_value.valueChanged.connect(lambda: main_window.
+                                                            on_amount_ki_fusion_changed(amount_ki_fusion_index=1))
+    main_window.amountKi_fusion3_value.valueChanged.connect(lambda: main_window.
+                                                            on_amount_ki_fusion_changed(amount_ki_fusion_index=2))
+    main_window.amountKi_fusion4_value.valueChanged.connect(lambda: main_window.
+                                                            on_amount_ki_fusion_changed(amount_ki_fusion_index=3))
 
     # Set the animation per fusion
     main_window.animation_per_fusion_text.setDisabled(True)
@@ -131,14 +141,18 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.fusion3_animation_value.setDisabled(True)
     main_window.animation_fusion4_text.setDisabled(True)
     main_window.fusion4_animation_value.setDisabled(True)
-    main_window.fusion1_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_fusion_changed(animation_per_fusion=0))
-    main_window.fusion2_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_fusion_changed(animation_per_fusion=1))
-    main_window.fusion3_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_fusion_changed(animation_per_fusion=2))
-    main_window.fusion4_animation_value.currentIndexChanged.connect \
-    (lambda: main_window.on_animation_per_fusion_changed(animation_per_fusion=3))
+    main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                    on_animation_per_fusion_changed
+                                                                    (animation_per_fusion=0))
+    main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                    on_animation_per_fusion_changed
+                                                                    (animation_per_fusion=1))
+    main_window.fusion3_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                    on_animation_per_fusion_changed
+                                                                    (animation_per_fusion=2))
+    main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: main_window.
+                                                                    on_animation_per_fusion_changed
+                                                                    (animation_per_fusion=3))
 
     # Set the fusion panel
     main_window.fusiPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_fusion.png")))
@@ -160,12 +174,17 @@ def initialize_cpe(main_window, QtWidgets):
 
 
 def store_character_parameters(character, pak_file):
-
     # Move to the visual parameters position
     pak_file.seek(character.position_visual_parameters)
 
     # UNK data for now
-    pak_file.seek(41, 1)
+    pak_file.seek(33, 1)
+
+    # Aura size
+    character.aura_size = (int.from_bytes(pak_file.read(1), byteorder='little'))
+
+    # UNK data for now
+    pak_file.seek(7, 1)
 
     # Color lightnings
     character.color_lightning = int.from_bytes(pak_file.read(1), byteorder='little')

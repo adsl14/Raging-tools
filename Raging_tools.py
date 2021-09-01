@@ -761,6 +761,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Get the values for the fist character of the list
         character_zero = CPEV.character_list[0]
 
+        # Show the aura size
+        self.aura_size_text.setDisabled(False)
+        self.aura_size_value.setValue(character_zero.aura_size)
+        self.aura_size_value.setDisabled(False)
+
         # Show the color lightnings parameter
         self.color_lightning_text.setDisabled(False)
         self.color_lightning_value.setCurrentIndex(character_zero.glow_lightning)
@@ -936,6 +941,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Load the portrait
             self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
                                                          str(index).zfill(3) + ".png")))
+
+            # Aura size
+            self.aura_size_value.setValue(CPEV.character_list[index].aura_size)
 
             # Color lightning
             self.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
@@ -1477,6 +1485,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
                 CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
+    def on_aura_size_changed(self):
+
+        # Avoid change the values when the program is changing the character from the main panel
+        if not CPEV.change_character:
+
+            # Change the slot of aura size
+            CPEV.character_list[CPEV.chara_selected].aura_size = self.aura_size_value.value()
+
+            # If the character was edited before, we won't append the index to our array of characters edited once
+            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
     def action_save_pak_logic(self):
 
         # If the user has edited one character, we will save
@@ -1507,8 +1527,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Save the visual parameters
                         file.seek(character.position_visual_parameters)
 
-                        # Move some positions because is unk data
-                        file.seek(41, 1)
+                        # UNK data for now
+                        file.seek(33, 1)
+
+                        file.write(character.aura_size.to_bytes(1, byteorder="big"))
+
+                        # UNK data for now
+                        file.seek(7, 1)
 
                         file.write(character.color_lightning.to_bytes(1, byteorder="big"))
 

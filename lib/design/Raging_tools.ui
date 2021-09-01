@@ -1804,7 +1804,7 @@
             <x>190</x>
             <y>40</y>
             <width>261</width>
-            <height>51</height>
+            <height>41</height>
            </rect>
           </property>
           <property name="frameShape">
@@ -1817,7 +1817,7 @@
            <property name="geometry">
             <rect>
              <x>0</x>
-             <y>20</y>
+             <y>10</y>
              <width>161</width>
              <height>21</height>
             </rect>
@@ -1830,7 +1830,7 @@
            <property name="geometry">
             <rect>
              <x>200</x>
-             <y>10</y>
+             <y>0</y>
              <width>41</width>
              <height>41</height>
             </rect>
@@ -1849,7 +1849,7 @@
            <property name="geometry">
             <rect>
              <x>200</x>
-             <y>10</y>
+             <y>0</y>
              <width>41</width>
              <height>41</height>
             </rect>
@@ -1872,7 +1872,7 @@
           <property name="geometry">
            <rect>
             <x>190</x>
-            <y>100</y>
+            <y>80</y>
             <width>261</width>
             <height>81</height>
            </rect>
@@ -1902,7 +1902,7 @@
           <widget class="QLabel" name="amountKi_trans1_text">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>20</x>
              <y>30</y>
              <width>41</width>
              <height>20</height>
@@ -1924,7 +1924,7 @@
           <widget class="QSpinBox" name="amountKi_trans1_value">
            <property name="geometry">
             <rect>
-             <x>0</x>
+             <x>20</x>
              <y>50</y>
              <width>42</width>
              <height>22</height>
@@ -1940,7 +1940,7 @@
           <widget class="QSpinBox" name="amountKi_trans2_value">
            <property name="geometry">
             <rect>
-             <x>60</x>
+             <x>80</x>
              <y>50</y>
              <width>42</width>
              <height>22</height>
@@ -1953,7 +1953,7 @@
           <widget class="QLabel" name="amountKi_trans2_text">
            <property name="geometry">
             <rect>
-             <x>60</x>
+             <x>80</x>
              <y>30</y>
              <width>41</width>
              <height>20</height>
@@ -1975,7 +1975,7 @@
           <widget class="QSpinBox" name="amountKi_trans3_value">
            <property name="geometry">
             <rect>
-             <x>120</x>
+             <x>140</x>
              <y>50</y>
              <width>42</width>
              <height>22</height>
@@ -1988,7 +1988,7 @@
           <widget class="QLabel" name="amountKi_trans3_text">
            <property name="geometry">
             <rect>
-             <x>120</x>
+             <x>140</x>
              <y>30</y>
              <width>41</width>
              <height>20</height>
@@ -2010,7 +2010,7 @@
           <widget class="QSpinBox" name="amountKi_trans4_value">
            <property name="geometry">
             <rect>
-             <x>180</x>
+             <x>200</x>
              <y>50</y>
              <width>42</width>
              <height>22</height>
@@ -2023,7 +2023,7 @@
           <widget class="QLabel" name="amountKi_trans4_text">
            <property name="geometry">
             <rect>
-             <x>180</x>
+             <x>200</x>
              <y>30</y>
              <width>41</width>
              <height>20</height>
@@ -2047,7 +2047,7 @@
           <property name="geometry">
            <rect>
             <x>190</x>
-            <y>180</y>
+            <y>160</y>
             <width>261</width>
             <height>111</height>
            </rect>
@@ -2183,12 +2183,12 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>0X2</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>0X3</string>
             </property>
            </item>
            <item>
@@ -2198,7 +2198,7 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK5</string>
+             <string>0X5</string>
             </property>
            </item>
            <item>
@@ -2208,27 +2208,27 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK7</string>
+             <string>0X7</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK8</string>
+             <string>0X8</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK9</string>
+             <string>0X9</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK10</string>
+             <string>0X10</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK11</string>
+             <string>0X11</string>
             </property>
            </item>
            <item>
@@ -2258,12 +2258,12 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>0X2</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>0X3</string>
             </property>
            </item>
            <item>
@@ -2273,7 +2273,7 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK5</string>
+             <string>0X5</string>
             </property>
            </item>
            <item>
@@ -2283,27 +2283,27 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK7</string>
+             <string>0X7</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK8</string>
+             <string>0X8</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK9</string>
+             <string>0X9</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK10</string>
+             <string>0X10</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK11</string>
+             <string>0X11</string>
             </property>
            </item>
            <item>
@@ -2333,12 +2333,12 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>0X2</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>0X3</string>
             </property>
            </item>
            <item>
@@ -2348,7 +2348,7 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK5</string>
+             <string>0X5</string>
             </property>
            </item>
            <item>
@@ -2358,27 +2358,27 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK7</string>
+             <string>0X7</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK8</string>
+             <string>0X8</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK9</string>
+             <string>0X9</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK10</string>
+             <string>0X10</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK11</string>
+             <string>0X11</string>
             </property>
            </item>
            <item>
@@ -2408,12 +2408,12 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>0X2</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>0X3</string>
             </property>
            </item>
            <item>
@@ -2423,7 +2423,7 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK5</string>
+             <string>0X5</string>
             </property>
            </item>
            <item>
@@ -2433,27 +2433,27 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK7</string>
+             <string>0X7</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK8</string>
+             <string>0X8</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK9</string>
+             <string>0X9</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK10</string>
+             <string>0X10</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK11</string>
+             <string>0X11</string>
             </property>
            </item>
            <item>
@@ -2466,10 +2466,10 @@
          <widget class="QFrame" name="partnerPotara">
           <property name="geometry">
            <rect>
-            <x>680</x>
+            <x>620</x>
             <y>0</y>
-            <width>181</width>
-            <height>51</height>
+            <width>241</width>
+            <height>41</height>
            </rect>
           </property>
           <property name="frameShape">
@@ -2481,8 +2481,8 @@
           <widget class="QLabel" name="partnerPotara_text">
            <property name="geometry">
             <rect>
-             <x>10</x>
-             <y>20</y>
+             <x>0</x>
+             <y>10</y>
              <width>121</width>
              <height>21</height>
             </rect>
@@ -2494,8 +2494,8 @@
           <widget class="QLabel" name="partnerPotara_value">
            <property name="geometry">
             <rect>
-             <x>140</x>
-             <y>10</y>
+             <x>200</x>
+             <y>0</y>
              <width>41</width>
              <height>41</height>
             </rect>
@@ -2513,8 +2513,8 @@
           <widget class="QLabel" name="partnerPotara_slot">
            <property name="geometry">
             <rect>
-             <x>140</x>
-             <y>10</y>
+             <x>200</x>
+             <y>0</y>
              <width>41</width>
              <height>41</height>
             </rect>
@@ -2536,9 +2536,9 @@
          <widget class="QFrame" name="partnerMetamoran">
           <property name="geometry">
            <rect>
-            <x>680</x>
-            <y>60</y>
-            <width>181</width>
+            <x>620</x>
+            <y>40</y>
+            <width>241</width>
             <height>41</height>
            </rect>
           </property>
@@ -2551,7 +2551,7 @@
           <widget class="QLabel" name="partnerMetamoran_text">
            <property name="geometry">
             <rect>
-             <x>10</x>
+             <x>0</x>
              <y>10</y>
              <width>121</width>
              <height>21</height>
@@ -2564,7 +2564,7 @@
           <widget class="QLabel" name="partnerMetamoran_value">
            <property name="geometry">
             <rect>
-             <x>140</x>
+             <x>200</x>
              <y>0</y>
              <width>41</width>
              <height>41</height>
@@ -2583,7 +2583,7 @@
           <widget class="QLabel" name="partnerMetamoran_slot">
            <property name="geometry">
             <rect>
-             <x>140</x>
+             <x>200</x>
              <y>0</y>
              <width>41</width>
              <height>41</height>
@@ -2746,7 +2746,7 @@
           <property name="geometry">
            <rect>
             <x>620</x>
-            <y>100</y>
+            <y>80</y>
             <width>251</width>
             <height>81</height>
            </rect>
@@ -2760,9 +2760,9 @@
           <widget class="QLabel" name="amount_ki_per_fusion_text">
            <property name="geometry">
             <rect>
-             <x>70</x>
+             <x>0</x>
              <y>10</y>
-             <width>131</width>
+             <width>111</width>
              <height>16</height>
             </rect>
            </property>
@@ -2918,7 +2918,7 @@
           <property name="geometry">
            <rect>
             <x>620</x>
-            <y>180</y>
+            <y>160</y>
             <width>251</width>
             <height>111</height>
            </rect>
@@ -2932,9 +2932,9 @@
           <widget class="QLabel" name="animation_per_fusion_text">
            <property name="geometry">
             <rect>
-             <x>80</x>
+             <x>0</x>
              <y>10</y>
-             <width>131</width>
+             <width>111</width>
              <height>16</height>
             </rect>
            </property>
@@ -3118,7 +3118,7 @@
           <property name="geometry">
            <rect>
             <x>280</x>
-            <y>370</y>
+            <y>330</y>
             <width>201</width>
             <height>41</height>
            </rect>
@@ -3163,12 +3163,12 @@
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>0X2</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>0X3</string>
             </property>
            </item>
            <item>
@@ -3187,7 +3187,7 @@
           <property name="geometry">
            <rect>
             <x>280</x>
-            <y>330</y>
+            <y>290</y>
             <width>201</width>
             <height>41</height>
            </rect>
@@ -3227,7 +3227,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Blue and white</string>
+             <string>Cyan</string>
             </property>
            </item>
            <item>
@@ -3240,6 +3240,54 @@
              <string>Rose and white</string>
             </property>
            </item>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="aura_size">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>370</y>
+            <width>111</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="aura_size_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>51</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Aura size:</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+           </property>
+          </widget>
+          <widget class="QSpinBox" name="aura_size_value">
+           <property name="geometry">
+            <rect>
+             <x>60</x>
+             <y>10</y>
+             <width>42</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <property name="maximum">
+            <number>255</number>
+           </property>
+           <property name="value">
+            <number>0</number>
+           </property>
           </widget>
          </widget>
         </widget>
