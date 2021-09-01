@@ -1699,7 +1699,7 @@
           <zorder>transSlotPanel2</zorder>
           <zorder>transSlotPanel3</zorder>
          </widget>
-         <widget class="QFrame" name="detransEffect">
+         <widget class="QFrame" name="transEffect">
           <property name="geometry">
            <rect>
             <x>190</x>
@@ -1714,68 +1714,68 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <widget class="QComboBox" name="detransEffectValue">
+          <widget class="QComboBox" name="transEffectValue">
            <property name="geometry">
             <rect>
-             <x>170</x>
+             <x>140</x>
              <y>10</y>
-             <width>73</width>
+             <width>101</width>
              <height>22</height>
             </rect>
            </property>
            <item>
             <property name="text">
-             <string>UNK0</string>
+             <string>Super Saiyan</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK1</string>
+             <string>Metamoru</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK2</string>
+             <string>Potara</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK3</string>
+             <string>Cell</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK4</string>
+             <string>Super Buu</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK5</string>
+             <string>Broly</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK6</string>
+             <string>Freezer</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK7</string>
+             <string>Super Saiyan 3</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK8</string>
+             <string>Cooler</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK9</string>
+             <string>Bojack</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>UNK10</string>
+             <string>C-13</string>
             </property>
            </item>
            <item>
@@ -1784,7 +1784,7 @@
             </property>
            </item>
           </widget>
-          <widget class="QLabel" name="detransEffectText">
+          <widget class="QLabel" name="transEffectText">
            <property name="geometry">
             <rect>
              <x>0</x>
@@ -1794,7 +1794,7 @@
             </rect>
            </property>
            <property name="text">
-            <string>Detransformation effect/Ki:</string>
+            <string>Transformation effect/Ki:</string>
            </property>
           </widget>
          </widget>
@@ -1839,12 +1839,34 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
            </property>
           </widget>
+          <widget class="QLabel" name="transPartnerSlot">
+           <property name="geometry">
+            <rect>
+             <x>200</x>
+             <y>10</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <zorder>transPartnerSlot</zorder>
+          <zorder>transPartnerText</zorder>
+          <zorder>transPartnerValue</zorder>
          </widget>
          <widget class="QFrame" name="amount_ki_per_transformation">
           <property name="geometry">
@@ -2159,6 +2181,61 @@
              <string>Return</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Transform 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Absorb</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Special</string>
+            </property>
+           </item>
           </widget>
           <widget class="QComboBox" name="trans3_animation_value">
            <property name="geometry">
@@ -2177,6 +2254,61 @@
            <item>
             <property name="text">
              <string>Return</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Transform 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Absorb</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Special</string>
             </property>
            </item>
           </widget>
@@ -2199,6 +2331,61 @@
              <string>Return</string>
             </property>
            </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Transform 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Absorb</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Special</string>
+            </property>
+           </item>
           </widget>
           <widget class="QComboBox" name="trans4_animation_value">
            <property name="geometry">
@@ -2217,6 +2404,61 @@
            <item>
             <property name="text">
              <string>Return</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Transform 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK5</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Absorb</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK7</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK8</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK9</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Special</string>
             </property>
            </item>
           </widget>
@@ -2262,12 +2504,34 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
            </property>
           </widget>
+          <widget class="QLabel" name="partnerPotara_slot">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>10</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <zorder>partnerPotara_slot</zorder>
+          <zorder>partnerPotara_text</zorder>
+          <zorder>partnerPotara_value</zorder>
          </widget>
          <widget class="QFrame" name="partnerMetamoran">
           <property name="geometry">
@@ -2310,12 +2574,34 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/small/sc_chara_000.bmp</pixmap>
+            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
            </property>
           </widget>
+          <widget class="QLabel" name="partnerMetamoran_slot">
+           <property name="geometry">
+            <rect>
+             <x>140</x>
+             <y>0</y>
+             <width>41</width>
+             <height>41</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+          <zorder>partnerMetamoran_slot</zorder>
+          <zorder>partnerMetamoran_text</zorder>
+          <zorder>partnerMetamoran_value</zorder>
          </widget>
          <widget class="QFrame" name="fusionPanel">
           <property name="geometry">
@@ -2763,7 +3049,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Fusion</string>
+             <string>Potara</string>
             </property>
            </item>
           </widget>
@@ -2783,7 +3069,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Fusion</string>
+             <string>Potara</string>
             </property>
            </item>
           </widget>
@@ -2803,7 +3089,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Fusion</string>
+             <string>Potara</string>
             </property>
            </item>
           </widget>
@@ -2823,7 +3109,7 @@
            </item>
            <item>
             <property name="text">
-             <string>Fusion</string>
+             <string>Potara</string>
             </property>
            </item>
           </widget>
@@ -2841,7 +3127,7 @@
      <x>0</x>
      <y>0</y>
      <width>952</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">

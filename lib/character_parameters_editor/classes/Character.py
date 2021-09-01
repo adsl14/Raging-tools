@@ -2,7 +2,7 @@ class Character:
 	def __init__(self):
 		self.position_trans = 0
 		self.character_id = 0
-		self.destransformation_effect = 0
+		self.transformation_effect = 0
 		self.transformation_partner = 0
 		self.transformations = [] * 4
 		self.amount_ki_transformations = [] * 4

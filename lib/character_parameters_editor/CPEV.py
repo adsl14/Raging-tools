@@ -33,8 +33,12 @@ class CPEV:
     # List of character with their data from the file
     character_list = []
     chara_selected = 0  # Index of the char selected in the main panel
-    trans_slot_panel_selected = 0  # Slot thas is being edited for the transformations
-    fusion_slot_panel_selected = 0 # Slot that is being edited for the fusions
+    change_character = False  # Flag that will tell us if the character has been changed in the main panel
+    trans_slot_panel_selected = 0   # Slot thas is being edited for the transformations
+    transformation_partner_flag = False  # Flag transformation partner slot to know if the user has selected that
+    fusion_slot_panel_selected = 0  # Slot that is being edited for the fusions
+    potara_partner_flag = False  # Flag potara partner slot to know if the user has selected that
+    metamoran_partner_flag = False  # Flag metamoran partner slot to know if the user has selected that
     # Array of the characters that has been edited
     character_list_edited = []
 
