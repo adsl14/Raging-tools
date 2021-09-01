@@ -725,9 +725,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Create a Character object
                 character = Character()
 
-                # Move to the position where the information is located
+                # Store the positions where the information is located
+                character.position_visual_parameters = CPEV.base_pos_visual_parameters + (i * CPEV.sizeVisualParameters)
                 character.position_trans = CPEV.base_pos_trans + (i * CPEV.sizeTrans)
-                pak_file.seek(character.position_trans)
 
                 # Store the information in the object and append to a list
                 store_character_parameters(character, pak_file)
@@ -760,6 +760,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Get the values for the fist character of the list
         character_zero = CPEV.character_list[0]
+
+        # Show the color lightnings parameter
+        self.color_lightning_text.setDisabled(False)
+        self.color_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+        self.color_lightning_value.setDisabled(False)
+
+        # Show the glow/lightnings parameter
+        self.glow_lightning_text.setDisabled(False)
+        self.glow_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+        self.glow_lightning_value.setDisabled(False)
 
         # Show the transform panel
         self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
@@ -926,6 +936,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Load the portrait
             self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
                                                          str(index).zfill(3) + ".png")))
+
+            # Color lightning
+            self.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
+
+            # Glow/lightning effect
+            self.glow_lightning_value.setCurrentIndex(CPEV.character_list[index].glow_lightning)
 
             # Load the transformations for the panel transformations
             transformations = CPEV.character_list[index].transformations
@@ -1343,6 +1359,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.selectCharaWindow.close()
 
+    def on_color_lightning_changed(self):
+
+        # Avoid change the values when the program is changing the character from the main panel
+        if not CPEV.change_character:
+            CPEV.character_list[CPEV.chara_selected].color_lightning = self.color_lightning_value.currentIndex()
+
+            # If the character was edited before, we won't append the index to our array of characters edited once
+            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+    def on_glow_lightning_changed(self):
+
+        # Avoid change the values when the program is changing the character from the main panel
+        if not CPEV.change_character:
+            CPEV.character_list[CPEV.chara_selected].glow_lightning = self.glow_lightning_value.currentIndex()
+
+            # If the character was edited before, we won't append the index to our array of characters edited once
+            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
     def on_transformation_ki_effect_changed(self):
 
         # Avoid change the values when the program is changing the character from the main panel
@@ -1467,6 +1503,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # Change the transformations in the file
                     for character in CPEV.character_list_edited:
+
+                        # Save the visual parameters
+                        file.seek(character.position_visual_parameters)
+
+                        # Move some positions because is unk data
+                        file.seek(41, 1)
+
+                        file.write(character.color_lightning.to_bytes(1, byteorder="big"))
+
+                        # UNK data for now
+                        file.seek(69, 1)
+
+                        file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
+
+                        # Save the transformation parameters
                         file.seek(character.position_trans)
 
                         file.write(character.character_id.to_bytes(1, byteorder="big"))

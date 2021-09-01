@@ -18,9 +18,12 @@ class CPEV:
     path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
+    # base position visual parameters
+    base_pos_visual_parameters = 7236
     # base position transformations
     base_pos_trans = 66720
     # number of bytes between each character
+    sizeVisualParameters = 148
     sizeTrans = 33
 
     # panelPortraistlist

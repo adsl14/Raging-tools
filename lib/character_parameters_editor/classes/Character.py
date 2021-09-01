@@ -1,5 +1,9 @@
 class Character:
 	def __init__(self):
+		self.position_visual_parameters = 0
+		self.color_lightning = 0
+		self.glow_lightning = 0
+
 		self.position_trans = 0
 		self.character_id = 0
 		self.transformation_effect = 0

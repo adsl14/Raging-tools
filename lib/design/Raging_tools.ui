@@ -3114,6 +3114,134 @@
            </item>
           </widget>
          </widget>
+         <widget class="QFrame" name="glow_lightning">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>370</y>
+            <width>201</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="glow_lightning_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Glow/Lightning:</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="glow_lightning_value">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>10</y>
+             <width>111</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Nothing</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Glow</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>UNK3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Lightnings</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Glow + lightnings</string>
+            </property>
+           </item>
+          </widget>
+         </widget>
+         <widget class="QFrame" name="color_lightning">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>330</y>
+            <width>201</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="color_lightning_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>81</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Color lightning:</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="color_lightning_value">
+           <property name="geometry">
+            <rect>
+             <x>90</x>
+             <y>10</y>
+             <width>111</width>
+             <height>22</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Blue</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Blue and white</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Rose</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Rose and white</string>
+            </property>
+           </item>
+          </widget>
+         </widget>
         </widget>
        </item>
       </layout>
