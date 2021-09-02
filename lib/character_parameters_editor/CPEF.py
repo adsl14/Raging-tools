@@ -24,11 +24,19 @@ def initialize_cpe(main_window, QtWidgets):
     # Set the the big portrait image
     main_window.portrait.setVisible(False)
 
+    # Set the health
+    main_window.health_text.setDisabled(True)
+    main_window.health_value.setDisabled(True)
+    main_window.health_value.valueChanged.connect(main_window.on_health_changed)
+
     # Set the aura size
     main_window.aura_size_text.setDisabled(True)
-    main_window.aura_size_text.setDisabled(True)
-    main_window.aura_size_value.setDisabled(True)
-    main_window.aura_size_value.valueChanged.connect(main_window.on_aura_size_changed)
+    main_window.aura_size_idle_text.setDisabled(True)
+    main_window.aura_size_idle_value.setDisabled(True)
+    main_window.aura_size_charge_text.setDisabled(True)
+    main_window.aura_size_charge_value.setDisabled(True)
+    main_window.aura_size_idle_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=0))
+    main_window.aura_size_charge_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=1))
 
     # Set the color lightning
     main_window.color_lightning_text.setDisabled(True)
@@ -183,92 +191,97 @@ def store_character_parameters(character, pak_file):
     # Move to the visual parameters position
     pak_file.seek(character.position_visual_parameters)
 
+    # Health
+    character.health = int.from_bytes(pak_file.read(4), byteorder='big')
+
     # UNK data for now
-    pak_file.seek(33, 1)
+    pak_file.seek(25, 1)
 
     # Aura size
-    character.aura_size = (int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.aura_size.append(int.from_bytes(pak_file.read(1), byteorder='big'))
+    pak_file.seek(7, 1)
+    character.aura_size.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # UNK data for now
     pak_file.seek(7, 1)
 
     # Color lightnings
-    character.color_lightning = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.color_lightning = int.from_bytes(pak_file.read(1), byteorder='big')
 
     # UNK data for now
     pak_file.seek(69, 1)
 
     # Glow/Lightnings
-    character.glow_lightning = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.glow_lightning = int.from_bytes(pak_file.read(1), byteorder='big')
 
     # Move to the transformations parameters position
     pak_file.seek(character.position_trans)
 
     # Character ID
-    character.character_id = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.character_id = int.from_bytes(pak_file.read(1), byteorder='big')
     # destransformation effect
-    character.transformation_effect = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.transformation_effect = int.from_bytes(pak_file.read(1), byteorder='big')
     # transformation_partner
-    character.transformation_partner = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.transformation_partner = int.from_bytes(pak_file.read(1), byteorder='big')
 
     # Transformation 1
-    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # Transformation 2
-    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # Transformation 3
-    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # Transformation 4
-    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # amount_ki_transformations 1
-    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_transformations 2
-    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_transformations 3
-    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_transformations 4
-    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_transformations.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # transformations_animation 1
-    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # transformations_animation 2
-    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # transformations_animation 3
-    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # transformations_animation 4
-    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.transformations_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # Move four positions because is unk data
     pak_file.seek(4, 1)
 
     # transformation_partner
-    character.partner_potara = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.partner_potara = int.from_bytes(pak_file.read(1), byteorder='big')
     # partner_metamoru
-    character.partner_metamoru = int.from_bytes(pak_file.read(1), byteorder='little')
+    character.partner_metamoru = int.from_bytes(pak_file.read(1), byteorder='big')
 
     # fusions 1
-    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions 2
-    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions 3
-    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions 4
-    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # amount_ki_fusions 1
-    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_fusions 2
-    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_fusions 3
-    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # amount_ki_fusions 4
-    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.amount_ki_fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # fusions_animation 1
-    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions_animation 2
-    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions_animation 3
-    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions_animation 4
-    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='little'))
+    character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))

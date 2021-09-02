@@ -761,10 +761,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Get the values for the fist character of the list
         character_zero = CPEV.character_list[0]
 
+        # Show the health
+        self.health_text.setDisabled(False)
+        self.health_value.setDisabled(False)
+        self.health_value.setValue(character_zero.health)
+
         # Show the aura size
         self.aura_size_text.setDisabled(False)
-        self.aura_size_value.setValue(character_zero.aura_size)
-        self.aura_size_value.setDisabled(False)
+        self.aura_size_idle_text.setDisabled(False)
+        self.aura_size_idle_value.setDisabled(False)
+        self.aura_size_idle_value.setValue(character_zero.aura_size[0])
+        self.aura_size_charge_text.setDisabled(False)
+        self.aura_size_charge_value.setDisabled(False)
+        self.aura_size_charge_value.setValue(character_zero.aura_size[1])
 
         # Show the color lightnings parameter
         self.color_lightning_text.setDisabled(False)
@@ -942,8 +951,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
                                                          str(index).zfill(3) + ".png")))
 
+            # Health
+            self.health_value.setValue(CPEV.character_list[index].health)
+
             # Aura size
-            self.aura_size_value.setValue(CPEV.character_list[index].aura_size)
+            self.aura_size_idle_value.setValue(CPEV.character_list[index].aura_size[0])
+            self.aura_size_charge_value.setValue(CPEV.character_list[index].aura_size[1])
 
             # Color lightning
             self.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
@@ -1485,13 +1498,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
                 CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
-    def on_aura_size_changed(self):
+    def on_aura_size_changed(self, aura_index):
 
         # Avoid change the values when the program is changing the character from the main panel
         if not CPEV.change_character:
 
-            # Change the slot of aura size
-            CPEV.character_list[CPEV.chara_selected].aura_size = self.aura_size_value.value()
+            if aura_index == 0:
+                # Change the slot of aura idle size
+                CPEV.character_list[CPEV.chara_selected].aura_size[0] = self.aura_size_idle_value.value()
+            else:
+                # Change the slot of aura charge size
+                CPEV.character_list[CPEV.chara_selected].aura_size[1] = self.aura_size_charge_value.value()
+
+            # If the character was edited before, we won't append the index to our array of characters edited once
+            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+    def on_health_changed(self):
+
+        # Avoid change the values when the program is changing the character from the main panel
+        if not CPEV.change_character:
+
+            # Change the slot of health
+            CPEV.character_list[CPEV.chara_selected].health = self.health_value.value()
 
             # If the character was edited before, we won't append the index to our array of characters edited once
             if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -1527,19 +1556,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Save the visual parameters
                         file.seek(character.position_visual_parameters)
 
-                        # UNK data for now
-                        file.seek(33, 1)
+                        # Health
+                        file.write(character.health.to_bytes(4, byteorder="big"))
 
-                        file.write(character.aura_size.to_bytes(1, byteorder="big"))
+                        # UNK data for now
+                        file.seek(25, 1)
+
+                        # Aura size (idle)
+                        file.write(character.aura_size[0].to_bytes(1, byteorder="big"))
+                        file.seek(7, 1)
+                        # Aura size (charge)
+                        file.write(character.aura_size[1].to_bytes(1, byteorder="big"))
 
                         # UNK data for now
                         file.seek(7, 1)
-
+                        # Color lightnining
                         file.write(character.color_lightning.to_bytes(1, byteorder="big"))
 
                         # UNK data for now
                         file.seek(69, 1)
-
+                        # Glow/Lightning
                         file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
 
                         # Save the transformation parameters
