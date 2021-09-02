@@ -2,6 +2,7 @@ from lib.character_parameters_editor.CPEV import CPEV
 from lib.packages import QLabel, QPixmap, functools, os, struct
 from lib.design.select_chara import Ui_Dialog
 
+
 def initialize_cpe(main_window, QtWidgets):
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
