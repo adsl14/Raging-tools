@@ -3195,7 +3195,7 @@
            <rect>
             <x>280</x>
             <y>330</y>
-            <width>191</width>
+            <width>201</width>
             <height>41</height>
            </rect>
           </property>
@@ -3223,9 +3223,12 @@
             <rect>
              <x>90</x>
              <y>10</y>
-             <width>101</width>
+             <width>111</width>
              <height>22</height>
             </rect>
+           </property>
+           <property name="currentText">
+            <string>Disabled</string>
            </property>
            <item>
             <property name="text">
@@ -3295,6 +3298,9 @@
              <width>101</width>
              <height>22</height>
             </rect>
+           </property>
+           <property name="currentText">
+            <string>Blue</string>
            </property>
            <item>
             <property name="text">
