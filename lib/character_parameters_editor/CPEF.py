@@ -1,7 +1,6 @@
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.packages import QLabel, QPixmap, functools, os
+from lib.packages import QLabel, QPixmap, functools, os, struct
 from lib.design.select_chara import Ui_Dialog
-
 
 def initialize_cpe(main_window, QtWidgets):
     # Load all the mini portraits (main panel)
@@ -33,10 +32,13 @@ def initialize_cpe(main_window, QtWidgets):
     main_window.aura_size_text.setDisabled(True)
     main_window.aura_size_idle_text.setDisabled(True)
     main_window.aura_size_idle_value.setDisabled(True)
+    main_window.aura_size_dash_text.setDisabled(True)
+    main_window.aura_size_dash_value.setDisabled(True)
     main_window.aura_size_charge_text.setDisabled(True)
     main_window.aura_size_charge_value.setDisabled(True)
     main_window.aura_size_idle_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=0))
-    main_window.aura_size_charge_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=1))
+    main_window.aura_size_dash_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=1))
+    main_window.aura_size_charge_value.valueChanged.connect(lambda: main_window.on_aura_size_changed(aura_index=2))
 
     # Set the color lightning
     main_window.color_lightning_text.setDisabled(True)
@@ -195,15 +197,15 @@ def store_character_parameters(character, pak_file):
     character.health = int.from_bytes(pak_file.read(4), byteorder='big')
 
     # UNK data for now
-    pak_file.seek(25, 1)
+    pak_file.seek(24, 1)
 
-    # Aura size
-    character.aura_size.append(int.from_bytes(pak_file.read(1), byteorder='big'))
-    pak_file.seek(7, 1)
-    character.aura_size.append(int.from_bytes(pak_file.read(1), byteorder='big'))
+    # Aura size '>f' big endian
+    character.aura_size.append(struct.unpack('>f', pak_file.read(4))[0])
+    character.aura_size.append(struct.unpack('>f', pak_file.read(4))[0])
+    character.aura_size.append(struct.unpack('>f', pak_file.read(4))[0])
 
     # UNK data for now
-    pak_file.seek(7, 1)
+    pak_file.seek(5, 1)
 
     # Color lightnings
     character.color_lightning = int.from_bytes(pak_file.read(1), byteorder='big')

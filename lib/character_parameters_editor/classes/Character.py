@@ -2,7 +2,7 @@ class Character:
 	def __init__(self):
 		self.position_visual_parameters = 0
 		self.health = 0
-		self.aura_size = [] * 2  # 0 is idle, 1 is charge
+		self.aura_size = [] * 3  # 0 is idle, 1 dash, 2 is charge
 		self.color_lightning = 0
 		self.glow_lightning = 0
 

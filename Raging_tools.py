@@ -4,7 +4,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from lib.design.Raging_tools import *
-from lib.packages import datetime, os, functools, QPixmap
+from lib.packages import datetime, os, functools, QPixmap, struct
 from lib.functions import del_rw
 
 # vram explorer
@@ -771,9 +771,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.aura_size_idle_text.setDisabled(False)
         self.aura_size_idle_value.setDisabled(False)
         self.aura_size_idle_value.setValue(character_zero.aura_size[0])
+        self.aura_size_dash_text.setDisabled(False)
+        self.aura_size_dash_value.setDisabled(False)
+        self.aura_size_dash_value.setValue(character_zero.aura_size[1])
         self.aura_size_charge_text.setDisabled(False)
         self.aura_size_charge_value.setDisabled(False)
-        self.aura_size_charge_value.setValue(character_zero.aura_size[1])
+        self.aura_size_charge_value.setValue(character_zero.aura_size[2])
 
         # Show the color lightnings parameter
         self.color_lightning_text.setDisabled(False)
@@ -956,7 +959,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Aura size
             self.aura_size_idle_value.setValue(CPEV.character_list[index].aura_size[0])
-            self.aura_size_charge_value.setValue(CPEV.character_list[index].aura_size[1])
+            self.aura_size_dash_value.setValue(CPEV.character_list[index].aura_size[1])
+            self.aura_size_charge_value.setValue(CPEV.character_list[index].aura_size[2])
 
             # Color lightning
             self.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
@@ -1506,9 +1510,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if aura_index == 0:
                 # Change the slot of aura idle size
                 CPEV.character_list[CPEV.chara_selected].aura_size[0] = self.aura_size_idle_value.value()
+            elif aura_index == 1:
+                # Change the slot of aura dash size
+                CPEV.character_list[CPEV.chara_selected].aura_size[1] = self.aura_size_dash_value.value()
             else:
-                # Change the slot of aura charge size
-                CPEV.character_list[CPEV.chara_selected].aura_size[1] = self.aura_size_charge_value.value()
+                # Change the slot of aura dash size
+                CPEV.character_list[CPEV.chara_selected].aura_size[2] = self.aura_size_charge_value.value()
 
             # If the character was edited before, we won't append the index to our array of characters edited once
             if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -1560,16 +1567,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         file.write(character.health.to_bytes(4, byteorder="big"))
 
                         # UNK data for now
-                        file.seek(25, 1)
+                        file.seek(24, 1)
 
                         # Aura size (idle)
-                        file.write(character.aura_size[0].to_bytes(1, byteorder="big"))
-                        file.seek(7, 1)
+                        file.write(struct.pack('>f', character.aura_size[0]))
+                        # Aura size (dash)
+                        file.write(struct.pack('>f', character.aura_size[1]))
                         # Aura size (charge)
-                        file.write(character.aura_size[1].to_bytes(1, byteorder="big"))
+                        file.write(struct.pack('>f', character.aura_size[2]))
 
                         # UNK data for now
-                        file.seek(7, 1)
+                        file.seek(5, 1)
                         # Color lightnining
                         file.write(character.color_lightning.to_bytes(1, byteorder="big"))
 
