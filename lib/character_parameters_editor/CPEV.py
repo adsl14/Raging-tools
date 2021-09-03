@@ -9,6 +9,9 @@ class CPEV:
     pak_file_path_original = ""
     pak_file_path = ""
 
+    # Allowed files
+    allowed_files = ["operate_resident_param"]
+
     # resources path
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
 

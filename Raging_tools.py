@@ -689,12 +689,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Check if the pak file is the correct one
         with open(CPEV.pak_file_path_original, mode="rb") as pak_file:
+
+            # Read the filename in the header
             pak_file.seek(78)
-            data = pak_file.read(26)
-            if data.decode('utf-8') != "operate_resident_param.pak":
+            data = pak_file.read(22)
+
+            if data.decode('utf-8') not in CPEV.allowed_files:
+                for allowed_file in CPEV.allowed_files:
+                    items = "<li>" + allowed_file + "</li>"
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
-                msg.setText("Selected file is not the correct one.")
+                msg.setText("Wrong file. Select one of these types of file:"
+                            "<ul>" + items + "</ul>")
                 msg.exec()
                 return
 
