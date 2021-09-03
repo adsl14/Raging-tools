@@ -16,7 +16,8 @@ from lib.vram_explorer.VEF import open_spr_file, open_vram_file, action_item, in
 
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe
+from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
+    open_select_chara_window
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -746,13 +747,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Show the transformations in the main panel
         self.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
-        self.label_trans_0.mousePressEvent = functools.partial(self.action_change_character,
+        self.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=self,
                                                                index=1, modify_slot_transform=False)
         self.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_002.bmp")))
-        self.label_trans_1.mousePressEvent = functools.partial(self.action_change_character,
+        self.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=self,
                                                                index=2, modify_slot_transform=False)
         self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
-        self.label_trans_2.mousePressEvent = functools.partial(self.action_change_character,
+        self.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=self,
                                                                index=3, modify_slot_transform=False)
         self.label_trans_0.setVisible(True)
         self.label_trans_1.setVisible(True)
@@ -791,22 +792,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Show the transform panel
         self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                             str(character_zero.transformations[0]).zfill(3) + ".png")))
-        self.transSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                  index=character_zero.transformations[0],
                                                                  trans_slot_panel_index=0)
         self.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                             str(character_zero.transformations[1]).zfill(3) + ".png")))
-        self.transSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                  index=character_zero.transformations[1],
                                                                  trans_slot_panel_index=1)
         self.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                             str(character_zero.transformations[2]).zfill(3) + ".png")))
-        self.transSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                  index=character_zero.transformations[2],
                                                                  trans_slot_panel_index=2)
         self.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                             str(character_zero.transformations[3]).zfill(3) + ".png")))
-        self.transSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                  index=character_zero.transformations[3],
                                                                  trans_slot_panel_index=3)
         self.transPanel.setEnabled(True)
@@ -822,7 +823,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                               str(character_zero.transformation_partner).zfill(3)
                                                               + ".png")))
-        self.transPartnerValue.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                    index=character_zero.transformation_partner,
                                                                    transformation_partner_flag=True)
 
@@ -862,23 +863,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Show the fusion panel
         self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                            str(character_zero.fusions[0]).zfill(3) + ".png")))
-        self.fusiSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                 index=character_zero.fusions[0],
                                                                 fusion_slot_panel_index=0)
         self.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                            str(character_zero.fusions[1]).zfill(3) + ".png")))
-        self.fusiSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                 index=character_zero.fusions[1],
                                                                 fusion_slot_panel_index=1
                                                                 )
         self.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                            str(character_zero.fusions[2]).zfill(3) + ".png")))
-        self.fusiSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                 index=character_zero.fusions[2],
                                                                 fusion_slot_panel_index=2)
         self.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                            str(character_zero.fusions[3]).zfill(3) + ".png")))
-        self.fusiSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                 index=character_zero.fusions[3],
                                                                 fusion_slot_panel_index=3)
         self.fusiPanel.setEnabled(True)
@@ -889,7 +890,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                 str(character_zero.partner_potara).zfill(3)
                                                                 + ".png")))
-        self.partnerPotara_value.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                      index=character_zero.partner_potara,
                                                                      potara_partner_flag=True)
         self.partnerPotara_value.setDisabled(False)
@@ -900,7 +901,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.partnerMetamoran_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                    str(character_zero.partner_metamoru).zfill(3)
                                                                    + ".png")))
-        self.partnerMetamoran_value.mousePressEvent = functools.partial(self.open_select_chara_window,
+        self.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
                                                                         index=character_zero.partner_metamoru,
                                                                         metamoran_partner_flag=True)
         self.partnerMetamoran_value.setDisabled(False)
@@ -941,597 +942,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open the tab
         self.tabWidget.setCurrentIndex(1)
-
-    def action_change_character(self, event, index=None, modify_slot_transform=False):
-
-        # Change only if the char selected is other
-        if CPEV.chara_selected != index:
-
-            # We're changing the character in the main panel (avoid combo box code)
-            CPEV.change_character = True
-
-            # Load the portrait
-            self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
-                                                         str(index).zfill(3) + ".png")))
-
-            # Health
-            self.health_value.setValue(CPEV.character_list[index].health)
-
-            # Aura size
-            self.aura_size_idle_value.setValue(CPEV.character_list[index].aura_size[0])
-            self.aura_size_dash_value.setValue(CPEV.character_list[index].aura_size[1])
-            self.aura_size_charge_value.setValue(CPEV.character_list[index].aura_size[2])
-
-            # Color lightning
-            self.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
-
-            # Glow/lightning effect
-            self.glow_lightning_value.setCurrentIndex(CPEV.character_list[index].glow_lightning)
-
-            # Load the transformations for the panel transformations
-            transformations = CPEV.character_list[index].transformations
-            # Change panel transformations and their interactions
-            if transformations[0] != 100:
-                self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(transformations[0]).zfill(3) + ".png")))
-                self.transSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=transformations[0],
-                                                                         trans_slot_panel_index=0)
-                self.transSlotPanel0.setVisible(True)
-            else:
-                self.transSlotPanel0.setPixmap(QPixmap())
-                self.transSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=100, trans_slot_panel_index=0)
-            if transformations[1] != 100:
-                self.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(transformations[1]).zfill(3) + ".png")))
-                self.transSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=transformations[1],
-                                                                         trans_slot_panel_index=1)
-                self.transSlotPanel1.setVisible(True)
-            else:
-                self.transSlotPanel1.setPixmap(QPixmap())
-                self.transSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=100, trans_slot_panel_index=1)
-            if transformations[2] != 100:
-                self.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(transformations[2]).zfill(3) + ".png")))
-                self.transSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=transformations[2],
-                                                                         trans_slot_panel_index=2)
-                self.transSlotPanel2.setVisible(True)
-            else:
-                self.transSlotPanel2.setPixmap(QPixmap())
-                self.transSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=100, trans_slot_panel_index=2)
-            if transformations[3] != 100:
-                self.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(transformations[3]).zfill(3) + ".png")))
-                self.transSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=transformations[3],
-                                                                         trans_slot_panel_index=3)
-                self.transSlotPanel3.setVisible(True)
-            else:
-                self.transSlotPanel3.setPixmap(QPixmap())
-                self.transSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=100, trans_slot_panel_index=3)
-
-            # Transformation effect
-            self.transEffectValue.setCurrentIndex(CPEV.character_list[index].transformation_effect)
-
-            # Trans partner value
-            self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                             str(CPEV.character_list[index].transformation_partner).zfill(3)
-                                            + ".png")))
-            self.partnerPotara_value.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=CPEV.character_list[
-                                                                             index].transformation_partner,
-                                                                         transformation_partner_flag=True)
-
-            # amount ki per transformation
-            self.amountKi_trans1_value.setValue(CPEV.character_list[index].amount_ki_transformations[0])
-            self.amountKi_trans2_value.setValue(CPEV.character_list[index].amount_ki_transformations[1])
-            self.amountKi_trans3_value.setValue(CPEV.character_list[index].amount_ki_transformations[2])
-            self.amountKi_trans4_value.setValue(CPEV.character_list[index].amount_ki_transformations[3])
-
-            # Animation per transformation
-            self.trans1_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[0])
-            self.trans2_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[1])
-            self.trans3_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[2])
-            self.trans4_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[3])
-
-            # Load the fusions for the panel of fusions
-            fusions = CPEV.character_list[index].fusions
-            # Change panel fusions and their interactions
-            if fusions[0] != 100:
-                self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(fusions[0]).zfill(3) + ".png")))
-                self.fusiSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=fusions[0],
-                                                                        fusion_slot_panel_index=0)
-                self.fusiSlotPanel0.setVisible(True)
-            else:
-                self.fusiSlotPanel0.setPixmap(QPixmap())
-                self.fusiSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=100, fusion_slot_panel_index=0)
-            if fusions[1] != 100:
-                self.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(fusions[1]).zfill(3) + ".png")))
-                self.fusiSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=fusions[1],
-                                                                        fusion_slot_panel_index=1)
-                self.fusiSlotPanel1.setVisible(True)
-            else:
-                self.fusiSlotPanel1.setPixmap(QPixmap())
-                self.fusiSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=100, fusion_slot_panel_index=1)
-            if fusions[2] != 100:
-                self.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(fusions[2]).zfill(3) + ".png")))
-                self.fusiSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=fusions[2],
-                                                                        fusion_slot_panel_index=2)
-                self.fusiSlotPanel2.setVisible(True)
-            else:
-                self.fusiSlotPanel2.setPixmap(QPixmap())
-                self.fusiSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=100, fusion_slot_panel_index=2)
-            if fusions[3] != 100:
-                self.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(fusions[3]).zfill(3) + ".png")))
-                self.fusiSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=fusions[3],
-                                                                        fusion_slot_panel_index=3)
-                self.fusiSlotPanel3.setVisible(True)
-            else:
-                self.fusiSlotPanel3.setPixmap(QPixmap())
-                self.fusiSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=100, fusion_slot_panel_index=3)
-
-            # Show the partner potara
-            self.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                               str(CPEV.character_list[index].partner_potara).zfill(3)
-                                               + ".png")))
-            self.partnerPotara_value.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=CPEV.character_list[index]
-                                                                         .partner_potara, potara_partner_flag=True)
-
-            # Show  partner metamoran
-            self.partnerMetamoran_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                  str(CPEV.character_list[index].partner_metamoru).zfill(3)
-                                                  + ".png")))
-            self.partnerMetamoran_value.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                            index=CPEV.character_list[index].
-                                                                            partner_metamoru,
-                                                                            metamoran_partner_flag=True)
-
-            # Show amount ki per fusion
-            self.amountKi_fusion1_value.setValue(CPEV.character_list[index].amount_ki_fusions[0])
-            self.amountKi_fusion2_value.setValue(CPEV.character_list[index].amount_ki_fusions[1])
-            self.amountKi_fusion3_value.setValue(CPEV.character_list[index].amount_ki_fusions[2])
-            self.amountKi_fusion4_value.setValue(CPEV.character_list[index].amount_ki_fusions[3])
-
-            # Show Animation per transformation
-            self.fusion1_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[0])
-            self.fusion2_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[1])
-            self.fusion3_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[2])
-            self.fusion4_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[3])
-
-            # Modify the slots of the transformations in the main panel
-            if modify_slot_transform:
-
-                # Disable all the transformations of the slots if it has been activated in the main panel
-                if self.label_trans_0.isVisible():
-                    self.label_trans_0.setVisible(False)
-                    self.label_trans_1.setVisible(False)
-                    self.label_trans_2.setVisible(False)
-                    self.label_trans_3.setVisible(False)
-
-                # Get the original transformations for the character
-                if index in CPEV.characters_with_trans:
-                    transformations = CPEV.characters_with_trans_index[CPEV.characters_with_trans.index(index)]
-                    num_transformations = len(transformations)
-                    if num_transformations > 0:
-                        self.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
-                                                                          str(transformations[0]).zfill(3) + ".bmp")))
-                        self.label_trans_0.mousePressEvent = functools.partial(self.action_change_character,
-                                                                               index=transformations[0],
-                                                                               modify_slot_transform=False)
-                        self.label_trans_0.setVisible(True)
-                        if num_transformations > 1:
-                            self.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
-                                                                              str(transformations[1]).zfill(3) +
-                                                                              ".bmp")))
-                            self.label_trans_1.mousePressEvent = functools.partial(self.action_change_character,
-                                                                                   index=transformations[1],
-                                                                                   modify_slot_transform=False)
-                            self.label_trans_1.setVisible(True)
-                            if num_transformations > 2:
-                                self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
-                                                                                  str(transformations[2]).zfill(3) +
-                                                                                  ".bmp")))
-                                self.label_trans_2.mousePressEvent = functools.partial(self.action_change_character,
-                                                                                       index=transformations[2],
-                                                                                       modify_slot_transform=False)
-                                self.label_trans_2.setVisible(True)
-                                if num_transformations > 3:
-                                    self.label_trans_3.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                                      "sc_chara_" +
-                                                                                      str(transformations[3]).zfill(3) +
-                                                                                      ".bmp")))
-                                    self.label_trans_3.mousePressEvent = functools.partial(self.action_change_character,
-                                                                                           index=transformations[3],
-                                                                                           modify_slot_transform=False)
-                                    self.label_trans_3.setVisible(True)
-
-                                    # Store the actual index selected of the char
-            CPEV.chara_selected = index
-
-            # We're not changing the character in the main panel (play combo box code)
-            CPEV.change_character = False
-
-    def open_select_chara_window(self, event, index, trans_slot_panel_index=None, fusion_slot_panel_index=None,
-                                 transformation_partner_flag=False, potara_partner_flag=False,
-                                 metamoran_partner_flag=False):
-
-        # Check what selected the user. If the user didn't select the transform panel or transform partner
-        # then, the user selected the fusion panel (or potara or metamoran)
-        if trans_slot_panel_index is not None or transformation_partner_flag:
-            q_label_style = "QLabel {border : 3px solid red;}"
-        else:
-            q_label_style = "QLabel {border : 3px solid green;}"
-
-        # Store in a global var what slot in the transformation and fusion panel has been selected
-        CPEV.trans_slot_panel_selected = trans_slot_panel_index
-        CPEV.transformation_partner_flag = transformation_partner_flag
-        CPEV.fusion_slot_panel_selected = fusion_slot_panel_index
-        CPEV.potara_partner_flag = potara_partner_flag
-        CPEV.metamoran_partner_flag = metamoran_partner_flag
-
-        # The character selected in the slot panel (trans or fusion) is not empty
-        if index != 100:
-
-            # The previous chara selected and the new are differents
-            if CPEV.previous_chara_selected_character_window != index:
-
-                # Add the color border to the character that has been selected in the trans/fusion slot
-                CPEV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
-
-                # Reset the previous character select if is not a empty character
-                if CPEV.previous_chara_selected_character_window != 100:
-                    CPEV.mini_portraits_image_select_chara_window[CPEV.previous_chara_selected_character_window] \
-                        .setStyleSheet("QLabel {}")
-
-                # Store the actual character selected in the select character window
-                CPEV.previous_chara_selected_character_window = index
-
-            # If the color border isn't the same, means the user has selected a different slot (trans or fusion
-            # or partners)
-            elif CPEV.mini_portraits_image_select_chara_window[index].styleSheet() != q_label_style:
-
-                # Add the color border to the character that has been selected in the trans/fusion slot
-                CPEV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
-
-                # Store the actual character selected in the select character window
-                CPEV.previous_chara_selected_character_window = index
-
-        # If the index is 100 (means there's no character transformation),
-        # we will remove the red/green border for the previous character transform panel
-        elif CPEV.previous_chara_selected_character_window != index:
-            CPEV.mini_portraits_image_select_chara_window[CPEV.previous_chara_selected_character_window] \
-                .setStyleSheet("QLabel {}")
-
-            CPEV.previous_chara_selected_character_window = index
-
-        self.selectCharaWindow.show()
-
-    def action_edit_trans_fusion_slot(self, event, char_selected_new):
-
-        # Check if the user wants to edit the transformation slot
-        if CPEV.trans_slot_panel_selected is not None:
-
-            # If the selected character in the window is the same as in the panel transformations,
-            # we assume there won't be any transformation in that slot
-            # so it will be 100
-            if CPEV.character_list[CPEV.chara_selected].transformations[CPEV.trans_slot_panel_selected] == \
-               char_selected_new:
-                char_selected_new = 100
-
-            # Change the transformation in our array of characters
-            CPEV.character_list[CPEV.chara_selected].transformations[CPEV.trans_slot_panel_selected] = char_selected_new
-
-            # Change the visual transformation
-            if CPEV.trans_slot_panel_selected == 0:
-                self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(char_selected_new).zfill(3) + ".png")))
-                self.transSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=char_selected_new,
-                                                                         trans_slot_panel_index=0)
-            elif CPEV.trans_slot_panel_selected == 1:
-                self.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(char_selected_new).zfill(3) + ".png")))
-                self.transSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=char_selected_new,
-                                                                         trans_slot_panel_index=1)
-            elif CPEV.trans_slot_panel_selected == 2:
-                self.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(char_selected_new).zfill(3) + ".png")))
-                self.transSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=char_selected_new,
-                                                                         trans_slot_panel_index=2)
-            elif CPEV.trans_slot_panel_selected == 3:
-                self.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(char_selected_new).zfill(3) + ".png")))
-                self.transSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=char_selected_new,
-                                                                         trans_slot_panel_index=3)
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-        # transformation partner slot
-        elif CPEV.transformation_partner_flag:
-
-            # If the selected character in the window is the same as in the transformation partner slot,
-            # we assume there won't be any transformation partner in that slot
-            # so it will be 100
-            if CPEV.character_list[CPEV.chara_selected].transformation_partner == \
-               char_selected_new:
-                char_selected_new = 100
-
-            # Change the fusion in our array of characters
-            CPEV.character_list[CPEV.chara_selected].transformation_partner = char_selected_new
-
-            self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                  str(char_selected_new).zfill(3) + ".png")))
-            self.transPartnerValue.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                       index=char_selected_new,
-                                                                       transformation_partner_flag=True)
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-        # fusion slot
-        elif CPEV.fusion_slot_panel_selected is not None:
-
-            # If the selected character in the window is the same as in the panel fusions,
-            # we assume there won't be any fusion in that slot
-            # so it will be 100
-            if CPEV.character_list[CPEV.chara_selected].fusions[CPEV.fusion_slot_panel_selected] == \
-               char_selected_new:
-                char_selected_new = 100
-
-            # Change the fusion in our array of characters
-            CPEV.character_list[CPEV.chara_selected].fusions[CPEV.fusion_slot_panel_selected] = char_selected_new
-
-            # Change the visual fusion
-            if CPEV.fusion_slot_panel_selected == 0:
-                self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(char_selected_new).zfill(3) + ".png")))
-                self.fusiSlotPanel0.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=char_selected_new,
-                                                                        fusion_slot_panel_index=0)
-            elif CPEV.fusion_slot_panel_selected == 1:
-                self.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(char_selected_new).zfill(3) + ".png")))
-                self.fusiSlotPanel1.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=char_selected_new,
-                                                                        fusion_slot_panel_index=1)
-            elif CPEV.fusion_slot_panel_selected == 2:
-                self.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(char_selected_new).zfill(3) + ".png")))
-                self.fusiSlotPanel2.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=char_selected_new,
-                                                                        fusion_slot_panel_index=2)
-            elif CPEV.fusion_slot_panel_selected == 3:
-                self.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(char_selected_new).zfill(3) + ".png")))
-                self.fusiSlotPanel3.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                        index=char_selected_new,
-                                                                        fusion_slot_panel_index=3)
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-        # potara partner slot
-        elif CPEV.potara_partner_flag:
-
-            # If the selected character in the window is the same as in the potara partner slot,
-            # we assume there won't be any potara partner in that slot
-            # so it will be 100
-            if CPEV.character_list[CPEV.chara_selected].partner_potara == \
-               char_selected_new:
-                char_selected_new = 100
-
-            # Change the fusion in our array of characters
-            CPEV.character_list[CPEV.chara_selected].partner_potara = char_selected_new
-
-            self.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                    str(char_selected_new).zfill(3) + ".png")))
-            self.partnerPotara_value.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                         index=char_selected_new,
-                                                                         potara_partner_flag=True)
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-        # metamoran partner slot
-        elif CPEV.metamoran_partner_flag:
-
-            # If the selected character in the window is the same as in the metamoran partner slot,
-            # we assume there won't be any metamoran partner in that slot
-            # so it will be 100
-            if CPEV.character_list[CPEV.chara_selected].partner_metamoru == \
-               char_selected_new:
-                char_selected_new = 100
-
-            # Change the fusion in our array of characters
-            CPEV.character_list[CPEV.chara_selected].partner_metamoru = char_selected_new
-
-            self.partnerMetamoran_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(char_selected_new).zfill(3) + ".png")))
-            self.partnerMetamoran_value.mousePressEvent = functools.partial(self.open_select_chara_window,
-                                                                            index=char_selected_new,
-                                                                            metamoran_partner_flag=True)
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-        self.selectCharaWindow.close()
-
-    def on_color_lightning_changed(self):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-            CPEV.character_list[CPEV.chara_selected].color_lightning = self.color_lightning_value.currentIndex()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_glow_lightning_changed(self):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-            CPEV.character_list[CPEV.chara_selected].glow_lightning = self.glow_lightning_value.currentIndex()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_transformation_ki_effect_changed(self):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-            CPEV.character_list[CPEV.chara_selected].transformation_effect = self.transEffectValue.currentIndex()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_amount_ki_trans_changed(self, amount_ki_trans_index):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-
-            # Change the slot of amount ki
-            if amount_ki_trans_index == 0:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                    self.amountKi_trans1_value.value()
-            elif amount_ki_trans_index == 1:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                    self.amountKi_trans2_value.value()
-            elif amount_ki_trans_index == 2:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                    self.amountKi_trans3_value.value()
-            elif amount_ki_trans_index == 3:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                    self.amountKi_trans4_value.value()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_animation_per_transformation_changed(self, animation_per_transformation):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-            if animation_per_transformation == 0:
-                CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                    self.trans1_animation_value.currentIndex()
-            elif animation_per_transformation == 1:
-                CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                    self.trans2_animation_value.currentIndex()
-            elif animation_per_transformation == 2:
-                CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                    self.trans3_animation_value.currentIndex()
-            elif animation_per_transformation == 3:
-                CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                    self.trans4_animation_value.currentIndex()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_amount_ki_fusion_changed(self, amount_ki_fusion_index):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-
-            # Change the slot of amount ki
-            if amount_ki_fusion_index == 0:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                    self.amountKi_fusion1_value.value()
-            elif amount_ki_fusion_index == 1:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                    self.amountKi_fusion2_value.value()
-            elif amount_ki_fusion_index == 2:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                    self.amountKi_fusion3_value.value()
-            elif amount_ki_fusion_index == 3:
-                CPEV.character_list[CPEV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                    self.amountKi_fusion4_value.value()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_animation_per_fusion_changed(self, animation_per_fusion):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-            if animation_per_fusion == 0:
-                CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                    self.fusion1_animation_value.currentIndex()
-            elif animation_per_fusion == 1:
-                CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                    self.fusion2_animation_value.currentIndex()
-            elif animation_per_fusion == 2:
-                CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                    self.fusion3_animation_value.currentIndex()
-            elif animation_per_fusion == 3:
-                CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                    self.fusion4_animation_value.currentIndex()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_aura_size_changed(self, aura_index):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-
-            if aura_index == 0:
-                # Change the slot of aura idle size
-                CPEV.character_list[CPEV.chara_selected].aura_size[0] = self.aura_size_idle_value.value()
-            elif aura_index == 1:
-                # Change the slot of aura dash size
-                CPEV.character_list[CPEV.chara_selected].aura_size[1] = self.aura_size_dash_value.value()
-            else:
-                # Change the slot of aura dash size
-                CPEV.character_list[CPEV.chara_selected].aura_size[2] = self.aura_size_charge_value.value()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-    def on_health_changed(self):
-
-        # Avoid change the values when the program is changing the character from the main panel
-        if not CPEV.change_character:
-
-            # Change the slot of health
-            CPEV.character_list[CPEV.chara_selected].health = self.health_value.value()
-
-            # If the character was edited before, we won't append the index to our array of characters edited once
-            if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
-                CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
     def action_save_pak_logic(self):
 
