@@ -695,7 +695,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             data = pak_file.read(22)
 
             if data.decode('utf-8') not in CPEV.allowed_files:
-                for allowed_file in CPEV.allowed_files:
+                for allowed_file in CPEV.allowed_files_clean:
                     items = "<li>" + allowed_file + "</li>"
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
@@ -772,6 +772,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.health_text.setDisabled(False)
         self.health_value.setDisabled(False)
         self.health_value.setValue(character_zero.health)
+
+        # Show the camera size
+        self.camera_size_text.setDisabled(False)
+        self.camera_size_cutscene_text.setDisabled(False)
+        self.camera_size_cutscene_value.setDisabled(False)
+        self.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
+        self.camera_size_idle_text.setDisabled(False)
+        self.camera_size_idle_value.setDisabled(False)
+        self.camera_size_idle_value.setValue(character_zero.camera_size[1])
+
+        # Show the hit box
+        self.hit_box_text.setDisabled(False)
+        self.hit_box_value.setDisabled(False)
+        self.hit_box_value.setValue(character_zero.hit_box)
 
         # Show the aura size
         self.aura_size_text.setDisabled(False)
@@ -982,8 +996,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Health
                         file.write(character.health.to_bytes(4, byteorder="big"))
 
+                        # Camera size (cutscene)
+                        file.write(struct.pack('>f', character.camera_size[0]))
+                        # Camera size (idle)
+                        file.write(struct.pack('>f', character.camera_size[1]))
+
+                        # hit box
+                        file.write(struct.pack('>f', character.hit_box))
+
                         # UNK data for now
-                        file.seek(24, 1)
+                        file.seek(12, 1)
 
                         # Aura size (idle)
                         file.write(struct.pack('>f', character.aura_size[0]))

@@ -30,6 +30,20 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.health_value.setDisabled(True)
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
 
+    # Set the camera size
+    main_window.camera_size_text.setDisabled(True)
+    main_window.camera_size_cutscene_text.setDisabled(True)
+    main_window.camera_size_cutscene_value.setDisabled(True)
+    main_window.camera_size_idle_text.setDisabled(True)
+    main_window.camera_size_idle_value.setDisabled(True)
+    main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window, camera_index=0))
+    main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window, camera_index=1))
+
+    # Set the hit box
+    main_window.hit_box_text.setDisabled(True)
+    main_window.hit_box_value.setDisabled(True)
+    main_window.hit_box_value.valueChanged.connect(lambda: on_hit_box_changed(main_window))
+
     # Set the aura size
     main_window.aura_size_text.setDisabled(True)
     main_window.aura_size_idle_text.setDisabled(True)
@@ -194,8 +208,15 @@ def store_character_parameters(character, pak_file):
     # Health
     character.health = int.from_bytes(pak_file.read(4), byteorder='big')
 
+    # Camera size '>f' big endian
+    character.camera_size.append(struct.unpack('>f', pak_file.read(4))[0])
+    character.camera_size.append(struct.unpack('>f', pak_file.read(4))[0])
+
+    # hit box '>f' big endian
+    character.hit_box = struct.unpack('>f', pak_file.read(4))[0]
+
     # UNK data for now
-    pak_file.seek(24, 1)
+    pak_file.seek(12, 1)
 
     # Aura size '>f' big endian
     character.aura_size.append(struct.unpack('>f', pak_file.read(4))[0])
@@ -300,6 +321,13 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
 
         # Health
         main_window.health_value.setValue(CPEV.character_list[index].health)
+
+        # Camera size
+        main_window.camera_size_cutscene_value.setValue(CPEV.character_list[index].camera_size[0])
+        main_window.camera_size_idle_value.setValue(CPEV.character_list[index].camera_size[1])
+
+        # hit box
+        main_window.hit_box_value.setValue(CPEV.character_list[index].hit_box)
 
         # Aura size
         main_window.aura_size_idle_value.setValue(CPEV.character_list[index].aura_size[0])
@@ -914,6 +942,34 @@ def on_health_changed(main_window):
 
         # Change the slot of health
         CPEV.character_list[CPEV.chara_selected].health = main_window.health_value.value()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+            CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+
+def on_camera_size_changed(main_window, camera_index):
+    # Avoid change the values when the program is changing the character from the main panel
+    if not CPEV.change_character:
+
+        if camera_index == 0:
+            # Change the slot of camera cutscene size
+            CPEV.character_list[CPEV.chara_selected].camera_size[0] = main_window.camera_size_cutscene_value.value()
+        else:
+            # Change the slot of camera idle size
+            CPEV.character_list[CPEV.chara_selected].camera_size[1] = main_window.camera_size_idle_value.value()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
+            CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+
+def on_hit_box_changed(main_window):
+    # Avoid change the values when the program is changing the character from the main panel
+    if not CPEV.change_character:
+
+        # Change the slot of health
+        CPEV.character_list[CPEV.chara_selected].hit_box = main_window.hit_box_value.value()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:

@@ -2,6 +2,8 @@ class Character:
 	def __init__(self):
 		self.position_visual_parameters = 0
 		self.health = 0
+		self.camera_size = [] * 2 # 0 cutscene, 1 idle
+		self.hit_box = 0
 		self.aura_size = [] * 3  # 0 is idle, 1 dash, 2 is charge
 		self.color_lightning = 0
 		self.glow_lightning = 0

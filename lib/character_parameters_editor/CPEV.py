@@ -11,6 +11,7 @@ class CPEV:
 
     # Allowed files
     allowed_files = ["operate_resident_param"]
+    allowed_files_clean = ["operate_resident_param (RB2)"]
 
     # resources path
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
