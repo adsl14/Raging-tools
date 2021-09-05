@@ -3,6 +3,12 @@ from lib.packages import datetime, os
 
 class CPEV:
 
+    # types of spr file
+    # STPZ and STPK file
+    STPZ = b'STPZ'
+    STPK = b'STPK'
+    stpz_file = False
+
     # Temp folder name
     temp_folder = "temp_CPE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
     # Path files
@@ -10,8 +16,8 @@ class CPEV:
     pak_file_path = ""
 
     # Allowed files
-    allowed_files = ["operate_resident_param"]
-    allowed_files_clean = ["operate_resident_param (RB2)"]
+    operate_resident_param = 'operate_resident_param'
+    operate_resident_param_flag = False
 
     # resources path
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")

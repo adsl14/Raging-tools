@@ -1,10 +1,10 @@
 from shutil import copyfile, rmtree, move
 
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QMessageBox
 
 from lib.design.Raging_tools import *
-from lib.packages import datetime, os, functools, QPixmap, struct
+from lib.packages import datetime, os, functools, QPixmap, struct, QFileDialog
 from lib.functions import del_rw
 
 # vram explorer
@@ -13,6 +13,10 @@ from lib.vram_explorer.VEF import change_endian, get_dxt_value
 from lib.vram_explorer.VEF import get_encoding_name, show_dds_image, validation_dds_imported_texture
 from lib.vram_explorer.VEF import validation_bmp_imported_texture, show_bmp_image
 from lib.vram_explorer.VEF import open_spr_file, open_vram_file, action_item, initialize_ve
+
+# pak explorer
+from lib.pak_explorer.PEF import unpack_pak_file, action_item_2, initialize_pe
+from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
@@ -38,12 +42,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionAuthor.triggered.connect(self.action_author_logic)
         self.actionCredits.triggered.connect(self.action_credits_logic)
 
-        # vram explorer
+        # --- vram explorer ---
         initialize_ve(self)
 
-        # character parameters editor
+        # --- pak explorer ---
+        initialize_pe(self)
+
+        # --- character parameters editor ---
         initialize_cpe(self, QtWidgets)
 
+    # vram explorer methods
     def action_export_logic(self):
 
         # If the encoding is DXT5 or DXT1, we show the dds image
@@ -318,7 +326,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         msg.setText("The image you're importing is BMP and should be DDS")
                         msg.exec()
 
-    # vram explorer methods
     def action_open_sprvram_logic(self):
 
         # Open spr file
@@ -672,7 +679,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Show the path folder to the user
                 os.system('explorer.exe ' + path_output_files)
 
-    # character parameters editor methods
+    # character parameters editor and pak explorer methods
     def action_open_pak_logic(self):
 
         # Open pak file
@@ -687,393 +694,449 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.exec()
             return
 
-        # Check if the pak file is the correct one
-        with open(CPEV.pak_file_path_original, mode="rb") as pak_file:
-
-            # Read the filename in the header
-            pak_file.seek(78)
-            data = pak_file.read(22)
-
-            if data.decode('utf-8') not in CPEV.allowed_files:
-                for allowed_file in CPEV.allowed_files_clean:
-                    items = "<li>" + allowed_file + "</li>"
-                msg = QMessageBox()
-                msg.setWindowTitle("Error")
-                msg.setText("Wrong file. Select one of these types of file:"
-                            "<ul>" + items + "</ul>")
-                msg.exec()
-                return
-
-        basename = os.path.basename(CPEV.pak_file_path_original)
-
-        # Create a folder where we store the necessary files or delete it. If already exists,
+        # Create a folder where we store the necessary files. If already exists,
         # we remove every files in it
         if os.path.exists(CPEV.temp_folder):
             rmtree(CPEV.temp_folder, onerror=del_rw)
         os.mkdir(CPEV.temp_folder)
 
-        # Execute the script in a command line for the pak file
-        CPEV.pak_file_path = os.path.join(os.path.abspath(os.getcwd()), CPEV.temp_folder,
-                                          basename.replace(".pak", "_d.pak"))
-        args = os.path.join(CPEV.dbrb_compressor_path) + " \"" + CPEV.pak_file_path_original + "\" \"" + \
-            CPEV.pak_file_path + "\""
-        os.system('cmd /c ' + args)
+        # Check if the pak file is STPZ or STPK
+        with open(CPEV.pak_file_path_original, mode="rb") as pak_file:
 
-        # reset the values
-        CPEV.character_list_edited.clear()
-        CPEV.character_list.clear()
-        CPEV.chara_selected = 0  # Index of the char selected in the program
+            data = pak_file.read(4)
 
-        # Read the file
+            # Check if the file is STPZ
+            if data == CPEV.STPZ:
+                basename = os.path.basename(CPEV.pak_file_path_original)
+
+                # Execute the script in a command line for the pak file
+                CPEV.pak_file_path = os.path.join(os.path.abspath(os.getcwd()), CPEV.temp_folder,
+                                                  basename.replace(".pak", "_d.pak"))
+                args = os.path.join(CPEV.dbrb_compressor_path) + " \"" + CPEV.pak_file_path_original + "\" \"" + \
+                       CPEV.pak_file_path + "\""
+                os.system('cmd /c ' + args)
+
+                CPEV.stpz_file = True
+
+            # The file is STPK
+            else:
+                CPEV.pak_file_path = CPEV.pak_file_path_original
+
+        # Read the pak file
         with open(CPEV.pak_file_path, mode="rb") as pak_file:
 
-            # Read the data from the file and store the parameters
-            for i in range(0, 100):
-                # Create a Character object
-                character = Character()
+            # --- pak explorer part ---
+            # Create the folder in order to write the unpacked files there
+            folder_path = os.path.join(os.path.abspath(os.getcwd()), CPEV.temp_folder,
+                                       os.path.basename(CPEV.pak_file_path).split(".")[0])
+            # Create the folder
+            os.mkdir(folder_path)
 
-                # Store the positions where the information is located
-                character.position_visual_parameters = CPEV.base_pos_visual_parameters + (i * CPEV.sizeVisualParameters)
-                character.position_trans = CPEV.base_pos_trans + (i * CPEV.sizeTrans)
+            # unpack the main pak file
+            unpack_pak_file(pak_file, folder_path)
 
-                # Store the information in the object and append to a list
-                store_character_parameters(character, pak_file)
-                CPEV.character_list.append(character)
+            # Add the names to the list view
+            PEV.current_selected_texture = 0
+            model = QStandardItemModel()
+            self.listView_2.setModel(model)
+            item_0 = QStandardItem(PEV.unpaks[0].name)
+            item_0.setEditable(False)
+            model.appendRow(item_0)
+            self.listView_2.setCurrentIndex(model.indexFromItem(item_0))
+            for unpak_data in PEV.unpaks[1:]:
+                item = QStandardItem(unpak_data.name)
+                item.setEditable(False)
+                model.appendRow(item)
+            self.listView_2.clicked.connect(lambda q_model_idx: action_item_2(q_model_idx))
 
-        # Enable the characters portraits
-        for i in range(0, 66):
-            CPEV.mini_portraits_image[i].setEnabled(True)
+            self.exportButton_2.setVisible(True)
+            self.importButton_2.setVisible(True)
 
-        # We're changing the character in the main panel (avoid combo box code)
-        CPEV.change_character = True
+            # --- character parameters editor part ---
 
-        # Show the large portrait
-        self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
-        self.portrait.setVisible(True)
+            # Read the filename (STPK) in the header
+            pak_file.seek(32)
+            data = pak_file.read(32).decode('utf-8').split(".")[0]
 
-        # Show the transformations in the main panel
-        self.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
-        self.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=self,
-                                                               index=1, modify_slot_transform=False)
-        self.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_002.bmp")))
-        self.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=self,
-                                                               index=2, modify_slot_transform=False)
-        self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
-        self.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=self,
-                                                               index=3, modify_slot_transform=False)
-        self.label_trans_0.setVisible(True)
-        self.label_trans_1.setVisible(True)
-        self.label_trans_2.setVisible(True)
+            # Check if the file is the operate_resident_param.pak
+            if data == CPEV.operate_resident_param:
+                CPEV.operate_resident_param_flag = True
 
-        # Get the values for the fist character of the list
-        character_zero = CPEV.character_list[0]
+                # reset the values
+                CPEV.character_list_edited.clear()
+                CPEV.character_list.clear()
+                CPEV.chara_selected = 0  # Index of the char selected in the program
 
-        # Show the health
-        self.health_text.setDisabled(False)
-        self.health_value.setDisabled(False)
-        self.health_value.setValue(character_zero.health)
+                # Read the data from the file and store the parameters
+                for i in range(0, 100):
+                    # Create a Character object
+                    character = Character()
 
-        # Show the camera size
-        self.camera_size_text.setDisabled(False)
-        self.camera_size_cutscene_text.setDisabled(False)
-        self.camera_size_cutscene_value.setDisabled(False)
-        self.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
-        self.camera_size_idle_text.setDisabled(False)
-        self.camera_size_idle_value.setDisabled(False)
-        self.camera_size_idle_value.setValue(character_zero.camera_size[1])
+                    # Store the positions where the information is located
+                    character.position_visual_parameters = CPEV.base_pos_visual_parameters + (
+                            i * CPEV.sizeVisualParameters)
+                    character.position_trans = CPEV.base_pos_trans + (i * CPEV.sizeTrans)
 
-        # Show the hit box
-        self.hit_box_text.setDisabled(False)
-        self.hit_box_value.setDisabled(False)
-        self.hit_box_value.setValue(character_zero.hit_box)
+                    # Store the information in the object and append to a list
+                    store_character_parameters(character, pak_file)
+                    CPEV.character_list.append(character)
 
-        # Show the aura size
-        self.aura_size_text.setDisabled(False)
-        self.aura_size_idle_text.setDisabled(False)
-        self.aura_size_idle_value.setDisabled(False)
-        self.aura_size_idle_value.setValue(character_zero.aura_size[0])
-        self.aura_size_dash_text.setDisabled(False)
-        self.aura_size_dash_value.setDisabled(False)
-        self.aura_size_dash_value.setValue(character_zero.aura_size[1])
-        self.aura_size_charge_text.setDisabled(False)
-        self.aura_size_charge_value.setDisabled(False)
-        self.aura_size_charge_value.setValue(character_zero.aura_size[2])
+                # Enable the characters portraits
+                for i in range(0, 66):
+                    CPEV.mini_portraits_image[i].setEnabled(True)
 
-        # Show the color lightnings parameter
-        self.color_lightning_text.setDisabled(False)
-        self.color_lightning_value.setCurrentIndex(character_zero.glow_lightning)
-        self.color_lightning_value.setDisabled(False)
+                # We're changing the character in the main panel (avoid combo box code)
+                CPEV.change_character = True
 
-        # Show the glow/lightnings parameter
-        self.glow_lightning_text.setDisabled(False)
-        self.glow_lightning_value.setCurrentIndex(character_zero.glow_lightning)
-        self.glow_lightning_value.setDisabled(False)
+                # Show the large portrait
+                self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
+                self.portrait.setVisible(True)
 
-        # Show the transform panel
-        self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                            str(character_zero.transformations[0]).zfill(3) + ".png")))
-        self.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                 index=character_zero.transformations[0],
-                                                                 trans_slot_panel_index=0)
-        self.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                            str(character_zero.transformations[1]).zfill(3) + ".png")))
-        self.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                 index=character_zero.transformations[1],
-                                                                 trans_slot_panel_index=1)
-        self.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                            str(character_zero.transformations[2]).zfill(3) + ".png")))
-        self.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                 index=character_zero.transformations[2],
-                                                                 trans_slot_panel_index=2)
-        self.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                            str(character_zero.transformations[3]).zfill(3) + ".png")))
-        self.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                 index=character_zero.transformations[3],
-                                                                 trans_slot_panel_index=3)
-        self.transPanel.setEnabled(True)
-        self.transText.setEnabled(True)
+                # Show the transformations in the main panel
+                self.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
+                self.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=self,
+                                                                       index=1, modify_slot_transform=False)
+                self.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_002.bmp")))
+                self.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=self,
+                                                                       index=2, modify_slot_transform=False)
+                self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
+                self.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=self,
+                                                                       index=3, modify_slot_transform=False)
+                self.label_trans_0.setVisible(True)
+                self.label_trans_1.setVisible(True)
+                self.label_trans_2.setVisible(True)
 
-        # Show the transformation parameter
-        self.transEffectText.setDisabled(False)
-        self.transEffectValue.setCurrentIndex(character_zero.transformation_effect)
-        self.transEffectValue.setDisabled(False)
+                # Get the values for the fist character of the list
+                character_zero = CPEV.character_list[0]
 
-        # Show the transformation partner
-        self.transPartnerText.setDisabled(False)
-        self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                              str(character_zero.transformation_partner).zfill(3)
-                                                              + ".png")))
-        self.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                   index=character_zero.transformation_partner,
-                                                                   transformation_partner_flag=True)
+                # Show the health
+                self.health_text.setDisabled(False)
+                self.health_value.setDisabled(False)
+                self.health_value.setValue(character_zero.health)
 
-        self.transPartnerValue.setDisabled(False)
-        self.transPartnerSlot.setDisabled(False)
+                # Show the camera size
+                self.camera_size_text.setDisabled(False)
+                self.camera_size_cutscene_text.setDisabled(False)
+                self.camera_size_cutscene_value.setDisabled(False)
+                self.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
+                self.camera_size_idle_text.setDisabled(False)
+                self.camera_size_idle_value.setDisabled(False)
+                self.camera_size_idle_value.setValue(character_zero.camera_size[1])
 
-        # Show amount ki per transformation
-        self.amount_ki_per_transformation_text.setDisabled(False)
-        self.amountKi_trans1_text.setDisabled(False)
-        self.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
-        self.amountKi_trans1_value.setDisabled(False)
-        self.amountKi_trans2_text.setDisabled(False)
-        self.amountKi_trans2_value.setValue(character_zero.amount_ki_transformations[1])
-        self.amountKi_trans2_value.setDisabled(False)
-        self.amountKi_trans3_text.setDisabled(False)
-        self.amountKi_trans3_value.setValue(character_zero.amount_ki_transformations[2])
-        self.amountKi_trans3_value.setDisabled(False)
-        self.amountKi_trans4_text.setDisabled(False)
-        self.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
-        self.amountKi_trans4_value.setDisabled(False)
+                # Show the hit box
+                self.hit_box_text.setDisabled(False)
+                self.hit_box_value.setDisabled(False)
+                self.hit_box_value.setValue(character_zero.hit_box)
 
-        # Show Animation per transformation
-        self.animation_per_transformation_text.setDisabled(False)
-        self.animation_trans1_text.setDisabled(False)
-        self.trans1_animation_value.setCurrentIndex(character_zero.transformations_animation[0])
-        self.trans1_animation_value.setDisabled(False)
-        self.animation_trans2_text.setDisabled(False)
-        self.trans2_animation_value.setCurrentIndex(character_zero.transformations_animation[1])
-        self.trans2_animation_value.setDisabled(False)
-        self.animation_trans3_text.setDisabled(False)
-        self.trans3_animation_value.setCurrentIndex(character_zero.transformations_animation[2])
-        self.trans3_animation_value.setDisabled(False)
-        self.animation_trans4_text.setDisabled(False)
-        self.trans4_animation_value.setCurrentIndex(character_zero.transformations_animation[3])
-        self.trans4_animation_value.setDisabled(False)
+                # Show the aura size
+                self.aura_size_text.setDisabled(False)
+                self.aura_size_idle_text.setDisabled(False)
+                self.aura_size_idle_value.setDisabled(False)
+                self.aura_size_idle_value.setValue(character_zero.aura_size[0])
+                self.aura_size_dash_text.setDisabled(False)
+                self.aura_size_dash_value.setDisabled(False)
+                self.aura_size_dash_value.setValue(character_zero.aura_size[1])
+                self.aura_size_charge_text.setDisabled(False)
+                self.aura_size_charge_value.setDisabled(False)
+                self.aura_size_charge_value.setValue(character_zero.aura_size[2])
 
-        # Show the fusion panel
-        self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                           str(character_zero.fusions[0]).zfill(3) + ".png")))
-        self.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                index=character_zero.fusions[0],
-                                                                fusion_slot_panel_index=0)
-        self.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                           str(character_zero.fusions[1]).zfill(3) + ".png")))
-        self.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                index=character_zero.fusions[1],
-                                                                fusion_slot_panel_index=1
-                                                                )
-        self.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                           str(character_zero.fusions[2]).zfill(3) + ".png")))
-        self.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                index=character_zero.fusions[2],
-                                                                fusion_slot_panel_index=2)
-        self.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                           str(character_zero.fusions[3]).zfill(3) + ".png")))
-        self.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                index=character_zero.fusions[3],
-                                                                fusion_slot_panel_index=3)
-        self.fusiPanel.setEnabled(True)
-        self.fusiPanelText.setEnabled(True)
+                # Show the color lightnings parameter
+                self.color_lightning_text.setDisabled(False)
+                self.color_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+                self.color_lightning_value.setDisabled(False)
 
-        # Show the partner potara
-        self.partnerPotara_text.setDisabled(False)
-        self.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                str(character_zero.partner_potara).zfill(3)
-                                                                + ".png")))
-        self.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                     index=character_zero.partner_potara,
-                                                                     potara_partner_flag=True)
-        self.partnerPotara_value.setDisabled(False)
-        self.partnerPotara_slot.setDisabled(False)
+                # Show the glow/lightnings parameter
+                self.glow_lightning_text.setDisabled(False)
+                self.glow_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+                self.glow_lightning_value.setDisabled(False)
 
-        # Show  partner metamoran
-        self.partnerMetamoran_text.setDisabled(False)
-        self.partnerMetamoran_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(character_zero.partner_metamoru).zfill(3)
-                                                                   + ".png")))
-        self.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                        index=character_zero.partner_metamoru,
-                                                                        metamoran_partner_flag=True)
-        self.partnerMetamoran_value.setDisabled(False)
-        self.partnerMetamoran_slot.setDisabled(False)
+                # Show the transform panel
+                self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                    str(character_zero.transformations[0]).zfill(
+                                                                        3) + ".png")))
+                self.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                         index=character_zero.transformations[0],
+                                                                         trans_slot_panel_index=0)
+                self.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                    str(character_zero.transformations[1]).zfill(
+                                                                        3) + ".png")))
+                self.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                         index=character_zero.transformations[1],
+                                                                         trans_slot_panel_index=1)
+                self.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                    str(character_zero.transformations[2]).zfill(
+                                                                        3) + ".png")))
+                self.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                         index=character_zero.transformations[2],
+                                                                         trans_slot_panel_index=2)
+                self.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                    str(character_zero.transformations[3]).zfill(
+                                                                        3) + ".png")))
+                self.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                         index=character_zero.transformations[3],
+                                                                         trans_slot_panel_index=3)
+                self.transPanel.setEnabled(True)
+                self.transText.setEnabled(True)
 
-        # Show amount ki per fusion
-        self.amount_ki_per_fusion_text.setDisabled(False)
-        self.amountKi_fusion1_text.setDisabled(False)
-        self.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
-        self.amountKi_fusion1_value.setDisabled(False)
-        self.amountKi_fusion2_text.setDisabled(False)
-        self.amountKi_fusion2_value.setValue(character_zero.amount_ki_fusions[1])
-        self.amountKi_fusion2_value.setDisabled(False)
-        self.amountKi_fusion3_text.setDisabled(False)
-        self.amountKi_fusion3_value.setValue(character_zero.amount_ki_fusions[2])
-        self.amountKi_fusion3_value.setDisabled(False)
-        self.amountKi_fusion4_text.setDisabled(False)
-        self.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
-        self.amountKi_fusion4_value.setDisabled(False)
+                # Show the transformation parameter
+                self.transEffectText.setDisabled(False)
+                self.transEffectValue.setCurrentIndex(character_zero.transformation_effect)
+                self.transEffectValue.setDisabled(False)
 
-        # Show Animation per transformation
-        self.animation_per_fusion_text.setDisabled(False)
-        self.animation_fusion1_text.setDisabled(False)
-        self.fusion1_animation_value.setCurrentIndex(character_zero.fusions_animation[0])
-        self.fusion1_animation_value.setDisabled(False)
-        self.animation_fusion2_text.setDisabled(False)
-        self.fusion2_animation_value.setCurrentIndex(character_zero.fusions_animation[1])
-        self.fusion2_animation_value.setDisabled(False)
-        self.animation_fusion3_text.setDisabled(False)
-        self.fusion3_animation_value.setCurrentIndex(character_zero.fusions_animation[2])
-        self.fusion3_animation_value.setDisabled(False)
-        self.animation_fusion4_text.setDisabled(False)
-        self.fusion4_animation_value.setCurrentIndex(character_zero.fusions_animation[3])
-        self.fusion4_animation_value.setDisabled(False)
+                # Show the transformation partner
+                self.transPartnerText.setDisabled(False)
+                self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                      str(character_zero.transformation_partner).zfill(
+                                                                          3)
+                                                                      + ".png")))
+                self.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                           index=character_zero.transformation_partner,
+                                                                           transformation_partner_flag=True)
 
-        # We're not changing the character in the main panel (play combo box code)
-        CPEV.change_character = False
+                self.transPartnerValue.setDisabled(False)
+                self.transPartnerSlot.setDisabled(False)
 
-        # Open the tab
-        self.tabWidget.setCurrentIndex(1)
+                # Show amount ki per transformation
+                self.amount_ki_per_transformation_text.setDisabled(False)
+                self.amountKi_trans1_text.setDisabled(False)
+                self.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
+                self.amountKi_trans1_value.setDisabled(False)
+                self.amountKi_trans2_text.setDisabled(False)
+                self.amountKi_trans2_value.setValue(character_zero.amount_ki_transformations[1])
+                self.amountKi_trans2_value.setDisabled(False)
+                self.amountKi_trans3_text.setDisabled(False)
+                self.amountKi_trans3_value.setValue(character_zero.amount_ki_transformations[2])
+                self.amountKi_trans3_value.setDisabled(False)
+                self.amountKi_trans4_text.setDisabled(False)
+                self.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
+                self.amountKi_trans4_value.setDisabled(False)
+
+                # Show Animation per transformation
+                self.animation_per_transformation_text.setDisabled(False)
+                self.animation_trans1_text.setDisabled(False)
+                self.trans1_animation_value.setCurrentIndex(character_zero.transformations_animation[0])
+                self.trans1_animation_value.setDisabled(False)
+                self.animation_trans2_text.setDisabled(False)
+                self.trans2_animation_value.setCurrentIndex(character_zero.transformations_animation[1])
+                self.trans2_animation_value.setDisabled(False)
+                self.animation_trans3_text.setDisabled(False)
+                self.trans3_animation_value.setCurrentIndex(character_zero.transformations_animation[2])
+                self.trans3_animation_value.setDisabled(False)
+                self.animation_trans4_text.setDisabled(False)
+                self.trans4_animation_value.setCurrentIndex(character_zero.transformations_animation[3])
+                self.trans4_animation_value.setDisabled(False)
+
+                # Show the fusion panel
+                self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                   str(character_zero.fusions[0]).zfill(3) + ".png")))
+                self.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                        index=character_zero.fusions[0],
+                                                                        fusion_slot_panel_index=0)
+                self.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                   str(character_zero.fusions[1]).zfill(3) + ".png")))
+                self.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                        index=character_zero.fusions[1],
+                                                                        fusion_slot_panel_index=1
+                                                                        )
+                self.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                   str(character_zero.fusions[2]).zfill(3) + ".png")))
+                self.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                        index=character_zero.fusions[2],
+                                                                        fusion_slot_panel_index=2)
+                self.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                   str(character_zero.fusions[3]).zfill(3) + ".png")))
+                self.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                        index=character_zero.fusions[3],
+                                                                        fusion_slot_panel_index=3)
+                self.fusiPanel.setEnabled(True)
+                self.fusiPanelText.setEnabled(True)
+
+                # Show the partner potara
+                self.partnerPotara_text.setDisabled(False)
+                self.partnerPotara_value.setPixmap(
+                    QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                         str(character_zero.partner_potara).zfill(3)
+                                         + ".png")))
+                self.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
+                                                                             index=character_zero.partner_potara,
+                                                                             potara_partner_flag=True)
+                self.partnerPotara_value.setDisabled(False)
+                self.partnerPotara_slot.setDisabled(False)
+
+                # Show  partner metamoran
+                self.partnerMetamoran_text.setDisabled(False)
+                self.partnerMetamoran_value.setPixmap(
+                    QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                         str(character_zero.partner_metamoru).zfill(3)
+                                         + ".png")))
+                self.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                main_window=self,
+                                                                                index=character_zero.partner_metamoru,
+                                                                                metamoran_partner_flag=True)
+                self.partnerMetamoran_value.setDisabled(False)
+                self.partnerMetamoran_slot.setDisabled(False)
+
+                # Show amount ki per fusion
+                self.amount_ki_per_fusion_text.setDisabled(False)
+                self.amountKi_fusion1_text.setDisabled(False)
+                self.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
+                self.amountKi_fusion1_value.setDisabled(False)
+                self.amountKi_fusion2_text.setDisabled(False)
+                self.amountKi_fusion2_value.setValue(character_zero.amount_ki_fusions[1])
+                self.amountKi_fusion2_value.setDisabled(False)
+                self.amountKi_fusion3_text.setDisabled(False)
+                self.amountKi_fusion3_value.setValue(character_zero.amount_ki_fusions[2])
+                self.amountKi_fusion3_value.setDisabled(False)
+                self.amountKi_fusion4_text.setDisabled(False)
+                self.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
+                self.amountKi_fusion4_value.setDisabled(False)
+
+                # Show Animation per transformation
+                self.animation_per_fusion_text.setDisabled(False)
+                self.animation_fusion1_text.setDisabled(False)
+                self.fusion1_animation_value.setCurrentIndex(character_zero.fusions_animation[0])
+                self.fusion1_animation_value.setDisabled(False)
+                self.animation_fusion2_text.setDisabled(False)
+                self.fusion2_animation_value.setCurrentIndex(character_zero.fusions_animation[1])
+                self.fusion2_animation_value.setDisabled(False)
+                self.animation_fusion3_text.setDisabled(False)
+                self.fusion3_animation_value.setCurrentIndex(character_zero.fusions_animation[2])
+                self.fusion3_animation_value.setDisabled(False)
+                self.animation_fusion4_text.setDisabled(False)
+                self.fusion4_animation_value.setCurrentIndex(character_zero.fusions_animation[3])
+                self.fusion4_animation_value.setDisabled(False)
+
+                # We're not changing the character in the main panel (play combo box code)
+                CPEV.change_character = False
+
+                # Open the tab (character parameters editor)
+                self.tabWidget.setCurrentIndex(2)
+
+            else:
+
+                # Open the tab (pak explorer)
+                self.tabWidget.setCurrentIndex(1)
 
     def action_save_pak_logic(self):
 
-        # If the user has edited one character, we will save
-        if CPEV.character_list_edited:
+        # Save method for the operate_resident_param.pak
+        if CPEV.operate_resident_param_flag:
 
-            # Create the output name
-            extension = CPEV.pak_file_path_original.split(".")[-1]
-            basename = os.path.basename(CPEV.pak_file_path_original).replace("." + extension,
-                                                                             datetime.now().
-                                                                             strftime("_%d-%m-%Y_%H-%M-%S"))
+            # If the user has edited one character, we will save the file
+            if CPEV.character_list_edited:
 
-            # Ask to the user where to save the file
-            path_output_file = QFileDialog.getSaveFileName(self, "Save file",
-                                                           os.path.abspath(os.path.join(os.getcwd(), basename)),
-                                                           "PAK files (*.pak)")[0]
+                # Create the output name
+                extension = CPEV.pak_file_path_original.split(".")[-1]
+                basename = os.path.basename(CPEV.pak_file_path_original).replace("." + extension,
+                                                                                 datetime.now().
+                                                                                 strftime("_%d-%m-%Y_%H-%M-%S"))
 
-            if path_output_file:
+                # Ask to the user where to save the file
+                path_output_file = QFileDialog.getSaveFileName(self, "Save file",
+                                                               os.path.abspath(os.path.join(os.getcwd(), basename)),
+                                                               "PAK files (*.pak)")[0]
 
-                pak_export_path = CPEV.pak_file_path.replace("." + extension, "_m." + extension)
-                copyfile(CPEV.pak_file_path, pak_export_path)
+                if path_output_file:
 
-                # We open the file decrypted
-                with open(pak_export_path, mode="rb+") as file:
+                    pak_export_path = CPEV.pak_file_path.replace("." + extension, "_m." + extension)
+                    copyfile(CPEV.pak_file_path, pak_export_path)
 
-                    # Change the transformations in the file
-                    for character in CPEV.character_list_edited:
+                    # We open the file decrypted
+                    with open(pak_export_path, mode="rb+") as file:
 
-                        # Save the visual parameters
-                        file.seek(character.position_visual_parameters)
+                        # Change the transformations in the file
+                        for character in CPEV.character_list_edited:
 
-                        # Health
-                        file.write(character.health.to_bytes(4, byteorder="big"))
+                            # Save the visual parameters
+                            file.seek(character.position_visual_parameters)
 
-                        # Camera size (cutscene)
-                        file.write(struct.pack('>f', character.camera_size[0]))
-                        # Camera size (idle)
-                        file.write(struct.pack('>f', character.camera_size[1]))
+                            # Health
+                            file.write(character.health.to_bytes(4, byteorder="big"))
 
-                        # hit box
-                        file.write(struct.pack('>f', character.hit_box))
+                            # Camera size (cutscene)
+                            file.write(struct.pack('>f', character.camera_size[0]))
+                            # Camera size (idle)
+                            file.write(struct.pack('>f', character.camera_size[1]))
 
-                        # UNK data for now
-                        file.seek(12, 1)
+                            # hit box
+                            file.write(struct.pack('>f', character.hit_box))
 
-                        # Aura size (idle)
-                        file.write(struct.pack('>f', character.aura_size[0]))
-                        # Aura size (dash)
-                        file.write(struct.pack('>f', character.aura_size[1]))
-                        # Aura size (charge)
-                        file.write(struct.pack('>f', character.aura_size[2]))
+                            # UNK data for now
+                            file.seek(12, 1)
 
-                        # UNK data for now
-                        file.seek(5, 1)
-                        # Color lightnining
-                        file.write(character.color_lightning.to_bytes(1, byteorder="big"))
+                            # Aura size (idle)
+                            file.write(struct.pack('>f', character.aura_size[0]))
+                            # Aura size (dash)
+                            file.write(struct.pack('>f', character.aura_size[1]))
+                            # Aura size (charge)
+                            file.write(struct.pack('>f', character.aura_size[2]))
 
-                        # UNK data for now
-                        file.seek(69, 1)
-                        # Glow/Lightning
-                        file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
+                            # UNK data for now
+                            file.seek(5, 1)
+                            # Color lightnining
+                            file.write(character.color_lightning.to_bytes(1, byteorder="big"))
 
-                        # Save the transformation parameters
-                        file.seek(character.position_trans)
+                            # UNK data for now
+                            file.seek(69, 1)
+                            # Glow/Lightning
+                            file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
 
-                        file.write(character.character_id.to_bytes(1, byteorder="big"))
+                            # Save the transformation parameters
+                            file.seek(character.position_trans)
 
-                        file.write(character.transformation_effect.to_bytes(1, byteorder="big"))
-                        file.write(character.transformation_partner.to_bytes(1, byteorder="big"))
-                        for transformation in character.transformations:
-                            file.write(transformation.to_bytes(1, byteorder="big"))
-                        for trans_ki_ammount in character.amount_ki_transformations:
-                            file.write(trans_ki_ammount.to_bytes(1, byteorder="big"))
-                        for trans_animation in character.transformations_animation:
-                            file.write(trans_animation.to_bytes(1, byteorder="big"))
+                            file.write(character.character_id.to_bytes(1, byteorder="big"))
 
-                        # Move four positions because is unk data
-                        file.seek(4, 1)
+                            file.write(character.transformation_effect.to_bytes(1, byteorder="big"))
+                            file.write(character.transformation_partner.to_bytes(1, byteorder="big"))
+                            for transformation in character.transformations:
+                                file.write(transformation.to_bytes(1, byteorder="big"))
+                            for trans_ki_ammount in character.amount_ki_transformations:
+                                file.write(trans_ki_ammount.to_bytes(1, byteorder="big"))
+                            for trans_animation in character.transformations_animation:
+                                file.write(trans_animation.to_bytes(1, byteorder="big"))
 
-                        file.write(character.partner_potara.to_bytes(1, byteorder="big"))
-                        file.write(character.partner_metamoru.to_bytes(1, byteorder="big"))
-                        for fusion in character.fusions:
-                            file.write(fusion.to_bytes(1, byteorder="big"))
-                        for fusion_ki_ammount in character.amount_ki_fusions:
-                            file.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
-                        for fusion_animation in character.fusions_animation:
-                            file.write(fusion_animation.to_bytes(1, byteorder="big"))
+                            # Move four positions because is unk data
+                            file.seek(4, 1)
 
-                # Generate the final file for the game
-                args = os.path.join(CPEV.dbrb_compressor_path) + " \"" + pak_export_path + "\" \"" \
-                    + path_output_file + "\""
-                os.system('cmd /c ' + args)
+                            file.write(character.partner_potara.to_bytes(1, byteorder="big"))
+                            file.write(character.partner_metamoru.to_bytes(1, byteorder="big"))
+                            for fusion in character.fusions:
+                                file.write(fusion.to_bytes(1, byteorder="big"))
+                            for fusion_ki_ammount in character.amount_ki_fusions:
+                                file.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
+                            for fusion_animation in character.fusions_animation:
+                                file.write(fusion_animation.to_bytes(1, byteorder="big"))
 
-                # Remove the uncompressed modified file
-                os.remove(pak_export_path)
+                    # Generate the final file for the game
+                    args = os.path.join(CPEV.dbrb_compressor_path) + " \"" + pak_export_path + "\" \"" \
+                        + path_output_file + "\""
+                    os.system('cmd /c ' + args)
 
+                    # Remove the uncompressed modified file
+                    os.remove(pak_export_path)
+
+                    msg = QMessageBox()
+                    msg.setWindowTitle("Message")
+                    message = "The file were saved and compressed in: <b>" + path_output_file \
+                              + "</b><br><br> Do you wish to open the folder?"
+                    message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
+
+                    # If the users click on 'Yes', it will open the path where the files were saved
+                    if message_open_saved_files == msg.Yes:
+                        # Show the path folder to the user
+                        os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
+
+            else:
                 msg = QMessageBox()
-                msg.setWindowTitle("Message")
-                message = "The file were saved and compressed in: <b>" + path_output_file \
-                          + "</b><br><br> Do you wish to open the folder?"
-                message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
+                msg.setWindowTitle("Warning")
+                msg.setText("The file hasn't been modified.")
+                msg.exec()
 
-                # If the users click on 'Yes', it will open the path where the files were saved
-                if message_open_saved_files == msg.Yes:
-                    # Show the path folder to the user
-                    os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
-
+        # Save method for generic pak files
         else:
-            msg = QMessageBox()
-            msg.setWindowTitle("Warning")
-            msg.setText("The file hasn't been modified.")
-            msg.exec()
+            print("TODO")
+
+
 
     def closeEvent(self, event):
         if os.path.exists(VEV.temp_folder):
