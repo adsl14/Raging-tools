@@ -17,7 +17,6 @@ class CPEV:
 
     # Allowed files
     operate_resident_param = 'operate_resident_param'
-    operate_resident_param_flag = False
 
     # resources path
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
