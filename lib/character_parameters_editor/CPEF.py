@@ -36,8 +36,10 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.camera_size_cutscene_value.setDisabled(True)
     main_window.camera_size_idle_text.setDisabled(True)
     main_window.camera_size_idle_value.setDisabled(True)
-    main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window, camera_index=0))
-    main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window, camera_index=1))
+    main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
+                                                                                               camera_index=0))
+    main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
+                                                                                           camera_index=1))
 
     # Set the hit box
     main_window.hit_box_text.setDisabled(True)
