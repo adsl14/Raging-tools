@@ -130,17 +130,17 @@ def initialize_cpe(main_window, qt_widgets):
         main_window.trans3_animation_value.view().setRowHidden(i, True)
         main_window.trans4_animation_value.view().setRowHidden(i, True)
 
-    # Set partner potara
-    main_window.partnerPotara_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
-    main_window.partnerPotara_slot.setDisabled(True)
-    main_window.partnerPotara_value.setDisabled(True)
-    main_window.partnerPotara_text.setDisabled(True)
+    # Set fusion partner trigger
+    main_window.fusionPartnerTrigger_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
+    main_window.fusionPartnerTrigger_slot.setDisabled(True)
+    main_window.fusionPartnerTrigger_value.setDisabled(True)
+    main_window.fusionPartnerTrigger_text.setDisabled(True)
 
-    # Set partner metamoran
-    main_window.partnerMetamoran_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
-    main_window.partnerMetamoran_slot.setDisabled(True)
-    main_window.partnerMetamoran_value.setDisabled(True)
-    main_window.partnerMetamoran_text.setDisabled(True)
+    # Set fusion partner visual
+    main_window.fusionPartnerVisual_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
+    main_window.fusionPartnerVisual_slot.setDisabled(True)
+    main_window.fusionPartnerVisual_value.setDisabled(True)
+    main_window.fusionPartnerVisual_text.setDisabled(True)
 
     # Set the amount ki per fusion
     main_window.amount_ki_per_fusion_text.setDisabled(True)
@@ -277,10 +277,9 @@ def store_character_parameters(character, pak_file):
     # Move four positions because is unk data
     pak_file.seek(4, 1)
 
-    # transformation_partner
-    character.partner_potara = int.from_bytes(pak_file.read(1), byteorder='big')
-    # partner_metamoru
-    character.partner_metamoru = int.from_bytes(pak_file.read(1), byteorder='big')
+    # fusion partner (trigger and visual)
+    character.fusion_partner.append(int.from_bytes(pak_file.read(1), byteorder='big'))
+    character.fusion_partner.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
     # fusions 1
     character.fusions.append(int.from_bytes(pak_file.read(1), byteorder='big'))
@@ -406,7 +405,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                      str(CPEV.character_list[
                                                                              index].transformation_partner).zfill(3)
                                                                      + ".png")))
-        main_window.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window,
+        main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
                                                                             main_window=main_window,
                                                                             index=CPEV.character_list[
                                                                                 index].transformation_partner,
@@ -481,26 +480,28 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                            main_window=main_window,
                                                                            index=100, fusion_slot_panel_index=3)
 
-        # Show the partner potara
-        main_window.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(CPEV.character_list[
-                                                                               index].partner_potara).zfill(3)
-                                                                       + ".png")))
-        main_window.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=main_window,
-                                                                            index=CPEV.character_list[index]
-                                                                            .partner_potara, potara_partner_flag=True)
+        # Show the fusion partner trigger
+        main_window.fusionPartnerTrigger_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
+                                                                              "sc_chara_s_" +
+                                                                              str(CPEV.character_list[
+                                                                               index].fusion_partner[0]).zfill(3)
+                                                                              + ".png")))
+        main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                   main_window=main_window,
+                                                                                   index=CPEV.character_list[index]
+                                                                                   .fusion_partner[0],
+                                                                                   fusion_partner_trigger_flag=True)
 
-        # Show  partner metamoran
-        main_window.partnerMetamoran_value.setPixmap(
+        # Show the fusion partner visual
+        main_window.fusionPartnerVisual_value.setPixmap(
             QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                 str(CPEV.character_list[index].partner_metamoru).zfill(3)
+                                 str(CPEV.character_list[index].fusion_partner[1]).zfill(3)
                                  + ".png")))
-        main_window.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                               main_window=main_window,
-                                                                               index=CPEV.character_list[index].
-                                                                               partner_metamoru,
-                                                                               metamoran_partner_flag=True)
+        main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                  main_window=main_window,
+                                                                                  index=CPEV.character_list[index].
+                                                                                  fusion_partner[1],
+                                                                                  fusion_partner_visual_flag=True)
 
         # Show amount ki per fusion
         main_window.amountKi_fusion1_value.setValue(CPEV.character_list[index].amount_ki_fusions[0])
@@ -576,8 +577,8 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
 
 
 def open_select_chara_window(event, main_window, index, trans_slot_panel_index=None, fusion_slot_panel_index=None,
-                             transformation_partner_flag=False, potara_partner_flag=False,
-                             metamoran_partner_flag=False):
+                             transformation_partner_flag=False, fusion_partner_trigger_flag=False,
+                             fusion_partner_visual_flag=False):
     # Check what selected the user. If the user didn't select the transform panel or transform partner
     # then, the user selected the fusion panel (or potara or metamoran)
     if trans_slot_panel_index is not None or transformation_partner_flag:
@@ -589,8 +590,8 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     CPEV.trans_slot_panel_selected = trans_slot_panel_index
     CPEV.transformation_partner_flag = transformation_partner_flag
     CPEV.fusion_slot_panel_selected = fusion_slot_panel_index
-    CPEV.potara_partner_flag = potara_partner_flag
-    CPEV.metamoran_partner_flag = metamoran_partner_flag
+    CPEV.fusion_partner_flag[0] = fusion_partner_trigger_flag
+    CPEV.fusion_partner_flag[1] = fusion_partner_visual_flag
 
     # The character selected in the slot panel (trans or fusion) is not empty
     if index != 100:
@@ -749,50 +750,51 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
-    # potara partner slot
-    elif CPEV.potara_partner_flag:
+    # fusion partner trigger slot
+    elif CPEV.fusion_partner_flag[0]:
 
         # If the selected character in the window is the same as in the potara partner slot,
         # we assume there won't be any potara partner in that slot
         # so it will be 100
-        if CPEV.character_list[CPEV.chara_selected].partner_potara == \
+        if CPEV.character_list[CPEV.chara_selected].fusion_partner[0] == \
            char_selected_new:
             char_selected_new = 100
 
         # Change the fusion in our array of characters
-        CPEV.character_list[CPEV.chara_selected].partner_potara = char_selected_new
+        CPEV.character_list[CPEV.chara_selected].fusion_partner[0] = char_selected_new
 
-        main_window.partnerPotara_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(char_selected_new).zfill(3) + ".png")))
-        main_window.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=main_window,
-                                                                            index=char_selected_new,
-                                                                            potara_partner_flag=True)
+        main_window.fusionPartnerTrigger_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
+                                                                             "sc_chara_s_" +
+                                                                             str(char_selected_new).zfill(3) + ".png")))
+        main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                  main_window=main_window,
+                                                                                  index=char_selected_new,
+                                                                                  fusion_partner_trigger_flag=True)
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
-    # metamoran partner slot
-    elif CPEV.metamoran_partner_flag:
+    # fusion partner visual slot
+    elif CPEV.fusion_partner_flag[1]:
 
         # If the selected character in the window is the same as in the metamoran partner slot,
         # we assume there won't be any metamoran partner in that slot
         # so it will be 100
-        if CPEV.character_list[CPEV.chara_selected].partner_metamoru == \
+        if CPEV.character_list[CPEV.chara_selected].fusion_partner[1] == \
            char_selected_new:
             char_selected_new = 100
 
         # Change the fusion in our array of characters
-        CPEV.character_list[CPEV.chara_selected].partner_metamoru = char_selected_new
+        CPEV.character_list[CPEV.chara_selected].fusion_partner[1] = char_selected_new
 
-        main_window.partnerMetamoran_value.setPixmap(
+        main_window.fusionPartnerVisual_value.setPixmap(
             QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                  str(char_selected_new).zfill(3) + ".png")))
-        main_window.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                               main_window=main_window,
-                                                                               index=char_selected_new,
-                                                                               metamoran_partner_flag=True)
+        main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                  main_window=main_window,
+                                                                                  index=char_selected_new,
+                                                                                  fusion_partner_visual_flag=True)
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:

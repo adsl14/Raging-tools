@@ -916,30 +916,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.fusiPanel.setEnabled(True)
                 self.fusiPanelText.setEnabled(True)
 
-                # Show the partner potara
-                self.partnerPotara_text.setDisabled(False)
-                self.partnerPotara_value.setPixmap(
+                # Show the fusion partner (trigger)
+                self.fusionPartnerTrigger_text.setDisabled(False)
+                self.fusionPartnerTrigger_value.setPixmap(
                     QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                         str(character_zero.partner_potara).zfill(3)
+                                         str(character_zero.fusion_partner[0]).zfill(3)
                                          + ".png")))
-                self.partnerPotara_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=self,
-                                                                             index=character_zero.partner_potara,
-                                                                             potara_partner_flag=True)
-                self.partnerPotara_value.setDisabled(False)
-                self.partnerPotara_slot.setDisabled(False)
+                self.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                    main_window=self,
+                                                                                    index=
+                                                                                    character_zero.fusion_partner[0],
+                                                                                    fusion_partner_trigger_flag=True)
+                self.fusionPartnerTrigger_value.setDisabled(False)
+                self.fusionPartnerTrigger_slot.setDisabled(False)
 
-                # Show  partner metamoran
-                self.partnerMetamoran_text.setDisabled(False)
-                self.partnerMetamoran_value.setPixmap(
+                # Show fusion partner visual
+                self.fusionPartnerVisual_text.setDisabled(False)
+                self.fusionPartnerVisual_value.setPixmap(
                     QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                         str(character_zero.partner_metamoru).zfill(3)
+                                         str(character_zero.fusion_partner[1]).zfill(3)
                                          + ".png")))
-                self.partnerMetamoran_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                main_window=self,
-                                                                                index=character_zero.partner_metamoru,
-                                                                                metamoran_partner_flag=True)
-                self.partnerMetamoran_value.setDisabled(False)
-                self.partnerMetamoran_slot.setDisabled(False)
+                self.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                   main_window=self,
+                                                                                   index=character_zero.
+                                                                                   fusion_partner[1],
+                                                                                   fusion_partner_visual_flag=True)
+                self.fusionPartnerVisual_value.setDisabled(False)
+                self.fusionPartnerVisual_slot.setDisabled(False)
 
                 # Show amount ki per fusion
                 self.amount_ki_per_fusion_text.setDisabled(False)
@@ -1063,8 +1066,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Move four positions because is unk data
                         file.seek(4, 1)
 
-                        file.write(character.partner_potara.to_bytes(1, byteorder="big"))
-                        file.write(character.partner_metamoru.to_bytes(1, byteorder="big"))
+                        file.write(character.fusion_partner[0].to_bytes(1, byteorder="big"))
+                        file.write(character.fusion_partner[1].to_bytes(1, byteorder="big"))
                         for fusion in character.fusions:
                             file.write(fusion.to_bytes(1, byteorder="big"))
                         for fusion_ki_ammount in character.amount_ki_fusions:

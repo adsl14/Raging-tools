@@ -33,7 +33,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="vram_explorer">
      <attribute name="title">
@@ -2539,7 +2539,7 @@
            </item>
           </widget>
          </widget>
-         <widget class="QFrame" name="partnerPotara">
+         <widget class="QFrame" name="fusionPartnerTrigger">
           <property name="geometry">
            <rect>
             <x>620</x>
@@ -2554,20 +2554,20 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <widget class="QLabel" name="partnerPotara_text">
+          <widget class="QLabel" name="fusionPartnerTrigger_text">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>10</y>
-             <width>121</width>
+             <width>151</width>
              <height>21</height>
             </rect>
            </property>
            <property name="text">
-            <string>Partner potara:</string>
+            <string>Fusion partner (trigger):</string>
            </property>
           </widget>
-          <widget class="QLabel" name="partnerPotara_value">
+          <widget class="QLabel" name="fusionPartnerTrigger_value">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2586,7 +2586,7 @@
             <bool>true</bool>
            </property>
           </widget>
-          <widget class="QLabel" name="partnerPotara_slot">
+          <widget class="QLabel" name="fusionPartnerTrigger_slot">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2605,11 +2605,11 @@
             <bool>true</bool>
            </property>
           </widget>
-          <zorder>partnerPotara_slot</zorder>
-          <zorder>partnerPotara_text</zorder>
-          <zorder>partnerPotara_value</zorder>
+          <zorder>fusionPartnerTrigger_slot</zorder>
+          <zorder>fusionPartnerTrigger_text</zorder>
+          <zorder>fusionPartnerTrigger_value</zorder>
          </widget>
-         <widget class="QFrame" name="partnerMetamoran">
+         <widget class="QFrame" name="fusionPartnerVisual">
           <property name="geometry">
            <rect>
             <x>620</x>
@@ -2624,20 +2624,20 @@
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <widget class="QLabel" name="partnerMetamoran_text">
+          <widget class="QLabel" name="fusionPartnerVisual_text">
            <property name="geometry">
             <rect>
              <x>0</x>
              <y>10</y>
-             <width>121</width>
+             <width>141</width>
              <height>21</height>
             </rect>
            </property>
            <property name="text">
-            <string>Partner metamoran:</string>
+            <string>Fusion partner (visual):</string>
            </property>
           </widget>
-          <widget class="QLabel" name="partnerMetamoran_value">
+          <widget class="QLabel" name="fusionPartnerVisual_value">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2656,7 +2656,7 @@
             <bool>true</bool>
            </property>
           </widget>
-          <widget class="QLabel" name="partnerMetamoran_slot">
+          <widget class="QLabel" name="fusionPartnerVisual_slot">
            <property name="geometry">
             <rect>
              <x>200</x>
@@ -2675,9 +2675,9 @@
             <bool>true</bool>
            </property>
           </widget>
-          <zorder>partnerMetamoran_slot</zorder>
-          <zorder>partnerMetamoran_text</zorder>
-          <zorder>partnerMetamoran_value</zorder>
+          <zorder>fusionPartnerVisual_slot</zorder>
+          <zorder>fusionPartnerVisual_text</zorder>
+          <zorder>fusionPartnerVisual_value</zorder>
          </widget>
          <widget class="QFrame" name="fusionPanel">
           <property name="geometry">

@@ -49,8 +49,8 @@ class CPEV:
     trans_slot_panel_selected = 0   # Slot thas is being edited for the transformations
     transformation_partner_flag = False  # Flag transformation partner slot to know if the user has selected that
     fusion_slot_panel_selected = 0  # Slot that is being edited for the fusions
-    potara_partner_flag = False  # Flag potara partner slot to know if the user has selected that
-    metamoran_partner_flag = False  # Flag metamoran partner slot to know if the user has selected that
+    # Flag for fusion partner (trigger 0, visual 1) slot to know if the user has selected that
+    fusion_partner_flag = [False, False]
     # Array of the characters that has been edited
     character_list_edited = []
 
