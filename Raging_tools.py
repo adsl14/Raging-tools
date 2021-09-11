@@ -1068,11 +1068,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             elif self.pak_explorer.isEnabled():
                 pack_and_save_file(self, path_output_file)
 
-        else:
-            msg = QMessageBox()
-            msg.setWindowTitle("Warning")
-            msg.setText("No pak file has been loaded.")
-            msg.exec()
+            else:
+                msg = QMessageBox()
+                msg.setWindowTitle("Warning")
+                msg.setText("No pak file has been loaded.")
+                msg.exec()
 
     def closeEvent(self, event):
         if os.path.exists(VEV.temp_folder):
