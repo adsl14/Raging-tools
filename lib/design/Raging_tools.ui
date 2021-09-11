@@ -1766,9 +1766,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>false</bool>
            </property>
@@ -1784,9 +1781,6 @@
            </property>
            <property name="text">
             <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -1804,9 +1798,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>false</bool>
            </property>
@@ -1822,9 +1813,6 @@
            </property>
            <property name="text">
             <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -2025,9 +2013,6 @@
            </property>
            <property name="text">
             <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -2709,9 +2694,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>true</bool>
            </property>
@@ -2785,9 +2767,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>true</bool>
            </property>
@@ -2845,9 +2824,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>false</bool>
            </property>
@@ -2863,9 +2839,6 @@
            </property>
            <property name="text">
             <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -2883,9 +2856,6 @@
            <property name="text">
             <string/>
            </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
-           </property>
            <property name="scaledContents">
             <bool>false</bool>
            </property>
@@ -2901,9 +2871,6 @@
            </property>
            <property name="text">
             <string/>
-           </property>
-           <property name="pixmap">
-            <pixmap>../character_parameters_editor/images/fourSlot/small/sc_chara_s_000.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
