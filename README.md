@@ -24,7 +24,7 @@ Check that your imported texture follows the properties of the original one in o
 
 <img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
 
-<i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.pak</i>. It uses a <i>Depth-first search</i> since the information in those files are stored with a tree graph structure.
+<i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.pak</i>. It uses a <i>Depth-first search</i> since the information in those files are stored as a <i>tree graph structure</i>.
 
 When opens a <i>.pak</i> file, it will store all the sub-files in disk, in order to write the files propertly. When the algorithm finishes, the tool will show the full path of the sub-files.
 
