@@ -215,36 +215,34 @@ def pack_and_save_file(main_window, path_output_file):
             os.mkdir(old_pak_folder)
         move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
 
-    if path_output_file:
+    # Path where we'll save the stpk  packed file
+    path_output_packed_file = os.path.join(PEV.temp_folder,
+                                           os.path.basename(PEV.pak_file_path).split(".")[0])
 
-        # Path where we'll save the stpk  packed file
-        path_output_packed_file = os.path.join(PEV.temp_folder,
-                                               os.path.basename(PEV.pak_file_path).split(".")[0])
+    # Get the list of files inside the folder unpacked in order to pak the folder
+    filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
+    num_filenames = len(filenames)
+    num_pak_files = int(filenames[-1].split(";")[0]) + 1
+    pack(path_output_packed_file, filenames, num_filenames, num_pak_files)
 
-        # Get the list of files inside the folder unpacked in order to pak the folder
-        filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
-        num_filenames = len(filenames)
-        num_pak_files = int(filenames[-1].split(";")[0]) + 1
-        pack(path_output_packed_file, filenames, num_filenames, num_pak_files)
+    path_output_packed_file = path_output_packed_file + ".pak"
 
-        path_output_packed_file = path_output_packed_file + ".pak"
+    # Generate the final file for the game
+    args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
+        + path_output_file + "\""
+    os.system('cmd /c ' + args)
 
-        # Generate the final file for the game
-        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
-            + path_output_file + "\""
-        os.system('cmd /c ' + args)
+    # Remove the 'old_pak' folder
+    if PEV.stpz_file:
+        rmtree(old_pak_folder, onerror=del_rw)
 
-        # Remove the 'old_pak' folder
-        if PEV.stpz_file:
-            rmtree(old_pak_folder, onerror=del_rw)
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    message = "The file were saved and compressed in: <b>" + path_output_file \
+              + "</b><br><br> Do you wish to open the folder?"
+    message_open_saved_files = msg.question(main_window, '', message, msg.Yes | msg.No)
 
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        message = "The file were saved and compressed in: <b>" + path_output_file \
-                  + "</b><br><br> Do you wish to open the folder?"
-        message_open_saved_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-        # If the users click on 'Yes', it will open the path where the files were saved
-        if message_open_saved_files == msg.Yes:
-            # Show the path folder to the user
-            os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
+    # If the users click on 'Yes', it will open the path where the files were saved
+    if message_open_saved_files == msg.Yes:
+        # Show the path folder to the user
+        os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))

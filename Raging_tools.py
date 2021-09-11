@@ -943,28 +943,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                        os.path.abspath(os.path.join(os.getcwd(), basename)),
                                                        "PAK files (*.pak)")[0]
 
-        # Check if character parameters editor is enabled in order to save the parameters from that tab
-        if self.character_parameters_editor.isEnabled():
+        # Check if the user has selected an output path
+        if path_output_file:
+            # Check if character parameters editor is enabled in order to save the parameters from that tab
+            if self.character_parameters_editor.isEnabled():
 
-            # Ask to the user, from what tab he wants to gather and save the data
-            msg = QMessageBox()
-            msg.setWindowTitle("Message")
-            message = "From what tab do you wish to save the file?"
-            options = ["character parameters editor", "pak explorer"]
-            answer = QInputDialog.getItem(self, "Select option", message, options, editable=False)
+                # Ask to the user, from what tab he wants to gather and save the data
+                msg = QMessageBox()
+                msg.setWindowTitle("Message")
+                message = "From what tab do you wish to save the file?"
+                options = ["character parameters editor", "pak explorer"]
+                answer = QInputDialog.getItem(self, "Select option", message, options, editable=False)
 
-            # Check if the user has selected something
-            if answer[1]:
+                # Check if the user has selected something
+                if answer[1]:
 
-                # The user wants to save the file from the 'character parameters editor'
-                if answer[0] == options[0]:
+                    # The user wants to save the file from the 'character parameters editor'
+                    if answer[0] == options[0]:
 
-                    # If the user has edited one character, we will save the file
-                    if CPEV.character_list_edited:
-
-                        # If the user select a path, we continue saving the new file
-                        if path_output_file:
-
+                        # If the user has edited one character, we will save the file
+                        if CPEV.character_list_edited:
+    
                             pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
                             copyfile(PEV.pak_file_path, pak_export_path)
 
@@ -1053,15 +1052,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 # Show the path folder to the user
                                 os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
 
-                    else:
-                        msg = QMessageBox()
-                        msg.setWindowTitle("Warning")
-                        msg.setText("The file hasn't been modified.")
-                        msg.exec()
+                        else:
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Warning")
+                            msg.setText("The file hasn't been modified.")
+                            msg.exec()
 
-                # The user wants to save the pak file from the 'pak explorer'
-                else:
-                    pack_and_save_file(self, path_output_file)
+                    # The user wants to save the pak file from the 'pak explorer'
+                    else:
+                        pack_and_save_file(self, path_output_file)
 
         # We save the data from the 'pak explorer' tab
         elif self.pak_explorer.isEnabled():
