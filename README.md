@@ -10,7 +10,7 @@ You can get access to the Raging Blast Modding community in the [Discord](https:
 
 ## vram explorer
 
-<img src="images/vram_explorer.jpg" alt="vram_explorer_image" width="50%">
+<img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
 
 <i>vram explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and <i>.vram</i> file, it will ask where is the <i>.spr</i> located, also the <i>.vram</i> file. After that, the textures will be loaded.
 
@@ -22,7 +22,7 @@ Check that your imported texture follows the properties of the original one in o
 
 ## pak explorer
 
-<img src="images/pak_explorer.jpg" alt="pak_explorer_image" width="50%">
+<img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
 
 <i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.pak</i>. It uses a <i>Depth-first search</i> since the information in those files are stored with a tree graph structure.
 
