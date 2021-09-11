@@ -36,6 +36,6 @@ You can export the files or import a new one. With this you can, for example, sw
 
 <i>character parameters editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, aura size and more.
 
-In order to use this tool, you need to open the file <i>operate_resident_param.pak</i>. Since is a <i>.pak</i> file, the pak explorer will be activated too, and show you all the sub-files that the main pak file has.
+In order to use this tool, you need to open the file <i>operate_resident_param.pak</i>. Since is a <i>.pak</i> file, the pak explorer will be activated too, and show you all the sub-files that the main <i>.pak</i> file has.
 
 When saving, since they are two tools activated at the same time, it will ask you from what tool do you want to gather all the modified data and save it to disk. The options are <i>character parameters editor</i> or <i>pak explorer</i>
