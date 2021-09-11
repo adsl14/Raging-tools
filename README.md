@@ -41,6 +41,8 @@ When opens a <i>.pak</i> file, it will store all the sub-files in disk, in order
 
 You can export the files or import a new one. With this you can, for example, swap animations between characters.
 
+<b>Note</b>: There are some <i>.vram</i> files that are <i>.pak</i> file, even though they have the <i>.vram</i> extension. You can load them as a <i>.pak</i> file without problems.
+
 ## character parameters editor
 
 <img src="images/character_parameters_editor.jpg" alt="character_parameters_editor_image" width="50%">

@@ -680,7 +680,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open pak file
         PEV.pak_file_path_original = \
-            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "PAK files (*.pak *.zpak)")[0]
+            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()),
+                                        "PAK files (*.pak *.zpak *.vram)")[0]
 
         # Check if the user has selected a pak format file
         if not os.path.exists(PEV.pak_file_path_original):
