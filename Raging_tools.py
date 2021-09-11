@@ -1062,7 +1062,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # The user wants to save the pak file from the 'pak explorer'
                     else:
                         pack_and_save_file(self, path_output_file)
-                        
+
             # We save the data from the 'pak explorer' tab
             elif self.pak_explorer.isEnabled():
                 pack_and_save_file(self, path_output_file)
