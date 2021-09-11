@@ -1087,7 +1087,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setTextFormat(1)
         msg.setWindowTitle("Author")
         msg.setText(
-            "Raging tools 1.0 by <a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a>")
+            "<ul>"
+            "<li><b>Raging tools 1.0</b> by "
+            "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
+            "<li>If you want to support the tool, you can get the source code in the "
+            "<a href=https://github.com/i32camad/Raging-tools>GitHub</a> page <li>"
+            "</ul>")
         msg.exec()
 
     @staticmethod
