@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Raging tools 1.0</string>
+   <string>Raging tools 1.0 - by adsl14</string>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Rounded</enum>
@@ -33,7 +33,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>2</number>
     </property>
     <widget class="QWidget" name="vram_explorer">
      <attribute name="title">
@@ -1884,6 +1884,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -1969,6 +1972,9 @@
              <height>21</height>
             </rect>
            </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The effect of the transformation during &lt;span style=&quot; font-weight:600;&quot;&gt;and&lt;/span&gt; finishing the animation&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>Transformation effect/Ki:</string>
            </property>
@@ -1982,6 +1988,9 @@
             <width>281</width>
             <height>41</height>
            </rect>
+          </property>
+          <property name="toolTip">
+           <string/>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -1997,6 +2006,9 @@
              <width>161</width>
              <height>21</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transformation partner that will be shown during the transformation (Super Buu, Cell)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Trasformation partner:</string>
@@ -2053,6 +2065,9 @@
             <height>81</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -2067,6 +2082,9 @@
              <width>181</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of Ki that will be consumed when a transformation is activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Amount Ki per transformation:</string>
@@ -2228,6 +2246,9 @@
             <height>111</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -2242,6 +2263,9 @@
              <width>181</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of transformation for the transform slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XXX_m.pak' (where XXX is the ID of the character) if the character you're editing doesn't have a transformation animation or wants to change their animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Animation per transformation:</string>
@@ -2648,6 +2672,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -2662,6 +2689,9 @@
              <width>151</width>
              <height>21</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The character you need in your team in order to activate the fusion panel. Select only base form characters otherwise, it won't show the fusion panel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Fusion partner (trigger):</string>
@@ -2718,6 +2748,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -2732,6 +2765,9 @@
              <width>141</width>
              <height>21</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The character that will be shown during the fusion.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Fusion partner (visual):</string>
@@ -2927,6 +2963,9 @@
             <height>81</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -2941,6 +2980,9 @@
              <width>131</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of Ki that will be consumed when a fusion is activated.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Amount Ki per fusion:</string>
@@ -3099,6 +3141,9 @@
             <height>111</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3113,6 +3158,9 @@
              <width>121</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of animation for the fusion slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XXX_m.pak' (where XXX is the ID of the character) if the character you're editing doesn't have a fusion animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Animation per fusion:</string>
@@ -3299,6 +3347,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3313,6 +3364,9 @@
              <width>91</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable the glow, lightnings of both of them for the character.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Glow/Lightning:</string>
@@ -3371,6 +3425,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3385,6 +3442,9 @@
              <width>91</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The color of the lightnings&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Color lightning:</string>
@@ -3433,6 +3493,9 @@
             <height>51</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3447,6 +3510,9 @@
              <width>61</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Size of the aura in game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Aura size:</string>
@@ -3561,6 +3627,9 @@
             <height>41</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3575,6 +3644,9 @@
              <width>41</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Health:</string>
@@ -3615,6 +3687,9 @@
             <height>51</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string/>
+          </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
           </property>
@@ -3629,6 +3704,9 @@
              <width>81</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Camera zoom in and out of the character in cutscene and in game (idle)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Camera size:</string>
@@ -3682,7 +3760,7 @@
             </rect>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Distance of the camera in the cutscene&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string/>
            </property>
            <property name="maximum">
             <double>100.000000000000000</double>
@@ -3698,7 +3776,7 @@
             </rect>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Distance of the camera in idle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string/>
            </property>
            <property name="maximum">
             <double>100.000000000000000</double>
@@ -3713,6 +3791,9 @@
             <width>121</width>
             <height>41</height>
            </rect>
+          </property>
+          <property name="toolTip">
+           <string/>
           </property>
           <property name="frameShape">
            <enum>QFrame::StyledPanel</enum>
@@ -3730,7 +3811,7 @@
             </rect>
            </property>
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The envolved box of the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string/>
            </property>
            <property name="maximum">
             <double>100.000000000000000</double>
@@ -3744,6 +3825,9 @@
              <width>51</width>
              <height>16</height>
             </rect>
+           </property>
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The envolved box of the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
             <string>Hit box:</string>
