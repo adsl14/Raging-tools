@@ -2,7 +2,7 @@
 
 This tool will help you in order to edit the games Dragon Ball Raging Blast, Dragon Ball Raging Blast 2 and Dragon Ball Z Ultimate Tenkaichi.
 
-It gather all the tools that were made by adsl14, like [vram explorer](https://github.com/i32camad/vram-explorer), [character parameters editor](https://github.com/i32camad/character-parameters-editor) and pak explorer.
+It gather all the tools that were made by adsl14, like [vram explorer](https://github.com/adsl14/vram-explorer), [character parameters editor](https://github.com/adsl14/character-parameters-editor) and pak explorer.
 
 Credits to the Raging Blast Modding community and specially to revelation from [XeNTaX](https://forum.xentax.com) forum who made the compress/uncompress tool.
 

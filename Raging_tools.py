@@ -1091,7 +1091,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "<li><b>Raging tools 1.0</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>If you want to support the tool, you can get the source code in the "
-            "<a href=https://github.com/i32camad/Raging-tools>GitHub</a> page <li>"
+            "<a href=https://github.com/adsl14/Raging-tools>GitHub</a> page <li>"
             "</ul>")
         msg.exec()
 
