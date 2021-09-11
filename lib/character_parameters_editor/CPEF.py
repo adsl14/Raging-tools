@@ -25,77 +25,44 @@ def initialize_cpe(main_window, qt_widgets):
     # Set the the big portrait image
     main_window.portrait.setVisible(False)
 
+    # Disabled all the bottons
+    main_window.character_parameters_editor.setEnabled(False)
+
     # Set the health
-    main_window.health_text.setDisabled(True)
-    main_window.health_value.setDisabled(True)
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
 
     # Set the camera size
-    main_window.camera_size_text.setDisabled(True)
-    main_window.camera_size_cutscene_text.setDisabled(True)
-    main_window.camera_size_cutscene_value.setDisabled(True)
-    main_window.camera_size_idle_text.setDisabled(True)
-    main_window.camera_size_idle_value.setDisabled(True)
     main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
                                                                                                camera_index=0))
     main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
                                                                                            camera_index=1))
 
     # Set the hit box
-    main_window.hit_box_text.setDisabled(True)
-    main_window.hit_box_value.setDisabled(True)
     main_window.hit_box_value.valueChanged.connect(lambda: on_hit_box_changed(main_window))
 
     # Set the aura size
-    main_window.aura_size_text.setDisabled(True)
-    main_window.aura_size_idle_text.setDisabled(True)
-    main_window.aura_size_idle_value.setDisabled(True)
-    main_window.aura_size_dash_text.setDisabled(True)
-    main_window.aura_size_dash_value.setDisabled(True)
-    main_window.aura_size_charge_text.setDisabled(True)
-    main_window.aura_size_charge_value.setDisabled(True)
     main_window.aura_size_idle_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=0))
     main_window.aura_size_dash_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=1))
     main_window.aura_size_charge_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=2))
 
     # Set the color lightning
-    main_window.color_lightning_text.setDisabled(True)
-    main_window.color_lightning_value.setDisabled(True)
     main_window.color_lightning_value.currentIndexChanged.connect(lambda: on_color_lightning_changed(main_window))
 
     # Set the glow/lightning
-    main_window.glow_lightning_text.setDisabled(True)
-    main_window.glow_lightning_value.setDisabled(True)
     main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
     main_window.glow_lightning_value.view().setRowHidden(3, True)  # Hide item with ID 3
 
     # Set the transform panel
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
     main_window.transText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_transform_US.png")))
-    main_window.transPanel.setDisabled(True)
-    main_window.transText.setDisabled(True)
 
     # Set the transformation parameter
-    main_window.transEffectText.setDisabled(True)
-    main_window.transEffectValue.setDisabled(True)
     main_window.transEffectValue.currentIndexChanged.connect(lambda: on_transformation_ki_effect_changed(main_window))
 
     # Set the Trasformation partner
     main_window.transPartnerSlot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
-    main_window.transPartnerSlot.setDisabled(True)
-    main_window.transPartnerText.setDisabled(True)
-    main_window.transPartnerValue.setDisabled(True)
 
     # Set the amount ki per transformation
-    main_window.amount_ki_per_transformation_text.setDisabled(True)
-    main_window.amountKi_trans1_text.setDisabled(True)
-    main_window.amountKi_trans2_text.setDisabled(True)
-    main_window.amountKi_trans3_text.setDisabled(True)
-    main_window.amountKi_trans4_text.setDisabled(True)
-    main_window.amountKi_trans1_value.setDisabled(True)
-    main_window.amountKi_trans2_value.setDisabled(True)
-    main_window.amountKi_trans3_value.setDisabled(True)
-    main_window.amountKi_trans4_value.setDisabled(True)
     main_window.amountKi_trans1_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
                                                                                               amount_ki_trans_index=0))
     main_window.amountKi_trans2_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
@@ -106,15 +73,6 @@ def initialize_cpe(main_window, qt_widgets):
                                                                                               amount_ki_trans_index=3))
 
     # Set the animation per transformation
-    main_window.animation_per_transformation_text.setDisabled(True)
-    main_window.animation_trans1_text.setDisabled(True)
-    main_window.trans1_animation_value.setDisabled(True)
-    main_window.animation_trans2_text.setDisabled(True)
-    main_window.trans2_animation_value.setDisabled(True)
-    main_window.animation_trans3_text.setDisabled(True)
-    main_window.trans3_animation_value.setDisabled(True)
-    main_window.animation_trans4_text.setDisabled(True)
-    main_window.trans4_animation_value.setDisabled(True)
     main_window.trans1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
                                                                    (main_window, animation_per_transformation=0))
     main_window.trans2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
@@ -132,26 +90,11 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Set fusion partner trigger
     main_window.fusionPartnerTrigger_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
-    main_window.fusionPartnerTrigger_slot.setDisabled(True)
-    main_window.fusionPartnerTrigger_value.setDisabled(True)
-    main_window.fusionPartnerTrigger_text.setDisabled(True)
 
     # Set fusion partner visual
     main_window.fusionPartnerVisual_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
-    main_window.fusionPartnerVisual_slot.setDisabled(True)
-    main_window.fusionPartnerVisual_value.setDisabled(True)
-    main_window.fusionPartnerVisual_text.setDisabled(True)
 
     # Set the amount ki per fusion
-    main_window.amount_ki_per_fusion_text.setDisabled(True)
-    main_window.amountKi_fusion1_text.setDisabled(True)
-    main_window.amountKi_fusion2_text.setDisabled(True)
-    main_window.amountKi_fusion3_text.setDisabled(True)
-    main_window.amountKi_fusion4_text.setDisabled(True)
-    main_window.amountKi_fusion1_value.setDisabled(True)
-    main_window.amountKi_fusion2_value.setDisabled(True)
-    main_window.amountKi_fusion3_value.setDisabled(True)
-    main_window.amountKi_fusion4_value.setDisabled(True)
     main_window.amountKi_fusion1_value.valueChanged.connect(lambda:
                                                             on_amount_ki_fusion_changed(main_window,
                                                                                         amount_ki_fusion_index=0))
@@ -166,15 +109,6 @@ def initialize_cpe(main_window, qt_widgets):
                                                                                         amount_ki_fusion_index=3))
 
     # Set the animation per fusion
-    main_window.animation_per_fusion_text.setDisabled(True)
-    main_window.animation_fusion1_text.setDisabled(True)
-    main_window.fusion1_animation_value.setDisabled(True)
-    main_window.animation_fusion2_text.setDisabled(True)
-    main_window.fusion2_animation_value.setDisabled(True)
-    main_window.animation_fusion3_text.setDisabled(True)
-    main_window.fusion3_animation_value.setDisabled(True)
-    main_window.animation_fusion4_text.setDisabled(True)
-    main_window.fusion4_animation_value.setDisabled(True)
     main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
                                                                     (main_window, animation_per_fusion=0))
     main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
@@ -187,8 +121,6 @@ def initialize_cpe(main_window, qt_widgets):
     # Set the fusion panel
     main_window.fusiPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_fusion.png")))
     main_window.fusiPanelText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_fusion_US.png")))
-    main_window.fusiPanel.setDisabled(True)
-    main_window.fusiPanelText.setDisabled(True)
 
     # Load the Select Chara window
     main_window.selectCharaWindow = qt_widgets.QMainWindow()
