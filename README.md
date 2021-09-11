@@ -19,13 +19,13 @@ If you want to run the source code, the required packages are the following:
   <li>pyqt5 5.15.4</li>
 </ul>
 
-## IMPORTANT!
+# IMPORTANT!
 
-It is highly recomended to place the tool in Program files because when using pak explorer, 
-if the path in Windows is very long, the tool will crash!
+It is highly recomended to place the tool in <i>Program files</i> because when using <i>pak explorer</i>, 
+if the path in Windows is very long, the tool will <b>crash!</b>
 
 Windows has a limit for the path name, so run the tool in a place where the path is not much long 
-(Program files for example)
+(<i>Program files</i> for example)
 
 ## vram explorer
 
