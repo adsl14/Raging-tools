@@ -8,6 +8,17 @@ Credits to the Raging Blast Modding community and specially to revelation from [
 
 You can get access to the Raging Blast Modding community in the [Discord](https://discord.gg/tBmcwkGUE6) server.
 
+## Requisites
+
+If you want to run the source code, the required packages are the following:
+
+<ul>
+  <li>natsort 7.1.1</li>
+  <li>numpy 1.21.1</li>
+  <li>pyglet 1.5.16</li>
+  <li>pyqt5 5.15.4</li>
+</ul>
+
 ## vram explorer
 
 <img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">

@@ -945,6 +945,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Check if the user has selected an output path
         if path_output_file:
+
             # Check if character parameters editor is enabled in order to save the parameters from that tab
             if self.character_parameters_editor.isEnabled():
 
@@ -963,7 +964,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # If the user has edited one character, we will save the file
                         if CPEV.character_list_edited:
-    
+
                             pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
                             copyfile(PEV.pak_file_path, pak_export_path)
 
@@ -1061,10 +1062,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # The user wants to save the pak file from the 'pak explorer'
                     else:
                         pack_and_save_file(self, path_output_file)
-
-        # We save the data from the 'pak explorer' tab
-        elif self.pak_explorer.isEnabled():
-            pack_and_save_file(self, path_output_file)
+                        
+            # We save the data from the 'pak explorer' tab
+            elif self.pak_explorer.isEnabled():
+                pack_and_save_file(self, path_output_file)
 
         else:
             msg = QMessageBox()
