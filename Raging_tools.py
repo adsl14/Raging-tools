@@ -1,16 +1,16 @@
-from shutil import move
+
 
 from PyQt5.QtGui import QStandardItemModel
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QInputDialog
 
 from lib.design.Raging_tools import *
 from lib.packages import datetime, os, functools, QPixmap, struct, rmtree, QStandardItem, QFileDialog, copyfile, \
-    natsorted
+    move, QMessageBox
 from lib.functions import del_rw
 
 # vram explorer
 from lib.pak_explorer import PEF
-from lib.pak_explorer.PEF import initialize_pe, action_item_pak_explorer
+from lib.pak_explorer.PEF import initialize_pe, action_item_pak_explorer, pack_and_save_file
 from lib.pak_explorer.PEV import PEV
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import change_endian, get_dxt_value
@@ -932,175 +932,141 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_pak_logic(self):
 
-        # Check if character parameters editor is enabled in order to save the parameters
+        # Create the output name (STPZ)
+        extension = PEV.pak_file_path_original.split(".")[-1]
+        basename = os.path.basename(PEV.pak_file_path_original).replace("." + extension,
+                                                                        datetime.now().
+                                                                        strftime("_%d-%m-%Y_%H-%M-%S"))
+
+        # Ask to the user where to save the file
+        path_output_file = QFileDialog.getSaveFileName(self, "Save file",
+                                                       os.path.abspath(os.path.join(os.getcwd(), basename)),
+                                                       "PAK files (*.pak)")[0]
+
+        # Check if character parameters editor is enabled in order to save the parameters from that tab
         if self.character_parameters_editor.isEnabled():
 
-            # If the user has edited one character, we will save the file
-            if CPEV.character_list_edited:
+            # Ask to the user, from what tab he wants to gather and save the data
+            msg = QMessageBox()
+            msg.setWindowTitle("Message")
+            message = "From what tab do you wish to save the file?"
+            options = ["character parameters editor", "pak explorer"]
+            answer = QInputDialog.getItem(self, "Select option", message, options, editable=False)
 
-                # Create the output name
-                extension = PEV.pak_file_path_original.split(".")[-1]
-                basename = os.path.basename(PEV.pak_file_path_original).replace("." + extension,
-                                                                                datetime.now().
-                                                                                strftime("_%d-%m-%Y_%H-%M-%S"))
+            # Check if the user has selected something
+            if answer[1]:
 
-                # Ask to the user where to save the file
-                path_output_file = QFileDialog.getSaveFileName(self, "Save file",
-                                                               os.path.abspath(os.path.join(os.getcwd(), basename)),
-                                                               "PAK files (*.pak)")[0]
+                # The user wants to save the file from the 'character parameters editor'
+                if answer[0] == options[0]:
 
-                # If the user select a path, we continue saving the new file
-                if path_output_file:
+                    # If the user has edited one character, we will save the file
+                    if CPEV.character_list_edited:
 
-                    pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
-                    copyfile(PEV.pak_file_path, pak_export_path)
+                        # If the user select a path, we continue saving the new file
+                        if path_output_file:
 
-                    # We open the file decrypted
-                    with open(pak_export_path, mode="rb+") as file:
+                            pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
+                            copyfile(PEV.pak_file_path, pak_export_path)
 
-                        # Change the transformations in the file
-                        for character in CPEV.character_list_edited:
+                            # We open the file decrypted
+                            with open(pak_export_path, mode="rb+") as file:
 
-                            # Save the visual parameters
-                            file.seek(character.position_visual_parameters)
+                                # Change the transformations in the file
+                                for character in CPEV.character_list_edited:
 
-                            # Health
-                            file.write(character.health.to_bytes(4, byteorder="big"))
+                                    # Save the visual parameters
+                                    file.seek(character.position_visual_parameters)
 
-                            # Camera size (cutscene)
-                            file.write(struct.pack('>f', character.camera_size[0]))
-                            # Camera size (idle)
-                            file.write(struct.pack('>f', character.camera_size[1]))
+                                    # Health
+                                    file.write(character.health.to_bytes(4, byteorder="big"))
 
-                            # hit box
-                            file.write(struct.pack('>f', character.hit_box))
+                                    # Camera size (cutscene)
+                                    file.write(struct.pack('>f', character.camera_size[0]))
+                                    # Camera size (idle)
+                                    file.write(struct.pack('>f', character.camera_size[1]))
 
-                            # UNK data for now
-                            file.seek(12, 1)
+                                    # hit box
+                                    file.write(struct.pack('>f', character.hit_box))
 
-                            # Aura size (idle)
-                            file.write(struct.pack('>f', character.aura_size[0]))
-                            # Aura size (dash)
-                            file.write(struct.pack('>f', character.aura_size[1]))
-                            # Aura size (charge)
-                            file.write(struct.pack('>f', character.aura_size[2]))
+                                    # UNK data for now
+                                    file.seek(12, 1)
 
-                            # UNK data for now
-                            file.seek(5, 1)
-                            # Color lightnining
-                            file.write(character.color_lightning.to_bytes(1, byteorder="big"))
+                                    # Aura size (idle)
+                                    file.write(struct.pack('>f', character.aura_size[0]))
+                                    # Aura size (dash)
+                                    file.write(struct.pack('>f', character.aura_size[1]))
+                                    # Aura size (charge)
+                                    file.write(struct.pack('>f', character.aura_size[2]))
 
-                            # UNK data for now
-                            file.seek(69, 1)
-                            # Glow/Lightning
-                            file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
+                                    # UNK data for now
+                                    file.seek(5, 1)
+                                    # Color lightnining
+                                    file.write(character.color_lightning.to_bytes(1, byteorder="big"))
 
-                            # Save the transformation parameters
-                            file.seek(character.position_trans)
+                                    # UNK data for now
+                                    file.seek(69, 1)
+                                    # Glow/Lightning
+                                    file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
 
-                            file.write(character.character_id.to_bytes(1, byteorder="big"))
+                                    # Save the transformation parameters
+                                    file.seek(character.position_trans)
 
-                            file.write(character.transformation_effect.to_bytes(1, byteorder="big"))
-                            file.write(character.transformation_partner.to_bytes(1, byteorder="big"))
-                            for transformation in character.transformations:
-                                file.write(transformation.to_bytes(1, byteorder="big"))
-                            for trans_ki_ammount in character.amount_ki_transformations:
-                                file.write(trans_ki_ammount.to_bytes(1, byteorder="big"))
-                            for trans_animation in character.transformations_animation:
-                                file.write(trans_animation.to_bytes(1, byteorder="big"))
+                                    file.write(character.character_id.to_bytes(1, byteorder="big"))
 
-                            # Move four positions because is unk data
-                            file.seek(4, 1)
+                                    file.write(character.transformation_effect.to_bytes(1, byteorder="big"))
+                                    file.write(character.transformation_partner.to_bytes(1, byteorder="big"))
+                                    for transformation in character.transformations:
+                                        file.write(transformation.to_bytes(1, byteorder="big"))
+                                    for trans_ki_ammount in character.amount_ki_transformations:
+                                        file.write(trans_ki_ammount.to_bytes(1, byteorder="big"))
+                                    for trans_animation in character.transformations_animation:
+                                        file.write(trans_animation.to_bytes(1, byteorder="big"))
 
-                            file.write(character.fusion_partner[0].to_bytes(1, byteorder="big"))
-                            file.write(character.fusion_partner[1].to_bytes(1, byteorder="big"))
-                            for fusion in character.fusions:
-                                file.write(fusion.to_bytes(1, byteorder="big"))
-                            for fusion_ki_ammount in character.amount_ki_fusions:
-                                file.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
-                            for fusion_animation in character.fusions_animation:
-                                file.write(fusion_animation.to_bytes(1, byteorder="big"))
+                                    # Move four positions because is unk data
+                                    file.seek(4, 1)
 
-                    # Generate the final file for the game
-                    args = os.path.join(PEV.dbrb_compressor_path) + " \"" + pak_export_path + "\" \"" \
-                        + path_output_file + "\""
-                    os.system('cmd /c ' + args)
+                                    file.write(character.fusion_partner[0].to_bytes(1, byteorder="big"))
+                                    file.write(character.fusion_partner[1].to_bytes(1, byteorder="big"))
+                                    for fusion in character.fusions:
+                                        file.write(fusion.to_bytes(1, byteorder="big"))
+                                    for fusion_ki_ammount in character.amount_ki_fusions:
+                                        file.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
+                                    for fusion_animation in character.fusions_animation:
+                                        file.write(fusion_animation.to_bytes(1, byteorder="big"))
 
-                    # Remove the uncompressed modified file
-                    os.remove(pak_export_path)
+                            # Generate the final file for the game
+                            args = os.path.join(PEV.dbrb_compressor_path) + " \"" + pak_export_path + "\" \"" \
+                                + path_output_file + "\""
+                            os.system('cmd /c ' + args)
 
-                    msg = QMessageBox()
-                    msg.setWindowTitle("Message")
-                    message = "The file were saved and compressed in: <b>" + path_output_file \
-                              + "</b><br><br> Do you wish to open the folder?"
-                    message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
+                            # Remove the uncompressed modified file
+                            os.remove(pak_export_path)
 
-                    # If the users click on 'Yes', it will open the path where the files were saved
-                    if message_open_saved_files == msg.Yes:
-                        # Show the path folder to the user
-                        os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Message")
+                            message = "The file were saved and compressed in: <b>" + path_output_file \
+                                      + "</b><br><br> Do you wish to open the folder?"
+                            message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
 
-            else:
-                msg = QMessageBox()
-                msg.setWindowTitle("Warning")
-                msg.setText("The file hasn't been modified.")
-                msg.exec()
+                            # If the users click on 'Yes', it will open the path where the files were saved
+                            if message_open_saved_files == msg.Yes:
+                                # Show the path folder to the user
+                                os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
 
+                    else:
+                        msg = QMessageBox()
+                        msg.setWindowTitle("Warning")
+                        msg.setText("The file hasn't been modified.")
+                        msg.exec()
+
+                # The user wants to save the pak file from the 'pak explorer'
+                else:
+                    pack_and_save_file(self, path_output_file)
+
+        # We save the data from the 'pak explorer' tab
         elif self.pak_explorer.isEnabled():
+            pack_and_save_file(self, path_output_file)
 
-            # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
-            # to the folder 'old_pak', so we can create a new packed file
-            old_pak_folder = ""
-            if PEV.stpz_file:
-                old_pak_folder = os.path.join(PEV.temp_folder, "old_pak")
-                if not os.path.exists(old_pak_folder):
-                    os.mkdir(old_pak_folder)
-                move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
-
-            # Create the output name (STPZ)
-            extension = PEV.pak_file_path_original.split(".")[-1]
-            basename = os.path.basename(PEV.pak_file_path_original).replace("." + extension,
-                                                                            datetime.now().
-                                                                            strftime("_%d-%m-%Y_%H-%M-%S"))
-
-            # Ask to the user where to save the file
-            path_output_file = QFileDialog.getSaveFileName(self, "Save file",
-                                                           os.path.abspath(os.path.join(os.getcwd(), basename)),
-                                                           "PAK files (*.pak)")[0]
-
-            if path_output_file:
-
-                # Path where we'll save the stpk  packed file
-                path_output_packed_file = os.path.join(PEV.temp_folder,
-                                                       os.path.basename(PEV.pak_file_path).split(".")[0])
-
-                # Get the list of files inside the folder unpacked in order to pak the folder
-                filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
-                num_filenames = len(filenames)
-                num_pak_files = int(filenames[-1].split(";")[0]) + 1
-                PEF.pack(path_output_packed_file, filenames, num_filenames, num_pak_files)
-
-                path_output_packed_file = path_output_packed_file + ".pak"
-
-                # Generate the final file for the game
-                args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
-                    + path_output_file + "\""
-                os.system('cmd /c ' + args)
-
-                # Remove the 'old_pak' folder
-                if PEV.stpz_file:
-                    rmtree(old_pak_folder, onerror=del_rw)
-
-                msg = QMessageBox()
-                msg.setWindowTitle("Message")
-                message = "The file were saved and compressed in: <b>" + path_output_file \
-                          + "</b><br><br> Do you wish to open the folder?"
-                message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
-
-                # If the users click on 'Yes', it will open the path where the files were saved
-                if message_open_saved_files == msg.Yes:
-                    # Show the path folder to the user
-                    os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
         else:
             msg = QMessageBox()
             msg.setWindowTitle("Warning")

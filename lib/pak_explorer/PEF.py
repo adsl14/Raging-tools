@@ -1,7 +1,7 @@
 from PyQt5.QtGui import QStandardItem, QColor
 from PyQt5.QtWidgets import QFileDialog
 
-from lib.packages import os, rmtree, copyfile, natsorted
+from lib.packages import os, rmtree, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
 
@@ -202,3 +202,49 @@ def action_import_2_logic(main_window):
 
         # Changed background color in order to show that file has been changed
         item.setBackground(QColor('#7fc97f'))
+
+
+def pack_and_save_file(main_window, path_output_file):
+
+    # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
+    # to the folder 'old_pak', so we can create a new packed file
+    old_pak_folder = ""
+    if PEV.stpz_file:
+        old_pak_folder = os.path.join(PEV.temp_folder, "old_pak")
+        if not os.path.exists(old_pak_folder):
+            os.mkdir(old_pak_folder)
+        move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
+
+    if path_output_file:
+
+        # Path where we'll save the stpk  packed file
+        path_output_packed_file = os.path.join(PEV.temp_folder,
+                                               os.path.basename(PEV.pak_file_path).split(".")[0])
+
+        # Get the list of files inside the folder unpacked in order to pak the folder
+        filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
+        num_filenames = len(filenames)
+        num_pak_files = int(filenames[-1].split(";")[0]) + 1
+        pack(path_output_packed_file, filenames, num_filenames, num_pak_files)
+
+        path_output_packed_file = path_output_packed_file + ".pak"
+
+        # Generate the final file for the game
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
+            + path_output_file + "\""
+        os.system('cmd /c ' + args)
+
+        # Remove the 'old_pak' folder
+        if PEV.stpz_file:
+            rmtree(old_pak_folder, onerror=del_rw)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The file were saved and compressed in: <b>" + path_output_file \
+                  + "</b><br><br> Do you wish to open the folder?"
+        message_open_saved_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_saved_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
