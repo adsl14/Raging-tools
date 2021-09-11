@@ -1,4 +1,4 @@
-from lib.packages import datetime, os
+from lib.packages import os
 
 
 class CPEV:

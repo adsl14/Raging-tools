@@ -338,10 +338,10 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                              index].transformation_partner).zfill(3)
                                                                      + ".png")))
         main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=main_window,
-                                                                            index=CPEV.character_list[
-                                                                                index].transformation_partner,
-                                                                            transformation_partner_flag=True)
+                                                                          main_window=main_window,
+                                                                          index=CPEV.character_list[
+                                                                              index].transformation_partner,
+                                                                          transformation_partner_flag=True)
 
         # amount ki per transformation
         main_window.amountKi_trans1_value.setValue(CPEV.character_list[index].amount_ki_transformations[0])
@@ -696,12 +696,13 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
         CPEV.character_list[CPEV.chara_selected].fusion_partner[0] = char_selected_new
 
         main_window.fusionPartnerTrigger_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
-                                                                             "sc_chara_s_" +
-                                                                             str(char_selected_new).zfill(3) + ".png")))
+                                                                              "sc_chara_s_" +
+                                                                              str(char_selected_new).zfill(3) +
+                                                                              ".png")))
         main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                  main_window=main_window,
-                                                                                  index=char_selected_new,
-                                                                                  fusion_partner_trigger_flag=True)
+                                                                                   main_window=main_window,
+                                                                                   index=char_selected_new,
+                                                                                   fusion_partner_trigger_flag=True)
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:

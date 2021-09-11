@@ -727,6 +727,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.listView_2.clicked.connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
         # Enable the pak explorer
         self.pak_explorer.setEnabled(True)
+        # Add the title
+        self.fileNameText_2.setText(os.path.basename(PEV.pak_file_path_original))
 
         # Read the pak file (character parameters editor)
         with open(PEV.pak_file_path, mode="rb") as pak_file:
@@ -923,8 +925,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Generic pak file
             else:
-                # Add the title
-                self.fileNameText_2.setText(os.path.basename(PEV.pak_file_path_original))
                 # Open the tab (pak explorer)
                 self.tabWidget.setCurrentIndex(1)
                 # Disable the character parameters editor

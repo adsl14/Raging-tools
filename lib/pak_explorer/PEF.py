@@ -94,16 +94,19 @@ def unpack(path_file, extension, main_temp_folder, listView_2):
 
 def pack(path_folder, filenames, num_filenames, num_pak_files):
 
+    # Create the headers and data vars
     header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
     header = b''
     data = b''
 
+    # Store the sizes
     acumulated_sizes = 0
     size_total_block_header_subpak = num_pak_files * 48
     stpk_header_size = 16
 
     pak_file = b''
 
+    # Store all the data from a folder
     for i in range(0, num_filenames):
 
         filename = filenames[i]
@@ -162,6 +165,7 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
     for i in range(0, 112):
         data = data + bytes.fromhex("00")
 
+    # Create the pak file
     pak_file = header_0 + header + pak_file + data
 
     # Write the new pak file in the folder
