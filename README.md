@@ -1,4 +1,4 @@
-# Raging-tools
+# Raging tools
 
 This tool will help you in order to edit the games Dragon Ball Raging Blast, Dragon Ball Raging Blast 2 and Dragon Ball Z Ultimate Tenkaichi.
 
