@@ -1,5 +1,8 @@
 class Character:
+
 	def __init__(self):
+
+		# First positions in the file operate_resident_param
 		self.position_visual_parameters = 0
 		self.health = 0
 		self.camera_size = [] * 2  # 0 cutscene, 1 idle
@@ -8,6 +11,7 @@ class Character:
 		self.color_lightning = 0
 		self.glow_lightning = 0
 
+		# Seconds positions in the file operate_resident_param
 		self.position_trans = 0
 		self.character_id = 0
 		self.transformation_effect = 0

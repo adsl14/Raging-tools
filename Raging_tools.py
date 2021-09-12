@@ -21,7 +21,7 @@ from lib.vram_explorer.VEF import open_spr_file, open_vram_file, action_item, in
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
-    open_select_chara_window
+    open_select_chara_window, enable_disable_operate_resident_param_buttons
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -760,10 +760,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     store_character_parameters(character, pak_file)
                     CPEV.character_list.append(character)
 
-                # Enable the characters portraits
-                for i in range(0, 66):
-                    CPEV.mini_portraits_image[i].setEnabled(True)
-
                 # We're changing the character in the main panel (avoid combo box code)
                 CPEV.change_character = True
 
@@ -919,8 +915,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # We're not changing the character in the main panel (play combo box code)
                 CPEV.change_character = False
 
-                # Enable the character parameters editor
-                self.character_parameters_editor.setEnabled(True)
+                # Enable all the buttons (character parameters editor -> operate_resident_param)
+                enable_disable_operate_resident_param_buttons(self, True)
+                self.portrait.setEnabled(True)
                 # Open the tab (character parameters editor)
                 self.tabWidget.setCurrentIndex(2)
 
@@ -928,8 +925,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 # Open the tab (pak explorer)
                 self.tabWidget.setCurrentIndex(1)
-                # Disable the character parameters editor
-                self.character_parameters_editor.setEnabled(False)
+                # Disable all the buttons (character parameters editor -> operate_resident_param)
+                enable_disable_operate_resident_param_buttons(self, False)
+                self.portrait.setEnabled(False)
 
     def action_save_pak_logic(self):
 

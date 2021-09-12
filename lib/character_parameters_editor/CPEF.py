@@ -25,8 +25,8 @@ def initialize_cpe(main_window, qt_widgets):
     # Set the the big portrait image
     main_window.portrait.setVisible(False)
 
-    # Disabled all the bottons
-    main_window.character_parameters_editor.setEnabled(False)
+    # Disabled all the bottons (operate_resident_param)
+    enable_disable_operate_resident_param_buttons(main_window, False)
 
     # Set the health
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -135,7 +135,37 @@ def initialize_cpe(main_window, qt_widgets):
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
 
+def enable_disable_operate_resident_param_buttons(main_window, flag):
+
+    main_window.transEffect.setEnabled(flag)
+    main_window.transPartner.setEnabled(flag)
+    main_window.amount_ki_per_transformation.setEnabled(flag)
+    main_window.animation_per_transformation.setEnabled(flag)
+    main_window.transformPanel.setEnabled(flag)
+    main_window.fusionPartnerTrigger.setEnabled(flag)
+    main_window.fusionPartnerVisual.setEnabled(flag)
+    main_window.amount_ki_per_fusion.setEnabled(flag)
+    main_window.animation_per_fusion.setEnabled(flag)
+    main_window.fusionPanel.setEnabled(flag)
+    main_window.health.setEnabled(flag)
+    main_window.camera_size.setEnabled(flag)
+    main_window.hit_box.setEnabled(flag)
+    main_window.aura_size.setEnabled(flag)
+    main_window.color_lightning.setEnabled(flag)
+    main_window.glow_lightning.setEnabled(flag)
+
+    # Enable the characters portraits
+    for i in range(0, 66):
+        CPEV.mini_portraits_image[i].setEnabled(flag)
+
+    main_window.label_trans_0.setEnabled(flag)
+    main_window.label_trans_1.setEnabled(flag)
+    main_window.label_trans_2.setEnabled(flag)
+    main_window.label_trans_3.setEnabled(flag)
+
+
 def store_character_parameters(character, pak_file):
+
     # Move to the visual parameters position
     pak_file.seek(character.position_visual_parameters)
 
