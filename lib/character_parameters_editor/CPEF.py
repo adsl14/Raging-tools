@@ -4,6 +4,9 @@ from lib.design.select_chara import Ui_Dialog
 
 
 def initialize_cpe(main_window, qt_widgets):
+
+    # --- operate_resident_param ---
+
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
@@ -25,8 +28,11 @@ def initialize_cpe(main_window, qt_widgets):
     # Set the the big portrait image
     main_window.portrait.setVisible(False)
 
-    # Disabled all the bottons (operate_resident_param)
+    # Disable all the buttons (operate_resident_param)
     enable_disable_operate_resident_param_buttons(main_window, False)
+
+    # Disable all the buttons (operate_character_XXX_m)
+    enable_disable_operate_character_XXX_m_buttons(main_window, False)
 
     # Set the health
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -50,7 +56,6 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Set the glow/lightning
     main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
-    main_window.glow_lightning_value.view().setRowHidden(3, True)  # Hide item with ID 3
 
     # Set the transform panel
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
@@ -81,12 +86,6 @@ def initialize_cpe(main_window, qt_widgets):
                                                                    (main_window, animation_per_transformation=2))
     main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
                                                                    (main_window, animation_per_transformation=3))
-    # Hide items
-    for i in [2, 3, 5, 7, 8, 9, 10, 11]:
-        main_window.trans1_animation_value.view().setRowHidden(i, True)
-        main_window.trans2_animation_value.view().setRowHidden(i, True)
-        main_window.trans3_animation_value.view().setRowHidden(i, True)
-        main_window.trans4_animation_value.view().setRowHidden(i, True)
 
     # Set fusion partner trigger
     main_window.fusionPartnerTrigger_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -134,6 +133,8 @@ def initialize_cpe(main_window, qt_widgets):
         CPEV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
+    # --- operate_character_XXX_m ---
+
 
 def enable_disable_operate_resident_param_buttons(main_window, flag):
 
@@ -164,6 +165,11 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
     main_window.label_trans_3.setEnabled(flag)
 
 
+def enable_disable_operate_character_XXX_m_buttons(main_window, flag):
+
+    main_window.type_fighting.setEnabled(flag)
+
+# operate_resident_param
 def store_character_parameters(character, pak_file):
 
     # Move to the visual parameters position
@@ -269,6 +275,25 @@ def store_character_parameters(character, pak_file):
     character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
     # fusions_animation 4
     character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
+
+# operate_character_XXX
+def store_single_character_parameters(main_window, global_character):
+
+    # Read all the data from the files
+    # character_info
+    CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
+    with open(CPEV.character_i_path, mode="rb") as file:
+        # Type fighting
+        file.seek(CPEV.type_fighting_pos)
+        global_character.type_of_fighting = int.from_bytes(file.read(1), "big")
+
+        # Direction last hit fast combo
+        file.seek(1, 1)
+        global_character.direction_last_hit_combo = int.from_bytes(file.read(1), "big")
+
+        # Color background fast combo
+        file.seek(3, 1)
+        global_character.color_background_combo = int.from_bytes(file.read(1), "big")
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):

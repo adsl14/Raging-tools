@@ -5,6 +5,7 @@ class CPEV:
 
     # Allowed files
     operate_resident_param = 'operate_resident_param'
+    operate_character_XXX_m_regex = "operate_character_0[0-9][0-9]_m"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
@@ -12,13 +13,19 @@ class CPEV:
     path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
-    # base position visual parameters
+    # base position visual parameters (operate_resident_param)
     base_pos_visual_parameters = 7232
     # base position transformations
     base_pos_trans = 66720
     # number of bytes between each character
     sizeVisualParameters = 148
     sizeTrans = 33
+
+    # global character  (operate_character_XXX_m)
+    global_character = None
+    # path and positions of files and data
+    character_i_path = ""
+    type_fighting_pos = 141
 
     # panelPortraistlist
     mini_portraits_image = []

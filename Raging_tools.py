@@ -1,4 +1,4 @@
-
+import re
 
 from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QInputDialog
@@ -9,19 +9,21 @@ from lib.packages import datetime, os, functools, QPixmap, struct, rmtree, QStan
 from lib.functions import del_rw
 
 # vram explorer
-from lib.pak_explorer import PEF
-from lib.pak_explorer.PEF import initialize_pe, action_item_pak_explorer, pack_and_save_file
-from lib.pak_explorer.PEV import PEV
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import change_endian, get_dxt_value
 from lib.vram_explorer.VEF import get_encoding_name, show_dds_image, validation_dds_imported_texture
 from lib.vram_explorer.VEF import validation_bmp_imported_texture, show_bmp_image
 from lib.vram_explorer.VEF import open_spr_file, open_vram_file, action_item, initialize_ve
 
+# pak explorer
+from lib.pak_explorer.PEF import initialize_pe, action_item_pak_explorer, pack_and_save_file, unpack
+from lib.pak_explorer.PEV import PEV
+
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
-    open_select_chara_window, enable_disable_operate_resident_param_buttons
+    open_select_chara_window, enable_disable_operate_resident_param_buttons, \
+    enable_disable_operate_character_XXX_m_buttons, store_single_character_parameters
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -444,7 +446,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.sizeImageText.setVisible(True)
 
         # Open the tab
-        self.tabWidget.setCurrentIndex(0)
+        if self.tabWidget.currentIndex() != 0:
+            self.tabWidget.setCurrentIndex(0)
 
     def action_save_sprvram_logic(self):
 
@@ -721,8 +724,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Prepare the list view 2 in order to add the names
         model = QStandardItemModel()
         self.listView_2.setModel(model)
-        PEF.unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
-                   self.listView_2)
+        unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
+               self.listView_2)
         self.listView_2.setCurrentIndex(self.listView_2.model().index(0, 0))
         PEV.current_selected_subpak_file = self.listView_2.model().index(0, 0).row()
         self.listView_2.clicked.connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
@@ -765,7 +768,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # Show the large portrait
                 self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
-                self.portrait.setVisible(True)
+                if not self.portrait.isVisible():
+                    self.portrait.setVisible(True)
 
                 # Show the transformations in the main panel
                 self.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
@@ -777,9 +781,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
                 self.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=self,
                                                                        index=3, modify_slot_transform=False)
-                self.label_trans_0.setVisible(True)
-                self.label_trans_1.setVisible(True)
-                self.label_trans_2.setVisible(True)
+                if not self.label_trans_0.isVisible():
+                    self.label_trans_0.setVisible(True)
+                    self.label_trans_1.setVisible(True)
+                    self.label_trans_2.setVisible(True)
 
                 # Get the values for the fist character of the list
                 character_zero = CPEV.character_list[0]
@@ -916,18 +921,63 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.change_character = False
 
                 # Enable all the buttons (character parameters editor -> operate_resident_param)
-                enable_disable_operate_resident_param_buttons(self, True)
-                self.portrait.setEnabled(True)
+                if not self.label_trans_0.isEnabled():
+                    enable_disable_operate_resident_param_buttons(self, True)
+                # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+                if self.type_fighting.isEnabled():
+                    enable_disable_operate_character_XXX_m_buttons(self, False)
+                # Enable the portrait
+                if not self.portrait.isEnabled():
+                    self.portrait.setEnabled(True)
+
                 # Open the tab (character parameters editor)
-                self.tabWidget.setCurrentIndex(2)
+                if self.tabWidget.currentIndex() != 2:
+                    self.tabWidget.setCurrentIndex(2)
+
+            # Check if the file is an operate_character_XXX_m type
+            elif re.search(CPEV.operate_character_XXX_m_regex, data):
+
+                # Read all the data from the files and store it in the global_character from CPEV.
+                CPEV.global_character = Character()
+                store_single_character_parameters(self, CPEV.global_character)
+
+                # Change type of fighting value
+                self.type_fighting_value.setCurrentIndex(CPEV.global_character.type_of_fighting)
+
+                # Disable all the buttons (character parameters editor -> operate_resident_param)
+                if self.label_trans_0.isEnabled():
+                    enable_disable_operate_resident_param_buttons(self, False)
+                # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
+                if not self.type_fighting.isEnabled():
+                    enable_disable_operate_character_XXX_m_buttons(self, True)
+                # Enable the portrait
+                # Load the large portrait
+                self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
+                                                             data.split("_")[-2] + ".png")))
+                if not self.portrait.isEnabled():
+                    self.portrait.setEnabled(True)
+                if not self.portrait.isVisible():
+                    self.portrait.setVisible(True)
+
+                # Open the tab (character parameters editor)
+                if self.tabWidget.currentIndex() != 2:
+                    self.tabWidget.setCurrentIndex(2)
 
             # Generic pak file
             else:
+
                 # Open the tab (pak explorer)
-                self.tabWidget.setCurrentIndex(1)
+                if self.tabWidget.currentIndex() != 1:
+                    self.tabWidget.setCurrentIndex(1)
+
                 # Disable all the buttons (character parameters editor -> operate_resident_param)
-                enable_disable_operate_resident_param_buttons(self, False)
-                self.portrait.setEnabled(False)
+                if self.label_trans_0.isEnabled():
+                    enable_disable_operate_resident_param_buttons(self, False)
+                # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+                if self.type_fighting.isEnabled():
+                    enable_disable_operate_character_XXX_m_buttons(self, False)
+                if self.portrait.isEnabled():
+                    self.portrait.setEnabled(False)
 
     def action_save_pak_logic(self):
 

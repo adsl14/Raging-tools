@@ -3801,6 +3801,120 @@
            </property>
           </widget>
          </widget>
+         <widget class="QFrame" name="type_fighting">
+          <property name="geometry">
+           <rect>
+            <x>560</x>
+            <y>370</y>
+            <width>181</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <widget class="QLabel" name="type_fighting_text">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>10</y>
+             <width>101</width>
+             <height>16</height>
+            </rect>
+           </property>
+           <property name="toolTip">
+            <string>Type 0 -&gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.
+Type 1 -&gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.
+Type 2 -&gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.
+Type 3 -&gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.
+Type 10 -&gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.
+Type 11 -&gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).
+Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.
+</string>
+           </property>
+           <property name="text">
+            <string>Type of fighting:</string>
+           </property>
+          </widget>
+          <widget class="QComboBox" name="type_fighting_value">
+           <property name="geometry">
+            <rect>
+             <x>100</x>
+             <y>10</y>
+             <width>81</width>
+             <height>21</height>
+            </rect>
+           </property>
+           <item>
+            <property name="text">
+             <string>Type 0</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 1</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 2</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 3</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x04</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x05</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x06</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x07</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x08</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>0x09</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 10</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 11</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Type 12</string>
+            </property>
+           </item>
+          </widget>
+         </widget>
         </widget>
        </item>
       </layout>
