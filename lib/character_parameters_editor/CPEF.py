@@ -135,6 +135,9 @@ def initialize_cpe(main_window, qt_widgets):
 
     # --- operate_character_XXX_m ---
 
+    # Set the fighting style
+    main_window.type_fighting_value.currentIndexChanged.connect(lambda: on_type_of_fighting_changed(main_window))
+
 
 def enable_disable_operate_resident_param_buttons(main_window, flag):
 
@@ -295,6 +298,24 @@ def store_single_character_parameters(main_window, global_character):
         file.seek(3, 1)
         global_character.color_background_combo = int.from_bytes(file.read(1), "big")
 
+# operate_character_XXX
+def save_single_character_parameters():
+
+    # Save all the info
+    with open(CPEV.character_i_path, mode="wb") as file:
+        # Type fighting
+        file.seek(CPEV.type_fighting_pos)
+        file.write(CPEV.global_character.type_of_fighting.to_bytes(1, byteorder="big"))
+
+        # Direction last hit fast combo
+        file.seek(1, 1)
+        file.write(CPEV.global_character.direction_last_hit_combo.to_bytes(1,
+                                                                           byteorder="big"))
+
+        # Color background fast combo
+        file.seek(3, 1)
+        file.write(CPEV.global_character.color_background_combo.to_bytes(1,
+                                                                         byteorder="big"))
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
     # Change only if the char selected is other
@@ -966,3 +987,12 @@ def on_hit_box_changed(main_window):
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+
+def on_type_of_fighting_changed(main_window):
+
+    # Change the slot of type of fighting
+    CPEV.global_character.type_of_fighting = main_window.type_fighting_value.currentIndex()
+
+    if not CPEV.operate_character_XXX_m_modified:
+        CPEV.operate_character_XXX_m_modified = True

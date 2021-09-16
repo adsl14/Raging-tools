@@ -23,7 +23,7 @@ from lib.pak_explorer.PEV import PEV
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
     open_select_chara_window, enable_disable_operate_resident_param_buttons, \
-    enable_disable_operate_character_XXX_m_buttons, store_single_character_parameters
+    enable_disable_operate_character_XXX_m_buttons, store_single_character_parameters, save_single_character_parameters
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -930,12 +930,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if not self.portrait.isEnabled():
                     self.portrait.setEnabled(True)
 
+                # Enable completely the tab character parameters editor
+                if not self.character_parameters_editor.isEnabled():
+                    self.character_parameters_editor.setEnabled(True)
+
                 # Open the tab (character parameters editor)
                 if self.tabWidget.currentIndex() != 2:
                     self.tabWidget.setCurrentIndex(2)
 
             # Check if the file is an operate_character_XXX_m type
             elif re.search(CPEV.operate_character_XXX_m_regex, data):
+
+                CPEV.operate_character_XXX_m_modified = False
 
                 # Read all the data from the files and store it in the global_character from CPEV.
                 CPEV.global_character = Character()
@@ -959,6 +965,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if not self.portrait.isVisible():
                     self.portrait.setVisible(True)
 
+                # Enable completely the tab character parameters editor
+                if not self.character_parameters_editor.isEnabled():
+                    self.character_parameters_editor.setEnabled(True)
+
                 # Open the tab (character parameters editor)
                 if self.tabWidget.currentIndex() != 2:
                     self.tabWidget.setCurrentIndex(2)
@@ -978,6 +988,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     enable_disable_operate_character_XXX_m_buttons(self, False)
                 if self.portrait.isEnabled():
                     self.portrait.setEnabled(False)
+
+                # Disable completely the tab character parameters editor
+                if self.character_parameters_editor.isEnabled():
+                    self.character_parameters_editor.setEnabled(False)
 
     def action_save_pak_logic(self):
 
@@ -1011,8 +1025,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # The user wants to save the file from the 'character parameters editor'
                     if answer[0] == options[0]:
 
+                        # Check what type of character parameter editor is activated
+                        # --- operate_character_XXX_m ---
+                        if self.type_fighting.isEnabled():
+
+                            if CPEV.operate_character_XXX_m_modified:
+                                # Save all the info
+                                save_single_character_parameters()
+
+                                # Pack the files
+                                pack_and_save_file(self, path_output_file)
+                            else:
+                                msg = QMessageBox()
+                                msg.setWindowTitle("Warning")
+                                msg.setText("The character hasn't been modified.")
+                                msg.exec()
+
+                        # --- operate_resident_param ---
                         # If the user has edited one character, we will save the file
-                        if CPEV.character_list_edited:
+                        elif CPEV.character_list_edited:
 
                             pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
                             copyfile(PEV.pak_file_path, pak_export_path)
