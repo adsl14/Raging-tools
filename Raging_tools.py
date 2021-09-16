@@ -426,10 +426,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 show_bmp_image(self.imageTexture, VEV.tx2_datas[0].data_unswizzle, VEV.tx2d_infos[0].width,
                                VEV.tx2d_infos[0].height)
 
-        # Show the buttons
-        self.exportButton.setVisible(True)
-        self.exportAllButton.setVisible(True)
-        self.importButton.setVisible(True)
+        # Enable the buttons
+        self.exportButton.setEnabled(True)
+        self.exportAllButton.setEnabled(True)
+        self.importButton.setEnabled(True)
 
         # Show the text labels
         self.fileNameText.setText(basename.split(".")[0])

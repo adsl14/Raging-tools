@@ -10,9 +10,9 @@ def initialize_ve(main_window):
     main_window.exportButton.clicked.connect(main_window.action_export_logic)
     main_window.exportAllButton.clicked.connect(main_window.action_export_all_logic)
     main_window.importButton.clicked.connect(main_window.action_import_logic)
-    main_window.exportButton.setVisible(False)
-    main_window.exportAllButton.setVisible(False)
-    main_window.importButton.setVisible(False)
+    main_window.exportButton.setEnabled(False)
+    main_window.exportAllButton.setEnabled(False)
+    main_window.importButton.setEnabled(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
