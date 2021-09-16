@@ -26,6 +26,7 @@ class CPEV:
     # path and positions of files and data
     character_i_path = ""
     type_fighting_pos = 141
+    operate_character_XXX_m_modified = False
 
     # panelPortraistlist
     mini_portraits_image = []
