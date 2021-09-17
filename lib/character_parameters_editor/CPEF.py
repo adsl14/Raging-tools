@@ -345,7 +345,7 @@ def store_single_character_parameters(main_window):
 def write_single_character_parameters(main_window):
 
     # Save all the info
-    with open(CPEV.character_i_path, mode="wb") as file:
+    with open(CPEV.character_i_path, mode="rb+") as file:
 
         # Type fighting
         file.seek(CPEV.type_fighting_pos)

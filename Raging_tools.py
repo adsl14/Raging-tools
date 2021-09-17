@@ -1048,9 +1048,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if CPEV.operate_character_XXX_m_modified:
 
                                 # Save all the info
+                                print("Writing values in the file...")
                                 write_single_character_parameters(self)
 
                                 # Pack the files
+                                print("Packing the file...")
                                 pack_and_save_file(self, path_output_file)
 
                             else:
@@ -1068,6 +1070,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # We open the file decrypted
                             with open(pak_export_path, mode="rb+") as file:
+
+                                print("Writing the file...")
 
                                 # Change the transformations in the file
                                 for character in CPEV.character_list_edited:
@@ -1163,6 +1167,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # We save the data from the 'pak explorer' tab
             elif self.pak_explorer.isEnabled():
+                print("Packing the file...")
                 pack_and_save_file(self, path_output_file)
 
             else:
