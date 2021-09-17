@@ -32,7 +32,7 @@ def initialize_cpe(main_window, qt_widgets):
     enable_disable_operate_resident_param_buttons(main_window, False)
 
     # Disable all the buttons (operate_character_XXX_m)
-    enable_disable_operate_character_XXX_m_buttons(main_window, False)
+    enable_disable_operate_character_xxx_m_buttons(main_window, False)
 
     # Set the health
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -168,9 +168,10 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
     main_window.label_trans_3.setEnabled(flag)
 
 
-def enable_disable_operate_character_XXX_m_buttons(main_window, flag):
+def enable_disable_operate_character_xxx_m_buttons(main_window, flag):
 
     main_window.type_fighting.setEnabled(flag)
+
 
 # operate_resident_param
 def store_character_parameters(character, pak_file):
@@ -279,6 +280,7 @@ def store_character_parameters(character, pak_file):
     # fusions_animation 4
     character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
+
 # operate_character_XXX
 def store_single_character_parameters(main_window, global_character):
 
@@ -298,6 +300,7 @@ def store_single_character_parameters(main_window, global_character):
         file.seek(3, 1)
         global_character.color_background_combo = int.from_bytes(file.read(1), "big")
 
+
 # operate_character_XXX
 def save_single_character_parameters():
 
@@ -316,6 +319,7 @@ def save_single_character_parameters():
         file.seek(3, 1)
         file.write(CPEV.global_character.color_background_combo.to_bytes(1,
                                                                          byteorder="big"))
+
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
     # Change only if the char selected is other

@@ -23,7 +23,7 @@ from lib.pak_explorer.PEV import PEV
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
     open_select_chara_window, enable_disable_operate_resident_param_buttons, \
-    enable_disable_operate_character_XXX_m_buttons, store_single_character_parameters, save_single_character_parameters
+    enable_disable_operate_character_xxx_m_buttons, store_single_character_parameters, save_single_character_parameters
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -925,7 +925,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     enable_disable_operate_resident_param_buttons(self, True)
                 # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
                 if self.type_fighting.isEnabled():
-                    enable_disable_operate_character_XXX_m_buttons(self, False)
+                    enable_disable_operate_character_xxx_m_buttons(self, False)
                 # Enable the portrait
                 if not self.portrait.isEnabled():
                     self.portrait.setEnabled(True)
@@ -955,7 +955,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     enable_disable_operate_resident_param_buttons(self, False)
                 # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
                 if not self.type_fighting.isEnabled():
-                    enable_disable_operate_character_XXX_m_buttons(self, True)
+                    enable_disable_operate_character_xxx_m_buttons(self, True)
                 # Enable the portrait
                 # Load the large portrait
                 self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -985,7 +985,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     enable_disable_operate_resident_param_buttons(self, False)
                 # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
                 if self.type_fighting.isEnabled():
-                    enable_disable_operate_character_XXX_m_buttons(self, False)
+                    enable_disable_operate_character_xxx_m_buttons(self, False)
                 if self.portrait.isEnabled():
                     self.portrait.setEnabled(False)
 
