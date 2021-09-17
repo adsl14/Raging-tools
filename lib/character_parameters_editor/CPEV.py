@@ -20,13 +20,26 @@ class CPEV:
     # number of bytes between each character
     sizeVisualParameters = 148
     sizeTrans = 33
+    # Values for the combo box
+    trans_effect_values = [["Super Saiyan", 0], ["Metamoru", 1], ["Potara", 2], ["Cell", 3], ["Super Buu", 4],
+                           ["Broly", 5], ["Freezer", 6], ["Super Saiyan 3", 7], ["Cooler", 8], ["Bojack", 9],
+                           ["C-13", 10], ["Nothing", 11]]
+    trans_animation_values = [["Transform", 0], ["Return", 1], ["Transform 2", 4], ["Absorb", 6], ["Special", 12]]
+    fusion_animation_values = [["Metamoru", 0], ["Potara", 1]]
+    color_lightning_values = [["Blue", 0], ["Cyan", 1], ["Rose", 2], ["Rose and white", 3]]
+    glow_lightning_values = [["Disabled", 0], ["Glow", 1], ["Lightnings", 4], ["Glow + lightnings", 5]]
 
-    # global character  (operate_character_XXX_m)
-    global_character = None
+    # operate_character_XXX_m
     # path and positions of files and data
     character_i_path = ""
     type_fighting_pos = 141
     operate_character_XXX_m_modified = False
+    # Values for the combo box
+    type_of_fighting_values = [["Type 1", 0], ["Type 2", 1], ["Type 3", 2], ["Type 4", 3],
+                               ["Type 5", 10], ["Type 6", 11], ["Type 7", 12]]
+    direction_last_hit_combo_values = [["Forward", 0], ["Up", 1], ["Down", 2], ["Left", 3], ["Right", 4]]
+    color_background_combo_values = [["Blue", 88], ["Yellow 1", 94], ["Yellow 2", 92], ["Gray", 82],
+                                     ["Purple", 80], ["Red", 76], ["Black", 78]]
 
     # panelPortraistlist
     mini_portraits_image = []

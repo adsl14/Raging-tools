@@ -354,7 +354,7 @@
            <widget class="QFrame" name="glow_lightning">
             <property name="geometry">
              <rect>
-              <x>560</x>
+              <x>570</x>
               <y>330</y>
               <width>231</width>
               <height>41</height>
@@ -395,38 +395,8 @@
               </rect>
              </property>
              <property name="currentText">
-              <string>Disabled</string>
+              <string/>
              </property>
-             <item>
-              <property name="text">
-               <string>Disabled</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Glow</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Lightnings</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Glow + lightnings</string>
-              </property>
-             </item>
             </widget>
            </widget>
            <widget class="QFrame" name="animation_per_fusion">
@@ -434,7 +404,7 @@
              <rect>
               <x>630</x>
               <y>160</y>
-              <width>251</width>
+              <width>261</width>
               <height>111</height>
              </rect>
             </property>
@@ -563,16 +533,6 @@
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Metamoru</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Potara</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="fusion3_animation_value">
              <property name="geometry">
@@ -583,16 +543,6 @@
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Metamoru</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Potara</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="fusion2_animation_value">
              <property name="geometry">
@@ -603,16 +553,6 @@
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Metamoru</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Potara</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="fusion4_animation_value">
              <property name="geometry">
@@ -623,16 +563,6 @@
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Metamoru</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Potara</string>
-              </property>
-             </item>
             </widget>
            </widget>
            <widget class="QFrame" name="health">
@@ -698,7 +628,7 @@
            <widget class="QFrame" name="type_fighting">
             <property name="geometry">
              <rect>
-              <x>560</x>
+              <x>570</x>
               <y>370</y>
               <width>181</width>
               <height>41</height>
@@ -720,14 +650,7 @@
               </rect>
              </property>
              <property name="toolTip">
-              <string>Type 0 -&gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.
-Type 1 -&gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.
-Type 2 -&gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.
-Type 3 -&gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.
-Type 10 -&gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.
-Type 11 -&gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).
-Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.
-</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type 1 -&amp;gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.&lt;/p&gt;&lt;p&gt;Type 2 -&amp;gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.&lt;/p&gt;&lt;p&gt;Type 3 -&amp;gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.&lt;/p&gt;&lt;p&gt;Type 4 -&amp;gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.&lt;/p&gt;&lt;p&gt;Type 5 -&amp;gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.&lt;/p&gt;&lt;p&gt;Type 6 -&amp;gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).&lt;/p&gt;&lt;p&gt;Type 7 -&amp;gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Type of fighting:</string>
@@ -742,71 +665,6 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>21</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Type 0</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 1</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x04</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x05</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x06</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x07</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x08</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0x09</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 10</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 11</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Type 12</string>
-              </property>
-             </item>
             </widget>
            </widget>
            <widget class="QFrame" name="aura_size">
@@ -814,7 +672,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              <rect>
               <x>270</x>
               <y>420</y>
-              <width>291</width>
+              <width>281</width>
               <height>51</height>
              </rect>
             </property>
@@ -849,7 +707,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="aura_size_charge_text">
              <property name="geometry">
               <rect>
-               <x>240</x>
+               <x>230</x>
                <y>0</y>
                <width>41</width>
                <height>16</height>
@@ -868,7 +726,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="aura_size_idle_text">
              <property name="geometry">
               <rect>
-               <x>90</x>
+               <x>80</x>
                <y>0</y>
                <width>21</width>
                <height>16</height>
@@ -884,7 +742,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="aura_size_dash_text">
              <property name="geometry">
               <rect>
-               <x>165</x>
+               <x>155</x>
                <y>0</y>
                <width>31</width>
                <height>16</height>
@@ -903,7 +761,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QDoubleSpinBox" name="aura_size_idle_value">
              <property name="geometry">
               <rect>
-               <x>70</x>
+               <x>60</x>
                <y>20</y>
                <width>61</width>
                <height>22</height>
@@ -916,7 +774,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QDoubleSpinBox" name="aura_size_dash_value">
              <property name="geometry">
               <rect>
-               <x>150</x>
+               <x>140</x>
                <y>20</y>
                <width>61</width>
                <height>22</height>
@@ -929,7 +787,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QDoubleSpinBox" name="aura_size_charge_value">
              <property name="geometry">
               <rect>
-               <x>230</x>
+               <x>220</x>
                <y>20</y>
                <width>61</width>
                <height>22</height>
@@ -2297,7 +2155,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              <rect>
               <x>630</x>
               <y>80</y>
-              <width>251</width>
+              <width>261</width>
               <height>81</height>
              </rect>
             </property>
@@ -2475,7 +2333,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              <rect>
               <x>630</x>
               <y>40</y>
-              <width>251</width>
+              <width>261</width>
               <height>41</height>
              </rect>
             </property>
@@ -2546,7 +2404,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
            <widget class="QFrame" name="color_lightning">
             <property name="geometry">
              <rect>
-              <x>560</x>
+              <x>570</x>
               <y>290</y>
               <width>221</width>
               <height>41</height>
@@ -2587,28 +2445,8 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
               </rect>
              </property>
              <property name="currentText">
-              <string>Blue</string>
+              <string/>
              </property>
-             <item>
-              <property name="text">
-               <string>Blue</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Cyan</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Rose</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Rose and white</string>
-              </property>
-             </item>
             </widget>
            </widget>
            <widget class="QFrame" name="transPartner">
@@ -2730,66 +2568,6 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Super Saiyan</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Metamoru</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Potara</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Cell</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Super Buu</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Broly</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Freezer</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Super Saiyan 3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Cooler</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Bojack</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>C-13</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Nothing</string>
-              </property>
-             </item>
             </widget>
             <widget class="QLabel" name="transEffectText">
              <property name="geometry">
@@ -2811,9 +2589,9 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
            <widget class="QFrame" name="fusionPanel">
             <property name="geometry">
              <rect>
-              <x>460</x>
-              <y>40</y>
-              <width>171</width>
+              <x>470</x>
+              <y>0</y>
+              <width>161</width>
               <height>181</height>
              </rect>
             </property>
@@ -2829,7 +2607,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              </property>
              <property name="geometry">
               <rect>
-               <x>33</x>
+               <x>17</x>
                <y>75</y>
                <width>61</width>
                <height>61</height>
@@ -2845,7 +2623,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="fusiSlotPanel1">
              <property name="geometry">
               <rect>
-               <x>65</x>
+               <x>49</x>
                <y>43</y>
                <width>61</width>
                <height>61</height>
@@ -2861,7 +2639,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="fusiSlotPanel2">
              <property name="geometry">
               <rect>
-               <x>99</x>
+               <x>83</x>
                <y>75</y>
                <width>61</width>
                <height>61</height>
@@ -2877,7 +2655,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="fusiSlotPanel3">
              <property name="geometry">
               <rect>
-               <x>65</x>
+               <x>49</x>
                <y>108</y>
                <width>61</width>
                <height>61</height>
@@ -2893,7 +2671,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="fusiPanelText">
              <property name="geometry">
               <rect>
-               <x>56</x>
+               <x>40</x>
                <y>10</y>
                <width>81</width>
                <height>21</height>
@@ -2912,7 +2690,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
             <widget class="QLabel" name="fusiPanel">
              <property name="geometry">
               <rect>
-               <x>30</x>
+               <x>14</x>
                <y>35</y>
                <width>141</width>
                <height>141</height>
@@ -3225,71 +3003,6 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Transform</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Return</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Transform 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Absorb</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X7</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X8</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X9</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X10</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X11</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Special</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="trans3_animation_value">
              <property name="geometry">
@@ -3300,71 +3013,6 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Transform</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Return</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Transform 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Absorb</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X7</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X8</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X9</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X10</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X11</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Special</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="trans2_animation_value">
              <property name="geometry">
@@ -3375,71 +3023,6 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Transform</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Return</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Transform 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Absorb</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X7</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X8</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X9</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X10</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X11</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Special</string>
-              </property>
-             </item>
             </widget>
             <widget class="QComboBox" name="trans4_animation_value">
              <property name="geometry">
@@ -3450,78 +3033,13 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
                <height>22</height>
               </rect>
              </property>
-             <item>
-              <property name="text">
-               <string>Transform</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Return</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X3</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Transform 2</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X5</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Absorb</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X7</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X8</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X9</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X10</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>0X11</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Special</string>
-              </property>
-             </item>
             </widget>
            </widget>
            <widget class="QFrame" name="transformPanel">
             <property name="geometry">
              <rect>
               <x>0</x>
-              <y>40</y>
+              <y>0</y>
               <width>191</width>
               <height>181</height>
              </rect>
@@ -3649,7 +3167,7 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              <rect>
               <x>630</x>
               <y>0</y>
-              <width>251</width>
+              <width>261</width>
               <height>41</height>
              </rect>
             </property>
@@ -3898,6 +3416,90 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
              </property>
             </widget>
            </widget>
+           <widget class="QFrame" name="direction_last_hit_combo">
+            <property name="geometry">
+             <rect>
+              <x>570</x>
+              <y>410</y>
+              <width>211</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QLabel" name="direction_last_hit_combo_text">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>10</y>
+               <width>121</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When the character is doing an auto-combo (the one with background) the last hit will be the direction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Direction last hit combo:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="direction_last_hit_combo_value">
+             <property name="geometry">
+              <rect>
+               <x>130</x>
+               <y>10</y>
+               <width>81</width>
+               <height>21</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+           <widget class="QFrame" name="background_color_combo">
+            <property name="geometry">
+             <rect>
+              <x>570</x>
+              <y>450</y>
+              <width>221</width>
+              <height>41</height>
+             </rect>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::StyledPanel</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Raised</enum>
+            </property>
+            <widget class="QLabel" name="background_color_combo_text">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>10</y>
+               <width>131</width>
+               <height>16</height>
+              </rect>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The background color of the auto-combo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Background color combo:</string>
+             </property>
+            </widget>
+            <widget class="QComboBox" name="background_color_combo_value">
+             <property name="geometry">
+              <rect>
+               <x>140</x>
+               <y>10</y>
+               <width>81</width>
+               <height>21</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
            <zorder>portrait</zorder>
            <zorder>glow_lightning</zorder>
            <zorder>animation_per_fusion</zorder>
@@ -3917,6 +3519,8 @@ Type 12 -&gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(B
            <zorder>transformPanel</zorder>
            <zorder>fusionPartnerTrigger</zorder>
            <zorder>amount_ki_per_transformation</zorder>
+           <zorder>direction_last_hit_combo</zorder>
+           <zorder>background_color_combo</zorder>
           </widget>
          </widget>
         </item>

@@ -23,7 +23,8 @@ from lib.pak_explorer.PEV import PEV
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
     open_select_chara_window, enable_disable_operate_resident_param_buttons, \
-    enable_disable_operate_character_xxx_m_buttons, store_single_character_parameters, save_single_character_parameters
+    enable_disable_operate_character_xxx_m_buttons, store_single_character_parameters, \
+    write_single_character_parameters
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -51,6 +52,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         initialize_pe(self)
 
         # --- character parameters editor ---
+        CPEV.change_character = True  # Starting the tool (avoid combo box code)
         initialize_cpe(self, QtWidgets)
 
     # vram explorer methods
@@ -805,10 +807,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.aura_size_charge_value.setValue(character_zero.aura_size[2])
 
                 # Show the color lightnings parameter
-                self.color_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+                self.color_lightning_value.setCurrentIndex(self.color_lightning_value.findData
+                                                           (character_zero.color_lightning))
 
                 # Show the glow/lightnings parameter
-                self.glow_lightning_value.setCurrentIndex(character_zero.glow_lightning)
+                self.glow_lightning_value.setCurrentIndex(self.glow_lightning_value.findData
+                                                          (character_zero.glow_lightning))
 
                 # Show the transform panel
                 self.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
@@ -837,7 +841,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                          trans_slot_panel_index=3)
 
                 # Show the transformation parameter
-                self.transEffectValue.setCurrentIndex(character_zero.transformation_effect)
+                self.transEffectValue.setCurrentIndex(self.transEffectValue.findData
+                                                      (character_zero.transformation_effect))
 
                 # Show the transformation partner
                 self.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
@@ -855,10 +860,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
 
                 # Show Animation per transformation
-                self.trans1_animation_value.setCurrentIndex(character_zero.transformations_animation[0])
-                self.trans2_animation_value.setCurrentIndex(character_zero.transformations_animation[1])
-                self.trans3_animation_value.setCurrentIndex(character_zero.transformations_animation[2])
-                self.trans4_animation_value.setCurrentIndex(character_zero.transformations_animation[3])
+                self.trans1_animation_value.setCurrentIndex(self.trans1_animation_value.findData
+                                                            (character_zero.transformations_animation[0]))
+                self.trans2_animation_value.setCurrentIndex(self.trans2_animation_value.findData
+                                                            (character_zero.transformations_animation[1]))
+                self.trans3_animation_value.setCurrentIndex(self.trans3_animation_value.findData
+                                                            (character_zero.transformations_animation[2]))
+                self.trans4_animation_value.setCurrentIndex(self.trans4_animation_value.findData
+                                                            (character_zero.transformations_animation[3]))
 
                 # Show the fusion panel
                 self.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
@@ -912,10 +921,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
 
                 # Show Animation per transformation
-                self.fusion1_animation_value.setCurrentIndex(character_zero.fusions_animation[0])
-                self.fusion2_animation_value.setCurrentIndex(character_zero.fusions_animation[1])
-                self.fusion3_animation_value.setCurrentIndex(character_zero.fusions_animation[2])
-                self.fusion4_animation_value.setCurrentIndex(character_zero.fusions_animation[3])
+                self.fusion1_animation_value.setCurrentIndex(self.fusion1_animation_value.findData
+                                                             (character_zero.fusions_animation[0]))
+                self.fusion2_animation_value.setCurrentIndex(self.fusion2_animation_value.findData
+                                                             (character_zero.fusions_animation[1]))
+                self.fusion3_animation_value.setCurrentIndex(self.fusion3_animation_value.findData
+                                                             (character_zero.fusions_animation[2]))
+                self.fusion4_animation_value.setCurrentIndex(self.fusion4_animation_value.findData
+                                                             (character_zero.fusions_animation[3]))
 
                 # We're not changing the character in the main panel (play combo box code)
                 CPEV.change_character = False
@@ -941,14 +954,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Check if the file is an operate_character_XXX_m type
             elif re.search(CPEV.operate_character_XXX_m_regex, data):
 
+                # We're changing the character in the main panel (avoid combo box code)
+                CPEV.change_character = True
+
+                # The character isn't modified
                 CPEV.operate_character_XXX_m_modified = False
 
                 # Read all the data from the files and store it in the global_character from CPEV.
-                CPEV.global_character = Character()
-                store_single_character_parameters(self, CPEV.global_character)
+                store_single_character_parameters(self)
 
-                # Change type of fighting value
-                self.type_fighting_value.setCurrentIndex(CPEV.global_character.type_of_fighting)
+                # We're not changing the character in the main panel (play combo box code)
+                CPEV.change_character = False
 
                 # Disable all the buttons (character parameters editor -> operate_resident_param)
                 if self.label_trans_0.isEnabled():
@@ -1030,11 +1046,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if self.type_fighting.isEnabled():
 
                             if CPEV.operate_character_XXX_m_modified:
+
                                 # Save all the info
-                                save_single_character_parameters()
+                                write_single_character_parameters(self)
 
                                 # Pack the files
                                 pack_and_save_file(self, path_output_file)
+
                             else:
                                 msg = QMessageBox()
                                 msg.setWindowTitle("Warning")

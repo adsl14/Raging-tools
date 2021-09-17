@@ -23,8 +23,3 @@ class Character:
 		self.fusions = [] * 4
 		self.amount_ki_fusions = [] * 4
 		self.fusions_animation = [] * 4
-
-		# Values for the file operate_character_XXX_m
-		self.type_of_fighting = 0
-		self.direction_last_hit_combo = 0
-		self.color_background_combo = 0

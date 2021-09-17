@@ -53,9 +53,15 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Set the color lightning
     main_window.color_lightning_value.currentIndexChanged.connect(lambda: on_color_lightning_changed(main_window))
+    # Add the values
+    for element in CPEV.color_lightning_values:
+        main_window.color_lightning_value.addItem(element[0], element[1])
 
     # Set the glow/lightning
     main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
+    # Add the values
+    for element in CPEV.glow_lightning_values:
+        main_window.glow_lightning_value.addItem(element[0], element[1])
 
     # Set the transform panel
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
@@ -63,6 +69,9 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Set the transformation parameter
     main_window.transEffectValue.currentIndexChanged.connect(lambda: on_transformation_ki_effect_changed(main_window))
+    # Add the values
+    for element in CPEV.trans_effect_values:
+        main_window.transEffectValue.addItem(element[0], element[1])
 
     # Set the Trasformation partner
     main_window.transPartnerSlot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -86,6 +95,12 @@ def initialize_cpe(main_window, qt_widgets):
                                                                    (main_window, animation_per_transformation=2))
     main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
                                                                    (main_window, animation_per_transformation=3))
+    # Add the values
+    for element in CPEV.trans_animation_values:
+        main_window.trans1_animation_value.addItem(element[0], element[1])
+        main_window.trans2_animation_value.addItem(element[0], element[1])
+        main_window.trans3_animation_value.addItem(element[0], element[1])
+        main_window.trans4_animation_value.addItem(element[0], element[1])
 
     # Set fusion partner trigger
     main_window.fusionPartnerTrigger_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -116,6 +131,12 @@ def initialize_cpe(main_window, qt_widgets):
                                                                     (main_window, animation_per_fusion=2))
     main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
                                                                     (main_window, animation_per_fusion=3))
+    # Add the values
+    for element in CPEV.fusion_animation_values:
+        main_window.fusion1_animation_value.addItem(element[0], element[1])
+        main_window.fusion2_animation_value.addItem(element[0], element[1])
+        main_window.fusion3_animation_value.addItem(element[0], element[1])
+        main_window.fusion4_animation_value.addItem(element[0], element[1])
 
     # Set the fusion panel
     main_window.fusiPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_fusion.png")))
@@ -134,9 +155,23 @@ def initialize_cpe(main_window, qt_widgets):
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
     # --- operate_character_XXX_m ---
-
     # Set the fighting style
-    main_window.type_fighting_value.currentIndexChanged.connect(lambda: on_type_of_fighting_changed(main_window))
+    main_window.type_fighting_value.currentIndexChanged.connect(on_type_of_fighting_changed)
+    # Add the values
+    for element in CPEV.type_of_fighting_values:
+        main_window.type_fighting_value.addItem(element[0], element[1])
+
+    # Set the direction last hit combo
+    main_window.direction_last_hit_combo_value.currentIndexChanged.connect(on_direction_last_hit_combo_changed)
+    # Add the values
+    for element in CPEV.direction_last_hit_combo_values:
+        main_window.direction_last_hit_combo_value.addItem(element[0], element[1])
+
+    # Set the background color combo
+    main_window.background_color_combo_value.currentIndexChanged.connect(on_background_color_combo_changed)
+    # Add the values
+    for element in CPEV.color_background_combo_values:
+        main_window.background_color_combo_value.addItem(element[0], element[1])
 
 
 def enable_disable_operate_resident_param_buttons(main_window, flag):
@@ -171,6 +206,8 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
 def enable_disable_operate_character_xxx_m_buttons(main_window, flag):
 
     main_window.type_fighting.setEnabled(flag)
+    main_window.direction_last_hit_combo.setEnabled(flag)
+    main_window.background_color_combo.setEnabled(flag)
 
 
 # operate_resident_param
@@ -281,44 +318,46 @@ def store_character_parameters(character, pak_file):
     character.fusions_animation.append(int.from_bytes(pak_file.read(1), byteorder='big'))
 
 
-# operate_character_XXX
-def store_single_character_parameters(main_window, global_character):
+# operate_character_XXX functions (single_character_parameters)
+def store_single_character_parameters(main_window):
 
     # Read all the data from the files
     # character_info
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
     with open(CPEV.character_i_path, mode="rb") as file:
+
         # Type fighting
         file.seek(CPEV.type_fighting_pos)
-        global_character.type_of_fighting = int.from_bytes(file.read(1), "big")
+        main_window.type_fighting_value.setCurrentIndex(main_window.type_fighting_value.findData
+                                                        (int.from_bytes(file.read(1), "big")))
 
         # Direction last hit fast combo
         file.seek(1, 1)
-        global_character.direction_last_hit_combo = int.from_bytes(file.read(1), "big")
+        main_window.direction_last_hit_combo_value.setCurrentIndex(main_window.direction_last_hit_combo_value.findData
+                                                                   (int.from_bytes(file.read(1), "big")))
 
         # Color background fast combo
         file.seek(3, 1)
-        global_character.color_background_combo = int.from_bytes(file.read(1), "big")
+        main_window.background_color_combo_value.setCurrentIndex(main_window.background_color_combo_value.findData
+                                                                 (int.from_bytes(file.read(1), "big")))
 
 
-# operate_character_XXX
-def save_single_character_parameters():
+def write_single_character_parameters(main_window):
 
     # Save all the info
     with open(CPEV.character_i_path, mode="wb") as file:
+
         # Type fighting
         file.seek(CPEV.type_fighting_pos)
-        file.write(CPEV.global_character.type_of_fighting.to_bytes(1, byteorder="big"))
+        file.write(main_window.type_fighting_value.currentData().to_bytes(1, byteorder="big"))
 
         # Direction last hit fast combo
         file.seek(1, 1)
-        file.write(CPEV.global_character.direction_last_hit_combo.to_bytes(1,
-                                                                           byteorder="big"))
+        file.write(main_window.direction_last_hit_combo_value.currentData().to_bytes(1, byteorder="big"))
 
         # Color background fast combo
         file.seek(3, 1)
-        file.write(CPEV.global_character.color_background_combo.to_bytes(1,
-                                                                         byteorder="big"))
+        file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
@@ -348,10 +387,12 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
         main_window.aura_size_charge_value.setValue(CPEV.character_list[index].aura_size[2])
 
         # Color lightning
-        main_window.color_lightning_value.setCurrentIndex(CPEV.character_list[index].color_lightning)
+        main_window.color_lightning_value.setCurrentIndex(main_window.color_lightning_value.findData
+                                                          (CPEV.character_list[index].color_lightning))
 
         # Glow/lightning effect
-        main_window.glow_lightning_value.setCurrentIndex(CPEV.character_list[index].glow_lightning)
+        main_window.glow_lightning_value.setCurrentIndex(main_window.glow_lightning_value.findData
+                                                         (CPEV.character_list[index].glow_lightning))
 
         # Load the transformations for the panel transformations
         transformations = CPEV.character_list[index].transformations
@@ -410,7 +451,8 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                             index=100, trans_slot_panel_index=3)
 
         # Transformation effect
-        main_window.transEffectValue.setCurrentIndex(CPEV.character_list[index].transformation_effect)
+        main_window.transEffectValue.setCurrentIndex(main_window.transEffectValue.findData
+                                                     (CPEV.character_list[index].transformation_effect))
 
         # Trans partner value
         main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
@@ -430,10 +472,14 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
         main_window.amountKi_trans4_value.setValue(CPEV.character_list[index].amount_ki_transformations[3])
 
         # Animation per transformation
-        main_window.trans1_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[0])
-        main_window.trans2_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[1])
-        main_window.trans3_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[2])
-        main_window.trans4_animation_value.setCurrentIndex(CPEV.character_list[index].transformations_animation[3])
+        main_window.trans1_animation_value.setCurrentIndex(main_window.trans1_animation_value.findData
+                                                           (CPEV.character_list[index].transformations_animation[0]))
+        main_window.trans2_animation_value.setCurrentIndex(main_window.trans2_animation_value.findData
+                                                           (CPEV.character_list[index].transformations_animation[1]))
+        main_window.trans3_animation_value.setCurrentIndex(main_window.trans3_animation_value.findData
+                                                           (CPEV.character_list[index].transformations_animation[2]))
+        main_window.trans4_animation_value.setCurrentIndex(main_window.trans4_animation_value.findData
+                                                           (CPEV.character_list[index].transformations_animation[3]))
 
         # Load the fusions for the panel of fusions
         fusions = CPEV.character_list[index].fusions
@@ -521,11 +567,15 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
         main_window.amountKi_fusion3_value.setValue(CPEV.character_list[index].amount_ki_fusions[2])
         main_window.amountKi_fusion4_value.setValue(CPEV.character_list[index].amount_ki_fusions[3])
 
-        # Show Animation per transformation
-        main_window.fusion1_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[0])
-        main_window.fusion2_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[1])
-        main_window.fusion3_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[2])
-        main_window.fusion4_animation_value.setCurrentIndex(CPEV.character_list[index].fusions_animation[3])
+        # Show Animation per Fusion
+        main_window.fusion1_animation_value.setCurrentIndex(main_window.fusion1_animation_value.findData
+                                                            (CPEV.character_list[index].fusions_animation[0]))
+        main_window.fusion2_animation_value.setCurrentIndex(main_window.fusion2_animation_value.findData
+                                                            (CPEV.character_list[index].fusions_animation[1]))
+        main_window.fusion3_animation_value.setCurrentIndex(main_window.fusion3_animation_value.findData
+                                                            (CPEV.character_list[index].fusions_animation[2]))
+        main_window.fusion4_animation_value.setCurrentIndex(main_window.fusion4_animation_value.findData
+                                                            (CPEV.character_list[index].fusions_animation[3]))
 
         # Modify the slots of the transformations in the main panel
         if modify_slot_transform:
@@ -817,9 +867,9 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
 
 
 def on_color_lightning_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
-        CPEV.character_list[CPEV.chara_selected].color_lightning = main_window.color_lightning_value.currentIndex()
+        CPEV.character_list[CPEV.chara_selected].color_lightning = main_window.color_lightning_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -827,9 +877,9 @@ def on_color_lightning_changed(main_window):
 
 
 def on_glow_lightning_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
-        CPEV.character_list[CPEV.chara_selected].glow_lightning = main_window.glow_lightning_value.currentIndex()
+        CPEV.character_list[CPEV.chara_selected].glow_lightning = main_window.glow_lightning_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -837,9 +887,9 @@ def on_glow_lightning_changed(main_window):
 
 
 def on_transformation_ki_effect_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
-        CPEV.character_list[CPEV.chara_selected].transformation_effect = main_window.transEffectValue.currentIndex()
+        CPEV.character_list[CPEV.chara_selected].transformation_effect = main_window.transEffectValue.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -847,7 +897,7 @@ def on_transformation_ki_effect_changed(main_window):
 
 
 def on_amount_ki_trans_changed(main_window, amount_ki_trans_index):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
 
         # Change the slot of amount ki
@@ -870,20 +920,20 @@ def on_amount_ki_trans_changed(main_window, amount_ki_trans_index):
 
 
 def on_animation_per_transformation_changed(main_window, animation_per_transformation):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
         if animation_per_transformation == 0:
             CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans1_animation_value.currentIndex()
+                main_window.trans1_animation_value.currentData()
         elif animation_per_transformation == 1:
             CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans2_animation_value.currentIndex()
+                main_window.trans2_animation_value.currentData()
         elif animation_per_transformation == 2:
             CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans3_animation_value.currentIndex()
+                main_window.trans3_animation_value.currentData()
         elif animation_per_transformation == 3:
             CPEV.character_list[CPEV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans4_animation_value.currentIndex()
+                main_window.trans4_animation_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -891,7 +941,7 @@ def on_animation_per_transformation_changed(main_window, animation_per_transform
 
 
 def on_amount_ki_fusion_changed(main_window, amount_ki_fusion_index):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
 
         # Change the slot of amount ki
@@ -914,20 +964,20 @@ def on_amount_ki_fusion_changed(main_window, amount_ki_fusion_index):
 
 
 def on_animation_per_fusion_changed(main_window, animation_per_fusion):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
         if animation_per_fusion == 0:
             CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion1_animation_value.currentIndex()
+                main_window.fusion1_animation_value.currentData()
         elif animation_per_fusion == 1:
             CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion2_animation_value.currentIndex()
+                main_window.fusion2_animation_value.currentData()
         elif animation_per_fusion == 2:
             CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion3_animation_value.currentIndex()
+                main_window.fusion3_animation_value.currentData()
         elif animation_per_fusion == 3:
             CPEV.character_list[CPEV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion4_animation_value.currentIndex()
+                main_window.fusion4_animation_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
@@ -935,7 +985,7 @@ def on_animation_per_fusion_changed(main_window, animation_per_fusion):
 
 
 def on_aura_size_changed(main_window, aura_index):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
 
         if aura_index == 0:
@@ -954,7 +1004,7 @@ def on_aura_size_changed(main_window, aura_index):
 
 
 def on_health_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel
+    #  and starting
     if not CPEV.change_character:
 
         # Change the slot of health
@@ -966,7 +1016,7 @@ def on_health_changed(main_window):
 
 
 def on_camera_size_changed(main_window, camera_index):
-    # Avoid change the values when the program is changing the character from the main panel
+    # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
 
         if camera_index == 0:
@@ -982,7 +1032,7 @@ def on_camera_size_changed(main_window, camera_index):
 
 
 def on_hit_box_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel
+    # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
 
         # Change the slot of health
@@ -993,10 +1043,28 @@ def on_hit_box_changed(main_window):
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
 
 
-def on_type_of_fighting_changed(main_window):
+def on_type_of_fighting_changed():
 
-    # Change the slot of type of fighting
-    CPEV.global_character.type_of_fighting = main_window.type_fighting_value.currentIndex()
+    # Avoid change the values when the program is starting
+    if not CPEV.change_character:
 
-    if not CPEV.operate_character_XXX_m_modified:
-        CPEV.operate_character_XXX_m_modified = True
+        if not CPEV.operate_character_XXX_m_modified:
+            CPEV.operate_character_XXX_m_modified = True
+
+
+def on_direction_last_hit_combo_changed():
+
+    # Avoid change the values when the program is starting
+    if not CPEV.change_character:
+
+        if not CPEV.operate_character_XXX_m_modified:
+            CPEV.operate_character_XXX_m_modified = True
+
+
+def on_background_color_combo_changed():
+
+    # Avoid change the values when the program is starting
+    if not CPEV.change_character:
+
+        if not CPEV.operate_character_XXX_m_modified:
+            CPEV.operate_character_XXX_m_modified = True
