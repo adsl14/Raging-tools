@@ -69,6 +69,6 @@ gather all the modified data and save it to disk. The options are <i>character p
 
 ### 1.1 version
 
-<img src="images/character_parameters_editor_1.1.jpg" alt="character_parameters_editor_image" width="30%">
+<img src="images/character_parameters_editor_1.1.jpg" alt="character_parameters_editor_image" width="50%">
 
 Support for files that are the following: operate_character_xyz_m (where xyz are generic numbers). Opening this files, will activate new parameters, like <i>type of fighting</i>. The paramaters that are not in a file, will be disabled for edition.
