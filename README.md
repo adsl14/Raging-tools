@@ -66,3 +66,9 @@ parameter, it will pop up a description of that parameter.
 
 When saving, since they are two tools activated at the same time, it will ask you from what tool do you want to 
 gather all the modified data and save it to disk. The options are <i>character parameters editor</i> or <i>pak explorer</i>.
+
+### 1.1 version
+
+<img src="images/character_parameters_editor_1.1.jpg" alt="character_parameters_editor_image" width="30%">
+
+Support for files that are the following: operate_character_xyz_m (where xyz are generic numbers). Opening this files, will activate new parameters, like <i>type of fighting</i>. The paramaters that are not in a file, will be disabled for edition.

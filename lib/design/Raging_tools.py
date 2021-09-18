@@ -1222,7 +1222,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Raging tools 1.0 - by adsl14"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Raging tools 1.1 - by adsl14"))
         self.mipMapsImageText.setText(_translate("MainWindow", "MipMaps: 8"))
         self.sizeImageText.setText(_translate("MainWindow", "Resolution: 1280x720"))
         self.exportButton.setText(_translate("MainWindow", "E&xport..."))
