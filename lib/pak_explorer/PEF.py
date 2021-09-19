@@ -161,7 +161,7 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
                 "00 00 00 00 00 00 00 00") + filename
             data = data + data_aux
 
-    # Add the last 112 bytes due to is the end of the file (maybte it's not necessary)
+    # Add the last 112 bytes due to is the end of the file (maybe it's not necessary)
     for i in range(0, 112):
         data = data + bytes.fromhex("00")
 
