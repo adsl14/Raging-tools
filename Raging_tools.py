@@ -783,10 +783,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
                 self.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=self,
                                                                        index=3, modify_slot_transform=False)
-                if not self.label_trans_0.isVisible():
-                    self.label_trans_0.setVisible(True)
-                    self.label_trans_1.setVisible(True)
-                    self.label_trans_2.setVisible(True)
+                self.label_trans_0.setVisible(True)
+                self.label_trans_1.setVisible(True)
+                self.label_trans_2.setVisible(True)
+                self.label_trans_3.setVisible(False)
 
                 # Get the values for the fist character of the list
                 character_zero = CPEV.character_list[0]

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'lib\design\Raging_tools.ui'
+# Form implementation generated from reading ui file 'design\Raging_tools.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
