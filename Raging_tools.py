@@ -770,6 +770,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # Show the large portrait
                 self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
+                # Enable the portrait
+                if not self.portrait.isEnabled():
+                    self.portrait.setEnabled(True)
                 if not self.portrait.isVisible():
                     self.portrait.setVisible(True)
 
@@ -934,14 +937,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.change_character = False
 
                 # Enable all the buttons (character parameters editor -> operate_resident_param)
-                if not self.label_trans_0.isEnabled():
+                if not self.transEffect.isVisible():
                     enable_disable_operate_resident_param_buttons(self, True)
+                    # Move the window to the foreground (being clickable)
+                    self.operate_resident_param_frame.raise_()
                 # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-                if self.type_fighting.isEnabled():
+                if self.type_fighting.isVisible():
                     enable_disable_operate_character_xxx_m_buttons(self, False)
-                # Enable the portrait
-                if not self.portrait.isEnabled():
-                    self.portrait.setEnabled(True)
 
                 # Enable completely the tab character parameters editor
                 if not self.character_parameters_editor.isEnabled():
@@ -967,11 +969,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.change_character = False
 
                 # Disable all the buttons (character parameters editor -> operate_resident_param)
-                if self.label_trans_0.isEnabled():
+                if self.transEffect.isVisible():
                     enable_disable_operate_resident_param_buttons(self, False)
                 # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-                if not self.type_fighting.isEnabled():
+                if not self.type_fighting.isVisible():
                     enable_disable_operate_character_xxx_m_buttons(self, True)
+                    # Move the window to the foreground (being clickable)
+                    self.operate_character_xyz_m_frame.raise_()
                 # Enable the portrait
                 # Load the large portrait
                 self.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -997,10 +1001,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.tabWidget.setCurrentIndex(1)
 
                 # Disable all the buttons (character parameters editor -> operate_resident_param)
-                if self.label_trans_0.isEnabled():
+                if self.transEffect.isVisible():
                     enable_disable_operate_resident_param_buttons(self, False)
                 # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-                if self.type_fighting.isEnabled():
+                if self.type_fighting.isVisible():
                     enable_disable_operate_character_xxx_m_buttons(self, False)
                 if self.portrait.isEnabled():
                     self.portrait.setEnabled(False)
@@ -1043,7 +1047,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # Check what type of character parameter editor is activated
                         # --- operate_character_XXX_m ---
-                        if self.type_fighting.isEnabled():
+                        if self.type_fighting.isVisible():
 
                             if CPEV.operate_character_XXX_m_modified:
 

@@ -176,22 +176,22 @@ def initialize_cpe(main_window, qt_widgets):
 
 def enable_disable_operate_resident_param_buttons(main_window, flag):
 
-    main_window.transEffect.setEnabled(flag)
-    main_window.transPartner.setEnabled(flag)
-    main_window.amount_ki_per_transformation.setEnabled(flag)
-    main_window.animation_per_transformation.setEnabled(flag)
-    main_window.transformPanel.setEnabled(flag)
-    main_window.fusionPartnerTrigger.setEnabled(flag)
-    main_window.fusionPartnerVisual.setEnabled(flag)
-    main_window.amount_ki_per_fusion.setEnabled(flag)
-    main_window.animation_per_fusion.setEnabled(flag)
-    main_window.fusionPanel.setEnabled(flag)
-    main_window.health.setEnabled(flag)
-    main_window.camera_size.setEnabled(flag)
-    main_window.hit_box.setEnabled(flag)
-    main_window.aura_size.setEnabled(flag)
-    main_window.color_lightning.setEnabled(flag)
-    main_window.glow_lightning.setEnabled(flag)
+    main_window.transEffect.setVisible(flag)
+    main_window.transPartner.setVisible(flag)
+    main_window.amount_ki_per_transformation.setVisible(flag)
+    main_window.animation_per_transformation.setVisible(flag)
+    main_window.transformPanel.setVisible(flag)
+    main_window.fusionPartnerTrigger.setVisible(flag)
+    main_window.fusionPartnerVisual.setVisible(flag)
+    main_window.amount_ki_per_fusion.setVisible(flag)
+    main_window.animation_per_fusion.setVisible(flag)
+    main_window.fusionPanel.setVisible(flag)
+    main_window.health.setVisible(flag)
+    main_window.camera_size.setVisible(flag)
+    main_window.hit_box.setVisible(flag)
+    main_window.aura_size.setVisible(flag)
+    main_window.color_lightning.setVisible(flag)
+    main_window.glow_lightning.setVisible(flag)
 
     # Enable the characters portraits
     for i in range(0, 66):
@@ -205,9 +205,9 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
 
 def enable_disable_operate_character_xxx_m_buttons(main_window, flag):
 
-    main_window.type_fighting.setEnabled(flag)
-    main_window.direction_last_hit_combo.setEnabled(flag)
-    main_window.background_color_combo.setEnabled(flag)
+    main_window.type_fighting.setVisible(flag)
+    main_window.direction_last_hit_combo.setVisible(flag)
+    main_window.background_color_combo.setVisible(flag)
 
 
 # operate_resident_param
