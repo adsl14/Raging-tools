@@ -10,6 +10,7 @@ class VEV:
 	STPZ = "5354505a"
 	STPK = "5354504b"
 	stpz_file = False
+	stpk_file = False
 	single_stpk_header = True  # This flag will tell us if the spr and vram has two STPK header (RB2 to RB1 port)
 
 	# resources path

@@ -320,8 +320,8 @@ def open_vram_file(vram_path):
 
     with open(vram_path, mode="rb") as file:
 
-        # Check if we're dealing with a stpz file (compressed)
-        if VEV.stpz_file:
+        # Check if we're dealing with a stpz file (crypted) or STPK (decrypted)
+        if VEV.stpz_file or VEV.stpk_file:
 
             # Normal VramExplorerVars.STPK file
             if VEV.single_stpk_header:
@@ -338,6 +338,7 @@ def open_vram_file(vram_path):
             # The size of the file is in position 20
             VEV.vram_file_size_old = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+        # SPR header
         else:
             # Move to the position 0, where it tells the offset of the file where the texture starts
             texture_offset = 0

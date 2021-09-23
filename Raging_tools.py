@@ -338,13 +338,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Check if the user has selected an spr format file
         if not os.path.exists(VEV.spr_file_path_original):
             return
+
         # Check if the user has selected an spr stpz file
+        VEV.stpz_file = False
+        VEV.stpk_file = False
         with open(VEV.spr_file_path_original, mode="rb") as spr_file:
             type_file = spr_file.read(4).hex()
             if type_file == VEV.STPZ:
                 VEV.stpz_file = True
             else:
-                VEV.stpz_file = False
+                # If is not a STPZ, check if the file is STPK
+                if type_file == VEV.STPK:
+                    VEV.stpk_file = True
 
         # Open vram file
         VEV.vram_file_path_original = \
@@ -395,7 +400,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
             VEV.spr_file_path = VEV.spr_file_path_original
             VEV.vram_file_path = VEV.vram_file_path_original
-            open_spr_file(VEV.spr_file_path, 12)
+            # Check if the file decrypted is stpk
+            if VEV.stpk_file:
+                open_spr_file(VEV.spr_file_path, 16)
+            else:
+                open_spr_file(VEV.spr_file_path, 12)
 
         open_vram_file(VEV.vram_file_path)
 
@@ -542,8 +551,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             with open(vram_export_path, mode="wb") as output_file:
                 with open(VEV.vram_file_path, mode="rb") as input_file:
 
-                    # If we're dealing with a vram stpz file
-                    if VEV.stpz_file:
+                    # If we're dealing with a vram stpz or sptk file
+                    if VEV.stpz_file or VEV.stpk_file:
 
                         # If we're dealing with a normal STPK
                         if VEV.single_stpk_header:
@@ -568,6 +577,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             output_file.write(data)
                             texture_offset = int.from_bytes(data, "big") + 64
 
+                    # SPR header
                     else:
                         texture_offset = 0
 
@@ -633,7 +643,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 output_file.write(vram_file_size.to_bytes(4, byteorder='big'))
 
             # If we're dealing with a vram stpz file
-            if VEV.stpz_file:
+            if VEV.stpz_file or VEV.stpk_file:
                 # Change the header of pos 20 in vram file because that place indicates the size of the final output
                 # file
                 with open(vram_export_path, mode="rb+") as output_file:
@@ -659,6 +669,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 os.remove(spr_export_path)
                 os.remove(vram_export_path)
 
+                message = "The files were saved and compressed in: <b>" + path_output_files \
+                          + "</b><br><br> Do you wish to open the folder?"
+            # SPR file. We won't compress
             else:
 
                 basename_spr = os.path.basename(spr_export_path).replace("_m.", ".")
@@ -669,10 +682,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 move(spr_export_path, VEV.spr_file_path_modified)
                 move(vram_export_path, VEV.vram_file_path_modified)
 
+                message = "The files were saved in: <b>" + path_output_files \
+                          + "</b><br><br> Do you wish to open the folder?"
+
             msg = QMessageBox()
             msg.setWindowTitle("Message")
-            message = "The files were saved and compressed in: <b>" + path_output_files \
-                      + "</b><br><br> Do you wish to open the folder?"
             message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
 
             # If the users click on 'Yes', it will open the path where the files were saved
