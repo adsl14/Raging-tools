@@ -47,8 +47,9 @@ def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_enco
             + ". The imported texture has " + str(mip_maps) + ".</li>"
 
     # Check encoding
-    if get_encoding_name(tx2d_info.dxt_encoding) != dxt_encoding_text:
-        message = message + "<li> The encoding should be " + get_encoding_name(tx2d_info.dxt_encoding) \
+    dxt_encoding_text_original = get_encoding_name(tx2d_info.dxt_encoding)
+    if dxt_encoding_text_original != dxt_encoding_text:
+        message = message + "<li> The encoding should be " + dxt_encoding_text_original \
                   + ". The imported texture is " + dxt_encoding_text + ".</li>"
 
     return message
