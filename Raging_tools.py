@@ -161,10 +161,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         mip_maps = int.from_bytes(file.read(1), 'big')
                         # Get the dxtencoding
                         file.seek(84)
-                        dxt_encoding = get_dxt_value(file.read(VEV.bytes2Read).decode())
+                        dxt_encoding_text = file.read(VEV.bytes2Read).decode()
+                        dxt_encoding = get_dxt_value(dxt_encoding_text)
 
                         message = validation_dds_imported_texture(VEV.tx2d_infos[VEV.current_selected_texture],
-                                                                  width, height, mip_maps, dxt_encoding)
+                                                                  width, height, mip_maps, dxt_encoding_text)
 
                         # If the message is empty, there is no differences between original and modified one
                         msg = QMessageBox()

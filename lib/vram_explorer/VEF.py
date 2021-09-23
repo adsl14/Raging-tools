@@ -31,7 +31,7 @@ def change_endian(data):
     return bytes.fromhex(new_data)
 
 
-def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_encoding):
+def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_encoding_text):
 
     message = ""
 
@@ -47,9 +47,9 @@ def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_enco
             + ". The imported texture has " + str(mip_maps) + ".</li>"
 
     # Check encoding
-    if tx2d_info.dxt_encoding != dxt_encoding:
+    if get_encoding_name(tx2d_info.dxt_encoding) != dxt_encoding_text:
         message = message + "<li> The encoding should be " + get_encoding_name(tx2d_info.dxt_encoding) \
-                  + ". The imported texture is " + get_encoding_name(dxt_encoding) + ".</li>"
+                  + ". The imported texture is " + dxt_encoding_text + ".</li>"
 
     return message
 
