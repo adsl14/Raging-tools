@@ -258,54 +258,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # If there is a message, it has detected differences
                         if message:
-                            # If the imported texture is not png, we ask the user first to add it or not
-                            if VEV.tx2_datas[VEV.current_selected_texture].extension != "png":
-
-                                msg = QMessageBox()
-
-                                # Concatenate the base message and the differences the tool has found
-                                message = VEV.message_base_import_DDS_start + "<ul>" + message + "</ul>" \
-                                    + VEV.message_base_import_DDS_end
-
-                                # Ask to the user if he/she is sure that wants to replace the texture
-                                msg.setWindowTitle("Warning")
-                                message_import_result = msg.question(self, '', message, msg.Yes | msg.No)
-
-                                # If the users click on 'NO', the modified texture won't be imported
-                                if message_import_result == msg.No:
-                                    return
-                            else:
-                                msg = QMessageBox()
-                                msg.setWindowTitle("Error")
-                                msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
-                                msg.exec()
-                                return
+                            msg = QMessageBox()
+                            msg.setWindowTitle("Error")
+                            msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
+                            msg.exec()
+                            return
 
                         # Get all the data
                         file.seek(0)
                         data = file.read()
 
+                        # Get the difference in size between original and modified. If the size in each of one is
+                        # different, we gather the data modified but only the exact number of bytes from the original
+                        # in order to avoid the corruption of the files
+                        len_data = len(data[54:])
+                        difference = abs(len_data - VEV.tx2d_infos[VEV.current_selected_texture].data_size)
+                        if difference != 0:
+                            data = data[:-difference]
+
                         # It's not png file
                         if VEV.tx2_datas[VEV.current_selected_texture].extension != "png":
                             # Importing the texture
-                            # Get the difference in size between original and modified in order to change the offsets
-                            len_data = len(data[54:])
-                            difference = len_data - VEV.tx2d_infos[VEV.current_selected_texture].data_size
-                            if difference != 0:
-                                VEV.tx2d_infos[VEV.current_selected_texture].data_size = len_data
-                                VEV.offset_quanty_difference[VEV.current_selected_texture] = difference
-
-                            # Change width
-                            if VEV.tx2d_infos[VEV.current_selected_texture].width != width:
-                                VEV.tx2d_infos[VEV.current_selected_texture].width = width
-                                self.sizeImageText.setText(
-                                    "Resolution: %dx%d" % (width, VEV.tx2d_infos[VEV.current_selected_texture].height))
-                            # Change height
-                            if VEV.tx2d_infos[VEV.current_selected_texture].height != height:
-                                VEV.tx2d_infos[VEV.current_selected_texture].height = height
-                                self.sizeImageText.setText(
-                                    "Resolution: %dx%d" % (VEV.tx2d_infos[VEV.current_selected_texture].width, height))
-
                             # Change texture in the array
                             VEV.tx2_datas[VEV.current_selected_texture].data = data
 
