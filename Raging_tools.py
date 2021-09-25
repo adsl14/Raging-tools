@@ -4,7 +4,7 @@ from PyQt5.QtGui import QStandardItemModel
 from PyQt5.QtWidgets import QInputDialog
 
 from lib.design.Raging_tools import *
-from lib.packages import datetime, os, functools, QPixmap, struct, rmtree, QStandardItem, QFileDialog, copyfile, \
+from lib.packages import datetime, os, functools, QPixmap, rmtree, QStandardItem, QFileDialog, copyfile, \
     move, QMessageBox
 from lib.functions import del_rw
 
@@ -21,10 +21,10 @@ from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEF import store_character_parameters, initialize_cpe, action_change_character, \
+from lib.character_parameters_editor.CPEF import read_character_parameters, initialize_cpe, action_change_character, \
     open_select_chara_window, enable_disable_operate_resident_param_buttons, \
-    enable_disable_operate_character_xxx_m_buttons, store_single_character_parameters, \
-    write_single_character_parameters
+    enable_disable_operate_character_xxx_m_buttons, read_single_character_parameters, \
+    write_single_character_parameters, write_character_parameters
 from lib.character_parameters_editor.classes.Character import Character
 
 
@@ -739,19 +739,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.character_list.clear()
                 CPEV.chara_selected = 0  # Index of the char selected in the program
 
-                # Read the data from the file and store the parameters
+                # Read all the data from the files
+                # character_info and transformer_i
+                CPEV.resident_character_inf_path = self.listView_2.model().item(3, 0).text()
+                CPEV.resident_transformer_i_path = self.listView_2.model().item(11, 0).text()
+                subpak_file_character_inf = open(CPEV.resident_character_inf_path, mode="rb")
+                subpak_file_transformer_i = open(CPEV.resident_transformer_i_path, mode="rb")
+
+                # Read the data from the files and store the parameters
                 for i in range(0, 100):
+
                     # Create a Character object
                     character = Character()
 
                     # Store the positions where the information is located
-                    character.position_visual_parameters = CPEV.base_pos_visual_parameters + (
-                            i * CPEV.sizeVisualParameters)
-                    character.position_trans = CPEV.base_pos_trans + (i * CPEV.sizeTrans)
+                    character.position_visual_parameters = i * CPEV.sizeVisualParameters
+                    character.position_trans = i * CPEV.sizeTrans
 
                     # Store the information in the object and append to a list
-                    store_character_parameters(character, pak_file)
+                    read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i)
                     CPEV.character_list.append(character)
+
+                # Close the files
+                subpak_file_character_inf.close()
+                subpak_file_transformer_i.close()
 
                 # We're changing the character in the main panel (avoid combo box code)
                 CPEV.change_character = True
@@ -951,7 +962,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 CPEV.operate_character_XXX_m_modified = False
 
                 # Read all the data from the files and store it in the global_character from CPEV.
-                store_single_character_parameters(self)
+                read_single_character_parameters(self)
 
                 # We're not changing the character in the main panel (play combo box code)
                 CPEV.change_character = False
@@ -1057,95 +1068,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # If the user has edited one character, we will save the file
                         elif CPEV.character_list_edited:
 
-                            pak_export_path = PEV.pak_file_path.replace("." + extension, "_m." + extension)
-                            copyfile(PEV.pak_file_path, pak_export_path)
+                            # Open the files
+                            subpak_file_character_inf = open(CPEV.resident_character_inf_path, mode="rb+")
+                            subpak_file_transformer_i = open(CPEV.resident_transformer_i_path, mode="rb+")
 
-                            # We open the file decrypted
-                            with open(pak_export_path, mode="rb+") as file:
+                            print("Writing values in the file...")
+                            # Change the transformations in the file
+                            for character in CPEV.character_list_edited:
+                                # Save all the info for each character
+                                write_character_parameters(character, subpak_file_character_inf,
+                                                           subpak_file_transformer_i)
 
-                                print("Writing the file...")
+                            # Close the files
+                            subpak_file_character_inf.close()
+                            subpak_file_transformer_i.close()
 
-                                # Change the transformations in the file
-                                for character in CPEV.character_list_edited:
-
-                                    # Save the visual parameters
-                                    file.seek(character.position_visual_parameters)
-
-                                    # Health
-                                    file.write(character.health.to_bytes(4, byteorder="big"))
-
-                                    # Camera size (cutscene)
-                                    file.write(struct.pack('>f', character.camera_size[0]))
-                                    # Camera size (idle)
-                                    file.write(struct.pack('>f', character.camera_size[1]))
-
-                                    # hit box
-                                    file.write(struct.pack('>f', character.hit_box))
-
-                                    # UNK data for now
-                                    file.seek(12, 1)
-
-                                    # Aura size (idle)
-                                    file.write(struct.pack('>f', character.aura_size[0]))
-                                    # Aura size (dash)
-                                    file.write(struct.pack('>f', character.aura_size[1]))
-                                    # Aura size (charge)
-                                    file.write(struct.pack('>f', character.aura_size[2]))
-
-                                    # UNK data for now
-                                    file.seek(5, 1)
-                                    # Color lightnining
-                                    file.write(character.color_lightning.to_bytes(1, byteorder="big"))
-
-                                    # UNK data for now
-                                    file.seek(69, 1)
-                                    # Glow/Lightning
-                                    file.write(character.glow_lightning.to_bytes(1, byteorder="big"))
-
-                                    # Save the transformation parameters
-                                    file.seek(character.position_trans)
-
-                                    file.write(character.character_id.to_bytes(1, byteorder="big"))
-
-                                    file.write(character.transformation_effect.to_bytes(1, byteorder="big"))
-                                    file.write(character.transformation_partner.to_bytes(1, byteorder="big"))
-                                    for transformation in character.transformations:
-                                        file.write(transformation.to_bytes(1, byteorder="big"))
-                                    for trans_ki_ammount in character.amount_ki_transformations:
-                                        file.write(trans_ki_ammount.to_bytes(1, byteorder="big"))
-                                    for trans_animation in character.transformations_animation:
-                                        file.write(trans_animation.to_bytes(1, byteorder="big"))
-
-                                    # Move four positions because is unk data
-                                    file.seek(4, 1)
-
-                                    file.write(character.fusion_partner[0].to_bytes(1, byteorder="big"))
-                                    file.write(character.fusion_partner[1].to_bytes(1, byteorder="big"))
-                                    for fusion in character.fusions:
-                                        file.write(fusion.to_bytes(1, byteorder="big"))
-                                    for fusion_ki_ammount in character.amount_ki_fusions:
-                                        file.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
-                                    for fusion_animation in character.fusions_animation:
-                                        file.write(fusion_animation.to_bytes(1, byteorder="big"))
-
-                            # Generate the final file for the game
-                            args = os.path.join(PEV.dbrb_compressor_path) + " \"" + pak_export_path + "\" \"" \
-                                + path_output_file + "\""
-                            os.system('cmd /c ' + args)
-
-                            # Remove the uncompressed modified file
-                            os.remove(pak_export_path)
-
-                            msg = QMessageBox()
-                            msg.setWindowTitle("Message")
-                            message = "The file were saved and compressed in: <b>" + path_output_file \
-                                      + "</b><br><br> Do you wish to open the folder?"
-                            message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
-
-                            # If the users click on 'Yes', it will open the path where the files were saved
-                            if message_open_saved_files == msg.Yes:
-                                # Show the path folder to the user
-                                os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))
+                            # Pack the files
+                            print("Packing the file...")
+                            pack_and_save_file(self, path_output_file)
 
                         else:
                             msg = QMessageBox()

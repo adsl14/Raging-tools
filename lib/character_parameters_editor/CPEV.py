@@ -13,10 +13,9 @@ class CPEV:
     path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
-    # base position visual parameters (operate_resident_param)
-    base_pos_visual_parameters = 7232
-    # base position transformations
-    base_pos_trans = 66720
+    # path for character info and transformer (operate_resident_param)
+    resident_character_inf_path = ""
+    resident_transformer_i_path = ""
     # number of bytes between each character
     sizeVisualParameters = 148
     sizeTrans = 33
@@ -32,7 +31,6 @@ class CPEV:
     # operate_character_XXX_m
     # path and positions of files and data
     character_i_path = ""
-    type_fighting_pos = 141
     operate_character_XXX_m_modified = False
     # Values for the combo box
     type_of_fighting_values = [["Type 1", 0], ["Type 2", 1], ["Type 3", 2], ["Type 4", 3],
