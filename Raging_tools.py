@@ -727,7 +727,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Read the pak file (character parameters editor)
         pak_file = open(PEV.pak_file_path, mode="rb")
 
-        # Read the the header (STPK)
+        # Read the header (STPK)
         pak_file.seek(32)
         data = pak_file.read(32).decode('utf-8').split(".")[0]
         pak_file.close()
