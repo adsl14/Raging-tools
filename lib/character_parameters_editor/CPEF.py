@@ -387,8 +387,8 @@ def read_single_character_parameters(main_window):
     with open(CPEV.character_i_path, mode="rb") as file:
 
         # Speed of charging
-        main_window.speed_of_charching_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.speed_of_charching_value_2.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.speed_of_charging_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.speed_of_charging_value_2.setValue(struct.unpack('>f', file.read(4))[0])
         # Ki regeneration rate
         main_window.ki_regeneration_rate_value.setValue(struct.unpack('>f', file.read(4))[0])
 
@@ -410,9 +410,10 @@ def read_single_character_parameters(main_window):
 
         # Attack damage
         file.seek(4, 1)
-        main_window.attack_value.setValue(int.from_bytes(file.read(4), byteorder='big'))
+        main_window.attack_value.setValue(int.from_bytes(file.read(2), byteorder='big'))
         # Ki blast damage
-        main_window.blast_damage_value.setValue(int.from_bytes(file.read(4), byteorder='big'))
+        file.seek(4, 1)
+        main_window.blast_damage_value.setValue(int.from_bytes(file.read(2), byteorder='big'))
 
         # Defense/Armor
         file.seek(1, 1)
@@ -449,8 +450,8 @@ def write_single_character_parameters(main_window):
     # Save all the info
     with open(CPEV.character_i_path, mode="rb+") as file:
         # Speed of charging
-        file.write(struct.pack('>f', main_window.speed_of_charching_value.value()))
-        file.write(struct.pack('>f', main_window.speed_of_charching_value_2.value()))
+        file.write(struct.pack('>f', main_window.speed_of_charging_value.value()))
+        file.write(struct.pack('>f', main_window.speed_of_charging_value_2.value()))
         # Ki regeneration rate
         file.write(struct.pack('>f', main_window.ki_regeneration_rate_value.value()))
 
@@ -472,9 +473,10 @@ def write_single_character_parameters(main_window):
 
         # Attack damage
         file.seek(4, 1)
-        file.write(int(main_window.attack_value.value()).to_bytes(4, byteorder="big"))
+        file.write(main_window.attack_value.value().to_bytes(2, byteorder="big"))
         # Ki blast damage
-        file.write(int(main_window.blast_damage_value.value()).to_bytes(4, byteorder="big"))
+        file.seek(4, 1)
+        file.write(main_window.blast_damage_value.value().to_bytes(2, byteorder="big"))
 
         # Defense/Armor
         file.seek(1, 1)
