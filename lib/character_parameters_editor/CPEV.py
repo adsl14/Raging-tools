@@ -31,7 +31,6 @@ class CPEV:
     # operate_character_XXX_m
     # path and positions of files and data
     character_i_path = ""
-    operate_character_XXX_m_modified = False
     # Values for the combo box
     type_of_fighting_values = [["Type 1", 0], ["Type 2", 1], ["Type 3", 2], ["Type 4", 3],
                                ["Type 5", 10], ["Type 6", 11], ["Type 7", 12]]

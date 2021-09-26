@@ -942,7 +942,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Move the window to the foreground (being clickable)
                 self.operate_resident_param_frame.raise_()
             # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if self.type_fighting.isVisible():
+            if self.ki_values.isVisible():
                 enable_disable_operate_character_xxx_m_buttons(self, False)
 
             # Enable completely the tab character parameters editor
@@ -956,23 +956,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Check if the file is an operate_character_XXX_m type
         elif re.search(CPEV.operate_character_XXX_m_regex, data):
 
-            # We're changing the character in the main panel (avoid combo box code)
-            CPEV.change_character = True
-
-            # The character isn't modified
-            CPEV.operate_character_XXX_m_modified = False
-
             # Read all the data from the files and store it in the global_character from CPEV.
             read_single_character_parameters(self)
-
-            # We're not changing the character in the main panel (play combo box code)
-            CPEV.change_character = False
 
             # Disable all the buttons (character parameters editor -> operate_resident_param)
             if self.transEffect.isVisible():
                 enable_disable_operate_resident_param_buttons(self, False)
             # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if not self.type_fighting.isVisible():
+            if not self.ki_values.isVisible():
                 enable_disable_operate_character_xxx_m_buttons(self, True)
                 # Move the window to the foreground (being clickable)
                 self.operate_character_xyz_m_frame.raise_()
@@ -1004,7 +995,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if self.transEffect.isVisible():
                 enable_disable_operate_resident_param_buttons(self, False)
             # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if self.type_fighting.isVisible():
+            if self.ki_values.isVisible():
                 enable_disable_operate_character_xxx_m_buttons(self, False)
             if self.portrait.isEnabled():
                 self.portrait.setEnabled(False)
@@ -1047,23 +1038,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # Check what type of character parameter editor is activated
                         # --- operate_character_XXX_m ---
-                        if self.type_fighting.isVisible():
+                        if self.ki_values.isVisible():
 
-                            if CPEV.operate_character_XXX_m_modified:
+                            # Save all the info
+                            print("Writing values in the file...")
+                            write_single_character_parameters(self)
 
-                                # Save all the info
-                                print("Writing values in the file...")
-                                write_single_character_parameters(self)
-
-                                # Pack the files
-                                print("Packing the file...")
-                                pack_and_save_file(self, path_output_file)
-
-                            else:
-                                msg = QMessageBox()
-                                msg.setWindowTitle("Warning")
-                                msg.setText("The character hasn't been modified.")
-                                msg.exec()
+                            # Pack the files
+                            print("Packing the file...")
+                            pack_and_save_file(self, path_output_file)
 
                         # --- operate_resident_param ---
                         # If the user has edited one character, we will save the file

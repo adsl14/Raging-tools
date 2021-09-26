@@ -1039,7 +1039,7 @@
               <rect>
                <x>270</x>
                <y>330</y>
-               <width>231</width>
+               <width>261</width>
                <height>51</height>
               </rect>
              </property>
@@ -1090,7 +1090,7 @@
              <widget class="QLabel" name="camera_size_idle_text">
               <property name="geometry">
                <rect>
-                <x>180</x>
+                <x>190</x>
                 <y>0</y>
                 <width>21</width>
                 <height>16</height>
@@ -1111,7 +1111,7 @@
                <rect>
                 <x>85</x>
                 <y>20</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
@@ -1119,15 +1119,15 @@
                <string/>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QDoubleSpinBox" name="camera_size_idle_value">
               <property name="geometry">
                <rect>
-                <x>165</x>
+                <x>170</x>
                 <y>20</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
@@ -1135,7 +1135,10 @@
                <string/>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
               </property>
              </widget>
             </widget>
@@ -1144,7 +1147,7 @@
               <rect>
                <x>270</x>
                <y>420</y>
-               <width>281</width>
+               <width>311</width>
                <height>51</height>
               </rect>
              </property>
@@ -1179,7 +1182,7 @@
              <widget class="QLabel" name="aura_size_charge_text">
               <property name="geometry">
                <rect>
-                <x>230</x>
+                <x>250</x>
                 <y>0</y>
                 <width>41</width>
                 <height>16</height>
@@ -1214,7 +1217,7 @@
              <widget class="QLabel" name="aura_size_dash_text">
               <property name="geometry">
                <rect>
-                <x>155</x>
+                <x>165</x>
                 <y>0</y>
                 <width>31</width>
                 <height>16</height>
@@ -1235,38 +1238,38 @@
                <rect>
                 <x>60</x>
                 <y>20</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QDoubleSpinBox" name="aura_size_dash_value">
               <property name="geometry">
                <rect>
-                <x>140</x>
+                <x>150</x>
                 <y>20</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QDoubleSpinBox" name="aura_size_charge_value">
               <property name="geometry">
                <rect>
-                <x>220</x>
+                <x>240</x>
                 <y>20</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
               <property name="value">
                <double>0.000000000000000</double>
@@ -1278,7 +1281,7 @@
               <rect>
                <x>270</x>
                <y>290</y>
-               <width>141</width>
+               <width>151</width>
                <height>41</height>
               </rect>
              </property>
@@ -1307,12 +1310,12 @@
                <string>Health:</string>
               </property>
              </widget>
-             <widget class="QSpinBox" name="health_value">
+             <widget class="QDoubleSpinBox" name="health_value">
               <property name="geometry">
                <rect>
                 <x>50</x>
                 <y>10</y>
-                <width>81</width>
+                <width>101</width>
                 <height>22</height>
                </rect>
               </property>
@@ -1322,14 +1325,14 @@
               <property name="whatsThis">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
-              <property name="minimum">
+              <property name="decimals">
                <number>0</number>
               </property>
               <property name="maximum">
-               <number>429496725</number>
+               <double>4294967295.000000000000000</double>
               </property>
               <property name="value">
-               <number>0</number>
+               <double>0.000000000000000</double>
               </property>
              </widget>
             </widget>
@@ -1812,7 +1815,7 @@
                <rect>
                 <x>50</x>
                 <y>10</y>
-                <width>61</width>
+                <width>71</width>
                 <height>22</height>
                </rect>
               </property>
@@ -1820,7 +1823,10 @@
                <string/>
               </property>
               <property name="maximum">
-               <double>100.000000000000000</double>
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="hit_box_text">
@@ -3408,14 +3414,17 @@
             <property name="frameShadow">
              <enum>QFrame::Raised</enum>
             </property>
-            <widget class="QFrame" name="background_color_combo">
+            <widget class="QFrame" name="ki_values">
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>80</y>
-               <width>241</width>
-               <height>41</height>
+               <y>0</y>
+               <width>401</width>
+               <height>131</height>
               </rect>
+             </property>
+             <property name="toolTip">
+              <string/>
              </property>
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
@@ -3423,40 +3432,649 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <widget class="QLabel" name="background_color_combo_text">
+             <widget class="QLabel" name="ki_values_text">
               <property name="geometry">
                <rect>
                 <x>0</x>
+                <y>0</y>
+                <width>61</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Ki values:</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="ki_regeneration_rate_text">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>30</y>
+                <width>111</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Regeneration rate</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="ki_regeneration_rate_value">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="ki_cost_of_dash_value">
+              <property name="geometry">
+               <rect>
+                <x>260</x>
+                <y>100</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="ki_cost_of_dash_text">
+              <property name="geometry">
+               <rect>
+                <x>260</x>
+                <y>77</y>
+                <width>71</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Cost of dash</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="speed_of_charching_value_2">
+              <property name="geometry">
+               <rect>
+                <x>320</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="speed_of_charching_text">
+              <property name="geometry">
+               <rect>
+                <x>260</x>
                 <y>10</y>
+                <width>101</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Charching speed</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="speed_of_charching_value">
+              <property name="geometry">
+               <rect>
+                <x>240</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="number_ki_blasts_text">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>80</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Num. blasts</string>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="number_ki_blasts_value">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>100</y>
+                <width>51</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+              <property name="displayIntegerBase">
+               <number>10</number>
+              </property>
+             </widget>
+             <widget class="QLabel" name="cost_of_blast_text">
+              <property name="geometry">
+               <rect>
+                <x>180</x>
+                <y>80</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Cost of blast</string>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="cost_of_blast_value">
+              <property name="geometry">
+               <rect>
+                <x>190</x>
+                <y>100</y>
+                <width>51</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+              <property name="displayIntegerBase">
+               <number>10</number>
+              </property>
+             </widget>
+             <widget class="QLabel" name="size_of_blast_text">
+              <property name="geometry">
+               <rect>
+                <x>100</x>
+                <y>80</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Size of blast</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="size_of_blast_value">
+              <property name="geometry">
+               <rect>
+                <x>100</x>
+                <y>100</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>0.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="blast_damage_text">
+              <property name="geometry">
+               <rect>
+                <x>130</x>
+                <y>30</y>
+                <width>81</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Blast damage</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="blast_damage_value">
+              <property name="geometry">
+               <rect>
+                <x>120</x>
+                <y>50</y>
+                <width>101</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <double>4294967295.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="speed_of_charching_text_2">
+              <property name="geometry">
+               <rect>
+                <x>250</x>
+                <y>30</y>
+                <width>51</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Normal</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="speed_of_charching_text_3">
+              <property name="geometry">
+               <rect>
+                <x>320</x>
+                <y>30</y>
+                <width>81</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>DS consumed</string>
+              </property>
+             </widget>
+            </widget>
+            <widget class="QFrame" name="movement_speed">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>140</y>
+               <width>391</width>
+               <height>131</height>
+              </rect>
+             </property>
+             <property name="toolTip">
+              <string/>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::StyledPanel</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <widget class="QLabel" name="movement_speed_text_2">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>0</y>
                 <width>151</width>
                 <height>16</height>
                </rect>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The background color of the auto-combo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Background color combo:</string>
+               <string>Movement speed values:</string>
               </property>
              </widget>
-             <widget class="QComboBox" name="background_color_combo_value">
+             <widget class="QDoubleSpinBox" name="movement_speed_value">
               <property name="geometry">
                <rect>
-                <x>160</x>
-                <y>10</y>
-                <width>81</width>
-                <height>21</height>
+                <x>20</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
                </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="movement_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>30</x>
+                <y>30</y>
+                <width>31</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Move</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="sidestep_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>110</x>
+                <y>30</y>
+                <width>51</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Sidestep</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="sidestep_speed_value">
+              <property name="geometry">
+               <rect>
+                <x>110</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="up_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>220</x>
+                <y>30</y>
+                <width>16</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Up</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="up_speed_value">
+              <property name="geometry">
+               <rect>
+                <x>200</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="down_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>310</x>
+                <y>30</y>
+                <width>31</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Down</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="down_speed_value">
+              <property name="geometry">
+               <rect>
+                <x>290</x>
+                <y>50</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="dash_up_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>80</y>
+                <width>51</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Dash up</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="dash_down_speed_value">
+              <property name="geometry">
+               <rect>
+                <x>110</x>
+                <y>100</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="dash_down_speed_text">
+              <property name="geometry">
+               <rect>
+                <x>110</x>
+                <y>80</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Dash down</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="dash_up_speed_value">
+              <property name="geometry">
+               <rect>
+                <x>20</x>
+                <y>100</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
               </property>
              </widget>
             </widget>
-            <widget class="QFrame" name="type_fighting">
+            <widget class="QFrame" name="melee_values">
              <property name="geometry">
               <rect>
-               <x>0</x>
+               <x>410</x>
                <y>0</y>
-               <width>191</width>
-               <height>41</height>
+               <width>331</width>
+               <height>131</height>
               </rect>
              </property>
              <property name="frameShape">
@@ -3465,12 +4083,107 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <widget class="QLabel" name="type_fighting_text">
+             <widget class="QLabel" name="melee_values_text">
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>10</y>
+                <y>0</y>
+                <width>81</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Melee values:</string>
+              </property>
+             </widget>
+             <widget class="QSpinBox" name="defense_value">
+              <property name="geometry">
+               <rect>
+                <x>130</x>
+                <y>50</y>
+                <width>91</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <number>255</number>
+              </property>
+              <property name="value">
+               <number>0</number>
+              </property>
+              <property name="displayIntegerBase">
+               <number>10</number>
+              </property>
+             </widget>
+             <widget class="QLabel" name="defense_text">
+              <property name="geometry">
+               <rect>
+                <x>150</x>
+                <y>30</y>
+                <width>51</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Defense</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="attack_text">
+              <property name="geometry">
+               <rect>
+                <x>40</x>
+                <y>30</y>
+                <width>41</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health for the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Attack</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="attack_value">
+              <property name="geometry">
+               <rect>
+                <x>12</x>
+                <y>50</y>
                 <width>101</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;0 spheres=10000&lt;/p&gt;&lt;p&gt;1 spheres=20000&lt;/p&gt;&lt;p&gt;2 spheres=30000&lt;/p&gt;&lt;p&gt;3 spheres=40000&lt;/p&gt;&lt;p&gt;4 spheres=50000&lt;/p&gt;&lt;p&gt;5 spheres=60000&lt;/p&gt;&lt;p&gt;6 spheres=70000&lt;/p&gt;&lt;p&gt;7 spheres=80000&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>0</number>
+              </property>
+              <property name="maximum">
+               <double>4294967295.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="type_fighting_text">
+              <property name="geometry">
+               <rect>
+                <x>240</x>
+                <y>30</y>
+                <width>91</width>
                 <height>16</height>
                </rect>
               </property>
@@ -3478,41 +4191,41 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type 1 -&amp;gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.&lt;/p&gt;&lt;p&gt;Type 2 -&amp;gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.&lt;/p&gt;&lt;p&gt;Type 3 -&amp;gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.&lt;/p&gt;&lt;p&gt;Type 4 -&amp;gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.&lt;/p&gt;&lt;p&gt;Type 5 -&amp;gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.&lt;/p&gt;&lt;p&gt;Type 6 -&amp;gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).&lt;/p&gt;&lt;p&gt;Type 7 -&amp;gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Type of fighting:</string>
+               <string>Type of fighting</string>
               </property>
              </widget>
              <widget class="QComboBox" name="type_fighting_value">
               <property name="geometry">
                <rect>
-                <x>110</x>
-                <y>10</y>
+                <x>240</x>
+                <y>50</y>
                 <width>81</width>
                 <height>21</height>
                </rect>
               </property>
              </widget>
-            </widget>
-            <widget class="QFrame" name="direction_last_hit_combo">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>40</y>
-               <width>231</width>
-               <height>41</height>
-              </rect>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::StyledPanel</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
+             <widget class="QLabel" name="combo_values_text">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>100</y>
+                <width>91</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type 1 -&amp;gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.&lt;/p&gt;&lt;p&gt;Type 2 -&amp;gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.&lt;/p&gt;&lt;p&gt;Type 3 -&amp;gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.&lt;/p&gt;&lt;p&gt;Type 4 -&amp;gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.&lt;/p&gt;&lt;p&gt;Type 5 -&amp;gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.&lt;/p&gt;&lt;p&gt;Type 6 -&amp;gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).&lt;/p&gt;&lt;p&gt;Type 7 -&amp;gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Combo values:</string>
+              </property>
+             </widget>
              <widget class="QLabel" name="direction_last_hit_combo_text">
               <property name="geometry">
                <rect>
-                <x>0</x>
-                <y>10</y>
-                <width>141</width>
+                <x>123</x>
+                <y>77</y>
+                <width>101</width>
                 <height>16</height>
                </rect>
               </property>
@@ -3520,14 +4233,40 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When the character is doing an auto-combo (the one with background) the last hit will be the direction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Direction last hit combo:</string>
+               <string>Direction last hit</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="background_color_combo_value">
+              <property name="geometry">
+               <rect>
+                <x>240</x>
+                <y>100</y>
+                <width>81</width>
+                <height>21</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="background_color_combo_text">
+              <property name="geometry">
+               <rect>
+                <x>230</x>
+                <y>77</y>
+                <width>101</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The background color of the auto-combo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Background color</string>
               </property>
              </widget>
              <widget class="QComboBox" name="direction_last_hit_combo_value">
               <property name="geometry">
                <rect>
-                <x>150</x>
-                <y>10</y>
+                <x>130</x>
+                <y>100</y>
                 <width>81</width>
                 <height>21</height>
                </rect>

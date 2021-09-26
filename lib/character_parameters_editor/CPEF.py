@@ -156,19 +156,16 @@ def initialize_cpe(main_window, qt_widgets):
 
     # --- operate_character_XXX_m ---
     # Set the fighting style
-    main_window.type_fighting_value.currentIndexChanged.connect(on_type_of_fighting_changed)
     # Add the values
     for element in CPEV.type_of_fighting_values:
         main_window.type_fighting_value.addItem(element[0], element[1])
 
     # Set the direction last hit combo
-    main_window.direction_last_hit_combo_value.currentIndexChanged.connect(on_direction_last_hit_combo_changed)
     # Add the values
     for element in CPEV.direction_last_hit_combo_values:
         main_window.direction_last_hit_combo_value.addItem(element[0], element[1])
 
     # Set the background color combo
-    main_window.background_color_combo_value.currentIndexChanged.connect(on_background_color_combo_changed)
     # Add the values
     for element in CPEV.color_background_combo_values:
         main_window.background_color_combo_value.addItem(element[0], element[1])
@@ -205,9 +202,9 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
 
 def enable_disable_operate_character_xxx_m_buttons(main_window, flag):
 
-    main_window.type_fighting.setVisible(flag)
-    main_window.direction_last_hit_combo.setVisible(flag)
-    main_window.background_color_combo.setVisible(flag)
+    main_window.ki_values.setVisible(flag)
+    main_window.melee_values.setVisible(flag)
+    main_window.movement_speed.setVisible(flag)
 
 
 # operate_resident_param
@@ -389,10 +386,50 @@ def read_single_character_parameters(main_window):
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
     with open(CPEV.character_i_path, mode="rb") as file:
 
-        # UNK data for now
-        file.seek(141, 1)
+        # Speed of charging
+        main_window.speed_of_charching_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.speed_of_charching_value_2.setValue(struct.unpack('>f', file.read(4))[0])
+        # Ki regeneration rate
+        main_window.ki_regeneration_rate_value.setValue(struct.unpack('>f', file.read(4))[0])
+
+        # Ki cost of dash
+        file.seek(4, 1)
+        main_window.ki_cost_of_dash_value.setValue(struct.unpack('>f', file.read(4))[0])
+
+        # Movement speed normal and sidestep
+        file.seek(12, 1)
+        main_window.movement_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.sidestep_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+
+        # Movement speed up and down
+        file.seek(12, 1)
+        main_window.up_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.down_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.dash_up_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+        main_window.dash_down_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
+
+        # Attack damage
+        file.seek(4, 1)
+        main_window.attack_value.setValue(int.from_bytes(file.read(4), byteorder='big'))
+        # Ki blast damage
+        main_window.blast_damage_value.setValue(int.from_bytes(file.read(4), byteorder='big'))
+
+        # Defense/Armor
+        file.seek(1, 1)
+        main_window.defense_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
+
+        # Number of ki blasts
+        file.seek(31, 1)
+        main_window.number_ki_blasts_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
+
+        # Cost of ki blast
+        file.seek(13, 1)
+        main_window.cost_of_blast_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
+        # Size of ki blast
+        main_window.size_of_blast_value.setValue(struct.unpack('>f', file.read(4))[0])
 
         # Type fighting
+        file.seek(9, 1)
         main_window.type_fighting_value.setCurrentIndex(main_window.type_fighting_value.findData
                                                         (int.from_bytes(file.read(1), "big")))
 
@@ -411,11 +448,50 @@ def write_single_character_parameters(main_window):
 
     # Save all the info
     with open(CPEV.character_i_path, mode="rb+") as file:
+        # Speed of charging
+        file.write(struct.pack('>f', main_window.speed_of_charching_value.value()))
+        file.write(struct.pack('>f', main_window.speed_of_charching_value_2.value()))
+        # Ki regeneration rate
+        file.write(struct.pack('>f', main_window.ki_regeneration_rate_value.value()))
 
-        # UNK data for now
-        file.seek(141, 1)
+        # Ki cost of dash
+        file.seek(4, 1)
+        file.write(struct.pack('>f', main_window.ki_cost_of_dash_value.value()))
+
+        # Movement speed normal and sidestep
+        file.seek(12, 1)
+        file.write(struct.pack('>f', main_window.movement_speed_value.value()))
+        file.write(struct.pack('>f', main_window.sidestep_speed_value.value()))
+
+        # Movement speed up and down
+        file.seek(12, 1)
+        file.write(struct.pack('>f', main_window.up_speed_value.value()))
+        file.write(struct.pack('>f', main_window.down_speed_value.value()))
+        file.write(struct.pack('>f', main_window.dash_up_speed_value.value()))
+        file.write(struct.pack('>f', main_window.dash_down_speed_value.value()))
+
+        # Attack damage
+        file.seek(4, 1)
+        file.write(int(main_window.attack_value.value()).to_bytes(4, byteorder="big"))
+        # Ki blast damage
+        file.write(int(main_window.blast_damage_value.value()).to_bytes(4, byteorder="big"))
+
+        # Defense/Armor
+        file.seek(1, 1)
+        file.write(main_window.defense_value.value().to_bytes(1, byteorder="big"))
+
+        # Number of ki blasts
+        file.seek(31, 1)
+        file.write(main_window.number_ki_blasts_value.value().to_bytes(1, byteorder="big"))
+
+        # Cost of ki blast
+        file.seek(13, 1)
+        file.write(main_window.cost_of_blast_value.value().to_bytes(1, byteorder="big"))
+        # Size of ki blast
+        file.write(struct.pack('>f', main_window.size_of_blast_value.value()))
 
         # Type fighting
+        file.seek(9, 1)
         file.write(main_window.type_fighting_value.currentData().to_bytes(1, byteorder="big"))
 
         # Direction last hit fast combo
@@ -1108,30 +1184,3 @@ def on_hit_box_changed(main_window):
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
-
-
-def on_type_of_fighting_changed():
-
-    # Avoid change the values when the program is starting
-    if not CPEV.change_character:
-
-        if not CPEV.operate_character_XXX_m_modified:
-            CPEV.operate_character_XXX_m_modified = True
-
-
-def on_direction_last_hit_combo_changed():
-
-    # Avoid change the values when the program is starting
-    if not CPEV.change_character:
-
-        if not CPEV.operate_character_XXX_m_modified:
-            CPEV.operate_character_XXX_m_modified = True
-
-
-def on_background_color_combo_changed():
-
-    # Avoid change the values when the program is starting
-    if not CPEV.change_character:
-
-        if not CPEV.operate_character_XXX_m_modified:
-            CPEV.operate_character_XXX_m_modified = True
