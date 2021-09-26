@@ -1305,7 +1305,7 @@ class Ui_MainWindow(object):
         self.defense_value.setGeometry(QtCore.QRect(100, 50, 51, 22))
         self.defense_value.setToolTip("")
         self.defense_value.setMinimum(0)
-        self.defense_value.setMaximum(255)
+        self.defense_value.setMaximum(100)
         self.defense_value.setProperty("value", 0)
         self.defense_value.setDisplayIntegerBase(10)
         self.defense_value.setObjectName("defense_value")
