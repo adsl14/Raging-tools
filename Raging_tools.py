@@ -308,7 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open spr file
         VEV.spr_file_path_original = \
-            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "SPR files (*.spr)")[0]
+            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "Info files (*.spr)")[0]
         # Check if the user has selected an spr format file
         if not os.path.exists(VEV.spr_file_path_original):
             return
@@ -674,7 +674,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Open pak file
         PEV.pak_file_path_original = \
             QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()),
-                                        "PAK files (*.pak);;ZPAK files (*.zpak);;SPR files (*.spr);;VRAM files (*.vram)"
+                                        "Packed files (*.pak);;"
+                                        "Packed RB1 files (*.zpak);;"
+                                        "Info files (*.spr);;"
+                                        "Texture files (*.vram)"
                                         )[0]
 
         # Check if the user has selected a pak format file
@@ -1018,7 +1021,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Ask to the user where to save the file
         path_output_file = QFileDialog.getSaveFileName(self, "Save file",
                                                        os.path.abspath(os.path.join(os.getcwd(), basename)),
-                                                       extension.upper() + " files (*." + extension + ")")[0]
+                                                       "*." + extension)[0]
 
         # Check if the user has selected an output path
         if path_output_file:
