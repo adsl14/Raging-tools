@@ -674,7 +674,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Open pak file
         PEV.pak_file_path_original = \
             QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()),
-                                        "PAK files (*.pak *.zpak *.vram)")[0]
+                                        "PAK files (*.pak);;ZPAK files (*.zpak);;SPR files (*.spr);;VRAM files (*.vram)"
+                                        )[0]
 
         # Check if the user has selected a pak format file
         if not os.path.exists(PEV.pak_file_path_original):
@@ -1008,6 +1009,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Create the output name (STPZ)
         extension = PEV.pak_file_path_original.split(".")[-1]
+        if not extension:
+            extension = "pak"
         basename = os.path.basename(PEV.pak_file_path_original).replace("." + extension,
                                                                         datetime.now().
                                                                         strftime("_%d-%m-%Y_%H-%M-%S"))
@@ -1015,7 +1018,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Ask to the user where to save the file
         path_output_file = QFileDialog.getSaveFileName(self, "Save file",
                                                        os.path.abspath(os.path.join(os.getcwd(), basename)),
-                                                       "PAK files (*.pak)")[0]
+                                                       extension.upper() + " files (*." + extension + ")")[0]
 
         # Check if the user has selected an output path
         if path_output_file:
