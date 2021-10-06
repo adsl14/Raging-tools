@@ -170,6 +170,9 @@ def initialize_cpe(main_window, qt_widgets):
     for element in CPEV.color_background_combo_values:
         main_window.background_color_combo_value.addItem(element[0], element[1])
 
+    # Disable character parameters editor tab
+    main_window.character_parameters_editor.setEnabled(False)
+
 
 def enable_disable_operate_resident_param_buttons(main_window, flag):
 
