@@ -49,8 +49,6 @@ When opens a <i>.pak</i> file, it will store all the sub-files in disk, in order
 
 You can export the files or import a new one. With this you can, for example, swap animations between characters.
 
-<b>Note</b>: <i>.vram</i> and <i>.spr</i> files can also be opened. Be warned that some <i>.vram</i> files works like <i>.pak</i> files, so if you try to load <i>.vram</i> files in <i>vram explorer</i> could not show the texture propertly. You need to unpack the <i>.vram</i> file and it will have inside the propers <i>.vram</i> files. Also, some <i>.pak</i> files has inside the <i>.spr</i> files so you need to do the same thing.
-
 ## character parameters editor
 
 <img src="images/character_parameters_editor.jpg" alt="character_parameters_editor_image" width="50%">

@@ -675,9 +675,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         PEV.pak_file_path_original = \
             QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()),
                                         "Packed files (*.pak);;"
-                                        "Packed RB1 files (*.zpak);;"
-                                        "Info files (*.spr);;"
-                                        "Texture files (*.vram)"
+                                        "Packed RB1 files (*.zpak)"
                                         )[0]
 
         # Check if the user has selected a pak format file
