@@ -1,17 +1,8 @@
 from lib.packages import os, np, datetime
 from lib.vram_explorer.classes.SprpStruct import SprpStruct
-from lib.vram_explorer.classes.StpkStruct import StpkStruct
 
 
 class VEV:
-
-	# types of spr file
-	# STPZ and STPK file
-	STPZ = "5354505a"
-	STPK = "5354504b"
-	stpz_file = False
-	stpk_file = False
-	single_stpk_header = True  # This flag will tell us if the spr and vram has two STPK header (RB2 to RB1 port)
 
 	# resources path
 	dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
@@ -30,12 +21,11 @@ class VEV:
 	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
 
 	# Paths where are the files
-	spr_file_path_original = ""
 	spr_file_path = ""
-	vram_file_path_original = ""
 	vram_file_path = ""
+
+	# Struct data
 	sprp_struct = SprpStruct()
-	stpk_struct = StpkStruct()
 
 	# Meta information (offset to tx2dInfos)
 	sprpDatasInfo = []
@@ -45,6 +35,8 @@ class VEV:
 	tx2_datas = []
 	# Size of the vram file
 	vram_file_size_old = 0
+	# offset of the spr file
+	data_offset_header = 0
 	# Indexes of textures edited
 	textures_index_edited = []
 	# Quanty of difference between the modifed texture and the old one

@@ -114,7 +114,6 @@ def show_dds_image(image_texture, texture_data, width, height, texture_path="tem
 def show_bmp_image(image_texture, texture_data, width, height):
 
     try:
-
         mpixmap = QPixmap()
         mpixmap.loadFromData(texture_data, "BMP")
 
@@ -160,35 +159,26 @@ def read_dds_file(file_path):
     return img
 
 
-def open_spr_file(spr_path, start_pointer):
+def open_spr_file(spr_path):
 
     with open(spr_path, mode='rb') as file:
 
-        # Move the pointer to the pos 16 (STPZ -> VramExplorerVars.STPK) or 12 (SPR) and get the offset of the header
-        file.seek(start_pointer)
-        VEV.stpk_struct.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-
-        # Check if we're dealing with a RB2 to RB1 port file
-        file.seek(VEV.stpk_struct.data_offset)
-        if file.read(VEV.bytes2Read).hex() != VEV.STPK:
-            VEV.single_stpk_header = True
-        else:
-            file.seek(VEV.stpk_struct.data_offset + start_pointer)
-            VEV.stpk_struct.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big") + 64
-            VEV.single_stpk_header = False
+        # Move the pointer to the pos 12 (SPR) and get the offset of the header
+        file.seek(12)
+        VEV.data_offset_header = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
         # Create the VramExplorerVars.sprp_struct instance
-        file.seek(VEV.stpk_struct.data_offset + 20)
-        VEV.sprp_struct.type_info_base = VEV.stpk_struct.data_offset + 64
+        file.seek(VEV.data_offset_header + 20)
+        VEV.sprp_struct.type_info_base = VEV.data_offset_header + 64
         VEV.sprp_struct.string_base = VEV.sprp_struct.type_info_base + int.from_bytes(file.read(VEV.bytes2Read), "big")
-        file.seek(VEV.stpk_struct.data_offset + 24)
+        file.seek(VEV.data_offset_header + 24)
         VEV.sprp_struct.data_info_base = VEV.sprp_struct.string_base + int.from_bytes(file.read(VEV.bytes2Read), "big")
-        file.seek(VEV.stpk_struct.data_offset + 28)
+        file.seek(VEV.data_offset_header + 28)
         VEV.sprp_struct.data_base = VEV.sprp_struct.data_info_base + int.from_bytes(file.read(VEV.bytes2Read), "big")
         file.seek(VEV.sprp_struct.type_info_base + 8)
         VEV.sprp_struct.data_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
-        # Read the first four bytes to check if the file is SPRP (50), SPR (00) or STPZ (5A).
+        # Read the first four bytes to check if the file is SPRP (50) or SPR (00).
         # SPR -> there is no names for each texture
         file.seek(3)
         data_type = file.read(1)
@@ -321,31 +311,11 @@ def open_vram_file(vram_path):
 
     with open(vram_path, mode="rb") as file:
 
-        # Check if we're dealing with a stpz file (crypted) or STPK (decrypted)
-        if VEV.stpz_file or VEV.stpk_file:
+        # Move to the position 0, where it tells the offset of the file where the texture starts
+        texture_offset = 0
 
-            # Normal VramExplorerVars.STPK file
-            if VEV.single_stpk_header:
-                # Move to the position 16, where it tells the offset of the file where the texture starts
-                file.seek(16)
-                texture_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-
-            # VramExplorerVars.STPK file RB2 to RB1 port (has double VramExplorerVars.STPK file type)
-            else:
-                # Move to the position 16 + 64, where it tells the offset of the file where the texture starts
-                file.seek(16 + 64)
-                texture_offset = int.from_bytes(file.read(VEV.bytes2Read), "big") + 64
-
-            # The size of the file is in position 20
-            VEV.vram_file_size_old = int.from_bytes(file.read(VEV.bytes2Read), "big")
-
-        # SPR header
-        else:
-            # Move to the position 0, where it tells the offset of the file where the texture starts
-            texture_offset = 0
-
-            # The size of the file is the size of the texture
-            VEV.vram_file_size_old = VEV.tx2d_infos[0].data_size
+        # The size of the file is the size of the texture
+        VEV.vram_file_size_old = VEV.tx2d_infos[0].data_size
 
         # Get each texture
         header_1 = bytes.fromhex("44 44 53 20 7C 00 00 00 07 10 00 00")

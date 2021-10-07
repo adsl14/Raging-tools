@@ -92,7 +92,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Create folder
         if not os.path.exists("textures"):
             os.mkdir("textures")
-        name_folder = os.path.basename(VEV.vram_file_path_original).replace(".vram", "")
+        name_folder = os.path.basename(VEV.vram_file_path).replace(".vram", "")
         folder_export_path = os.path.join(os.path.abspath(os.getcwd()), "textures", name_folder)
         if not os.path.exists(folder_export_path):
             os.mkdir(folder_export_path)
@@ -307,29 +307,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def action_open_sprvram_logic(self):
 
         # Open spr file
-        VEV.spr_file_path_original = \
+        VEV.spr_file_path = \
             QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()), "Info files (*.spr)")[0]
         # Check if the user has selected an spr format file
-        if not os.path.exists(VEV.spr_file_path_original):
+        if not os.path.exists(VEV.spr_file_path):
             return
 
-        # Check if the user has selected an spr stpz file
-        VEV.stpz_file = False
-        VEV.stpk_file = False
-        with open(VEV.spr_file_path_original, mode="rb") as spr_file:
-            type_file = spr_file.read(4).hex()
-            if type_file == VEV.STPZ:
-                VEV.stpz_file = True
-            else:
-                # If is not a STPZ, check if the file is STPK
-                if type_file == VEV.STPK:
-                    VEV.stpk_file = True
-
         # Open vram file
-        VEV.vram_file_path_original = \
-            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(VEV.spr_file_path_original),
+        VEV.vram_file_path = \
+            QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(VEV.spr_file_path),
                                         "Texture files (*.vram)")[0]
-        if not os.path.exists(VEV.vram_file_path_original):
+        if not os.path.exists(VEV.vram_file_path):
             msg = QMessageBox()
             msg.setWindowTitle("Error")
             msg.setText("A vram file is needed.")
@@ -342,44 +330,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         VEV.tx2d_infos.clear()
         VEV.textures_index_edited.clear()
 
-        basename = os.path.basename(VEV.spr_file_path_original)
+        basename = os.path.basename(VEV.spr_file_path)
 
-        # Convert spr and vram files if we're dealing with stpz file
-        if VEV.stpz_file:
-            # Create a folder where we store the necessary files or delete it. If already exists,
-            # we remove every files in it
-            if os.path.exists(VEV.temp_folder):
-                rmtree(VEV.temp_folder, onerror=del_rw)
-            os.mkdir(VEV.temp_folder)
-
-            # Execute the script in a command line for the spr file
-            VEV.spr_file_path = os.path.join(os.path.abspath(os.getcwd()), VEV.temp_folder,
-                                             basename.replace(".spr", "_u.spr"))
-            args = os.path.join(VEV.dbrb_compressor_path) + " \"" + VEV.spr_file_path_original + "\" \"" + \
-                VEV.spr_file_path + "\""
-            os.system('cmd /c ' + args)
-
-            # Execute the script in a command line for the vram file
-            basename = os.path.basename(VEV.vram_file_path_original)
-            VEV.vram_file_path = os.path.join(os.path.abspath(os.getcwd()), VEV.temp_folder,
-                                              basename.replace(".vram", "_u.vram"))
-            args = os.path.join(VEV.dbrb_compressor_path) + " \"" + \
-                VEV.vram_file_path_original + "\" \"" + VEV.vram_file_path + "\""
-            os.system('cmd /c ' + args)
-
-            # Load the data from the files
-            open_spr_file(VEV.spr_file_path, 16)
-
-        # Generic spr file. Don't need to convert
-        else:
-            VEV.spr_file_path = VEV.spr_file_path_original
-            VEV.vram_file_path = VEV.vram_file_path_original
-            # Check if the file decrypted is stpk
-            if VEV.stpk_file:
-                open_spr_file(VEV.spr_file_path, 16)
-            else:
-                open_spr_file(VEV.spr_file_path, 12)
-
+        # Open spr and vram
+        open_spr_file(VEV.spr_file_path)
         open_vram_file(VEV.vram_file_path)
 
         # Add the names to the list view
@@ -449,7 +403,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         else:
 
             # Create the folder where we save the modified files
-            basename = os.path.basename(VEV.vram_file_path_original) \
+            basename = os.path.basename(VEV.vram_file_path) \
                 .replace(".vram", datetime.now().strftime("_%d-%m-%Y_%H-%M-%S"))
             path_output_folder = os.path.join(os.path.abspath(os.getcwd()), "outputs")
             path_output_files = os.path.join(path_output_folder, basename)
@@ -525,35 +479,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             with open(vram_export_path, mode="wb") as output_file:
                 with open(VEV.vram_file_path, mode="rb") as input_file:
 
-                    # If we're dealing with a vram stpz or sptk file
-                    if VEV.stpz_file or VEV.stpk_file:
-
-                        # If we're dealing with a normal STPK
-                        if VEV.single_stpk_header:
-                            # Move to the position 16, where it tells the offset of the file where the texture starts
-                            data = input_file.read(16)
-
-                            output_file.write(data)
-
-                            data = input_file.read(VEV.bytes2Read)
-                            output_file.write(data)
-                            texture_offset = int.from_bytes(data, "big")
-
-                        # We're dealing with RB2 to RB1 port
-                        else:
-                            # Move to the position 16 + 64, where it tells the offset of the
-                            # file where the texture starts
-                            data = input_file.read(16 + 64)
-
-                            output_file.write(data)
-
-                            data = input_file.read(VEV.bytes2Read)
-                            output_file.write(data)
-                            texture_offset = int.from_bytes(data, "big") + 64
-
                     # SPR header
-                    else:
-                        texture_offset = 0
+                    texture_offset = 0
 
                     # Get each offset texture and write over the original file
                     for texture_index in VEV.textures_index_edited:
@@ -613,51 +540,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Change the header of pos 256 in spr file because in that place indicates the size of the final output file
             with open(spr_export_path, mode="rb+") as output_file:
-                output_file.seek(VEV.stpk_struct.data_offset + 48)
+                output_file.seek(VEV.data_offset_header + 48)
                 output_file.write(vram_file_size.to_bytes(4, byteorder='big'))
 
-            # If we're dealing with a vram stpz file
-            if VEV.stpz_file or VEV.stpk_file:
-                # Change the header of pos 20 in vram file because that place indicates the size of the final output
-                # file
-                with open(vram_export_path, mode="rb+") as output_file:
-                    output_file.seek(20)
-                    output_file.write(vram_file_size.to_bytes(4, byteorder='big'))
-
-                # Generate the final files for the game
-                # Output for the spr file
-                basename_spr = os.path.basename(VEV.spr_file_path_original)
-                VEV.spr_file_path_modified = os.path.join(path_output_files, basename_spr)
-                args = os.path.join(VEV.dbrb_compressor_path) + " \"" + spr_export_path + "\" \"" \
-                    + VEV.spr_file_path_modified + "\""
-                os.system('cmd /c ' + args)
-
-                # Output for the vram file
-                basename_vram = os.path.basename(VEV.vram_file_path_original)
-                VEV.vram_file_path_modified = os.path.join(path_output_files, basename_vram)
-                args = os.path.join(VEV.dbrb_compressor_path) + " \"" + vram_export_path + "\" \"" \
-                    + VEV.vram_file_path_modified + "\" "
-                os.system('cmd /c ' + args)
-
-                # Remove the uncompressed modified files
-                os.remove(spr_export_path)
-                os.remove(vram_export_path)
-
-                message = "The files were saved and compressed in: <b>" + path_output_files \
-                          + "</b><br><br> Do you wish to open the folder?"
             # SPR file. We won't compress
-            else:
 
-                basename_spr = os.path.basename(spr_export_path).replace("_m.", ".")
-                basename_vram = os.path.basename(vram_export_path).replace("_m.", ".")
-                VEV.spr_file_path_modified = os.path.join(path_output_files, basename_spr)
-                VEV.vram_file_path_modified = os.path.join(path_output_files, basename_vram)
+            basename_spr = os.path.basename(spr_export_path).replace("_m.", ".")
+            basename_vram = os.path.basename(vram_export_path).replace("_m.", ".")
+            VEV.spr_file_path_modified = os.path.join(path_output_files, basename_spr)
+            VEV.vram_file_path_modified = os.path.join(path_output_files, basename_vram)
 
-                move(spr_export_path, VEV.spr_file_path_modified)
-                move(vram_export_path, VEV.vram_file_path_modified)
+            move(spr_export_path, VEV.spr_file_path_modified)
+            move(vram_export_path, VEV.vram_file_path_modified)
 
-                message = "The files were saved in: <b>" + path_output_files \
-                          + "</b><br><br> Do you wish to open the folder?"
+            message = "The files were saved in: <b>" + path_output_files \
+                      + "</b><br><br> Do you wish to open the folder?"
 
             msg = QMessageBox()
             msg.setWindowTitle("Message")
@@ -674,8 +571,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Open pak file
         PEV.pak_file_path_original = \
             QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(os.getcwd()),
-                                        "Packed files (*.pak);;"
-                                        "Packed RB1 files (*.zpak)"
+                                        "Packed files (*.pak *.zpak)"
                                         )[0]
 
         # Check if the user has selected a pak format file
@@ -1010,8 +906,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Create the output name (STPZ)
         extension = PEV.pak_file_path_original.split(".")[-1]
-        if not extension:
-            extension = "pak"
         basename = os.path.basename(PEV.pak_file_path_original).replace("." + extension,
                                                                         datetime.now().
                                                                         strftime("_%d-%m-%Y_%H-%M-%S"))
