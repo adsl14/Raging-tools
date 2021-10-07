@@ -58,7 +58,16 @@ You can export the files or import a new one. With this you can, for example, sw
 <i>character parameters editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, 
 aura size and more.
 
-In order to use this tool, you need to open the file <i>operate_resident_param.pak</i>. Since is a <i>.pak</i> file, 
+In order to use this tool, you can open the following files:
+
+<ul>
+  <li><i>operate_resident_param.pak</i>.</li>
+  <li><i>operate_character_xyz_m</i> (where xyz are generic numbers).</li>
+</ul>
+
+Depending of what file you loaded, it will show you the parameters that has that file, so if you don't find a specific parameter, you need to load other file.
+
+Since these files are <i>.pak</i>, 
 the <i>pak explorer</i> will be activated too, and show you all the sub-files that the main <i>.pak</i> file has.
 
 If you have doubts about what parameter is modifying, if you leave the pointer of your mouse in the name of the 
@@ -66,9 +75,3 @@ parameter, it will pop up a description of that parameter.
 
 When saving, since they are two tools activated at the same time, it will ask you from what tool do you want to 
 gather all the modified data and save it to disk. The options are <i>character parameters editor</i> or <i>pak explorer</i>.
-
-### 1.1 version
-
-<img src="images/character_parameters_editor_1.1.jpg" alt="character_parameters_editor_image" width="50%">
-
-Support for files that are the following: <i>operate_character_xyz_m</i> (where xyz are generic numbers). Opening this files, will activate new parameters, like <i>type of fighting</i>. The paramaters that are not in a file, will be disabled for edition.
