@@ -2,6 +2,7 @@ import os
 import stat
 import numpy as np
 import functools
+import re
 import struct
 from shutil import rmtree, copyfile, move
 from pyglet import image

@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Raging tools 1.2 - by adsl14</string>
+   <string>Raging tools 1.3 - by adsl14</string>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Rounded</enum>
@@ -241,7 +241,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Export all</string>
+           <string>Export all...</string>
           </property>
          </widget>
         </item>
@@ -281,19 +281,6 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="4">
-         <widget class="QPushButton" name="importButton_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>I&amp;mport...</string>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="0" rowspan="3" colspan="5">
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
@@ -311,7 +298,20 @@
           </item>
          </layout>
         </item>
-        <item row="2" column="3">
+        <item row="6" column="4">
+         <widget class="QPushButton" name="importButton_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>I&amp;mport...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="3">
          <widget class="QPushButton" name="exportButton_2">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -321,6 +321,19 @@
           </property>
           <property name="text">
            <string>Export...</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="exportAllButton_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="text">
+           <string>Export all...</string>
           </property>
          </widget>
         </item>
@@ -4300,13 +4313,10 @@
    </property>
    <widget class="QMenu" name="menuFIle">
     <property name="title">
-     <string>&amp;File</string>
+     <string>File</string>
     </property>
-    <addaction name="actionOpenSPRVRAM"/>
-    <addaction name="actionSaveSPRVRAM"/>
-    <addaction name="separator"/>
-    <addaction name="actionOpenPAK"/>
-    <addaction name="actionSavePAK"/>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
     <addaction name="separator"/>
     <addaction name="actionClose"/>
     <addaction name="separator"/>
@@ -4326,38 +4336,41 @@
     <bool>true</bool>
    </property>
   </widget>
-  <action name="actionOpenSPRVRAM">
+  <action name="actionOpen">
    <property name="text">
-    <string>Open spr/vram...</string>
+    <string>&amp;Open...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
   <action name="actionClose">
    <property name="text">
-    <string>E&amp;xit</string>
+    <string>&amp;Quit</string>
+   </property>
+   <property name="toolTip">
+    <string>Exit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
    </property>
   </action>
-  <action name="actionSaveSPRVRAM">
+  <action name="actionSave">
    <property name="text">
-    <string>Save spr/vram</string>
+    <string>&amp;Save as...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
   <action name="actionAuthor">
    <property name="text">
-    <string>A&amp;uthor</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+A</string>
+    <string>Author</string>
    </property>
   </action>
   <action name="actionCredits">
    <property name="text">
-    <string>C&amp;redits</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+C</string>
+    <string>Credits</string>
    </property>
   </action>
   <action name="actionOpenPAK">
