@@ -43,9 +43,9 @@ Check that your imported texture follows the properties of the original one in o
 
 <img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
 
-<i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.pak</i>. It uses a <i>Depth-first search</i> since the information in those files are stored as a <i>tree graph structure</i>.
+<i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.zpak</i> (encrypted pak file) or <i>.pak</i> (decrypted pak file). It uses a <i>Depth-first search</i> since the information in those files are stored as a <i>tree graph structure</i>.
 
-When opens a <i>.pak</i> file, it will store all the sub-files in disk, in order to write the files propertly. When the algorithm finishes, the tool will show the full path of the sub-files.
+When opens a <i>.zpak</i> or <i>.pak</i> file, it will store all the sub-files in disk, in order to write the files propertly. When the algorithm finishes, the tool will show the full path of the sub-files.
 
 You can export the files or import a new one. With this you can, for example, swap animations between characters.
 
@@ -59,14 +59,14 @@ aura size and more.
 In order to use this tool, you can open the following files:
 
 <ul>
-  <li><i>operate_resident_param.pak</i>.</li>
-  <li><i>operate_character_xyz_m</i> (where xyz are generic numbers).</li>
+  <li><i>operate_resident_param.zpak</i>.</li>
+  <li><i>operate_character_xyz_m.zpak</i> (where xyz are generic numbers).</li>
 </ul>
 
 Depending of what file you loaded, it will show you the parameters that has that file, so if you don't find a specific parameter, you need to load other file.
 
-Since these files are <i>.pak</i>, 
-the <i>pak explorer</i> will be activated too, and show you all the sub-files that the main <i>.pak</i> file has.
+Since these files are <i>.zpak</i>, 
+the <i>pak explorer</i> will be activated too, and show you all the sub-files that the main <i>.zpak</i> file has.
 
 If you have doubts about what parameter is modifying, if you leave the pointer of your mouse in the name of the 
 parameter, it will pop up a description of that parameter.
