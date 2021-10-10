@@ -81,12 +81,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # Execute the script in a command line for the pak file
                 PEV.pak_file_path = os.path.join(os.path.abspath(os.getcwd()), PEV.temp_folder,
-                                                 basename.replace("." + extension, "_d." + extension))
+                                                 basename.replace("." + extension, "_d.pak"))
                 args = os.path.join(PEV.dbrb_compressor_path) + " \"" + PEV.pak_file_path_original + "\" \"" + \
                     PEV.pak_file_path + "\""
                 os.system('cmd /c ' + args)
 
                 PEV.stpz_file = True
+                PEV.stpk_file = False
 
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
                 load_data_to_pe(self)
@@ -103,6 +104,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Store the paths of the pak file
                 PEV.pak_file_path_original = path_file
                 PEV.pak_file_path = PEV.pak_file_path_original
+
+                PEV.stpz_file = False
+                PEV.stpk_file = True
 
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
                 load_data_to_pe(self)
@@ -183,7 +187,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_logic(self):
 
-        extension_pak = "Pack files (*.pak *.zpak)"
+        extension_pak = "Pack files (*.zpak)"
         extension_spr_vram = "Info/Texture files (folder)"
 
         # Ask to the user where to save the file
@@ -466,7 +470,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowTitle("Author")
         msg.setText(
             "<ul>"
-            "<li><b>Raging tools 1.3</b> by "
+            "<li><b>Raging tools 1.3.1</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>If you want to support the tool, you can get the source code in the "
             "<a href=https://github.com/adsl14/Raging-tools>GitHub</a> page <li>"
