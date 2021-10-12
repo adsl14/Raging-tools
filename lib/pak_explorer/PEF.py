@@ -1,3 +1,5 @@
+import shutil
+
 from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
@@ -13,6 +15,9 @@ from lib.packages import functools
 
 
 def initialize_pe(main_window):
+
+    # Open temp folder button
+    main_window.openTempFolderButton.clicked.connect(action_open_temp_folder_button_logic)
 
     # Export all button
     main_window.exportAllButton_2.clicked.connect(lambda: action_export_all_2_logic(main_window))
@@ -490,29 +495,27 @@ def action_item_pak_explorer(q_model_index):
         PEV.current_selected_subpak_file = q_model_index.row()
 
 
+def action_open_temp_folder_button_logic():
+
+    # Show the path folder to the user
+    os.system('explorer.exe ' + PEV.temp_folder.replace("/", "\\"))
+
+
 def action_export_all_2_logic(main_window):
 
     # Ask to the user in what folder wants to save the files
-    name_folder = os.path.splitext(PEV.pak_file_path_original)[0]
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export files", os.path.join(
-                                                   os.path.abspath(os.getcwd()), name_folder))[0]
+    name_folder = os.path.basename(os.path.splitext(PEV.pak_file_path_original)[0])
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export files", name_folder, "")[0]
 
     # Check if the user has selected the path
     if folder_export_path:
 
-        # Create folder
-        if not os.path.exists(folder_export_path):
-            os.mkdir(folder_export_path)
-
         # Copy all the files to the folder
-        for i in range(0, main_window.listView_2.model().rowCount()):
-            path_original_item = main_window.listView_2.model().item(i, 0).text()
-            name_file = main_window.listView_2.model().item(i, 0).data()
-            copyfile(path_original_item, os.path.join(folder_export_path, name_file))
+        shutil.copytree(PEV.temp_folder, folder_export_path)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
-        message = "All the textures were exported in: <b>" + folder_export_path \
+        message = "All the files were exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the folder?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
 
