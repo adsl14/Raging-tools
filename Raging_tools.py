@@ -11,7 +11,7 @@ from lib.vram_explorer.VEF import change_endian, load_data_to_ve
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
-from lib.pak_explorer.PEF import initialize_pe, pack_and_save_file, load_data_to_pe
+from lib.pak_explorer.PEF import initialize_pe, pack_and_save_file, load_data_to_pe_cpe
 from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
@@ -90,7 +90,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 PEV.stpk_file = False
 
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
-                load_data_to_pe(self)
+                load_data_to_pe_cpe(self)
 
             # uncompressed pak file
             elif header_type == b'STPK':
@@ -109,7 +109,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 PEV.stpk_file = True
 
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
-                load_data_to_pe(self)
+                load_data_to_pe_cpe(self)
 
             # spr file
             elif header_type == b'SPRP' or header_type == b'SPR\x00':

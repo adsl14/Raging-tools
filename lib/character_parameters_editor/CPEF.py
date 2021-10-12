@@ -19,20 +19,15 @@ def initialize_cpe(main_window, qt_widgets):
                                                                          main_window=main_window,
                                                                          index=int(index_chara),
                                                                          modify_slot_transform=True)
-        CPEV.mini_portraits_image[i].setDisabled(True)
 
     for i in range(66, len(CPEV.mini_portraits_image)):
         CPEV.mini_portraits_image[i].setStyleSheet("QLabel {border : 3px solid grey;}")
-        CPEV.mini_portraits_image[i].setVisible(False)
-
-    # Set the the big portrait image
-    main_window.portrait.setVisible(False)
 
     # Disable all the buttons (operate_resident_param)
-    enable_disable_operate_resident_param_buttons(main_window, False)
+    enable_disable_operate_resident_param_frames(main_window, False)
 
     # Disable all the buttons (operate_character_XXX_m)
-    enable_disable_operate_character_xxx_m_buttons(main_window, False)
+    enable_disable_operate_character_xxx_m_frames(main_window, False)
 
     # Set the health
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -174,7 +169,7 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.character_parameters_editor.setEnabled(False)
 
 
-def enable_disable_operate_resident_param_buttons(main_window, flag):
+def enable_disable_operate_resident_param_frames(main_window, flag):
 
     main_window.transEffect.setVisible(flag)
     main_window.transPartner.setVisible(flag)
@@ -192,22 +187,16 @@ def enable_disable_operate_resident_param_buttons(main_window, flag):
     main_window.aura_size.setVisible(flag)
     main_window.color_lightning.setVisible(flag)
     main_window.glow_lightning.setVisible(flag)
-
-    # Enable the characters portraits
-    for i in range(0, 66):
-        CPEV.mini_portraits_image[i].setEnabled(flag)
-
-    main_window.label_trans_0.setEnabled(flag)
-    main_window.label_trans_1.setEnabled(flag)
-    main_window.label_trans_2.setEnabled(flag)
-    main_window.label_trans_3.setEnabled(flag)
+    main_window.portrait.setVisible(flag)
+    main_window.mainPanel.setVisible(flag)
 
 
-def enable_disable_operate_character_xxx_m_buttons(main_window, flag):
+def enable_disable_operate_character_xxx_m_frames(main_window, flag):
 
     main_window.ki_values.setVisible(flag)
     main_window.melee_values.setVisible(flag)
     main_window.movement_speed.setVisible(flag)
+    main_window.cutscene_values.setVisible(flag)
 
 
 # operate_resident_param

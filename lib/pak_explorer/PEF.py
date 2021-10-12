@@ -4,8 +4,8 @@ from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 from lib.character_parameters_editor.CPEF import read_character_parameters, action_change_character, \
-    enable_disable_operate_character_xxx_m_buttons, open_select_chara_window, \
-    enable_disable_operate_resident_param_buttons, read_single_character_parameters
+    enable_disable_operate_character_xxx_m_frames, open_select_chara_window, \
+    enable_disable_operate_resident_param_frames, read_single_character_parameters
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -32,8 +32,8 @@ def initialize_pe(main_window):
     main_window.pak_explorer.setEnabled(False)
 
 
-def load_data_to_pe(main_window):
-    
+def load_data_to_pe_cpe(main_window):
+
     # Unpack pak file (pak explorer)
     # Prepare the list view 2 in order to add the names
     model = QStandardItemModel()
@@ -55,7 +55,7 @@ def load_data_to_pe(main_window):
     pak_file.seek(32)
     data = pak_file.read(32).decode('utf-8').split(".")[0]
     pak_file.close()
-    
+
     # Check if the file is the operate_resident_param.pak
     if data == CPEV.operate_resident_param:
     
@@ -91,13 +91,8 @@ def load_data_to_pe(main_window):
         # We're changing the character in the main panel (avoid combo box code)
         CPEV.change_character = True
     
-        # Show the large portrait
+        # Load the large portrait
         main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
-        # Enable the portrait
-        if not main_window.portrait.isEnabled():
-            main_window.portrait.setEnabled(True)
-        if not main_window.portrait.isVisible():
-            main_window.portrait.setVisible(True)
     
         # Show the transformations in the main panel
         main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
@@ -265,70 +260,53 @@ def load_data_to_pe(main_window):
     
         # We're not changing the character in the main panel (play combo box code)
         CPEV.change_character = False
+
+        # Open the tab (character parameters editor)
+        if main_window.tabWidget.currentIndex() != 2:
+            main_window.tabWidget.setCurrentIndex(2)
     
         # Enable all the buttons (character parameters editor -> operate_resident_param)
         if not main_window.transEffect.isVisible():
-            enable_disable_operate_resident_param_buttons(main_window, True)
+            enable_disable_operate_resident_param_frames(main_window, True)
             # Move the window to the foreground (being clickable)
             main_window.operate_resident_param_frame.raise_()
         # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
         if main_window.ki_values.isVisible():
-            enable_disable_operate_character_xxx_m_buttons(main_window, False)
-    
+            enable_disable_operate_character_xxx_m_frames(main_window, False)
+
         # Enable completely the tab character parameters editor
         if not main_window.character_parameters_editor.isEnabled():
             main_window.character_parameters_editor.setEnabled(True)
-    
-        # Open the tab (character parameters editor)
-        if main_window.tabWidget.currentIndex() != 2:
-            main_window.tabWidget.setCurrentIndex(2)
     
     # Check if the file is an operate_character_XXX_m type
     elif re.search(CPEV.operate_character_XXX_m_regex, data):
-    
+
         # Read all the data from the files and store it in the global_character from CPEV.
         read_single_character_parameters(main_window)
-    
-        # Disable all the buttons (character parameters editor -> operate_resident_param)
-        if main_window.transEffect.isVisible():
-            enable_disable_operate_resident_param_buttons(main_window, False)
-        # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if not main_window.ki_values.isVisible():
-            enable_disable_operate_character_xxx_m_buttons(main_window, True)
-            # Move the window to the foreground (being clickable)
-            main_window.operate_character_xyz_m_frame.raise_()
-        # Enable the portrait
-        # Load the large portrait
-        main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
-                                                            data.split("_")[-2] + ".png")))
-        if not main_window.portrait.isEnabled():
-            main_window.portrait.setEnabled(True)
-        if not main_window.portrait.isVisible():
-            main_window.portrait.setVisible(True)
-    
-        # Enable completely the tab character parameters editor
-        if not main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(True)
-    
+
         # Open the tab (character parameters editor)
         if main_window.tabWidget.currentIndex() != 2:
             main_window.tabWidget.setCurrentIndex(2)
     
+        # Disable all the buttons (character parameters editor -> operate_resident_param)
+        if main_window.transEffect.isVisible():
+            enable_disable_operate_resident_param_frames(main_window, False)
+        # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
+        if not main_window.ki_values.isVisible():
+            enable_disable_operate_character_xxx_m_frames(main_window, True)
+            # Move the window to the foreground (being clickable)
+            main_window.operate_character_xyz_m_frame.raise_()
+
+        # Enable completely the tab character parameters editor
+        if not main_window.character_parameters_editor.isEnabled():
+            main_window.character_parameters_editor.setEnabled(True)
+    
     # Generic pak file
     else:
-    
+
         # Open the tab (pak explorer)
         if main_window.tabWidget.currentIndex() != 1:
             main_window.tabWidget.setCurrentIndex(1)
-    
-        # Disable all the buttons (character parameters editor -> operate_resident_param)
-        if main_window.transEffect.isVisible():
-            enable_disable_operate_resident_param_buttons(main_window, False)
-        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if main_window.ki_values.isVisible():
-            enable_disable_operate_character_xxx_m_buttons(main_window, False)
-        if main_window.portrait.isEnabled():
-            main_window.portrait.setEnabled(False)
     
         # Disable completely the tab character parameters editor
         if main_window.character_parameters_editor.isEnabled():
