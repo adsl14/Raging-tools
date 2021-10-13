@@ -230,7 +230,7 @@ def enable_disable_operate_character_xxx_m_frames(main_window, flag):
     main_window.ki_values.setVisible(flag)
     main_window.melee_values.setVisible(flag)
     main_window.movement_speed.setVisible(flag)
-    main_window.cutscene_values.setVisible(flag)
+    main_window.camera_values.setVisible(flag)
 
 
 # operate_resident_param
