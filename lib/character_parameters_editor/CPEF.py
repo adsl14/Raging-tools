@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.packages import QLabel, QPixmap, functools, os, struct
@@ -151,10 +153,15 @@ def initialize_cpe(main_window, qt_widgets):
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
     # --- operate_character_XXX_m ---
+
     # Set the camera cutscene type
     main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
     for element in CPEV.camera_types_cutscene:
         main_window.camera_type_key.addItem(element)
+    # Export camera button
+    main_window.exportCameraButton.clicked.connect(lambda: action_export_camera_button_logic(main_window))
+    # Import camera button
+    main_window.importCameraButton.clicked.connect(lambda: action_import_camera_button_logic(main_window))
 
     # Set the pivots
     main_window.pivot_value.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=0))
@@ -503,14 +510,14 @@ def read_single_character_parameters(main_window):
                 struct.unpack('>f', file.read(4))[0]
 
             # Unknown value block 10
-            camera_cutscene.unknowns["unknown_block_10"] = file.read(4)
+            camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
 
             # Get the zoom and camera speed (float values)
             camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
             camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
 
             # Unknown value block 13
-            camera_cutscene.unknowns["unknown_block_13"] = file.read(4)
+            camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
 
             # Set camera type combo box
             main_window.camera_type_key.setItemData(i, camera_cutscene)
@@ -1157,6 +1164,128 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
     main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
 
 
+def action_export_camera_button_logic(main_window):
+
+    # Ask to the user the file output
+    name_file = main_window.camera_type_key.currentText() + "." + CPEV.cutscene_camera_file_extension
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
+
+    if file_export_path:
+
+        camera_cutscene = main_window.camera_type_key.currentData()
+
+        with open(file_export_path, mode="wb") as file:
+
+            # Write the pivots
+            file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+
+            # Rotations Z
+            file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+            file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+
+            # Translations Y
+            file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+            file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+
+            # Rotations X
+            file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+            file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+
+            # Translations Z
+            file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+            file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+
+            # Unknown value block 10
+            file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+
+            # Get the zoom and camera speed (float values)
+            file.write(struct.pack('>f', camera_cutscene.zoom_in))
+            file.write(struct.pack('>f', camera_cutscene.camera_speed))
+
+            # Unknown value block 13
+            file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The camera file was exported in: <b>" + file_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def action_import_camera_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the camera files
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera", "", "")[0]
+
+    if file_export_path:
+
+        with open(file_export_path, mode="rb") as file:
+
+            size_file = len(file.read())
+
+            # The file of the camera has to be 52 bytes length
+            if size_file == CPEV.size_each_camera_cutscene:
+                file.seek(0)
+            else:
+                # Wrong camera file
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Invalid camera file.")
+                msg.exec()
+                return
+
+            # Create an instance of cameraCutscene
+            camera_cutscene = CameraCutscene()
+
+            # Get the pivots
+            camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
+
+            # Rotations Z
+            camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Translations Y
+            camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Rotations X
+            camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Translations Z
+            camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Unknown value block 10
+            camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
+
+            # Get the zoom and camera speed (float values)
+            camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
+
+            # Unknown value block 13
+            camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
+
+            # Set camera values to current combo box and show them in the tool
+            main_window.camera_type_key.setItemData(main_window.camera_type_key.currentIndex(), camera_cutscene)
+            change_camera_cutscene_values(main_window, camera_cutscene)
+
+
 def on_color_lightning_changed(main_window):
     #  and starting
     if not CPEV.change_character:
@@ -1338,8 +1467,7 @@ def on_camera_type_key_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
-        change_camera_cutscene_values(main_window,
-                                      main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()))
+        change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
 
 
 def on_pivot_value_changed(main_window, pivot_index):
@@ -1347,16 +1475,16 @@ def on_pivot_value_changed(main_window, pivot_index):
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
         if pivot_index == 0:
-            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_1"] = \
+            main_window.camera_type_key.currentData().pivots["pivot_1"] = \
                 main_window.pivot_value.value()
         elif pivot_index == 1:
-            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_2"] = \
+            main_window.camera_type_key.currentData().pivots["pivot_2"] = \
                 main_window.pivot_value_2.value()
         elif pivot_index == 2:
-            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_3"] = \
+            main_window.camera_type_key.currentData().pivots["pivot_3"] = \
                 main_window.pivot_value_3.value()
         else:
-            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_4"] = \
+            main_window.camera_type_key.currentData().pivots["pivot_4"] = \
                 main_window.pivot_value_4.value()
 
 
@@ -1365,17 +1493,17 @@ def on_translations_changed(main_window, y, z):
     if not CPEV.change_character:
         if y >= 0:
             if y == 0:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Y_start"] =\
+                main_window.camera_type_key.currentData().positions["Y_start"] =\
                     main_window.translation_y_start_value.value()
             else:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Y_end"] = \
+                main_window.camera_type_key.currentData().positions["Y_end"] = \
                     main_window.translation_y_end_value.value()
         else:
             if z == 0:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Z_start"] =\
+                main_window.camera_type_key.currentData().positions["Z_start"] =\
                     main_window.translation_z_start_value.value()
             else:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Z_end"] = \
+                main_window.camera_type_key.currentData().positions["Z_end"] = \
                     main_window.translation_z_end_value.value()
 
 
@@ -1384,18 +1512,18 @@ def on_rotations_changed(main_window, x, z):
     if not CPEV.change_character:
         if x >= 0:
             if x == 0:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["X_start"] =\
+                main_window.camera_type_key.currentData().rotations["X_start"] =\
                     main_window.rotation_x_start_value.value()
             else:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["X_end"] = \
+                main_window.camera_type_key.currentData().rotations["X_end"] = \
                     main_window.rotation_x_end_value.value()
         else:
             if z == 0:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["Z_start"] =\
+                main_window.camera_type_key.currentData().rotations["Z_start"] =\
                     \
                     main_window.rotation_z_start_value.value()
             else:
-                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["Z_end"] = \
+                main_window.camera_type_key.currentData().rotations["Z_end"] = \
                     main_window.rotation_z_end_value.value()
 
 
@@ -1403,7 +1531,7 @@ def on_speed_camera_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
-        main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).camera_speed = \
+        main_window.camera_type_key.currentData().camera_speed = \
             main_window.speed_camera_value.value()
 
 
@@ -1411,5 +1539,5 @@ def on_zoom_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
-        main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).zoom_in = \
+        main_window.camera_type_key.currentData().zoom_in = \
             main_window.zoom_value.value()
