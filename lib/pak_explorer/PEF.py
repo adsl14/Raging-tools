@@ -284,6 +284,9 @@ def load_data_to_pe_cpe(main_window):
         # Read all the data from the files and store it in the global_character from CPEV.
         read_single_character_parameters(main_window)
 
+        # We're not changing the character in the main panel (play combo box code)
+        CPEV.change_character = False
+
         # Open the tab (character parameters editor)
         if main_window.tabWidget.currentIndex() != 2:
             main_window.tabWidget.setCurrentIndex(2)

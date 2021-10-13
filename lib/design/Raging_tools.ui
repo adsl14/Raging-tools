@@ -4344,7 +4344,7 @@
                <rect>
                 <x>70</x>
                 <y>60</y>
-                <width>81</width>
+                <width>111</width>
                 <height>21</height>
                </rect>
               </property>
@@ -4483,8 +4483,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QDoubleSpinBox" name="rotation_z_start_value">
@@ -4505,8 +4508,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="rotations_text">
@@ -4623,8 +4629,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="rotation_x_end_text">
@@ -4661,8 +4670,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="translation_y_start_text">
@@ -4715,8 +4727,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QDoubleSpinBox" name="translation_z_start_value">
@@ -4737,8 +4752,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="translation_start_text">
@@ -4791,8 +4809,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="translation_z_end_text">
@@ -4845,8 +4866,11 @@
               <property name="decimals">
                <number>0</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
              </widget>
              <widget class="QLabel" name="translation_y_end_text">
@@ -4899,8 +4923,11 @@
               <property name="decimals">
                <number>2</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
               <property name="value">
                <double>0.000000000000000</double>
@@ -4940,8 +4967,11 @@
               <property name="decimals">
                <number>2</number>
               </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
               <property name="maximum">
-               <double>4294967296.000000000000000</double>
+               <double>1000.000000000000000</double>
               </property>
               <property name="value">
                <double>0.000000000000000</double>
@@ -4950,7 +4980,7 @@
              <widget class="QPushButton" name="exportCameraButton">
               <property name="geometry">
                <rect>
-                <x>160</x>
+                <x>190</x>
                 <y>60</y>
                 <width>81</width>
                 <height>23</height>
@@ -4963,7 +4993,7 @@
              <widget class="QPushButton" name="importCameraButton">
               <property name="geometry">
                <rect>
-                <x>250</x>
+                <x>280</x>
                 <y>60</y>
                 <width>81</width>
                 <height>23</height>
@@ -4978,7 +5008,7 @@
                <rect>
                 <x>70</x>
                 <y>30</y>
-                <width>81</width>
+                <width>111</width>
                 <height>21</height>
                </rect>
               </property>
@@ -5002,7 +5032,7 @@
              <widget class="QPushButton" name="importAnimationButton">
               <property name="geometry">
                <rect>
-                <x>250</x>
+                <x>280</x>
                 <y>30</y>
                 <width>81</width>
                 <height>23</height>
@@ -5015,7 +5045,7 @@
              <widget class="QPushButton" name="exportAnimationButton">
               <property name="geometry">
                <rect>
-                <x>160</x>
+                <x>190</x>
                 <y>30</y>
                 <width>81</width>
                 <height>23</height>
@@ -5027,8 +5057,6 @@
              </widget>
             </widget>
            </widget>
-           <zorder>operate_character_xyz_m_frame</zorder>
-           <zorder>operate_resident_param_frame</zorder>
           </widget>
          </widget>
         </item>

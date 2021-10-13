@@ -1,4 +1,5 @@
 from lib.character_parameters_editor.CPEV import CPEV
+from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.packages import QLabel, QPixmap, functools, os, struct
 from lib.design.select_chara import Ui_Dialog
 
@@ -50,13 +51,13 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.color_lightning_value.currentIndexChanged.connect(lambda: on_color_lightning_changed(main_window))
     # Add the values
     for element in CPEV.color_lightning_values:
-        main_window.color_lightning_value.addItem(element[0], element[1])
+        main_window.color_lightning_value.addItem(element, CPEV.color_lightning_values[element])
 
     # Set the glow/lightning
     main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
     # Add the values
     for element in CPEV.glow_lightning_values:
-        main_window.glow_lightning_value.addItem(element[0], element[1])
+        main_window.glow_lightning_value.addItem(element, CPEV.glow_lightning_values[element])
 
     # Set the transform panel
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
@@ -66,7 +67,7 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.transEffectValue.currentIndexChanged.connect(lambda: on_transformation_ki_effect_changed(main_window))
     # Add the values
     for element in CPEV.trans_effect_values:
-        main_window.transEffectValue.addItem(element[0], element[1])
+        main_window.transEffectValue.addItem(element, CPEV.trans_effect_values[element])
 
     # Set the Trasformation partner
     main_window.transPartnerSlot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -92,10 +93,10 @@ def initialize_cpe(main_window, qt_widgets):
                                                                    (main_window, animation_per_transformation=3))
     # Add the values
     for element in CPEV.trans_animation_values:
-        main_window.trans1_animation_value.addItem(element[0], element[1])
-        main_window.trans2_animation_value.addItem(element[0], element[1])
-        main_window.trans3_animation_value.addItem(element[0], element[1])
-        main_window.trans4_animation_value.addItem(element[0], element[1])
+        main_window.trans1_animation_value.addItem(element, CPEV.trans_animation_values[element])
+        main_window.trans2_animation_value.addItem(element, CPEV.trans_animation_values[element])
+        main_window.trans3_animation_value.addItem(element, CPEV.trans_animation_values[element])
+        main_window.trans4_animation_value.addItem(element, CPEV.trans_animation_values[element])
 
     # Set fusion partner trigger
     main_window.fusionPartnerTrigger_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
@@ -128,10 +129,10 @@ def initialize_cpe(main_window, qt_widgets):
                                                                     (main_window, animation_per_fusion=3))
     # Add the values
     for element in CPEV.fusion_animation_values:
-        main_window.fusion1_animation_value.addItem(element[0], element[1])
-        main_window.fusion2_animation_value.addItem(element[0], element[1])
-        main_window.fusion3_animation_value.addItem(element[0], element[1])
-        main_window.fusion4_animation_value.addItem(element[0], element[1])
+        main_window.fusion1_animation_value.addItem(element, CPEV.fusion_animation_values[element])
+        main_window.fusion2_animation_value.addItem(element, CPEV.fusion_animation_values[element])
+        main_window.fusion3_animation_value.addItem(element, CPEV.fusion_animation_values[element])
+        main_window.fusion4_animation_value.addItem(element, CPEV.fusion_animation_values[element])
 
     # Set the fusion panel
     main_window.fusiPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_fusion.png")))
@@ -150,20 +151,46 @@ def initialize_cpe(main_window, qt_widgets):
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
     # --- operate_character_XXX_m ---
+    # Set the camera cutscene type
+    main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
+    for element in CPEV.camera_types_cutscene:
+        main_window.camera_type_key.addItem(element)
+
+    # Set the pivots
+    main_window.pivot_value.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=0))
+    main_window.pivot_value_2.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=1))
+    main_window.pivot_value_3.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=2))
+    main_window.pivot_value_4.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=3))
+
+    # Set the translations
+    main_window.translation_y_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=0, z=-1))
+    main_window.translation_y_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=1, z=-1))
+    main_window.translation_z_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=0))
+    main_window.translation_z_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=1))
+
+    # Set the rotations
+    main_window.rotation_x_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, x=0, z=-1))
+    main_window.rotation_x_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, x=1, z=-1))
+    main_window.rotation_z_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, x=-1, z=0))
+    main_window.rotation_z_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, x=-1, z=1))
+
+    # Set the speed
+    main_window.speed_camera_value.valueChanged.connect(lambda: on_speed_camera_changed(main_window))
+
+    # Set the zoom
+    main_window.zoom_value.valueChanged.connect(lambda: on_zoom_value_changed(main_window))
+
     # Set the fighting style
-    # Add the values
     for element in CPEV.type_of_fighting_values:
-        main_window.type_fighting_value.addItem(element[0], element[1])
+        main_window.type_fighting_value.addItem(element, CPEV.type_of_fighting_values[element])
 
     # Set the direction last hit combo
-    # Add the values
     for element in CPEV.direction_last_hit_combo_values:
-        main_window.direction_last_hit_combo_value.addItem(element[0], element[1])
+        main_window.direction_last_hit_combo_value.addItem(element, CPEV.direction_last_hit_combo_values[element])
 
     # Set the background color combo
-    # Add the values
     for element in CPEV.color_background_combo_values:
-        main_window.background_color_combo_value.addItem(element[0], element[1])
+        main_window.background_color_combo_value.addItem(element, CPEV.color_background_combo_values[element])
 
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
@@ -376,6 +403,9 @@ def read_single_character_parameters(main_window):
     # Read all the data from the files
     # character_info
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
+    CPEV.camera_i_path = main_window.listView_2.model().item(727, 0).text()
+
+    # Read character info file
     with open(CPEV.character_i_path, mode="rb") as file:
 
         # Speed of charging
@@ -436,6 +466,59 @@ def read_single_character_parameters(main_window):
         main_window.background_color_combo_value.setCurrentIndex(main_window.background_color_combo_value.findData
                                                                  (int.from_bytes(file.read(1), "big")))
 
+    # Read camera info file
+    with open(CPEV.camera_i_path, mode="rb") as file:
+
+        # Move to position 208 where the first camera cutscene starts
+        file.seek(CPEV.position_camera_cutscene)
+
+        for i in range(0, len(CPEV.camera_types_cutscene)):
+            # Create an instance of cameraCutscene
+            camera_cutscene = CameraCutscene()
+
+            # Get the pivots
+            camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
+            camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
+
+            # Rotations Z
+            camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Translations Y
+            camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Rotations X
+            camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Translations Z
+            camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
+                struct.unpack('>f', file.read(4))[0]
+
+            # Unknown value block 10
+            camera_cutscene.unknowns["unknown_block_10"] = file.read(4)
+
+            # Get the zoom and camera speed (float values)
+            camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
+            camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
+
+            # Unknown value block 13
+            camera_cutscene.unknowns["unknown_block_13"] = file.read(4)
+
+            # Set camera type combo box
+            main_window.camera_type_key.setItemData(i, camera_cutscene)
+
+        # Show the first item in the combo box and his values
+        main_window.camera_type_key.setCurrentIndex(0)
+        change_camera_cutscene_values(main_window, main_window.camera_type_key.itemData(0))
+
 
 def write_single_character_parameters(main_window):
 
@@ -495,6 +578,50 @@ def write_single_character_parameters(main_window):
         # Color background fast combo
         file.seek(3, 1)
         file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
+
+    # Save all camera info
+    with open(CPEV.camera_i_path, mode="rb+") as file:
+
+        # Move to position 208 where the first camera cutscene starts
+        file.seek(CPEV.position_camera_cutscene)
+
+        for i in range(0, len(CPEV.camera_types_cutscene)):
+
+            camera_cutscene = main_window.camera_type_key.itemData(i)
+
+            # Write the pivots
+            file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+            file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+
+            # Rotations Z
+            file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+            file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+
+            # Translations Y
+            file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+            file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+
+            # Rotations X
+            file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+            file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+
+            # Translations Z
+            file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+            file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+
+            # Unknown value block 10
+            file.seek(4, 1)
+            # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+
+            # Get the zoom and camera speed (float values)
+            file.write(struct.pack('>f', camera_cutscene.zoom_in))
+            file.write(struct.pack('>f', camera_cutscene.camera_speed))
+
+            # Unknown value block 13
+            file.seek(4, 1)
+            # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
@@ -1003,6 +1130,33 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
     main_window.selectCharaWindow.close()
 
 
+def change_camera_cutscene_values(main_window, camera_cutscene):
+
+    # Pivots
+    main_window.pivot_value.setValue(camera_cutscene.pivots["pivot_1"])
+    main_window.pivot_value_2.setValue(camera_cutscene.pivots["pivot_2"])
+    main_window.pivot_value_3.setValue(camera_cutscene.pivots["pivot_3"])
+    main_window.pivot_value_4.setValue(camera_cutscene.pivots["pivot_4"])
+
+    # Translations
+    main_window.translation_y_start_value.setValue(camera_cutscene.positions["Y_start"])
+    main_window.translation_y_end_value.setValue(camera_cutscene.positions["Y_end"])
+    main_window.translation_z_start_value.setValue(camera_cutscene.positions["Z_start"])
+    main_window.translation_z_end_value.setValue(camera_cutscene.positions["Z_end"])
+
+    # Rotations
+    main_window.rotation_x_start_value.setValue(camera_cutscene.rotations["X_start"])
+    main_window.rotation_x_end_value.setValue(camera_cutscene.rotations["X_end"])
+    main_window.rotation_z_start_value.setValue(camera_cutscene.rotations["Z_start"])
+    main_window.rotation_z_end_value.setValue(camera_cutscene.rotations["Z_end"])
+
+    # Zoom
+    main_window.zoom_value.setValue(camera_cutscene.zoom_in)
+
+    # Speed
+    main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
+
+
 def on_color_lightning_changed(main_window):
     #  and starting
     if not CPEV.change_character:
@@ -1178,3 +1332,84 @@ def on_hit_box_changed(main_window):
         # If the character was edited before, we won't append the index to our array of characters edited once
         if CPEV.character_list[CPEV.chara_selected] not in CPEV.character_list_edited:
             CPEV.character_list_edited.append(CPEV.character_list[CPEV.chara_selected])
+
+
+def on_camera_type_key_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        change_camera_cutscene_values(main_window,
+                                      main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()))
+
+
+def on_pivot_value_changed(main_window, pivot_index):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        if pivot_index == 0:
+            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_1"] = \
+                main_window.pivot_value.value()
+        elif pivot_index == 1:
+            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_2"] = \
+                main_window.pivot_value_2.value()
+        elif pivot_index == 2:
+            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_3"] = \
+                main_window.pivot_value_3.value()
+        else:
+            main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).pivots["pivot_4"] = \
+                main_window.pivot_value_4.value()
+
+
+def on_translations_changed(main_window, y, z):
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        if y >= 0:
+            if y == 0:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Y_start"] =\
+                    main_window.translation_y_start_value.value()
+            else:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Y_end"] = \
+                    main_window.translation_y_end_value.value()
+        else:
+            if z == 0:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Z_start"] =\
+                    main_window.translation_z_start_value.value()
+            else:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).positions["Z_end"] = \
+                    main_window.translation_z_end_value.value()
+
+
+def on_rotations_changed(main_window, x, z):
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        if x >= 0:
+            if x == 0:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["X_start"] =\
+                    main_window.rotation_x_start_value.value()
+            else:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["X_end"] = \
+                    main_window.rotation_x_end_value.value()
+        else:
+            if z == 0:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["Z_start"] =\
+                    \
+                    main_window.rotation_z_start_value.value()
+            else:
+                main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).rotations["Z_end"] = \
+                    main_window.rotation_z_end_value.value()
+
+
+def on_speed_camera_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).camera_speed = \
+            main_window.speed_camera_value.value()
+
+
+def on_zoom_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        main_window.camera_type_key.itemData(main_window.camera_type_key.currentIndex()).zoom_in = \
+            main_window.zoom_value.value()

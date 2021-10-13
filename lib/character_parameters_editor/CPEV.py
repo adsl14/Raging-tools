@@ -20,23 +20,31 @@ class CPEV:
     sizeVisualParameters = 148
     sizeTrans = 33
     # Values for the combo box
-    trans_effect_values = [["Super Saiyan", 0], ["Metamoru", 1], ["Potara", 2], ["Cell", 3], ["Super Buu", 4],
-                           ["Broly", 5], ["Freezer", 6], ["Super Saiyan 3", 7], ["Cooler", 8], ["Bojack", 9],
-                           ["C-13", 10], ["Nothing", 11]]
-    trans_animation_values = [["Transform", 0], ["Return", 1], ["Transform 2", 4], ["Absorb", 6], ["Special", 12]]
-    fusion_animation_values = [["Metamoru", 0], ["Potara", 1]]
-    color_lightning_values = [["Blue", 0], ["Cyan", 1], ["Rose", 2], ["Rose and white", 3]]
-    glow_lightning_values = [["Disabled", 0], ["Glow", 1], ["Lightnings", 4], ["Glow + lightnings", 5]]
+    trans_effect_values = dict({"Super Saiyan": 0, "Metamoru": 1, "Potara": 2, "Cell": 3, "Super Buu": 4,
+                               "Broly": 5, "Freezer": 6, "Super Saiyan 3": 7, "Cooler": 8, "Bojack": 9, "C-13": 10,
+                                "Nothing": 11})
+    trans_animation_values = dict({"Transform": 0, "Return": 1, "Transform 2": 4, "Absorb": 6, "Special": 12})
+    fusion_animation_values = dict({"Metamoru": 0, "Potara": 1})
+    color_lightning_values = dict({"Blue": 0, "Cyan": 1, "Rose": 2, "Rose and white": 3})
+    glow_lightning_values = dict({"Disabled": 0, "Glow": 1, "Unknown (Androids)": 2, "Lightnings": 4,
+                                  "Glow + lightnings": 5})
 
     # operate_character_XXX_m
     # path and positions of files and data
     character_i_path = ""
+    camera_i_path = ""
     # Values for the combo box
-    type_of_fighting_values = [["Type 1", 0], ["Type 2", 1], ["Type 3", 2], ["Type 4", 3],
-                               ["Type 5", 10], ["Type 6", 11], ["Type 7", 12]]
-    direction_last_hit_combo_values = [["Forward", 0], ["Up", 1], ["Down", 2], ["Left", 3], ["Right", 4]]
-    color_background_combo_values = [["Blue", 88], ["Yellow 1", 94], ["Yellow 2", 92], ["Gray", 82],
-                                     ["Purple", 80], ["Red", 76], ["Black", 78]]
+    type_of_fighting_values = dict({"Type 1": 0, "Type 2": 1, "Type 3": 2, "Type 4": 3, "Type 5": 10, "Type 6": 11,
+                                    "Type 7": 12})
+    direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
+    color_background_combo_values = dict({"Blue": 88, "Yellow 1": 94, "Yellow 2": 92, "Gray": 82, "Purple": 80,
+                                          "Red": 76, "Black": 78})
+    # Don't change the order, because the file has this order when we read the file
+    camera_types_cutscene = ["Entry (1P)", "Entry (2P)", "Entry 2 (1P)", "Entry 2 (2P)", "Entry 3 (1P)",
+                             "Entry 3 (2P)", "Victory", "Lose", "Transform in", "Transform result", "Return in",
+                             "Return out", "Transform 2 in"]
+    # position where the first camera cutscene starts
+    position_camera_cutscene = 208
 
     # panelPortraistlist
     mini_portraits_image = []
