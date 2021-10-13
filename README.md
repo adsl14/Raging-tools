@@ -71,5 +71,5 @@ the <i>pak explorer</i> will be activated too, and show you all the sub-files th
 If you have doubts about what parameter is modifying, if you leave the pointer of your mouse in the name of the 
 parameter, it will pop up a description of that parameter.
 
-When saving, since they are two tools activated at the same time, it will ask you from what tool do you want to 
-gather all the modified data and save it to disk. The options are <i>character parameters editor</i> or <i>pak explorer</i>.
+When saving, it will ask you if the modified values from <i>character parameters editor</i> will be also 
+inserted into the unpacked files before repacking everything.

@@ -1167,7 +1167,7 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
 def action_export_camera_button_logic(main_window):
 
     # Ask to the user the file output
-    name_file = main_window.camera_type_key.currentText() + "." + CPEV.cutscene_camera_file_extension
+    name_file = main_window.camera_type_key.currentText()
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
 
     if file_export_path:

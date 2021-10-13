@@ -1,5 +1,3 @@
-from PyQt5.QtWidgets import QInputDialog
-
 from lib.design.Raging_tools import *
 from lib.packages import os, rmtree, QFileDialog, copyfile, \
     move, QMessageBox
@@ -388,18 +386,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():
 
-                    # Ask to the user, from what tab he wants to gather and save the data
+                    # Ask to the user if the tool saves also the modified values from character parameters editor
                     msg = QMessageBox()
                     msg.setWindowTitle("Message")
-                    message = "From what tab do you wish to save the file?"
-                    options = ["character parameters editor", "pak explorer"]
-                    answer = QInputDialog.getItem(self, "Select option", message, options, editable=False)
+                    message = "Do you wish to save also the modified values from 'character parameters editor' " \
+                              "into the unpacked files?"
+                    answer = msg.question(self, '', message, msg.Yes | msg.No | msg.Cancel)
 
                     # Check if the user has selected something
-                    if answer[1]:
+                    if answer:
 
-                        # The user wants to save the file from the 'character parameters editor'
-                        if answer[0] == options[0]:
+                        # The user wants to save also the modified values from 'character parameters editor'
+                        if answer == msg.Yes:
 
                             # Check what type of character parameter editor is activated
                             # --- operate_character_XXX_m ---
@@ -442,10 +440,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 msg.setText("The file hasn't been modified.")
                                 msg.exec()
 
-                        # The user wants to save the pak file from the 'pak explorer'
-                        else:
+                        # The user wants to save the values only from the 'pak explorer'
+                        elif answer == msg.No:
                             print("Packing the file...")
                             pack_and_save_file(self, path_output_file)
+
                 # We save the data from the 'pak explorer' tab
                 elif self.pak_explorer.isEnabled():
                     print("Packing the file...")
