@@ -644,7 +644,7 @@ def action_import_logic(main_window):
 
                         # Concatenate the base message and the differences the tool has found
                         message = VEV.message_base_import_DDS_start + "<ul>" + message + "</ul>" \
-                                  + VEV.message_base_import_DDS_end
+                            + VEV.message_base_import_DDS_end
 
                         # Ask to the user if he/she is sure that wants to replace the texture
                         msg.setWindowTitle("Warning")
