@@ -162,6 +162,10 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.exportCameraButton.clicked.connect(lambda: action_export_camera_button_logic(main_window))
     # Import camera button
     main_window.importCameraButton.clicked.connect(lambda: action_import_camera_button_logic(main_window))
+    # Export all camera button
+    main_window.exportAllCameraButton.clicked.connect(lambda: action_export_all_camera_button_logic(main_window))
+    # Import all camera button
+    main_window.importAllCameraButton.clicked.connect(lambda: action_import_all_camera_button_logic(main_window))
 
     # Set the pivots
     main_window.pivot_value.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=0))
@@ -1167,7 +1171,8 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
 def action_export_camera_button_logic(main_window):
 
     # Ask to the user the file output
-    name_file = main_window.camera_type_key.currentText()
+    name_file = CPEV.character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
+                main_window.camera_type_key.currentText().replace(" ", "_") + CPEV.camera_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
 
     if file_export_path:
@@ -1284,6 +1289,158 @@ def action_import_camera_button_logic(main_window):
             # Set camera values to current combo box and show them in the tool
             main_window.camera_type_key.setItemData(main_window.camera_type_key.currentIndex(), camera_cutscene)
             change_camera_cutscene_values(main_window, camera_cutscene)
+
+
+def action_export_all_camera_button_logic(main_window):
+
+    # Ask to the user the folder output
+    name_folder = CPEV.character_id + "_cameras"
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras", name_folder, "")[0]
+
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        # Export all the files to the folder
+        for i in range(0, main_window.camera_type_key.count()):
+            name_file = CPEV.character_id + "_" + str(i) + "_" + \
+                        main_window.camera_type_key.itemText(i).replace(" ", "_") + CPEV.camera_extension
+            file_export_path = os.path.join(folder_export_path, name_file)
+
+            camera_cutscene = main_window.camera_type_key.itemData(i)
+
+            with open(file_export_path, mode="wb") as file:
+
+                # Write the pivots
+                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+
+                # Rotations Z
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+
+                # Translations Y
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+
+                # Rotations X
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+
+                # Translations Z
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+
+                # Unknown value block 10
+                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+
+                # Get the zoom and camera speed (float values)
+                file.write(struct.pack('>f', camera_cutscene.zoom_in))
+                file.write(struct.pack('>f', camera_cutscene.camera_speed))
+
+                # Unknown value block 13
+                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The camera files weres exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def action_import_all_camera_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the camera files
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import cameras", "")
+
+    cameras_files_error = []
+
+    if folder_import:
+
+        cameras_files = os.listdir(folder_import)
+        # Get the filename of each camera
+        for i in range(0, len(cameras_files)):
+
+            # Read all the data
+            with open(os.path.join(folder_import, cameras_files[i]), mode="rb") as file:
+
+                size_file = len(file.read())
+                file.seek(0)
+
+                # Check if camera has the correct size
+                if size_file == CPEV.size_each_camera_cutscene:
+
+                    # Create an instance of cameraCutscene
+                    camera_cutscene = CameraCutscene()
+
+                    # Get the pivots
+                    camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
+                    camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
+                    camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
+                    camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
+
+                    # Rotations Z
+                    camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
+                    camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
+                        struct.unpack('>f', file.read(4))[0]
+
+                    # Translations Y
+                    camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
+                    camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
+                        struct.unpack('>f', file.read(4))[0]
+
+                    # Rotations X
+                    camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
+                    camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
+                        struct.unpack('>f', file.read(4))[0]
+
+                    # Translations Z
+                    camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
+                    camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
+                        struct.unpack('>f', file.read(4))[0]
+
+                    # Unknown value block 10
+                    camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
+
+                    # Get the zoom and camera speed (float values)
+                    camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
+                    camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
+
+                    # Unknown value block 13
+                    camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
+
+                    # Set camera values to combo box
+                    main_window.camera_type_key.setItemData(i, camera_cutscene)
+
+                    # Change the values in the tool only for the current selected item
+                    if main_window.camera_type_key.currentIndex() == i:
+                        change_camera_cutscene_values(main_window, camera_cutscene)
+
+                else:
+                    cameras_files_error.append(cameras_files[i])
+        
+        # We show a message with the cameras files that couldn't get imported
+        if cameras_files_error:
+
+            message = ""
+
+            for cameras_file_error in cameras_files_error:
+                message = message + "<li>" + cameras_file_error + "</li>"
+            message = "The following cameras couldn't get imported <ul>" + message + "</ul>"
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Warning")
+            msg.setText(message)
+            msg.exec()
 
 
 def on_color_lightning_changed(main_window):

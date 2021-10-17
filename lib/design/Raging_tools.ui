@@ -4987,6 +4987,32 @@
                <string>Import...</string>
               </property>
              </widget>
+             <widget class="QPushButton" name="exportAllCameraButton">
+              <property name="geometry">
+               <rect>
+                <x>380</x>
+                <y>10</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Export all...</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="importAllCameraButton">
+              <property name="geometry">
+               <rect>
+                <x>470</x>
+                <y>10</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Import all...</string>
+              </property>
+             </widget>
             </widget>
            </widget>
           </widget>

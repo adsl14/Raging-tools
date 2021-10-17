@@ -638,8 +638,9 @@ def action_import_logic(main_window):
                                                               width, height, mip_maps, dxt_encoding_text)
 
                     # If the message is empty, there is no differences between original and modified one
-                    msg = QMessageBox()
                     if message:
+
+                        msg = QMessageBox()
 
                         # Concatenate the base message and the differences the tool has found
                         message = VEV.message_base_import_DDS_start + "<ul>" + message + "</ul>" \

@@ -281,6 +281,9 @@ def load_data_to_pe_cpe(main_window):
     # Check if the file is an operate_character_XXX_m type
     elif re.search(CPEV.operate_character_XXX_m_regex, data):
 
+        # Save the id of the character to the character parameters editor tab
+        CPEV.character_id = data.split("_")[2]
+
         # Read all the data from the files and store it in the global_character from CPEV.
         read_single_character_parameters(main_window)
 

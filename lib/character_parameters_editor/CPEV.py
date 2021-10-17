@@ -33,12 +33,14 @@ class CPEV:
     # path and positions of files and data
     character_i_path = ""
     camera_i_path = ""
+    character_id = ""
     # Values for the combo box
     type_of_fighting_values = dict({"Type 1": 0, "Type 2": 1, "Type 3": 2, "Type 4": 3, "Type 5": 10, "Type 6": 11,
                                     "Type 7": 12})
     direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
     color_background_combo_values = dict({"Blue": 88, "Yellow 1": 94, "Yellow 2": 92, "Gray": 82, "Purple": 80,
                                           "Red": 76, "Black": 78})
+    # Camera properties
     # Don't change the order, because the file has this order when we read the file
     camera_types_cutscene = ["Entry (1P)", "Entry (2P)", "Entry 2 (1P)", "Entry 2 (2P)", "Entry 3 (1P)",
                              "Entry 3 (2P)", "Victory", "Lose", "Transform in", "Transform result", "Return in",
@@ -46,6 +48,7 @@ class CPEV:
     # position where the first camera cutscene starts
     position_camera_cutscene = 208
     size_each_camera_cutscene = 52
+    camera_extension = ".cam"
 
     # panelPortraistlist
     mini_portraits_image = []
