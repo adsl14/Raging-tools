@@ -8,3 +8,4 @@ class CameraCutscene:
         self.unknowns = dict({"unknown_block_10": 0, "unknown_block_13": 0})
         self.zoom_in = 0.0
         self.camera_speed = 0.0
+        self.modified = False

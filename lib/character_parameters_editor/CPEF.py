@@ -1,8 +1,9 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from lib.character_parameters_editor.CPEV import CPEV
+from lib.character_parameters_editor.classes.Animation import Animation
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
-from lib.packages import QLabel, QPixmap, functools, os, struct
+from lib.packages import QLabel, QPixmap, functools, os, struct, natsorted
 from lib.design.select_chara import Ui_Dialog
 
 
@@ -203,6 +204,18 @@ def initialize_cpe(main_window, qt_widgets):
     for element in CPEV.color_background_combo_values:
         main_window.background_color_combo_value.addItem(element, CPEV.color_background_combo_values[element])
 
+    # Set animations
+    for element in CPEV.animations_types:
+        main_window.animation_type.addItem(element)
+    # Export animation button
+    main_window.exportAnimationButton.clicked.connect(lambda: action_export_animation_button_logic(main_window))
+    # Import animation button
+    main_window.importAnimationButton.clicked.connect(lambda: action_import_animation_button_logic(main_window))
+    # Export all animation button
+    main_window.exportAllAnimationButton.clicked.connect(lambda: action_export_all_animation_button_logic(main_window))
+    # Import all animation button
+    main_window.importAllAnimationButton.clicked.connect(lambda: action_import_all_animation_button_logic(main_window))
+
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
 
@@ -235,6 +248,7 @@ def enable_disable_operate_character_xxx_m_frames(main_window, flag):
     main_window.melee_values.setVisible(flag)
     main_window.movement_speed.setVisible(flag)
     main_window.camera_values.setVisible(flag)
+    main_window.animation_values.setVisible(flag)
 
 
 # operate_resident_param
@@ -411,9 +425,12 @@ def write_character_parameters(character, subpak_file_character_inf, subpak_file
 # operate_character_XXX functions (single_character_parameters)
 def read_single_character_parameters(main_window):
 
-    # Read all the data from the files
-    # character_info
+    # Read all the data from the files -> animation info
+    read_animation_files(main_window)
+
+    # character info
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
+    # camera info
     CPEV.camera_i_path = main_window.listView_2.model().item(727, 0).text()
 
     # Read character info file
@@ -600,39 +617,101 @@ def write_single_character_parameters(main_window):
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
 
-            # Write the pivots
-            file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+            # Camera has been modified
+            if camera_cutscene.modified:
+                # Write the pivots
+                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
 
-            # Rotations Z
-            file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-            file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+                # Rotations Z
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
 
-            # Translations Y
-            file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-            file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+                # Translations Y
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
 
-            # Rotations X
-            file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
-            file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+                # Rotations X
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
 
-            # Translations Z
-            file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-            file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+                # Translations Z
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
 
-            # Unknown value block 10
-            file.seek(4, 1)
-            # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+                # Unknown value block 10
+                file.seek(4, 1)
+                # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
 
-            # Get the zoom and camera speed (float values)
-            file.write(struct.pack('>f', camera_cutscene.zoom_in))
-            file.write(struct.pack('>f', camera_cutscene.camera_speed))
+                # Get the zoom and camera speed (float values)
+                file.write(struct.pack('>f', camera_cutscene.zoom_in))
+                file.write(struct.pack('>f', camera_cutscene.camera_speed))
 
-            # Unknown value block 13
-            file.seek(4, 1)
-            # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+                # Unknown value block 13
+                file.seek(4, 1)
+                # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+            # Ignore this camera
+            else:
+                file.seek(CPEV.size_each_camera_cutscene, 1)
+
+    # Save all animation info
+    for i in range(0, len(CPEV.animations_types)):
+        animation_different_files = main_window.animation_type.itemData(i)
+
+        for animations_file in animation_different_files:
+            for animation_file in animations_file:
+                with open(animation_file.path, mode="wb") as file:
+                    file.write(animation_file.data)
+
+
+# Load the necesary animation files.
+# index_file in disk (temp folder)
+# index_combo_box (index from combo box in design)
+# number_files_to_load (number of files that is necessary to load in order to save the animation.
+# It doesn't count the effects)
+def read_animation_file(main_window, index_list_view, index_combo_box, number_files_to_load):
+
+    item_data_animation = []
+    for i in range(0, number_files_to_load):
+
+        # The animation keyframes
+        animation_keyframes = Animation()
+        animation_keyframes.path = main_window.listView_2.model().item(index_list_view + i, 0).text()
+        with open(animation_keyframes.path, mode="rb") as file:
+            animation_keyframes.data = file.read()
+        animation_keyframes.size = len(animation_keyframes.data)
+
+        # The animation effects
+        animation_effects = Animation()
+        animation_effects.path = main_window.listView_2.model().item(index_list_view +
+                                                                     CPEV.size_between_animation_and_effects + i,
+                                                                     0).text()
+        with open(animation_effects.path, mode="rb") as file:
+            animation_effects.data = file.read()
+        animation_effects.size = len(animation_effects.data)
+
+        # Add all the instances to an array
+        item_data_animation.append([animation_keyframes, animation_effects])
+    # Add the array of Animation instances to the combo box
+    main_window.animation_type.setItemData(index_combo_box, item_data_animation)
+
+
+# Read all the animation files
+def read_animation_files(main_window):
+
+    # Idle ground
+    read_animation_file(main_window, 0, 0, 1)
+
+    # Idle fly
+    read_animation_file(main_window, 1, 1, 1)
+
+    # Charge (in, loop)
+    read_animation_file(main_window, 2, 2, 2)
+
+    # Charge max
+    read_animation_file(main_window, 3, 3, 1)
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
@@ -1168,50 +1247,54 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
     main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
 
 
+def export_camera(file_export_path, camera_cutscene):
+
+    with open(file_export_path, mode="wb") as file:
+        # Write the pivots
+        file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+        file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+        file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+        file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+
+        # Rotations Z
+        file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+        file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+
+        # Translations Y
+        file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+        file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+
+        # Rotations X
+        file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+        file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+
+        # Translations Z
+        file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+        file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+
+        # Unknown value block 10
+        file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+
+        # Get the zoom and camera speed (float values)
+        file.write(struct.pack('>f', camera_cutscene.zoom_in))
+        file.write(struct.pack('>f', camera_cutscene.camera_speed))
+
+        # Unknown value block 13
+        file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+
+
 def action_export_camera_button_logic(main_window):
 
     # Ask to the user the file output
     name_file = CPEV.character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
-                main_window.camera_type_key.currentText().replace(" ", "_") + CPEV.camera_extension
+                main_window.camera_type_key.currentText().replace(" ", "_") + "." + CPEV.camera_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
 
     if file_export_path:
 
         camera_cutscene = main_window.camera_type_key.currentData()
 
-        with open(file_export_path, mode="wb") as file:
-
-            # Write the pivots
-            file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-            file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
-
-            # Rotations Z
-            file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-            file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
-
-            # Translations Y
-            file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-            file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
-
-            # Rotations X
-            file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
-            file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
-
-            # Translations Z
-            file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-            file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
-
-            # Unknown value block 10
-            file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
-
-            # Get the zoom and camera speed (float values)
-            file.write(struct.pack('>f', camera_cutscene.zoom_in))
-            file.write(struct.pack('>f', camera_cutscene.camera_speed))
-
-            # Unknown value block 13
-            file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+        export_camera(file_export_path, camera_cutscene)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -1223,6 +1306,48 @@ def action_export_camera_button_logic(main_window):
         if message_open_exported_files == msg.Yes:
             # Show the path folder to the user
             os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def import_camera(camera_cutscene, file):
+
+    # Get the pivots
+    camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
+    camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
+    camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
+    camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
+
+    # Rotations Z
+    camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
+    camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
+        struct.unpack('>f', file.read(4))[0]
+
+    # Translations Y
+    camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
+    camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
+        struct.unpack('>f', file.read(4))[0]
+
+    # Rotations X
+    camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
+    camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
+        struct.unpack('>f', file.read(4))[0]
+
+    # Translations Z
+    camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
+    camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
+        struct.unpack('>f', file.read(4))[0]
+
+    # Unknown value block 10
+    camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
+
+    # Get the zoom and camera speed (float values)
+    camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
+    camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
+
+    # Unknown value block 13
+    camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
+
+    # Set camera as modified
+    camera_cutscene.modified = True
 
 
 def action_import_camera_button_logic(main_window):
@@ -1247,48 +1372,14 @@ def action_import_camera_button_logic(main_window):
                 msg.exec()
                 return
 
-            # Create an instance of cameraCutscene
-            camera_cutscene = CameraCutscene()
+            # Get the instance of the combo box
+            camera_cutscene = main_window.camera_type_key.currentData()
 
-            # Get the pivots
-            camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
+            # Import camera to memory
+            import_camera(camera_cutscene, file)
 
-            # Rotations Z
-            camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Translations Y
-            camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Rotations X
-            camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Translations Z
-            camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Unknown value block 10
-            camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
-
-            # Get the zoom and camera speed (float values)
-            camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
-
-            # Unknown value block 13
-            camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
-
-            # Set camera values to current combo box and show them in the tool
-            main_window.camera_type_key.setItemData(main_window.camera_type_key.currentIndex(), camera_cutscene)
-            change_camera_cutscene_values(main_window, camera_cutscene)
+        # Set camera values to current combo box and show them in the tool
+        change_camera_cutscene_values(main_window, camera_cutscene)
 
 
 def action_export_all_camera_button_logic(main_window):
@@ -1306,44 +1397,12 @@ def action_export_all_camera_button_logic(main_window):
         # Export all the files to the folder
         for i in range(0, main_window.camera_type_key.count()):
             name_file = CPEV.character_id + "_" + str(i) + "_" + \
-                        main_window.camera_type_key.itemText(i).replace(" ", "_") + CPEV.camera_extension
+                        main_window.camera_type_key.itemText(i).replace(" ", "_") + "." + CPEV.camera_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
 
-            with open(file_export_path, mode="wb") as file:
-
-                # Write the pivots
-                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
-
-                # Rotations Z
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
-
-                # Translations Y
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
-
-                # Rotations X
-                file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
-
-                # Translations Z
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
-
-                # Unknown value block 10
-                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
-
-                # Get the zoom and camera speed (float values)
-                file.write(struct.pack('>f', camera_cutscene.zoom_in))
-                file.write(struct.pack('>f', camera_cutscene.camera_speed))
-
-                # Unknown value block 13
-                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+            export_camera(file_export_path, camera_cutscene)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -1366,12 +1425,13 @@ def action_import_all_camera_button_logic(main_window):
 
     if folder_import:
 
-        cameras_files = os.listdir(folder_import)
+        cameras_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
         # Get the filename of each camera
         for i in range(0, len(cameras_files)):
 
             # Read all the data
-            with open(os.path.join(folder_import, cameras_files[i]), mode="rb") as file:
+            file_export_path = os.path.join(folder_import, cameras_files[i])
+            with open(file_export_path, mode="rb") as file:
 
                 size_file = len(file.read())
                 file.seek(0)
@@ -1380,46 +1440,10 @@ def action_import_all_camera_button_logic(main_window):
                 if size_file == CPEV.size_each_camera_cutscene:
 
                     # Create an instance of cameraCutscene
-                    camera_cutscene = CameraCutscene()
+                    camera_cutscene = main_window.camera_type_key.itemData(i)
 
-                    # Get the pivots
-                    camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
-                    camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
-                    camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
-                    camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
-
-                    # Rotations Z
-                    camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
-                    camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
-                        struct.unpack('>f', file.read(4))[0]
-
-                    # Translations Y
-                    camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
-                    camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
-                        struct.unpack('>f', file.read(4))[0]
-
-                    # Rotations X
-                    camera_cutscene.rotations["X_start"] = struct.unpack('>f', file.read(4))[0]
-                    camera_cutscene.rotations["X_end"] = camera_cutscene.rotations["X_start"] + \
-                        struct.unpack('>f', file.read(4))[0]
-
-                    # Translations Z
-                    camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
-                    camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
-                        struct.unpack('>f', file.read(4))[0]
-
-                    # Unknown value block 10
-                    camera_cutscene.unknowns["unknown_block_10"] = struct.unpack('>f', file.read(4))[0]
-
-                    # Get the zoom and camera speed (float values)
-                    camera_cutscene.zoom_in = struct.unpack('>f', file.read(4))[0]
-                    camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
-
-                    # Unknown value block 13
-                    camera_cutscene.unknowns["unknown_block_13"] = struct.unpack('>f', file.read(4))[0]
-
-                    # Set camera values to combo box
-                    main_window.camera_type_key.setItemData(i, camera_cutscene)
+                    # Import camera to memory
+                    import_camera(camera_cutscene, file)
 
                     # Change the values in the tool only for the current selected item
                     if main_window.camera_type_key.currentIndex() == i:
@@ -1436,6 +1460,223 @@ def action_import_all_camera_button_logic(main_window):
             for cameras_file_error in cameras_files_error:
                 message = message + "<li>" + cameras_file_error + "</li>"
             message = "The following cameras couldn't get imported <ul>" + message + "</ul>"
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Warning")
+            msg.setText(message)
+            msg.exec()
+
+
+def export_animation(animation_array, file_export_path):
+
+    # Get the number of animations files
+    number_anim_files = len(animation_array)
+
+    # The header will have the 'SPAS', 'number of animation files', and the size of each
+    # of one in the same order (keyframes+effect, keyframes+effects)
+    header_file = bytes(CPEV.animations_extension.upper(), encoding='utf-8')
+    header_file = header_file + struct.pack('>I', number_anim_files * 2)
+    data_file = b''
+
+    # Get the sizes and data from each animation (keyframe and effects)
+    for animation in animation_array:
+        # Get each info from each animation file
+        for animation_file in animation:
+            header_file = header_file + struct.pack('>I', animation_file.size)
+            data_file = data_file + animation_file.data
+
+    # Write the header properties and then the data
+    with open(file_export_path, mode="wb") as file:
+        # Write the header (SPAS, number of animation files, and sizes)
+        file.write(header_file)
+
+        # Write the data
+        file.write(data_file)
+
+
+def action_export_animation_button_logic(main_window):
+    # Ask to the user the file output
+    name_file = CPEV.character_id + "_" + str(main_window.animation_type.currentIndex()) + "_" + \
+                main_window.animation_type.currentText().replace(" ", "_") + "." + CPEV.animations_extension
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation", name_file, "")[0]
+
+    # The user has selected an output
+    if file_export_path:
+
+        # Get from the combo box, the array of animations ([[keyframes + effect], [keyframes + effects]])
+        animation_array = main_window.animation_type.currentData()
+
+        export_animation(animation_array, file_export_path)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The animation file was exported in: <b>" + file_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def import_animation(main_window, file_export_path, index=None, name_file=None, animations_files_error=None):
+
+    if file_export_path:
+
+        with open(file_export_path, mode="rb") as file:
+
+            header_type = file.read(4)
+
+            # The header needs to have 'SPAS' as a header
+            if header_type.decode("utf-8").lower() != CPEV.animations_extension:
+                if animations_files_error is not None:
+                    animations_files_error.append(name_file)
+                    return
+                else:
+                    # Wrong animation file
+                    msg = QMessageBox()
+                    msg.setWindowTitle("Error")
+                    msg.setText("Invalid animation file.")
+                    msg.exec()
+                    return
+            else:
+
+                # Read the number of files
+                number_anim_files = int(int.from_bytes(file.read(4), "big") / 2)
+
+                # Get the sizes of each file. While reading we will sum all the sizes to check if the file has
+                # the same data size
+                sizes_number_of_files = []
+                total_size = 0
+
+                # Read the size of each animation file
+                for i in range(number_anim_files):
+                    # Keyframes
+                    size = int.from_bytes(file.read(4), "big")
+                    sizes_number_of_files.append(size)
+                    total_size += size
+
+                    # Effects
+                    size = int.from_bytes(file.read(4), "big")
+                    sizes_number_of_files.append(size)
+                    total_size += size
+
+                # The rest of data in the file, is the animations (keyframes and effects) info
+                data = file.read()
+                total_size_file = len(data)
+
+                # Check if the sizes are the same
+                if total_size != total_size_file:
+                    if animations_files_error is not None:
+                        animations_files_error.append(name_file)
+                        return
+                    else:
+                        # Wrong animation file
+                        msg = QMessageBox()
+                        msg.setWindowTitle("Error")
+                        msg.setText("Invalid animation file.")
+                        msg.exec()
+                        return
+
+                # Store all the info in memory
+                if index is not None:
+                    animation_array = main_window.animation_type.itemData(index)
+                else:
+                    animation_array = main_window.animation_type.currentData()
+
+                # If the modified file has more files inside than the original, we refuse the modified file
+                if len(animation_array) != number_anim_files:
+                    if animations_files_error is not None:
+                        animations_files_error.append(name_file)
+                        return
+                    else:
+                        # Wrong animation file
+                        msg = QMessageBox()
+                        msg.setWindowTitle("Error")
+                        msg.setText("Incompatible animation file.")
+                        msg.exec()
+                        return
+
+                data_index_start = 0
+                j = 0
+                # Get the pair animation (keyframes and effects)
+                for animation in animation_array:
+                    # Get each animation file
+                    for animation_file in animation:
+                        data_index_end = data_index_start + sizes_number_of_files[j]
+                        animation_file.data = data[data_index_start:data_index_end]
+                        animation_file.size = sizes_number_of_files[j]
+                        animation_file.modified = True
+                        data_index_start = data_index_end
+                        j = j + 1
+
+
+def action_import_animation_button_logic(main_window):
+    # Ask to the user from what file wants to open the camera files
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", "", "")[0]
+
+    # Import a single animation
+    import_animation(main_window, file_export_path)
+
+
+def action_export_all_animation_button_logic(main_window):
+    # Ask to the user the folder output
+    name_folder = CPEV.character_id + "_animations"
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export animations", name_folder, "")[0]
+
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        # Export all the files to the folder
+        for i in range(0, main_window.animation_type.count()):
+            name_file = CPEV.character_id + "_" + str(i) + "_" + \
+                        main_window.animation_type.itemText(i).replace(" ", "_") + "." + CPEV.animations_extension
+            file_export_path = os.path.join(folder_export_path, name_file)
+
+            animation = main_window.animation_type.itemData(i)
+
+            export_animation(animation, file_export_path)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The animation files weres exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def action_import_all_animation_button_logic(main_window):
+    # Ask to the user from what file wants to open the camera files
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", "")
+
+    animations_files_error = []
+
+    if folder_import:
+
+        animation_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
+        # Get the filename of each animation
+        for i in range(0, len(animation_files)):
+
+            # Import every single animation
+            import_animation(main_window, os.path.join(folder_import, animation_files[i]), i, animation_files[i],
+                             animations_files_error)
+
+        # We show a message with the animations files that couldn't get imported
+        if animations_files_error:
+
+            message = ""
+
+            for animations_file_error in animations_files_error:
+                message = message + "<li>" + animations_file_error + "</li>"
+            message = "The following animations couldn't get imported <ul>" + message + "</ul>"
 
             msg = QMessageBox()
             msg.setWindowTitle("Warning")
@@ -1634,15 +1875,19 @@ def on_pivot_value_changed(main_window, pivot_index):
         if pivot_index == 0:
             main_window.camera_type_key.currentData().pivots["pivot_1"] = \
                 main_window.pivot_value.value()
+            main_window.camera_type_key.currentData().modified = True
         elif pivot_index == 1:
             main_window.camera_type_key.currentData().pivots["pivot_2"] = \
                 main_window.pivot_value_2.value()
+            main_window.camera_type_key.currentData().modified = True
         elif pivot_index == 2:
             main_window.camera_type_key.currentData().pivots["pivot_3"] = \
                 main_window.pivot_value_3.value()
+            main_window.camera_type_key.currentData().modified = True
         else:
             main_window.camera_type_key.currentData().pivots["pivot_4"] = \
                 main_window.pivot_value_4.value()
+            main_window.camera_type_key.currentData().modified = True
 
 
 def on_translations_changed(main_window, y, z):
@@ -1652,16 +1897,20 @@ def on_translations_changed(main_window, y, z):
             if y == 0:
                 main_window.camera_type_key.currentData().positions["Y_start"] =\
                     main_window.translation_y_start_value.value()
+                main_window.camera_type_key.currentData().modified = True
             else:
                 main_window.camera_type_key.currentData().positions["Y_end"] = \
                     main_window.translation_y_end_value.value()
+                main_window.camera_type_key.currentData().modified = True
         else:
             if z == 0:
                 main_window.camera_type_key.currentData().positions["Z_start"] =\
                     main_window.translation_z_start_value.value()
+                main_window.camera_type_key.currentData().modified = True
             else:
                 main_window.camera_type_key.currentData().positions["Z_end"] = \
                     main_window.translation_z_end_value.value()
+                main_window.camera_type_key.currentData().modified = True
 
 
 def on_rotations_changed(main_window, x, z):
@@ -1671,17 +1920,21 @@ def on_rotations_changed(main_window, x, z):
             if x == 0:
                 main_window.camera_type_key.currentData().rotations["X_start"] =\
                     main_window.rotation_x_start_value.value()
+                main_window.camera_type_key.currentData().modified = True
             else:
                 main_window.camera_type_key.currentData().rotations["X_end"] = \
                     main_window.rotation_x_end_value.value()
+                main_window.camera_type_key.currentData().modified = True
         else:
             if z == 0:
                 main_window.camera_type_key.currentData().rotations["Z_start"] =\
                     \
                     main_window.rotation_z_start_value.value()
+                main_window.camera_type_key.currentData().modified = True
             else:
                 main_window.camera_type_key.currentData().rotations["Z_end"] = \
                     main_window.rotation_z_end_value.value()
+                main_window.camera_type_key.currentData().modified = True
 
 
 def on_speed_camera_changed(main_window):
@@ -1690,6 +1943,7 @@ def on_speed_camera_changed(main_window):
     if not CPEV.change_character:
         main_window.camera_type_key.currentData().camera_speed = \
             main_window.speed_camera_value.value()
+        main_window.camera_type_key.currentData().modified = True
 
 
 def on_zoom_value_changed(main_window):
@@ -1698,3 +1952,4 @@ def on_zoom_value_changed(main_window):
     if not CPEV.change_character:
         main_window.camera_type_key.currentData().zoom_in = \
             main_window.zoom_value.value()
+        main_window.camera_type_key.currentData().modified = True
