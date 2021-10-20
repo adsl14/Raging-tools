@@ -427,6 +427,8 @@ def read_single_character_parameters(main_window):
 
     # Read all the data from the files -> animation info
     read_animation_files(main_window)
+    main_window.animation_type.setCurrentIndex(0)
+
 
     # character info
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
@@ -668,10 +670,10 @@ def write_single_character_parameters(main_window):
 
 # Load the necesary animation files.
 # index_file in disk (temp folder)
-# index_combo_box (index from combo box in design)
+# combo_box_label (label from combo box in design)
 # number_files_to_load (number of files that is necessary to load in order to save the animation.
 # It doesn't count the effects)
-def read_animation_file(main_window, index_list_view, index_combo_box, number_files_to_load):
+def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load):
 
     item_data_animation = []
     for i in range(0, number_files_to_load):
@@ -695,23 +697,92 @@ def read_animation_file(main_window, index_list_view, index_combo_box, number_fi
         # Add all the instances to an array
         item_data_animation.append([animation_keyframes, animation_effects])
     # Add the array of Animation instances to the combo box
-    main_window.animation_type.setItemData(index_combo_box, item_data_animation)
+    main_window.animation_type.setItemData(main_window.animation_type.findText(combo_box_label), item_data_animation)
 
 
 # Read all the animation files
 def read_animation_files(main_window):
 
     # Idle ground
-    read_animation_file(main_window, 0, 0, 1)
-
+    read_animation_file(main_window, 0, "Idle ground", 1)
     # Idle fly
-    read_animation_file(main_window, 1, 1, 1)
-
+    read_animation_file(main_window, 1, "Idle fly", 1)
     # Charge (in, loop)
-    read_animation_file(main_window, 2, 2, 2)
-
+    read_animation_file(main_window, 2, "Charge", 2)
     # Charge max
-    read_animation_file(main_window, 3, 3, 1)
+    read_animation_file(main_window, 3, "Charge max", 1)
+    # Rush attack ground
+    read_animation_file(main_window, 66, "Rush attack ground", 1)
+    read_animation_file(main_window, 67, "Rush attack ground 2", 1)
+    read_animation_file(main_window, 68, "Rush attack ground 3", 1)
+    read_animation_file(main_window, 69, "Rush attack ground 4", 1)
+    read_animation_file(main_window, 70, "Rush attack ground 5", 1)
+    # Rush attack fly
+    read_animation_file(main_window, 71, "Rush attack fly", 1)
+    read_animation_file(main_window, 72, "Rush attack fly 2", 1)
+    read_animation_file(main_window, 73, "Rush attack fly 3", 1)
+    read_animation_file(main_window, 74, "Rush attack fly 4", 1)
+    read_animation_file(main_window, 75, "Rush attack fly 5", 1)
+    # Smash attack
+    read_animation_file(main_window, 76, "Smash attack left", 3)
+    read_animation_file(main_window, 79, "Smash attack right", 3)
+    read_animation_file(main_window, 82, "Smash attack 2", 3)
+    read_animation_file(main_window, 85, "Smash attack 3", 1)
+    read_animation_file(main_window, 86, "Smash attack 4", 3)
+    read_animation_file(main_window, 89, "Smash attack high", 3)
+    read_animation_file(main_window, 92, "Smash attack low", 3)
+    read_animation_file(main_window, 95, "Finish attack teleport", 2)
+    # Charge attack
+    read_animation_file(main_window, 97,  "Charge attack", 3)
+    read_animation_file(main_window, 100, "Charge attack high", 3)
+    read_animation_file(main_window, 103, "Charge attack low", 3)
+    read_animation_file(main_window, 106, "Charge attack left", 3)
+    read_animation_file(main_window, 109, "Charge attack right", 3)
+    # Dash attack
+    read_animation_file(main_window, 112, "Dash attack", 3)
+    # Dash charge attack
+    read_animation_file(main_window, 115, "Dash charge attack", 3)
+    read_animation_file(main_window, 118, "Dash charge attack high", 3)
+    read_animation_file(main_window, 121, "Dash charge attack low", 3)
+    read_animation_file(main_window, 124, "Dash charge attack left", 3)
+    read_animation_file(main_window, 127, "Dash charge attack right", 3)
+    # Shot ki
+    read_animation_file(main_window, 130, "Shot Ki left hand", 3)
+    read_animation_file(main_window, 133, "Shot Ki right hand", 3)
+    # Charge Shot ki
+    read_animation_file(main_window, 136, "Charge shot Ki", 3)
+    read_animation_file(main_window, 139, "Charge shot Ki high", 3)
+    read_animation_file(main_window, 142, "Charge shot Ki low", 3)
+    # Shot ki while moving
+    read_animation_file(main_window, 145, "Shot Ki moving forward", 1)
+    read_animation_file(main_window, 146, "Shot Ki moving left", 1)
+    read_animation_file(main_window, 147, "Shot Ki moving right", 1)
+    read_animation_file(main_window, 148, "Shot Ki moving back", 1)
+    # Charged shot ki while moving
+    read_animation_file(main_window, 149, "Charged shot Ki moving forward", 3)
+    read_animation_file(main_window, 152, "Charged shot Ki moving left", 3)
+    read_animation_file(main_window, 155, "Charged shot Ki moving right", 3)
+    read_animation_file(main_window, 158, "Charged shot Ki moving back", 3)
+    # Jump attack
+    read_animation_file(main_window, 161, "Jump attack", 3)
+    read_animation_file(main_window, 164, "Jump Ki shot left", 1)
+    read_animation_file(main_window, 165, "Jump Ki shot right", 1)
+    read_animation_file(main_window, 166, "Jump charged Ki shot", 3)
+    # Throw
+    read_animation_file(main_window, 169, "Throw catch", 1)
+    read_animation_file(main_window, 170, "Throw", 3)
+    # Transformation
+    read_animation_file(main_window, 308, "Transformation in", 2)
+    read_animation_file(main_window, 310, "Transformation result", 1)
+    # Return
+    read_animation_file(main_window, 311, "Return in", 2)
+    read_animation_file(main_window, 313, "Return out", 1)
+    # Cutscenes
+    read_animation_file(main_window, 336, "Entry 1", 2)
+    read_animation_file(main_window, 338, "Entry 2", 2)
+    read_animation_file(main_window, 340, "Entry 3", 2)
+    read_animation_file(main_window, 342, "Victory", 2)
+    read_animation_file(main_window, 344, "Lose", 2)
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):

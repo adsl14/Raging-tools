@@ -5019,7 +5019,7 @@
               <rect>
                <x>650</x>
                <y>130</y>
-               <width>201</width>
+               <width>241</width>
                <height>131</height>
               </rect>
              </property>
@@ -5032,14 +5032,14 @@
              <widget class="QLabel" name="animation_text">
               <property name="geometry">
                <rect>
-                <x>0</x>
+                <x>80</x>
                 <y>0</y>
                 <width>71</width>
                 <height>16</height>
                </rect>
               </property>
               <property name="text">
-               <string>Animation:</string>
+               <string>Animation</string>
               </property>
              </widget>
              <widget class="QPushButton" name="exportAllAnimationButton">
@@ -5084,9 +5084,9 @@
              <widget class="QComboBox" name="animation_type">
               <property name="geometry">
                <rect>
-                <x>70</x>
-                <y>0</y>
-                <width>111</width>
+                <x>0</x>
+                <y>20</y>
+                <width>221</width>
                 <height>21</height>
                </rect>
               </property>
