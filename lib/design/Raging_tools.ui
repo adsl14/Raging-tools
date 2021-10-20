@@ -4100,10 +4100,10 @@
             <widget class="QFrame" name="melee_values">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>270</y>
-               <width>331</width>
-               <height>131</height>
+               <x>650</x>
+               <y>130</y>
+               <width>231</width>
+               <height>181</height>
               </rect>
              </property>
              <property name="frameShape">
@@ -4213,8 +4213,8 @@
              <widget class="QLabel" name="type_fighting_text">
               <property name="geometry">
                <rect>
-                <x>230</x>
-                <y>30</y>
+                <x>80</x>
+                <y>130</y>
                 <width>91</width>
                 <height>16</height>
                </rect>
@@ -4229,8 +4229,8 @@
              <widget class="QComboBox" name="type_fighting_value">
               <property name="geometry">
                <rect>
-                <x>230</x>
-                <y>50</y>
+                <x>80</x>
+                <y>150</y>
                 <width>81</width>
                 <height>21</height>
                </rect>
@@ -5017,10 +5017,10 @@
             <widget class="QFrame" name="animation_values">
              <property name="geometry">
               <rect>
-               <x>650</x>
-               <y>130</y>
-               <width>241</width>
-               <height>131</height>
+               <x>0</x>
+               <y>270</y>
+               <width>651</width>
+               <height>141</height>
               </rect>
              </property>
              <property name="frameShape">
@@ -5029,24 +5029,27 @@
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <widget class="QLabel" name="animation_text">
+             <widget class="QLabel" name="animation_text_title">
               <property name="geometry">
                <rect>
-                <x>80</x>
+                <x>0</x>
                 <y>0</y>
-                <width>71</width>
+                <width>111</width>
                 <height>16</height>
                </rect>
               </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds everything related to the animations of the character, including effects and properties like the keyframes (for example for a melee attack, what frames can hit the opponet)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
-               <string>Animation</string>
+               <string>Animation values:</string>
               </property>
              </widget>
              <widget class="QPushButton" name="exportAllAnimationButton">
               <property name="geometry">
                <rect>
-                <x>20</x>
-                <y>100</y>
+                <x>470</x>
+                <y>40</y>
                 <width>81</width>
                 <height>23</height>
                </rect>
@@ -5058,8 +5061,8 @@
              <widget class="QPushButton" name="importAllAnimationButton">
               <property name="geometry">
                <rect>
-                <x>110</x>
-                <y>100</y>
+                <x>560</x>
+                <y>40</y>
                 <width>81</width>
                 <height>23</height>
                </rect>
@@ -5071,8 +5074,8 @@
              <widget class="QPushButton" name="importAnimationButton">
               <property name="geometry">
                <rect>
-                <x>110</x>
-                <y>50</y>
+                <x>380</x>
+                <y>40</y>
                 <width>81</width>
                 <height>23</height>
                </rect>
@@ -5084,8 +5087,8 @@
              <widget class="QComboBox" name="animation_type">
               <property name="geometry">
                <rect>
-                <x>0</x>
-                <y>20</y>
+                <x>60</x>
+                <y>40</y>
                 <width>221</width>
                 <height>21</height>
                </rect>
@@ -5094,14 +5097,108 @@
              <widget class="QPushButton" name="exportAnimationButton">
               <property name="geometry">
                <rect>
-                <x>20</x>
-                <y>50</y>
+                <x>290</x>
+                <y>40</y>
                 <width>81</width>
                 <height>23</height>
                </rect>
               </property>
               <property name="text">
                <string>Export...</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="animation_text">
+              <property name="geometry">
+               <rect>
+                <x>140</x>
+                <y>20</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds the frames of the animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Animation</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="importAllAnimationPropertiesButton">
+              <property name="geometry">
+               <rect>
+                <x>560</x>
+                <y>100</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Import all...</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="exportAnimationPropertiesButton">
+              <property name="geometry">
+               <rect>
+                <x>290</x>
+                <y>100</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Export...</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="animation_properties">
+              <property name="geometry">
+               <rect>
+                <x>60</x>
+                <y>100</y>
+                <width>221</width>
+                <height>21</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="animation_text_2">
+              <property name="geometry">
+               <rect>
+                <x>140</x>
+                <y>80</y>
+                <width>71</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds the effects and keyframes for the animations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Properties</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="exportAllAnimationPropertiesButton">
+              <property name="geometry">
+               <rect>
+                <x>470</x>
+                <y>100</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Export all...</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="importAnimationPropertiesButton">
+              <property name="geometry">
+               <rect>
+                <x>380</x>
+                <y>100</y>
+                <width>81</width>
+                <height>23</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Import...</string>
               </property>
              </widget>
             </widget>

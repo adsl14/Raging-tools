@@ -208,13 +208,32 @@ def initialize_cpe(main_window, qt_widgets):
     for element in CPEV.animations_types:
         main_window.animation_type.addItem(element)
     # Export animation button
-    main_window.exportAnimationButton.clicked.connect(lambda: action_export_animation_button_logic(main_window))
+    main_window.exportAnimationButton.clicked.connect(
+        lambda: action_export_animation_button_logic(main_window, main_window.animation_type))
     # Import animation button
-    main_window.importAnimationButton.clicked.connect(lambda: action_import_animation_button_logic(main_window))
+    main_window.importAnimationButton.clicked.connect(
+        lambda: action_import_animation_button_logic(main_window, main_window.animation_type))
     # Export all animation button
-    main_window.exportAllAnimationButton.clicked.connect(lambda: action_export_all_animation_button_logic(main_window))
+    main_window.exportAllAnimationButton.clicked.connect(
+        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_type))
     # Import all animation button
-    main_window.importAllAnimationButton.clicked.connect(lambda: action_import_all_animation_button_logic(main_window))
+    main_window.importAllAnimationButton.clicked.connect(
+        lambda: action_import_all_animation_button_logic(main_window, main_window.animation_type))
+    # Set animations properties
+    for element in CPEV.animations_types:
+        main_window.animation_properties.addItem(element)
+    # Export animation properties button
+    main_window.exportAnimationPropertiesButton.clicked.connect(
+        lambda: action_export_animation_button_logic(main_window, main_window.animation_properties))
+    # Import animation properties button
+    main_window.importAnimationPropertiesButton.clicked.connect(
+        lambda: action_import_animation_button_logic(main_window, main_window.animation_properties))
+    # Export all animation properties button
+    main_window.exportAllAnimationPropertiesButton.clicked.connect(
+        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_properties, " properties"))
+    # Import all animation properties button
+    main_window.importAllAnimationPropertiesButton.clicked.connect(
+        lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
 
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
@@ -425,10 +444,11 @@ def write_character_parameters(character, subpak_file_character_inf, subpak_file
 # operate_character_XXX functions (single_character_parameters)
 def read_single_character_parameters(main_window):
 
-    # Read all the data from the files -> animation info
-    read_animation_files(main_window)
+    # Read all the animation values
+    read_animation_files(main_window, 0, main_window.animation_type)
     main_window.animation_type.setCurrentIndex(0)
-
+    read_animation_files(main_window, CPEV.size_between_animation_and_effects, main_window.animation_properties)
+    main_window.animation_properties.setCurrentIndex(0)
 
     # character info
     CPEV.character_i_path = main_window.listView_2.model().item(726, 0).text()
@@ -552,6 +572,67 @@ def read_single_character_parameters(main_window):
 
 def write_single_character_parameters(main_window):
 
+    # Save all animation info (replace first the entire files)
+    for i in range(0, len(CPEV.animations_types)):
+        animation_files = main_window.animation_type.itemData(i)
+        animation_properties_files = main_window.animation_properties.itemData(i)
+
+        for j in range(0, len(animation_files)):
+            if animation_files[j].modified:
+                with open(animation_files[j].path, mode="wb") as file:
+                    file.write(animation_files[j].data)
+
+            if animation_properties_files[j].modified:
+                with open(animation_properties_files[j].path, mode="wb") as file:
+                    file.write(animation_properties_files[j].data)
+
+    # Save all camera info
+    with open(CPEV.camera_i_path, mode="rb+") as file:
+
+        # Move to position 208 where the first camera cutscene starts
+        file.seek(CPEV.position_camera_cutscene)
+
+        for i in range(0, len(CPEV.camera_types_cutscene)):
+
+            camera_cutscene = main_window.camera_type_key.itemData(i)
+
+            # Camera has been modified
+            if camera_cutscene.modified:
+                # Write the pivots
+                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
+                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
+
+                # Rotations Z
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
+
+                # Translations Y
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
+
+                # Rotations X
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
+                file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
+
+                # Translations Z
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
+                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
+
+                # Unknown value block 10
+                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
+
+                # Get the zoom and camera speed (float values)
+                file.write(struct.pack('>f', camera_cutscene.zoom_in))
+                file.write(struct.pack('>f', camera_cutscene.camera_speed))
+
+                # Unknown value block 13
+                file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
+            # Ignore this camera
+            else:
+                file.seek(CPEV.size_each_camera_cutscene, 1)
+
     # Save all the info
     with open(CPEV.character_i_path, mode="rb+") as file:
         # Speed of charging
@@ -609,180 +690,114 @@ def write_single_character_parameters(main_window):
         file.seek(3, 1)
         file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
 
-    # Save all camera info
-    with open(CPEV.camera_i_path, mode="rb+") as file:
-
-        # Move to position 208 where the first camera cutscene starts
-        file.seek(CPEV.position_camera_cutscene)
-
-        for i in range(0, len(CPEV.camera_types_cutscene)):
-
-            camera_cutscene = main_window.camera_type_key.itemData(i)
-
-            # Camera has been modified
-            if camera_cutscene.modified:
-                # Write the pivots
-                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
-
-                # Rotations Z
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
-
-                # Translations Y
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
-
-                # Rotations X
-                file.write(struct.pack('>f', camera_cutscene.rotations["X_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["X_end"] - camera_cutscene.rotations["X_start"]))
-
-                # Translations Z
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
-
-                # Unknown value block 10
-                file.seek(4, 1)
-                # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_10"]))
-
-                # Get the zoom and camera speed (float values)
-                file.write(struct.pack('>f', camera_cutscene.zoom_in))
-                file.write(struct.pack('>f', camera_cutscene.camera_speed))
-
-                # Unknown value block 13
-                file.seek(4, 1)
-                # file.write(struct.pack('>f', camera_cutscene.unknowns["unknown_block_13"]))
-            # Ignore this camera
-            else:
-                file.seek(CPEV.size_each_camera_cutscene, 1)
-
-    # Save all animation info
-    for i in range(0, len(CPEV.animations_types)):
-        animation_different_files = main_window.animation_type.itemData(i)
-
-        for animations_file in animation_different_files:
-            for animation_file in animations_file:
-                with open(animation_file.path, mode="wb") as file:
-                    file.write(animation_file.data)
-
 
 # Load the necesary animation files.
-# index_file in disk (temp folder)
+# index_list_view (index file in the list view from pack explorer)
 # combo_box_label (label from combo box in design)
 # number_files_to_load (number of files that is necessary to load in order to save the animation.
+# animation_combo_box (combo box with all the data for each label)
 # It doesn't count the effects)
-def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load):
+def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load, animation_combo_box):
 
     item_data_animation = []
     for i in range(0, number_files_to_load):
 
-        # The animation keyframes
-        animation_keyframes = Animation()
-        animation_keyframes.path = main_window.listView_2.model().item(index_list_view + i, 0).text()
-        with open(animation_keyframes.path, mode="rb") as file:
-            animation_keyframes.data = file.read()
-        animation_keyframes.size = len(animation_keyframes.data)
-
-        # The animation effects
-        animation_effects = Animation()
-        animation_effects.path = main_window.listView_2.model().item(index_list_view +
-                                                                     CPEV.size_between_animation_and_effects + i,
-                                                                     0).text()
-        with open(animation_effects.path, mode="rb") as file:
-            animation_effects.data = file.read()
-        animation_effects.size = len(animation_effects.data)
+        # Animation instance
+        animation = Animation()
+        animation.path = main_window.listView_2.model().item(index_list_view + i, 0).text()
+        with open(animation.path, mode="rb") as file:
+            animation.data = file.read()
+        animation.size = len(animation.data)
 
         # Add all the instances to an array
-        item_data_animation.append([animation_keyframes, animation_effects])
+        item_data_animation.append(animation)
     # Add the array of Animation instances to the combo box
-    main_window.animation_type.setItemData(main_window.animation_type.findText(combo_box_label), item_data_animation)
+    animation_combo_box.setItemData(animation_combo_box.findText(combo_box_label), item_data_animation)
 
 
 # Read all the animation files
-def read_animation_files(main_window):
+def read_animation_files(main_window, offset_index, animation_combo_box):
 
     # Idle ground
-    read_animation_file(main_window, 0, "Idle ground", 1)
+    read_animation_file(main_window, 0+offset_index, "Idle ground", 1, animation_combo_box)
     # Idle fly
-    read_animation_file(main_window, 1, "Idle fly", 1)
+    read_animation_file(main_window, 1+offset_index, "Idle fly", 1, animation_combo_box)
     # Charge (in, loop)
-    read_animation_file(main_window, 2, "Charge", 2)
+    read_animation_file(main_window, 2+offset_index, "Charge", 2, animation_combo_box)
     # Charge max
-    read_animation_file(main_window, 3, "Charge max", 1)
+    read_animation_file(main_window, 3+offset_index, "Charge max", 1, animation_combo_box)
     # Rush attack ground
-    read_animation_file(main_window, 66, "Rush attack ground", 1)
-    read_animation_file(main_window, 67, "Rush attack ground 2", 1)
-    read_animation_file(main_window, 68, "Rush attack ground 3", 1)
-    read_animation_file(main_window, 69, "Rush attack ground 4", 1)
-    read_animation_file(main_window, 70, "Rush attack ground 5", 1)
+    read_animation_file(main_window, 66+offset_index, "Rush attack ground", 1, animation_combo_box)
+    read_animation_file(main_window, 67+offset_index, "Rush attack ground 2", 1, animation_combo_box)
+    read_animation_file(main_window, 68+offset_index, "Rush attack ground 3", 1, animation_combo_box)
+    read_animation_file(main_window, 69+offset_index, "Rush attack ground 4", 1, animation_combo_box)
+    read_animation_file(main_window, 70+offset_index, "Rush attack ground 5", 1, animation_combo_box)
     # Rush attack fly
-    read_animation_file(main_window, 71, "Rush attack fly", 1)
-    read_animation_file(main_window, 72, "Rush attack fly 2", 1)
-    read_animation_file(main_window, 73, "Rush attack fly 3", 1)
-    read_animation_file(main_window, 74, "Rush attack fly 4", 1)
-    read_animation_file(main_window, 75, "Rush attack fly 5", 1)
+    read_animation_file(main_window, 71+offset_index, "Rush attack fly", 1, animation_combo_box)
+    read_animation_file(main_window, 72+offset_index, "Rush attack fly 2", 1, animation_combo_box)
+    read_animation_file(main_window, 73+offset_index, "Rush attack fly 3", 1, animation_combo_box)
+    read_animation_file(main_window, 74+offset_index, "Rush attack fly 4", 1, animation_combo_box)
+    read_animation_file(main_window, 75+offset_index, "Rush attack fly 5", 1, animation_combo_box)
     # Smash attack
-    read_animation_file(main_window, 76, "Smash attack left", 3)
-    read_animation_file(main_window, 79, "Smash attack right", 3)
-    read_animation_file(main_window, 82, "Smash attack 2", 3)
-    read_animation_file(main_window, 85, "Smash attack 3", 1)
-    read_animation_file(main_window, 86, "Smash attack 4", 3)
-    read_animation_file(main_window, 89, "Smash attack high", 3)
-    read_animation_file(main_window, 92, "Smash attack low", 3)
-    read_animation_file(main_window, 95, "Finish attack teleport", 2)
+    read_animation_file(main_window, 76+offset_index, "Smash attack left", 3, animation_combo_box)
+    read_animation_file(main_window, 79+offset_index, "Smash attack right", 3, animation_combo_box)
+    read_animation_file(main_window, 82+offset_index, "Smash attack 2", 3, animation_combo_box)
+    read_animation_file(main_window, 85+offset_index, "Smash attack 3", 1, animation_combo_box)
+    read_animation_file(main_window, 86+offset_index, "Smash attack 4", 3, animation_combo_box)
+    read_animation_file(main_window, 89+offset_index, "Smash attack high", 3, animation_combo_box)
+    read_animation_file(main_window, 92+offset_index, "Smash attack low", 3, animation_combo_box)
+    read_animation_file(main_window, 95+offset_index, "Finish attack teleport", 2, animation_combo_box)
     # Charge attack
-    read_animation_file(main_window, 97,  "Charge attack", 3)
-    read_animation_file(main_window, 100, "Charge attack high", 3)
-    read_animation_file(main_window, 103, "Charge attack low", 3)
-    read_animation_file(main_window, 106, "Charge attack left", 3)
-    read_animation_file(main_window, 109, "Charge attack right", 3)
+    read_animation_file(main_window, 97+offset_index,  "Charge attack", 3, animation_combo_box)
+    read_animation_file(main_window, 100+offset_index, "Charge attack high", 3, animation_combo_box)
+    read_animation_file(main_window, 103+offset_index, "Charge attack low", 3, animation_combo_box)
+    read_animation_file(main_window, 106+offset_index, "Charge attack left", 3, animation_combo_box)
+    read_animation_file(main_window, 109+offset_index, "Charge attack right", 3, animation_combo_box)
     # Dash attack
-    read_animation_file(main_window, 112, "Dash attack", 3)
+    read_animation_file(main_window, 112+offset_index, "Dash attack", 3, animation_combo_box)
     # Dash charge attack
-    read_animation_file(main_window, 115, "Dash charge attack", 3)
-    read_animation_file(main_window, 118, "Dash charge attack high", 3)
-    read_animation_file(main_window, 121, "Dash charge attack low", 3)
-    read_animation_file(main_window, 124, "Dash charge attack left", 3)
-    read_animation_file(main_window, 127, "Dash charge attack right", 3)
+    read_animation_file(main_window, 115+offset_index, "Dash charge attack", 3, animation_combo_box)
+    read_animation_file(main_window, 118+offset_index, "Dash charge attack high", 3, animation_combo_box)
+    read_animation_file(main_window, 121+offset_index, "Dash charge attack low", 3, animation_combo_box)
+    read_animation_file(main_window, 124+offset_index, "Dash charge attack left", 3, animation_combo_box)
+    read_animation_file(main_window, 127+offset_index, "Dash charge attack right", 3, animation_combo_box)
     # Shot ki
-    read_animation_file(main_window, 130, "Shot Ki left hand", 3)
-    read_animation_file(main_window, 133, "Shot Ki right hand", 3)
+    read_animation_file(main_window, 130+offset_index, "Shot Ki left hand", 3, animation_combo_box)
+    read_animation_file(main_window, 133+offset_index, "Shot Ki right hand", 3, animation_combo_box)
     # Charge Shot ki
-    read_animation_file(main_window, 136, "Charge shot Ki", 3)
-    read_animation_file(main_window, 139, "Charge shot Ki high", 3)
-    read_animation_file(main_window, 142, "Charge shot Ki low", 3)
+    read_animation_file(main_window, 136+offset_index, "Charge shot Ki", 3, animation_combo_box)
+    read_animation_file(main_window, 139+offset_index, "Charge shot Ki high", 3, animation_combo_box)
+    read_animation_file(main_window, 142+offset_index, "Charge shot Ki low", 3, animation_combo_box)
     # Shot ki while moving
-    read_animation_file(main_window, 145, "Shot Ki moving forward", 1)
-    read_animation_file(main_window, 146, "Shot Ki moving left", 1)
-    read_animation_file(main_window, 147, "Shot Ki moving right", 1)
-    read_animation_file(main_window, 148, "Shot Ki moving back", 1)
+    read_animation_file(main_window, 145+offset_index, "Shot Ki moving forward", 1, animation_combo_box)
+    read_animation_file(main_window, 146+offset_index, "Shot Ki moving left", 1, animation_combo_box)
+    read_animation_file(main_window, 147+offset_index, "Shot Ki moving right", 1, animation_combo_box)
+    read_animation_file(main_window, 148+offset_index, "Shot Ki moving back", 1, animation_combo_box)
     # Charged shot ki while moving
-    read_animation_file(main_window, 149, "Charged shot Ki moving forward", 3)
-    read_animation_file(main_window, 152, "Charged shot Ki moving left", 3)
-    read_animation_file(main_window, 155, "Charged shot Ki moving right", 3)
-    read_animation_file(main_window, 158, "Charged shot Ki moving back", 3)
+    read_animation_file(main_window, 149+offset_index, "Charged shot Ki moving forward", 3, animation_combo_box)
+    read_animation_file(main_window, 152+offset_index, "Charged shot Ki moving left", 3, animation_combo_box)
+    read_animation_file(main_window, 155+offset_index, "Charged shot Ki moving right", 3, animation_combo_box)
+    read_animation_file(main_window, 158+offset_index, "Charged shot Ki moving back", 3, animation_combo_box)
     # Jump attack
-    read_animation_file(main_window, 161, "Jump attack", 3)
-    read_animation_file(main_window, 164, "Jump Ki shot left", 1)
-    read_animation_file(main_window, 165, "Jump Ki shot right", 1)
-    read_animation_file(main_window, 166, "Jump charged Ki shot", 3)
+    read_animation_file(main_window, 161+offset_index, "Jump attack", 3, animation_combo_box)
+    read_animation_file(main_window, 164+offset_index, "Jump Ki shot left", 1, animation_combo_box)
+    read_animation_file(main_window, 165+offset_index, "Jump Ki shot right", 1, animation_combo_box)
+    read_animation_file(main_window, 166+offset_index, "Jump charged Ki shot", 3, animation_combo_box)
     # Throw
-    read_animation_file(main_window, 169, "Throw catch", 1)
-    read_animation_file(main_window, 170, "Throw", 3)
+    read_animation_file(main_window, 169+offset_index, "Throw catch", 1, animation_combo_box)
+    read_animation_file(main_window, 170+offset_index, "Throw", 3, animation_combo_box)
     # Transformation
-    read_animation_file(main_window, 308, "Transformation in", 2)
-    read_animation_file(main_window, 310, "Transformation result", 1)
+    read_animation_file(main_window, 308+offset_index, "Transformation in", 2, animation_combo_box)
+    read_animation_file(main_window, 310+offset_index, "Transformation result", 1, animation_combo_box)
     # Return
-    read_animation_file(main_window, 311, "Return in", 2)
-    read_animation_file(main_window, 313, "Return out", 1)
+    read_animation_file(main_window, 311+offset_index, "Return in", 2, animation_combo_box)
+    read_animation_file(main_window, 313+offset_index, "Return out", 1, animation_combo_box)
     # Cutscenes
-    read_animation_file(main_window, 336, "Entry 1", 2)
-    read_animation_file(main_window, 338, "Entry 2", 2)
-    read_animation_file(main_window, 340, "Entry 3", 2)
-    read_animation_file(main_window, 342, "Victory", 2)
-    read_animation_file(main_window, 344, "Lose", 2)
+    read_animation_file(main_window, 336+offset_index, "Entry 1", 2, animation_combo_box)
+    read_animation_file(main_window, 338+offset_index, "Entry 2", 2, animation_combo_box)
+    read_animation_file(main_window, 340+offset_index, "Entry 3", 2, animation_combo_box)
+    read_animation_file(main_window, 342+offset_index, "Victory", 2, animation_combo_box)
+    read_animation_file(main_window, 344+offset_index, "Lose", 2, animation_combo_box)
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
@@ -1538,44 +1553,17 @@ def action_import_all_camera_button_logic(main_window):
             msg.exec()
 
 
-def export_animation(animation_array, file_export_path):
-
-    # Get the number of animations files
-    number_anim_files = len(animation_array)
-
-    # The header will have the 'SPAS', 'number of animation files', and the size of each
-    # of one in the same order (keyframes+effect, keyframes+effects)
-    header_file = bytes(CPEV.animations_extension.upper(), encoding='utf-8')
-    header_file = header_file + struct.pack('>I', number_anim_files * 2)
-    data_file = b''
-
-    # Get the sizes and data from each animation (keyframe and effects)
-    for animation in animation_array:
-        # Get each info from each animation file
-        for animation_file in animation:
-            header_file = header_file + struct.pack('>I', animation_file.size)
-            data_file = data_file + animation_file.data
-
-    # Write the header properties and then the data
-    with open(file_export_path, mode="wb") as file:
-        # Write the header (SPAS, number of animation files, and sizes)
-        file.write(header_file)
-
-        # Write the data
-        file.write(data_file)
-
-
-def action_export_animation_button_logic(main_window):
+def action_export_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user the file output
-    name_file = CPEV.character_id + "_" + str(main_window.animation_type.currentIndex()) + "_" + \
-                main_window.animation_type.currentText().replace(" ", "_") + "." + CPEV.animations_extension
+    name_file = CPEV.character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
+                animation_combo_box.currentText().replace(" ", "_") + "." + CPEV.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation", name_file, "")[0]
 
     # The user has selected an output
     if file_export_path:
 
         # Get from the combo box, the array of animations ([[keyframes + effect], [keyframes + effects]])
-        animation_array = main_window.animation_type.currentData()
+        animation_array = animation_combo_box.currentData()
 
         export_animation(animation_array, file_export_path)
 
@@ -1591,7 +1579,107 @@ def action_export_animation_button_logic(main_window):
             os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
 
 
-def import_animation(main_window, file_export_path, index=None, name_file=None, animations_files_error=None):
+def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
+    # Ask to the user the folder output
+    name_folder = CPEV.character_id + "_animations" + ("_" + properties_text if properties_text else "")
+    folder_export_path = QFileDialog.getSaveFileName(main_window,
+                                                     "Export animations" + properties_text, name_folder, "")[0]
+
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        # Export all the files to the folder
+        for i in range(0, animation_combo_box.count()):
+            name_file = CPEV.character_id + "_" + str(i) + "_" + \
+                        animation_combo_box.itemText(i).replace(" ", "_") + "." + CPEV.animations_extension
+            file_export_path = os.path.join(folder_export_path, name_file)
+
+            animation = animation_combo_box.itemData(i)
+
+            export_animation(animation, file_export_path)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The animation files weres exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def export_animation(animation_array, file_export_path):
+
+    # Get the number of animations files
+    number_anim_files = len(animation_array)
+
+    # The header will have the 'SPAS', 'number of animation files', and the size of each
+    # of one in the same order
+    header_file = bytes(CPEV.animations_extension.upper(), encoding='utf-8')
+    header_file = header_file + struct.pack('>I', number_anim_files)
+    data_file = b''
+
+    # Get the sizes and data from each animation
+    for animation_file in animation_array:
+        header_file = header_file + struct.pack('>I', animation_file.size)
+        data_file = data_file + animation_file.data
+
+    # Write the header properties and then the data
+    with open(file_export_path, mode="wb") as file:
+        # Write the header (SPAS, number of animation files, and sizes)
+        file.write(header_file)
+
+        # Write the data
+        file.write(data_file)
+
+
+def action_import_animation_button_logic(main_window, animation_combo_box):
+    # Ask to the user from what file wants to open the camera files
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", "", "")[0]
+
+    # Import a single animation
+    animation_array = animation_combo_box.currentData()
+    import_animation(file_export_path, animation_array)
+
+
+def action_import_all_animation_button_logic(main_window, animation_combo_box):
+    # Ask to the user from what file wants to open the camera files
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", "")
+
+    animations_files_error = []
+
+    if folder_import:
+
+        animation_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
+        # Get the filename of each animation
+        for i in range(0, len(animation_files)):
+
+            # Import every single animation
+            animation_array = animation_combo_box.itemData(i)
+            import_animation(os.path.join(folder_import, animation_files[i]), animation_array,
+                             animation_files[i], animations_files_error)
+
+        # We show a message with the animations files that couldn't get imported
+        if animations_files_error:
+
+            message = ""
+
+            for animations_file_error in animations_files_error:
+                message = message + "<li>" + animations_file_error + "</li>"
+            message = "The following animations couldn't get imported <ul>" + message + "</ul>"
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Warning")
+            msg.setText(message)
+            msg.exec()
+
+
+def import_animation(file_export_path, animation_array, name_file=None, animations_files_error=None):
 
     if file_export_path:
 
@@ -1614,7 +1702,7 @@ def import_animation(main_window, file_export_path, index=None, name_file=None, 
             else:
 
                 # Read the number of files
-                number_anim_files = int(int.from_bytes(file.read(4), "big") / 2)
+                number_anim_files = int.from_bytes(file.read(4), "big")
 
                 # Get the sizes of each file. While reading we will sum all the sizes to check if the file has
                 # the same data size
@@ -1623,12 +1711,6 @@ def import_animation(main_window, file_export_path, index=None, name_file=None, 
 
                 # Read the size of each animation file
                 for i in range(number_anim_files):
-                    # Keyframes
-                    size = int.from_bytes(file.read(4), "big")
-                    sizes_number_of_files.append(size)
-                    total_size += size
-
-                    # Effects
                     size = int.from_bytes(file.read(4), "big")
                     sizes_number_of_files.append(size)
                     total_size += size
@@ -1650,12 +1732,6 @@ def import_animation(main_window, file_export_path, index=None, name_file=None, 
                         msg.exec()
                         return
 
-                # Store all the info in memory
-                if index is not None:
-                    animation_array = main_window.animation_type.itemData(index)
-                else:
-                    animation_array = main_window.animation_type.currentData()
-
                 # If the modified file has more files inside than the original, we refuse the modified file
                 if len(animation_array) != number_anim_files:
                     if animations_files_error is not None:
@@ -1670,89 +1746,13 @@ def import_animation(main_window, file_export_path, index=None, name_file=None, 
                         return
 
                 data_index_start = 0
-                j = 0
-                # Get the pair animation (keyframes and effects)
-                for animation in animation_array:
-                    # Get each animation file
-                    for animation_file in animation:
-                        data_index_end = data_index_start + sizes_number_of_files[j]
-                        animation_file.data = data[data_index_start:data_index_end]
-                        animation_file.size = sizes_number_of_files[j]
-                        animation_file.modified = True
-                        data_index_start = data_index_end
-                        j = j + 1
-
-
-def action_import_animation_button_logic(main_window):
-    # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", "", "")[0]
-
-    # Import a single animation
-    import_animation(main_window, file_export_path)
-
-
-def action_export_all_animation_button_logic(main_window):
-    # Ask to the user the folder output
-    name_folder = CPEV.character_id + "_animations"
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export animations", name_folder, "")[0]
-
-    if folder_export_path:
-
-        # Create the folder
-        if not os.path.exists(folder_export_path):
-            os.mkdir(folder_export_path)
-
-        # Export all the files to the folder
-        for i in range(0, main_window.animation_type.count()):
-            name_file = CPEV.character_id + "_" + str(i) + "_" + \
-                        main_window.animation_type.itemText(i).replace(" ", "_") + "." + CPEV.animations_extension
-            file_export_path = os.path.join(folder_export_path, name_file)
-
-            animation = main_window.animation_type.itemData(i)
-
-            export_animation(animation, file_export_path)
-
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        message = "The animation files weres exported in: <b>" + folder_export_path \
-                  + "</b><br><br> Do you wish to open the path?"
-        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-        # If the users click on 'Yes', it will open the path where the files were saved
-        if message_open_exported_files == msg.Yes:
-            # Show the path folder to the user
-            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
-
-
-def action_import_all_animation_button_logic(main_window):
-    # Ask to the user from what file wants to open the camera files
-    folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", "")
-
-    animations_files_error = []
-
-    if folder_import:
-
-        animation_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
-        # Get the filename of each animation
-        for i in range(0, len(animation_files)):
-
-            # Import every single animation
-            import_animation(main_window, os.path.join(folder_import, animation_files[i]), i, animation_files[i],
-                             animations_files_error)
-
-        # We show a message with the animations files that couldn't get imported
-        if animations_files_error:
-
-            message = ""
-
-            for animations_file_error in animations_files_error:
-                message = message + "<li>" + animations_file_error + "</li>"
-            message = "The following animations couldn't get imported <ul>" + message + "</ul>"
-
-            msg = QMessageBox()
-            msg.setWindowTitle("Warning")
-            msg.setText(message)
-            msg.exec()
+                # Get each animation file
+                for i in range(0, len(animation_array)):
+                    data_index_end = data_index_start + sizes_number_of_files[i]
+                    animation_array[i].data = data[data_index_start:data_index_end]
+                    animation_array[i].size = sizes_number_of_files[i]
+                    animation_array[i].modified = True
+                    data_index_start = data_index_end
 
 
 def on_color_lightning_changed(main_window):
