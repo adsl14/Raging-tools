@@ -3444,7 +3444,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>130</y>
+               <y>200</y>
                <width>371</width>
                <height>131</height>
               </rect>
@@ -3832,7 +3832,7 @@
              <property name="geometry">
               <rect>
                <x>380</x>
-               <y>130</y>
+               <y>200</y>
                <width>261</width>
                <height>131</height>
               </rect>
@@ -4101,7 +4101,7 @@
              <property name="geometry">
               <rect>
                <x>650</x>
-               <y>130</y>
+               <y>200</y>
                <width>231</width>
                <height>181</height>
               </rect>
@@ -4295,7 +4295,7 @@
                <x>0</x>
                <y>0</y>
                <width>891</width>
-               <height>121</height>
+               <height>191</height>
               </rect>
              </property>
              <property name="toolTip">
@@ -4452,7 +4452,7 @@
              <widget class="QDoubleSpinBox" name="rotation_z_end_value">
               <property name="geometry">
                <rect>
-                <x>660</x>
+                <x>410</x>
                 <y>90</y>
                 <width>51</width>
                 <height>22</height>
@@ -4477,7 +4477,7 @@
              <widget class="QDoubleSpinBox" name="rotation_z_start_value">
               <property name="geometry">
                <rect>
-                <x>540</x>
+                <x>290</x>
                 <y>90</y>
                 <width>51</width>
                 <height>22</height>
@@ -4502,7 +4502,7 @@
              <widget class="QLabel" name="rotations_text">
               <property name="geometry">
                <rect>
-                <x>540</x>
+                <x>290</x>
                 <y>40</y>
                 <width>121</width>
                 <height>16</height>
@@ -4518,7 +4518,7 @@
              <widget class="QLabel" name="rotation_start_text">
               <property name="geometry">
                <rect>
-                <x>520</x>
+                <x>270</x>
                 <y>60</y>
                 <width>31</width>
                 <height>16</height>
@@ -4534,7 +4534,7 @@
              <widget class="QLabel" name="rotation_end_text">
               <property name="geometry">
                <rect>
-                <x>640</x>
+                <x>390</x>
                 <y>60</y>
                 <width>31</width>
                 <height>16</height>
@@ -4550,7 +4550,7 @@
              <widget class="QLabel" name="rotation_z_start_text">
               <property name="geometry">
                <rect>
-                <x>560</x>
+                <x>310</x>
                 <y>70</y>
                 <width>16</width>
                 <height>16</height>
@@ -4566,7 +4566,7 @@
              <widget class="QLabel" name="rotation_z_end_text">
               <property name="geometry">
                <rect>
-                <x>680</x>
+                <x>430</x>
                 <y>70</y>
                 <width>16</width>
                 <height>16</height>
@@ -4579,89 +4579,7 @@
                <string>Z</string>
               </property>
              </widget>
-             <widget class="QLabel" name="rotation_x_start_text">
-              <property name="geometry">
-               <rect>
-                <x>500</x>
-                <y>70</y>
-                <width>16</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>X</string>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="rotation_x_start_value">
-              <property name="geometry">
-               <rect>
-                <x>480</x>
-                <y>90</y>
-                <width>51</width>
-                <height>22</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="minimum">
-               <double>-1000.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>1000.000000000000000</double>
-              </property>
-             </widget>
-             <widget class="QLabel" name="rotation_x_end_text">
-              <property name="geometry">
-               <rect>
-                <x>620</x>
-                <y>70</y>
-                <width>16</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>X</string>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="rotation_x_end_value">
-              <property name="geometry">
-               <rect>
-                <x>600</x>
-                <y>90</y>
-                <width>51</width>
-                <height>22</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="minimum">
-               <double>-1000.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>1000.000000000000000</double>
-              </property>
-             </widget>
-             <widget class="QLabel" name="translation_y_start_text">
+             <widget class="QLabel" name="rotation_y_start_text">
               <property name="geometry">
                <rect>
                 <x>250</x>
@@ -4677,105 +4595,7 @@
                <string>Y</string>
               </property>
              </widget>
-             <widget class="QLabel" name="translation_z_start_text">
-              <property name="geometry">
-               <rect>
-                <x>310</x>
-                <y>70</y>
-                <width>16</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="text">
-               <string>Z</string>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="translation_y_end_value">
-              <property name="geometry">
-               <rect>
-                <x>350</x>
-                <y>90</y>
-                <width>51</width>
-                <height>22</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="minimum">
-               <double>-1000.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>1000.000000000000000</double>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="translation_z_start_value">
-              <property name="geometry">
-               <rect>
-                <x>290</x>
-                <y>90</y>
-                <width>51</width>
-                <height>22</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string/>
-              </property>
-              <property name="whatsThis">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="minimum">
-               <double>-1000.000000000000000</double>
-              </property>
-              <property name="maximum">
-               <double>1000.000000000000000</double>
-              </property>
-             </widget>
-             <widget class="QLabel" name="translation_start_text">
-              <property name="geometry">
-               <rect>
-                <x>270</x>
-                <y>60</y>
-                <width>31</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Start</string>
-              </property>
-             </widget>
-             <widget class="QLabel" name="translation_end_text">
-              <property name="geometry">
-               <rect>
-                <x>390</x>
-                <y>60</y>
-                <width>31</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;End point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>End</string>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="translation_y_start_value">
+             <widget class="QDoubleSpinBox" name="rotation_y_start_value">
               <property name="geometry">
                <rect>
                 <x>230</x>
@@ -4800,10 +4620,10 @@
                <double>1000.000000000000000</double>
               </property>
              </widget>
-             <widget class="QLabel" name="translation_z_end_text">
+             <widget class="QLabel" name="rotation_y_end_text">
               <property name="geometry">
                <rect>
-                <x>430</x>
+                <x>370</x>
                 <y>70</y>
                 <width>16</width>
                 <height>16</height>
@@ -4813,29 +4633,13 @@
                <string/>
               </property>
               <property name="text">
-               <string>Z</string>
+               <string>Y</string>
               </property>
              </widget>
-             <widget class="QLabel" name="translations_text">
+             <widget class="QDoubleSpinBox" name="rotation_y_end_value">
               <property name="geometry">
                <rect>
-                <x>310</x>
-                <y>40</y>
-                <width>81</width>
-                <height>16</height>
-               </rect>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The translations of the camera&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Translations</string>
-              </property>
-             </widget>
-             <widget class="QDoubleSpinBox" name="translation_z_end_value">
-              <property name="geometry">
-               <rect>
-                <x>410</x>
+                <x>350</x>
                 <y>90</y>
                 <width>51</width>
                 <height>22</height>
@@ -4857,10 +4661,10 @@
                <double>1000.000000000000000</double>
               </property>
              </widget>
-             <widget class="QLabel" name="translation_y_end_text">
+             <widget class="QLabel" name="translation_y_start_text">
               <property name="geometry">
                <rect>
-                <x>370</x>
+                <x>510</x>
                 <y>70</y>
                 <width>16</width>
                 <height>16</height>
@@ -4873,26 +4677,108 @@
                <string>Y</string>
               </property>
              </widget>
-             <widget class="QLabel" name="zoom_text">
+             <widget class="QLabel" name="translation_z_start_text">
               <property name="geometry">
                <rect>
-                <x>830</x>
+                <x>590</x>
                 <y>70</y>
+                <width>16</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="text">
+               <string>Z</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="translation_y_end_value">
+              <property name="geometry">
+               <rect>
+                <x>640</x>
+                <y>90</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="translation_z_start_value">
+              <property name="geometry">
+               <rect>
+                <x>560</x>
+                <y>90</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="translation_start_text">
+              <property name="geometry">
+               <rect>
+                <x>540</x>
+                <y>60</y>
                 <width>31</width>
                 <height>16</height>
                </rect>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom of the camera&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Zoom</string>
+               <string>Start</string>
               </property>
              </widget>
-             <widget class="QDoubleSpinBox" name="zoom_value">
+             <widget class="QLabel" name="translation_end_text">
               <property name="geometry">
                <rect>
-                <x>810</x>
+                <x>700</x>
+                <y>60</y>
+                <width>31</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;End point&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>End</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="translation_y_start_value">
+              <property name="geometry">
+               <rect>
+                <x>480</x>
                 <y>90</y>
                 <width>71</width>
                 <height>22</height>
@@ -4917,27 +4803,100 @@
                <double>0.000000000000000</double>
               </property>
              </widget>
-             <widget class="QLabel" name="speed_camera_text">
+             <widget class="QLabel" name="translation_z_end_text">
               <property name="geometry">
                <rect>
                 <x>750</x>
                 <y>70</y>
-                <width>51</width>
+                <width>16</width>
                 <height>16</height>
                </rect>
               </property>
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How fast the camera will move and rotate&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string/>
               </property>
               <property name="text">
-               <string>Speed</string>
+               <string>Z</string>
               </property>
              </widget>
-             <widget class="QDoubleSpinBox" name="speed_camera_value">
+             <widget class="QLabel" name="translations_text">
               <property name="geometry">
                <rect>
-                <x>730</x>
+                <x>600</x>
+                <y>40</y>
+                <width>81</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The translations of the camera&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Translations</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="translation_z_end_value">
+              <property name="geometry">
+               <rect>
+                <x>720</x>
                 <y>90</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="translation_y_end_text">
+              <property name="geometry">
+               <rect>
+                <x>670</x>
+                <y>70</y>
+                <width>16</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="text">
+               <string>Y</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="zoom_end_text">
+              <property name="geometry">
+               <rect>
+                <x>110</x>
+                <y>140</y>
+                <width>31</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Where the zoom ends&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>End</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="zoom_end_value">
+              <property name="geometry">
+               <rect>
+                <x>90</x>
+                <y>160</y>
                 <width>71</width>
                 <height>22</height>
                </rect>
@@ -5013,12 +4972,166 @@
                <string>Import all...</string>
               </property>
              </widget>
+             <widget class="QDoubleSpinBox" name="zoom_start_value">
+              <property name="geometry">
+               <rect>
+                <x>10</x>
+                <y>160</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="zoom_start_text">
+              <property name="geometry">
+               <rect>
+                <x>30</x>
+                <y>140</y>
+                <width>41</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Where the zoom starts&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Start</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="zoom_text">
+              <property name="geometry">
+               <rect>
+                <x>70</x>
+                <y>120</y>
+                <width>41</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Controls the zoom of the camera&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Zoom</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="unk13_text">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>200</x>
+                <y>140</y>
+                <width>41</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unknown value (block 13)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Unk13</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="speed_camera_value">
+              <property name="geometry">
+               <rect>
+                <x>810</x>
+                <y>90</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
+             <widget class="QLabel" name="speed_camera_text">
+              <property name="geometry">
+               <rect>
+                <x>830</x>
+                <y>70</y>
+                <width>51</width>
+                <height>16</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How fast the camera will move and rotate. The lower the value, the faster the speed&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Speed</string>
+              </property>
+             </widget>
+             <widget class="QDoubleSpinBox" name="unk13_value">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="geometry">
+               <rect>
+                <x>180</x>
+                <y>160</y>
+                <width>71</width>
+                <height>22</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="decimals">
+               <number>2</number>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+              <property name="value">
+               <double>0.000000000000000</double>
+              </property>
+             </widget>
             </widget>
             <widget class="QFrame" name="animation_values">
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>270</y>
+               <y>340</y>
                <width>651</width>
                <height>141</height>
               </rect>
