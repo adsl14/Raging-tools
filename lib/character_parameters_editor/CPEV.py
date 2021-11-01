@@ -13,7 +13,8 @@ class CPEV:
     path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
-    # path for character info and transformer (operate_resident_param)
+    # --- operate_resident_param ---
+    # path for character info and transformer
     resident_character_inf_path = ""
     resident_transformer_i_path = ""
     # number of bytes between each character
@@ -29,7 +30,7 @@ class CPEV:
     glow_lightning_values = dict({"Disabled": 0, "Glow": 1, "Unknown (Androids)": 2, "Lightnings": 4,
                                   "Glow + lightnings": 5})
 
-    # operate_character_XXX_m
+    # --- operate_character_XXX_m ---
     # path and positions of files and data
     character_i_path = ""
     camera_i_path = ""
@@ -48,7 +49,27 @@ class CPEV:
     # position where the first camera cutscene starts
     position_camera_cutscene = 208
     size_each_camera_cutscene = 52
-    camera_extension = ".cam"
+    camera_extension = "cam"
+    # Animation properties
+    # Don't change the order, because the file has this order when we read the file
+    animations_types = ["Idle ground", "Idle fly", "Charge", "Charge max", "Rush attack ground", "Rush attack ground 2",
+                        "Rush attack ground 3", "Rush attack ground 4", "Rush attack ground 5", "Rush attack fly",
+                        "Rush attack fly 2", "Rush attack fly 3", "Rush attack fly 4", "Rush attack fly 5",
+                        "Smash attack left", "Smash attack right", "Smash attack 2", "Smash attack 3",
+                        "Smash attack 4", "Smash attack high", "Smash attack low", "Finish attack teleport",
+                        "Charge attack", "Charge attack high", "Charge attack low", "Charge attack left",
+                        "Charge attack right", "Dash attack", "Dash charge attack", "Dash charge attack high",
+                        "Dash charge attack low", "Dash charge attack left", "Dash charge attack right",
+                        "Shot Ki left hand", "Shot Ki right hand", "Charge shot Ki", "Charge shot Ki high",
+                        "Charge shot Ki low", "Shot Ki moving forward", "Shot Ki moving left", "Shot Ki moving right",
+                        "Shot Ki moving back", "Charged shot Ki moving forward", "Charged shot Ki moving left",
+                        "Charged shot Ki moving right", "Charged shot Ki moving back", "Jump attack",
+                        "Jump Ki shot left", "Jump Ki shot right", "Jump charged Ki shot", "Throw catch", "Throw",
+                        "Transformation in", "Transformation result", "Return in", "Return out", "Entry 1", "Entry 2",
+                        "Entry 3", "Victory", "Lose"]
+    animations_extension = "spas"
+    # Distance between the 'buffer' folders
+    size_between_animation_and_effects = 363
 
     # panelPortraistlist
     mini_portraits_image = []
