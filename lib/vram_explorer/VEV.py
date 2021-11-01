@@ -33,8 +33,6 @@ class VEV:
 	tx2d_infos = []
 	# The textures itself
 	tx2_datas = []
-	# Size of the vram file
-	vram_file_size_old = 0
 	# offset of the spr file
 	data_offset_header = 0
 	# Indexes of textures edited

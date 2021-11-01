@@ -252,9 +252,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited].
                                               dxt_encoding.to_bytes(1, byteorder="big"))
 
+                        # Get the quanty difference for the first texture modified
+                        quanty_aux = VEV.offset_quanty_difference[first_index_texture_edited]
+
                         # Check if is the last texture modified and there is no more textures in the bottom
                         if first_index_texture_edited + 1 < VEV.sprp_struct.data_count:
-                            quanty_aux = int(VEV.offset_quanty_difference[first_index_texture_edited])
                             # Reset offset difference for the first texture edited
                             VEV.offset_quanty_difference[first_index_texture_edited] = 0
                             first_index_texture_edited += 1
@@ -286,6 +288,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if VEV.offset_quanty_difference[i] != 0:
                                     quanty_aux += VEV.offset_quanty_difference[i]
                                     VEV.offset_quanty_difference[i] = 0
+
+                        # Convert from float to int since numpy works with floats
+                        quanty_aux = int(quanty_aux)
 
                     # replacing textures
                     with open(vram_export_path, mode="wb") as output_file:
@@ -349,14 +354,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data = input_file.read()
                             output_file.write(data)
 
-                            # Modify the bytes in pos 20 that indicates the size of the file
-                            vram_file_size = abs(VEV.vram_file_size_old + output_file.tell() - input_file.tell())
-
-                    # Change the header of pos 256 in spr file because in that place indicates the size of the
+                    # Change the header of pos 48 in spr file because in that place indicates the size of the
                     # final output file
                     with open(spr_export_path, mode="rb+") as output_file:
+                        # Get the original vram size
                         output_file.seek(VEV.data_offset_header + 48)
-                        output_file.write(vram_file_size.to_bytes(4, byteorder='big'))
+                        vram_file_size = int.from_bytes(output_file.read(4), byteorder='big')
+
+                        # Change the vram size adding the difference in positive or negative
+                        output_file.seek(VEV.data_offset_header + 48)
+                        output_file.write((vram_file_size+quanty_aux).to_bytes(4, byteorder='big'))
 
                     # SPR file. We won't compress
 

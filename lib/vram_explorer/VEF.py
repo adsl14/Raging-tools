@@ -386,9 +386,6 @@ def open_vram_file(vram_path):
         # Move to the position 0, where it tells the offset of the file where the texture starts
         texture_offset = 0
 
-        # The size of the file is the size of the texture
-        VEV.vram_file_size_old = VEV.tx2d_infos[0].data_size
-
         # Get each texture
         header_1 = bytes.fromhex("44 44 53 20 7C 00 00 00 07 10 00 00")
         header_3_1 = "00000000"
