@@ -20,6 +20,9 @@ from lib.character_parameters_editor.CPEF import initialize_cpe, write_single_ch
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
+    # old path where the user loaded before the file
+    old_path_file = ""
+
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
         self.setupUi(self)
@@ -47,15 +50,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open the file
         path_file = QFileDialog.getOpenFileName(self,
-                                                "Open file", os.path.abspath(os.getcwd()), "Supported files "
-                                                                                           "(*.pak *.zpak *.spr *.vram)"
-                                                                                           ";;Packed files "
-                                                                                           "(*.pak *.zpak)"
-                                                                                           ";;Info files (*.spr)"
-                                                                                           ";;Texture files "
-                                                                                           "(*.vram)")[0]
+                                                "Open file", os.path.abspath(MainWindow.old_path_file),
+                                                "Supported files "
+                                                "(*.pak *.zpak *.spr *.vram)"
+                                                ";;Packed files "
+                                                "(*.pak *.zpak)"
+                                                ";;Info files (*.spr)"
+                                                ";;Texture files "
+                                                "(*.vram)")[0]
         # Check if the user has selected a file
         if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
 
             # Get the header of the file
             with open(path_file, mode="rb") as input_file:
@@ -113,7 +120,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             elif header_type == b'SPRP' or header_type == b'SPR\x00':
 
                 # Open vram file
-                path_file_2 = QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(path_file),
+                path_file_2 = QFileDialog.getOpenFileName(self, "Open file", path_file,
                                                           "Texture files (*.vram)")[0]
 
                 if os.path.exists(path_file_2):
@@ -150,7 +157,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
 
                 # Open spr file
-                path_file_2 = QFileDialog.getOpenFileName(self, "Open file", os.path.abspath(path_file),
+                path_file_2 = QFileDialog.getOpenFileName(self, "Open file", path_file,
                                                           "Info files (*.spr)")[0]
 
                 if os.path.exists(path_file_2):
@@ -252,11 +259,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited].
                                               dxt_encoding.to_bytes(1, byteorder="big"))
 
-                        # Get the quanty difference for the first texture modified
-                        quanty_aux = VEV.offset_quanty_difference[first_index_texture_edited]
-
                         # Check if is the last texture modified and there is no more textures in the bottom
                         if first_index_texture_edited + 1 < VEV.sprp_struct.data_count:
+                            # Get the quanty difference for the first texture modified
+                            quanty_aux = VEV.offset_quanty_difference[first_index_texture_edited]
                             # Reset offset difference for the first texture edited
                             VEV.offset_quanty_difference[first_index_texture_edited] = 0
                             first_index_texture_edited += 1
@@ -288,9 +294,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if VEV.offset_quanty_difference[i] != 0:
                                     quanty_aux += VEV.offset_quanty_difference[i]
                                     VEV.offset_quanty_difference[i] = 0
-
-                        # Convert from float to int since numpy works with floats
-                        quanty_aux = int(quanty_aux)
 
                     # replacing textures
                     with open(vram_export_path, mode="wb") as output_file:
@@ -351,19 +354,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                         output_file.write(VEV.tx2_datas[texture_index].data)
 
+                            # Write the rest of the data to the new file
                             data = input_file.read()
                             output_file.write(data)
+
+                            # Get the new vram size by getting the position of the pointer in the output file
+                            # since it's in the end of the file
+                            vram_new_size = output_file.tell()
 
                     # Change the header of pos 48 in spr file because in that place indicates the size of the
                     # final output file
                     with open(spr_export_path, mode="rb+") as output_file:
-                        # Get the original vram size
-                        output_file.seek(VEV.data_offset_header + 48)
-                        vram_file_size = int.from_bytes(output_file.read(4), byteorder='big')
-
                         # Change the vram size adding the difference in positive or negative
                         output_file.seek(VEV.data_offset_header + 48)
-                        output_file.write((vram_file_size+quanty_aux).to_bytes(4, byteorder='big'))
+                        output_file.write(vram_new_size.to_bytes(4, byteorder='big'))
 
                     # SPR file. We won't compress
 
