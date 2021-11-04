@@ -42,7 +42,8 @@ def load_data_to_pe_cpe(main_window):
            main_window.listView_2)
     main_window.listView_2.setCurrentIndex(main_window.listView_2.model().index(0, 0))
     PEV.current_selected_subpak_file = main_window.listView_2.model().index(0, 0).row()
-    main_window.listView_2.clicked.connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
+    main_window.listView_2.selectionModel().currentChanged.\
+        connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
     # Enable the pak explorer
     main_window.pak_explorer.setEnabled(True)
     # Add the title
@@ -400,9 +401,6 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
     header = b''
     data = b''
 
-    # Flag that will tell us if the pak file has only ioram or vram files
-    spr_type_pak = True
-
     # Store the sizes
     acumulated_sizes = 0
     size_total_block_header_subpak = num_pak_files * 48
@@ -421,10 +419,10 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
         # position 12 of the STPK file. Also, we have to add 64 bytes wit the value 0x00 in the header as a separator
         # between the filenames of the pak file, and the data
         filename_splitted = filename.split(".")
-        if spr_type_pak and len(filename_splitted) > 1 and \
+        if PEV.spr_type_pak and len(filename_splitted) > 1 and \
                 (filename_splitted[-1] in "vram" or filename_splitted[-1] in "ioram"):
             # Means holds only vram or ioram files
-            spr_type_pak = False
+            PEV.spr_type_pak = False
 
         # We step in the first folder we find
         if os.path.isdir(sub_folder_path):
@@ -461,7 +459,7 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
 
             # If is a pak file that holds vram or ioram files, we will add 64 to the offset because we will add a
             # separator between filenames and data
-            if not spr_type_pak:
+            if not PEV.spr_type_pak:
                 offset = offset + 64
 
             # Increase the size for the next offset
@@ -487,7 +485,7 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
     # Add to header_0, the following bytes depending if the pak file holds only vram/ioram files (00 00 00 80) or other
     # types of file (00 00 00 10)
     # If the pak file has only ioram or vram files, we add a separator of 64 bytes between header and data
-    if not spr_type_pak:
+    if not PEV.spr_type_pak:
         separator = PEV.separator_vram_ioram
         header_0 = header_0 + bytes.fromhex("00 00 00 80")
     else:

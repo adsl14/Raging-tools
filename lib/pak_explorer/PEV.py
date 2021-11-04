@@ -9,6 +9,9 @@ class PEV:
     STPK = b'STPK'
     stpz_file = False
 
+    # Flag that will tell us if the pak file has only ioram or vram files
+    spr_type_pak = True
+
     # Separator that will be used in pak files (between header and data, only for pak files that holds vram or ioram)
     separator_vram_ioram = b''
     for i in range(0, 64):

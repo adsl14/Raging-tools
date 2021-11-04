@@ -51,7 +51,7 @@ def load_data_to_ve(main_window):
         item = QStandardItem(tx2_data_element.name)
         item.setEditable(False)
         model.appendRow(item)
-    main_window.listView.clicked.connect(
+    main_window.listView.selectionModel().currentChanged.connect(
         lambda q_model_idx: action_item(q_model_idx, main_window.imageTexture, main_window.encodingImageText,
                                         main_window.mipMapsImageText,
                                         main_window.sizeImageText))

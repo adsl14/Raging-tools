@@ -94,6 +94,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 PEV.stpz_file = True
                 PEV.stpk_file = False
 
+                # Reset the flag
+                PEV.spr_type_pak = True
+
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
                 load_data_to_pe_cpe(self)
 
@@ -112,6 +115,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 PEV.stpz_file = False
                 PEV.stpk_file = True
+
+                # Reset the flag
+                PEV.spr_type_pak = True
 
                 # Load all the data from pak file to pak_explorer/character_parameters_editor
                 load_data_to_pe_cpe(self)
@@ -480,7 +486,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowTitle("Author")
         msg.setText(
             "<ul>"
-            "<li><b>Raging tools 1.3.2</b> by "
+            "<li><b>Raging tools 1.4</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>If you want to support the tool, you can get the source code in the "
             "<a href=https://github.com/adsl14/Raging-tools>GitHub</a> page <li>"
@@ -493,9 +499,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setTextFormat(1)
         msg.setWindowTitle("Credits")
         msg.setText('<ul>'
-                    '<li>To <b>revelation (revel8n) </b> from <a ''href=https://forum.xentax.com>XeNTaX</a> '
+                    '<li>To <b>revelation (revel8n) </b> from <a href=https://forum.xentax.com>XeNTaX</a> '
                     'forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i>.</li>'
-                    '<li>To <b>316austin316</b> for reporting bugs.</li>'
+                    '<li>To <b>316austin316</b> for contributing to the tool.</li>'
+                    '<li>To <a href="https://twitter.com/ssjlvegeta?lang=es"><b>SSJLVegeta</b></a> '
+                    'for contributing to the tool.</li>'
                     '<li>To the <a ''href=https://discord.gg/tBmcwkGUE6>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()
