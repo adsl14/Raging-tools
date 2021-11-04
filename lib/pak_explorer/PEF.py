@@ -396,15 +396,19 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
 def pack(path_folder, filenames, num_filenames, num_pak_files):
 
     # Create the headers and data vars
-    header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
+    header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big')
     header = b''
     data = b''
+
+    # Flag that will tell us if the pak file has only ioram or vram files
+    spr_type_pak = True
 
     # Store the sizes
     acumulated_sizes = 0
     size_total_block_header_subpak = num_pak_files * 48
     stpk_header_size = 16
 
+    # Final pak file
     pak_file = b''
 
     # Store all the data from a folder
@@ -412,6 +416,15 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
 
         filename = filenames[i]
         sub_folder_path = os.path.join(path_folder, filename)
+
+        # If there is only one single vram or ioram, the header of the pak file has to be changed to 00 00 00 80 in
+        # position 12 of the STPK file. Also, we have to add 64 bytes wit the value 0x00 in the header as a separator
+        # between the filenames of the pak file, and the data
+        filename_splitted = filename.split(".")
+        if spr_type_pak and len(filename_splitted) > 1 and \
+                (filename_splitted[-1] in "vram" or filename_splitted[-1] in "ioram"):
+            # Means holds only vram or ioram files
+            spr_type_pak = False
 
         # We step in the first folder we find
         if os.path.isdir(sub_folder_path):
@@ -446,6 +459,11 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
             # Calculate offset fot the subpak
             offset = stpk_header_size + size_total_block_header_subpak + acumulated_sizes
 
+            # If is a pak file that holds vram or ioram files, we will add 64 to the offset because we will add a
+            # separator between filenames and data
+            if not spr_type_pak:
+                offset = offset + 64
+
             # Increase the size for the next offset
             acumulated_sizes = acumulated_sizes + size
 
@@ -466,8 +484,18 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
     for i in range(0, 112):
         data = data + bytes.fromhex("00")
 
+    # Add to header_0, the following bytes depending if the pak file holds only vram/ioram files (00 00 00 80) or other
+    # types of file (00 00 00 10)
+    # If the pak file has only ioram or vram files, we add a separator of 64 bytes between header and data
+    if not spr_type_pak:
+        separator = PEV.separator_vram_ioram
+        header_0 = header_0 + bytes.fromhex("00 00 00 80")
+    else:
+        separator = b''
+        header_0 = header_0 + bytes.fromhex("00 00 00 10")
+
     # Create the pak file
-    pak_file = header_0 + header + pak_file + data
+    pak_file = header_0 + header + separator + pak_file + data
 
     # Write the new pak file in the folder
     with open(path_folder + ".pak", mode="wb") as output_file:
