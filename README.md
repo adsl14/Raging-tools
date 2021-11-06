@@ -51,7 +51,10 @@ You can export the files or import a new one. With this you can, for example, sw
 
 ## character parameters editor
 
-<img src="images/character_parameters_editor.jpg" alt="character_parameters_editor_image" width="50%">
+<p float="left">
+  <img src="images/character_parameters_editor.jpg" alt="character_parameters_editor_image" width="40%">
+  <img src="images/character_parameters_editor_operate_character_XYZ.jpg" alt="character_parameters_editor_operate_character_XYZ_image" width="40%">
+</p>
 
 <i>character parameters editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, 
 aura size and more.
