@@ -62,8 +62,8 @@ aura size and more.
 In order to use this tool, you can open the following files:
 
 <ul>
-  <li><i>operate_resident_param.zpak</i>.</li>
-  <li><i>operate_character_xyz_m.zpak</i> (where xyz are generic numbers).</li>
+  <li><i>operate_resident_param.zpak</i> located in <i>st_pack_battle_others_pt_ps3.afs</i>.</li>
+  <li><i>operate_character_xyz_m.zpak</i> (where xyz are generic numbers) located in <i>st_pack_battle_character_pt_ps3.afs</i>.</li>
 </ul>
 
 Depending of what file you loaded, it will show you the parameters that has that file, so if you don't find a specific parameter, you need to load other file.
