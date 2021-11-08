@@ -50,7 +50,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Open the file
         path_file = QFileDialog.getOpenFileName(self,
-                                                "Open file", os.path.abspath(MainWindow.old_path_file),
+                                                "Open file", MainWindow.old_path_file,
                                                 "Supported files "
                                                 "(*.pak *.zpak *.spr *.vram)"
                                                 ";;Packed files "

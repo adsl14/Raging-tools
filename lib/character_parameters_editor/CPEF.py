@@ -791,13 +791,22 @@ def read_animation_files(main_window, offset_index, animation_combo_box):
     read_animation_file(main_window, 166+offset_index, "Jump charged Ki shot", 3, animation_combo_box)
     # Throw
     read_animation_file(main_window, 169+offset_index, "Throw catch", 1, animation_combo_box)
-    read_animation_file(main_window, 170+offset_index, "Throw", 3, animation_combo_box)
+    read_animation_file(main_window, 170+offset_index, "Throw", 8, animation_combo_box)
+    read_animation_file(main_window, 178+offset_index, "Throw wall", 5, animation_combo_box)
+    # Guard
+    read_animation_file(main_window, 267 + offset_index, "Guard", 1, animation_combo_box)
     # Transformation
     read_animation_file(main_window, 308+offset_index, "Transformation in", 2, animation_combo_box)
     read_animation_file(main_window, 310+offset_index, "Transformation result", 1, animation_combo_box)
     # Return
     read_animation_file(main_window, 311+offset_index, "Return in", 2, animation_combo_box)
     read_animation_file(main_window, 313+offset_index, "Return out", 1, animation_combo_box)
+    # Fusion
+    read_animation_file(main_window, 316+offset_index, "Fusion in", 2, animation_combo_box)
+    read_animation_file(main_window, 318+offset_index, "Fusion result", 1, animation_combo_box)
+    # Potala
+    read_animation_file(main_window, 321+offset_index, "Potara in", 2, animation_combo_box)
+    read_animation_file(main_window, 323+offset_index, "Potara result", 1, animation_combo_box)
     # Cutscenes
     read_animation_file(main_window, 336+offset_index, "Entry 1", 2, animation_combo_box)
     read_animation_file(main_window, 338+offset_index, "Entry 2", 2, animation_combo_box)
@@ -1450,9 +1459,9 @@ def import_camera(camera_cutscene, file):
 def action_import_camera_button_logic(main_window):
 
     # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera", "", "")[0]
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera", main_window.old_path_file, "")[0]
 
-    if file_export_path:
+    if os.path.exists(file_export_path):
 
         with open(file_export_path, mode="rb") as file:
 
@@ -1477,6 +1486,9 @@ def action_import_camera_button_logic(main_window):
 
         # Set camera values to current combo box and show them in the tool
         change_camera_cutscene_values(main_window, camera_cutscene)
+
+        # Change old path
+        main_window.old_path_file = file_export_path
 
 
 def action_export_all_camera_button_logic(main_window):
@@ -1650,12 +1662,18 @@ def export_animation(animation_array, file_export_path):
 
 
 def action_import_animation_button_logic(main_window, animation_combo_box):
-    # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", "", "")[0]
 
-    # Import a single animation
-    animation_array = animation_combo_box.currentData()
-    import_animation(file_export_path, animation_array)
+    # Ask to the user from what file wants to open the camera files
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", main_window.old_path_file, "")[0]
+
+    if os.path.exists(file_export_path):
+
+        # Import a single animation
+        animation_array = animation_combo_box.currentData()
+        import_animation(file_export_path, animation_array)
+
+        # Change old path
+        main_window.old_path_file = file_export_path
 
 
 def action_import_all_animation_button_logic(main_window, animation_combo_box):

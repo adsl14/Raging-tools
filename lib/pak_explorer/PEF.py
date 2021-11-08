@@ -551,14 +551,17 @@ def action_import_2_logic(main_window):
     # Ask to the user what file wants to import
     item = main_window.listView_2.model().item(PEV.current_selected_subpak_file, 0)
     path_original_file = item.text()
-    path_new_file = QFileDialog.getOpenFileName(main_window, "Import file", item.data(), "")[0]
+    path_new_file = QFileDialog.getOpenFileName(main_window, "Import file", item.data(), main_window.old_path_file)[0]
 
-    if path_new_file:
+    if os.path.exists(path_new_file):
         # Copy the new file
         copyfile(path_new_file, path_original_file)
 
         # Changed background color in order to show that file has been changed
         item.setBackground(QColor('#7fc97f'))
+
+        # Change old path
+        main_window.old_path_file = path_new_file
 
 
 def pack_and_save_file(main_window, path_output_file):

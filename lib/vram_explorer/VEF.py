@@ -610,7 +610,7 @@ def action_import_logic(main_window):
                                                                ".bmp"),
                                                   "BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
-    if import_path:
+    if os.path.exists(import_path):
         with open(import_path, mode="rb") as file:
             header = file.read(2).hex()
 
