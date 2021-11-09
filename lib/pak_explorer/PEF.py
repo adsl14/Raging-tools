@@ -4,8 +4,7 @@ from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 from lib.character_parameters_editor.CPEF import read_character_parameters, action_change_character, \
-    enable_disable_operate_character_xxx_m_frames, open_select_chara_window, \
-    enable_disable_operate_resident_param_frames, read_single_character_parameters
+    open_select_chara_window, read_single_character_parameters
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -265,20 +264,22 @@ def load_data_to_pe_cpe(main_window):
         # Open the tab (character parameters editor)
         if main_window.tabWidget.currentIndex() != 2:
             main_window.tabWidget.setCurrentIndex(2)
-    
-        # Enable all the buttons (character parameters editor -> operate_resident_param)
-        if not main_window.transEffect.isVisible():
-            enable_disable_operate_resident_param_frames(main_window, True)
-            # Move the window to the foreground (being clickable)
-            main_window.operate_resident_param_frame.raise_()
-        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if main_window.ki_values.isVisible():
-            enable_disable_operate_character_xxx_m_frames(main_window, False)
+
+        # Open the tab operate_resident_param
+        if main_window.tabWidget_2.currentIndex() != 0:
+            main_window.tabWidget_2.setCurrentIndex(0)
 
         # Enable completely the tab character parameters editor
         if not main_window.character_parameters_editor.isEnabled():
             main_window.character_parameters_editor.setEnabled(True)
     
+        # Enable all the buttons (character parameters editor -> operate_resident_param)
+        if not main_window.operate_resident_param_frame.isEnabled():
+            main_window.operate_resident_param_frame.setEnabled(True)
+        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+        if main_window.operate_character_xyz_m_frame.isEnabled():
+            main_window.operate_character_xyz_m_frame.setEnabled(False)
+
     # Check if the file is an operate_character_XXX_m type
     elif re.search(CPEV.operate_character_XXX_m_regex, data):
 
@@ -294,19 +295,21 @@ def load_data_to_pe_cpe(main_window):
         # Open the tab (character parameters editor)
         if main_window.tabWidget.currentIndex() != 2:
             main_window.tabWidget.setCurrentIndex(2)
-    
-        # Disable all the buttons (character parameters editor -> operate_resident_param)
-        if main_window.transEffect.isVisible():
-            enable_disable_operate_resident_param_frames(main_window, False)
-        # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if not main_window.ki_values.isVisible():
-            enable_disable_operate_character_xxx_m_frames(main_window, True)
-            # Move the window to the foreground (being clickable)
-            main_window.operate_character_xyz_m_frame.raise_()
+
+        # Open the tab operate_character_XXX_m
+        if main_window.tabWidget_2.currentIndex() != 1:
+            main_window.tabWidget_2.setCurrentIndex(1)
 
         # Enable completely the tab character parameters editor
         if not main_window.character_parameters_editor.isEnabled():
             main_window.character_parameters_editor.setEnabled(True)
+
+        # Disable all the buttons (character parameters editor -> operate_resident_param)
+        if main_window.operate_resident_param_frame.isEnabled():
+            main_window.operate_resident_param_frame.setEnabled(False)
+        # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
+        if not main_window.operate_character_xyz_m_frame.isEnabled():
+            main_window.operate_character_xyz_m_frame.setEnabled(True)
     
     # Generic pak file
     else:

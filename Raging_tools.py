@@ -418,7 +418,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Check what type of character parameter editor is activated
                             # --- operate_character_XXX_m ---
-                            if self.ki_values.isVisible():
+                            if self.operate_character_xyz_m_frame.isEnabled():
 
                                 # Save all the info
                                 print("Writing values in the file...")

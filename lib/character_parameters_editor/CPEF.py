@@ -27,11 +27,17 @@ def initialize_cpe(main_window, qt_widgets):
     for i in range(66, len(CPEV.mini_portraits_image)):
         CPEV.mini_portraits_image[i].setStyleSheet("QLabel {border : 3px solid grey;}")
 
+    # Hide the transformation slots
+    main_window.label_trans_0.setVisible(False)
+    main_window.label_trans_1.setVisible(False)
+    main_window.label_trans_2.setVisible(False)
+    main_window.label_trans_3.setVisible(False)
+
     # Disable all the buttons (operate_resident_param)
-    enable_disable_operate_resident_param_frames(main_window, False)
+    main_window.operate_resident_param_frame.setEnabled(False)
 
     # Disable all the buttons (operate_character_XXX_m)
-    enable_disable_operate_character_xxx_m_frames(main_window, False)
+    main_window.operate_character_xyz_m_frame.setEnabled(False)
 
     # Set the health
     main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -241,38 +247,6 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
-
-
-def enable_disable_operate_resident_param_frames(main_window, flag):
-
-    main_window.transEffect.setVisible(flag)
-    main_window.transPartner.setVisible(flag)
-    main_window.amount_ki_per_transformation.setVisible(flag)
-    main_window.animation_per_transformation.setVisible(flag)
-    main_window.transformPanel.setVisible(flag)
-    main_window.fusionPartnerTrigger.setVisible(flag)
-    main_window.fusionPartnerVisual.setVisible(flag)
-    main_window.amount_ki_per_fusion.setVisible(flag)
-    main_window.animation_per_fusion.setVisible(flag)
-    main_window.fusionPanel.setVisible(flag)
-    main_window.health.setVisible(flag)
-    main_window.camera_size.setVisible(flag)
-    main_window.hit_box.setVisible(flag)
-    main_window.aura_size.setVisible(flag)
-    main_window.color_lightning.setVisible(flag)
-    main_window.glow_lightning.setVisible(flag)
-    main_window.portrait.setVisible(flag)
-    main_window.mainPanel.setVisible(flag)
-
-
-def enable_disable_operate_character_xxx_m_frames(main_window, flag):
-
-    main_window.ki_values.setVisible(flag)
-    main_window.melee_values.setVisible(flag)
-    main_window.movement_speed.setVisible(flag)
-    main_window.camera_values.setVisible(flag)
-    main_window.animation_values.setVisible(flag)
-
 
 # operate_resident_param
 def read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i):
