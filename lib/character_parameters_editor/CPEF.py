@@ -246,6 +246,15 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.importAllAnimationPropertiesButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
 
+
+    # --- cs_chip ---
+    # Load all the mini portraits (main panel)
+    CPEV.mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
+
+    for i in range(0, len(CPEV.mini_portraits_image)):
+        CPEV.mini_portraits_image_2[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_noise.bmp")))
+        CPEV.mini_portraits_image_2[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
+
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
 

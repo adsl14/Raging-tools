@@ -279,6 +279,9 @@ def load_data_to_pe_cpe(main_window):
         # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
         if main_window.operate_character_xyz_m_frame.isEnabled():
             main_window.operate_character_xyz_m_frame.setEnabled(False)
+        # Disable all the buttons (character parameters editor -> cs_chip)
+        if main_window.cs_chip.isEnabled():
+            main_window.cs_chip.setEnabled(False)
 
     # Check if the file is an operate_character_XXX_m type
     elif re.search(CPEV.operate_character_XXX_m_regex, data):
@@ -310,6 +313,9 @@ def load_data_to_pe_cpe(main_window):
         # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
         if not main_window.operate_character_xyz_m_frame.isEnabled():
             main_window.operate_character_xyz_m_frame.setEnabled(True)
+        # Disable all the buttons (character parameters editor -> cs_chip)
+        if main_window.cs_chip.isEnabled():
+            main_window.cs_chip.setEnabled(False)
     
     # Generic pak file
     else:

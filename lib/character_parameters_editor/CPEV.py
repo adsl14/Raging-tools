@@ -30,6 +30,36 @@ class CPEV:
     glow_lightning_values = dict({"Disabled": 0, "Glow": 1, "Unknown (Androids)": 2, "Lightnings": 4,
                                   "Glow + lightnings": 5})
 
+    # panelPortraistlist
+    mini_portraits_image = []
+    styleSheetMainPanelChara = "QLabel {border : 3px solid black;}"
+
+    # portraits object for the Select Character window
+    previous_chara_selected_character_window = 100
+    mini_portraits_image_select_chara_window = []
+    styleSheetSelectChara = "QLabel {border : 6px solid black;}"
+    styleSheetTransformSelected = "QLabel {border : 5px solid red;}"
+    sytelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
+
+    # List of character with their data from the file
+    character_list = []
+    chara_selected = 0  # Index of the char selected in the main panel
+    change_character = False  # Flag that will tell us if the character has been changed in the main panel
+    trans_slot_panel_selected = 0  # Slot thas is being edited for the transformations
+    transformation_partner_flag = False  # Flag transformation partner slot to know if the user has selected that
+    fusion_slot_panel_selected = 0  # Slot that is being edited for the fusions
+    # Flag for fusion partner (trigger 0, visual 1) slot to know if the user has selected that
+    fusion_partner_flag = [False, False]
+    # Array of the characters that has been edited
+    character_list_edited = []
+
+    # Store what character has original transform version
+    characters_with_trans = [0, 5, 8, 17, 22, 24, 27, 29, 31, 34, 40, 48, 58, 63, 67, 79, 82, 85, 88]
+    # Store what transformations has the character originally
+    characters_with_trans_index = [[1, 2, 3], [6, 7], [9, 10], [18, 19, 20], [23], [25, 26], [28], [30], [32, 33],
+                                   [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86],
+                                   [89]]
+
     # --- operate_character_XXX_m ---
     # path and positions of files and data
     character_i_path = ""
@@ -72,32 +102,6 @@ class CPEV:
     # Distance between the 'buffer' folders
     size_between_animation_and_effects = 363
 
+    # --- cs_chip ---
     # panelPortraistlist
-    mini_portraits_image = []
-    styleSheetMainPanelChara = "QLabel {border : 3px solid black;}"
-
-    # portraits object for the Select Character window
-    previous_chara_selected_character_window = 100
-    mini_portraits_image_select_chara_window = []
-    styleSheetSelectChara = "QLabel {border : 6px solid black;}"
-    styleSheetTransformSelected = "QLabel {border : 5px solid red;}"
-    sytelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
-
-    # List of character with their data from the file
-    character_list = []
-    chara_selected = 0  # Index of the char selected in the main panel
-    change_character = False  # Flag that will tell us if the character has been changed in the main panel
-    trans_slot_panel_selected = 0   # Slot thas is being edited for the transformations
-    transformation_partner_flag = False  # Flag transformation partner slot to know if the user has selected that
-    fusion_slot_panel_selected = 0  # Slot that is being edited for the fusions
-    # Flag for fusion partner (trigger 0, visual 1) slot to know if the user has selected that
-    fusion_partner_flag = [False, False]
-    # Array of the characters that has been edited
-    character_list_edited = []
-
-    # Store what character has original transform version
-    characters_with_trans = [0, 5, 8, 17, 22, 24, 27, 29, 31, 34, 40, 48, 58, 63, 67, 79, 82, 85, 88]
-    # Store what transformations has the character originally
-    characters_with_trans_index = [[1, 2, 3], [6, 7], [9, 10], [18, 19, 20], [23], [25, 26], [28], [30], [32, 33],
-                                   [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86],
-                                   [89]]
+    mini_portraits_image_2 = []
