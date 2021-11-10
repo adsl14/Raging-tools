@@ -16,16 +16,16 @@ def initialize_cpe(main_window, qt_widgets):
 
     for i in range(0, 66):
         index_chara = CPEV.mini_portraits_image[i].objectName().split("_")[1]
-        CPEV.mini_portraits_image[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_0" +
+        CPEV.mini_portraits_image[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_0" +
                                                                     index_chara + ".bmp")))
-        CPEV.mini_portraits_image[i].setStyleSheet("QLabel {border : 3px solid grey;}")
+        CPEV.mini_portraits_image[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
         CPEV.mini_portraits_image[i].mousePressEvent = functools.partial(action_change_character,
                                                                          main_window=main_window,
                                                                          index=int(index_chara),
                                                                          modify_slot_transform=True)
 
     for i in range(66, len(CPEV.mini_portraits_image)):
-        CPEV.mini_portraits_image[i].setStyleSheet("QLabel {border : 3px solid grey;}")
+        CPEV.mini_portraits_image[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
 
     # Hide the transformation slots
     main_window.label_trans_0.setVisible(False)
@@ -154,8 +154,9 @@ def initialize_cpe(main_window, qt_widgets):
     CPEV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)
     for i in range(0, 100):
         CPEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                                        "sc_chara_0" + str(i).zfill(
+                                                                                        "chara_chips_0" + str(i).zfill(
                                                                                             2) + ".bmp")))
+        CPEV.mini_portraits_image_select_chara_window[i].setStyleSheet(CPEV.styleSheetSelectChara)
         CPEV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
@@ -1021,7 +1022,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                 transformations = CPEV.characters_with_trans_index[CPEV.characters_with_trans.index(index)]
                 num_transformations = len(transformations)
                 if num_transformations > 0:
-                    main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
+                    main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_" +
                                                                              str(transformations[0]).zfill(
                                                                                  3) + ".bmp")))
                     main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character,
@@ -1030,7 +1031,8 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                                   modify_slot_transform=False)
                     main_window.label_trans_0.setVisible(True)
                     if num_transformations > 1:
-                        main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
+                        main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                                 "chara_chips_" +
                                                                                  str(transformations[1]).zfill(3) +
                                                                                  ".bmp")))
                         main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character,
@@ -1040,7 +1042,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                         main_window.label_trans_1.setVisible(True)
                         if num_transformations > 2:
                             main_window.label_trans_2.setPixmap(
-                                QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_" +
+                                QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_" +
                                                      str(transformations[2]).zfill(3) +
                                                      ".bmp")))
                             main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character,
@@ -1050,7 +1052,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                             main_window.label_trans_2.setVisible(True)
                             if num_transformations > 3:
                                 main_window.label_trans_3.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                                         "sc_chara_" +
+                                                                                         "chara_chips_" +
                                                                                          str(transformations[3]).zfill(
                                                                                              3) +
                                                                                          ".bmp")))
@@ -1073,9 +1075,9 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     # Check what selected the user. If the user didn't select the transform panel or transform partner
     # then, the user selected the fusion panel (or potara or metamoran)
     if trans_slot_panel_index is not None or transformation_partner_flag:
-        q_label_style = "QLabel {border : 3px solid red;}"
+        q_label_style = CPEV.styleSheetTransformSelected
     else:
-        q_label_style = "QLabel {border : 3px solid green;}"
+        q_label_style = CPEV.sytelSheetFusionSelected
 
     # Store in a global var what slot in the transformation and fusion panel has been selected
     CPEV.trans_slot_panel_selected = trans_slot_panel_index
@@ -1096,7 +1098,7 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
             # Reset the previous character select if is not a empty character
             if CPEV.previous_chara_selected_character_window != 100:
                 CPEV.mini_portraits_image_select_chara_window[CPEV.previous_chara_selected_character_window] \
-                    .setStyleSheet("QLabel {}")
+                    .setStyleSheet(CPEV.styleSheetSelectChara)
 
             # Store the actual character selected in the select character window
             CPEV.previous_chara_selected_character_window = index
@@ -1115,7 +1117,7 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     # we will remove the red/green border for the previous character transform panel
     elif CPEV.previous_chara_selected_character_window != index:
         CPEV.mini_portraits_image_select_chara_window[CPEV.previous_chara_selected_character_window] \
-            .setStyleSheet("QLabel {}")
+            .setStyleSheet(CPEV.styleSheetSelectChara)
 
         CPEV.previous_chara_selected_character_window = index
 

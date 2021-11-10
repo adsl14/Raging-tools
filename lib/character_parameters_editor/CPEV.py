@@ -74,10 +74,14 @@ class CPEV:
 
     # panelPortraistlist
     mini_portraits_image = []
+    styleSheetMainPanelChara = "QLabel {border : 3px solid black;}"
 
     # portraits object for the Select Character window
     previous_chara_selected_character_window = 100
     mini_portraits_image_select_chara_window = []
+    styleSheetSelectChara = "QLabel {border : 6px solid black;}"
+    styleSheetTransformSelected = "QLabel {border : 5px solid red;}"
+    sytelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
 
     # List of character with their data from the file
     character_list = []

@@ -95,13 +95,13 @@ def load_data_to_pe_cpe(main_window):
         main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
     
         # Show the transformations in the main panel
-        main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_001.bmp")))
+        main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_001.bmp")))
         main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
                                                                       index=1, modify_slot_transform=False)
-        main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_002.bmp")))
+        main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_002.bmp")))
         main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
                                                                       index=2, modify_slot_transform=False)
-        main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "sc_chara_003.bmp")))
+        main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_003.bmp")))
         main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
                                                                       index=3, modify_slot_transform=False)
         main_window.label_trans_0.setVisible(True)
