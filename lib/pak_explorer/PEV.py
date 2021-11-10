@@ -9,13 +9,10 @@ class PEV:
     STPK = b'STPK'
     stpz_file = False
 
-    # Flag that will tell us if the pak file has only ioram or vram files
-    spr_type_pak = True
-
-    # Separator that will be used in pak files (between header and data, only for pak files that holds vram or ioram)
-    separator_vram_ioram = b''
+    # Separator that will be used in pak files (between header and data)
+    separator = b''
     for i in range(0, 64):
-        separator_vram_ioram = separator_vram_ioram + bytes.fromhex("00")
+        separator = separator + bytes.fromhex("00")
 
     # Temp folder name
     temp_folder = "temp_PE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
