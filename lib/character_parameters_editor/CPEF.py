@@ -251,7 +251,7 @@ def initialize_cpe(main_window, qt_widgets):
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
 
-    for i in range(0, len(CPEV.mini_portraits_image)):
+    for i in range(0, len(CPEV.mini_portraits_image_2)):
         CPEV.mini_portraits_image_2[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_noise.bmp")))
         CPEV.mini_portraits_image_2[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
 
