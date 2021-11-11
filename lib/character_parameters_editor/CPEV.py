@@ -1,5 +1,4 @@
-from lib.packages import os
-
+from lib.packages import os, np
 
 class CPEV:
 
@@ -105,6 +104,8 @@ class CPEV:
 
     # --- cs_chip ---
     # panelPortraistlist
+    num_total_slots = 72
     mini_portraits_image_2 = []
     cs_chip_path = ""
     cs_form_path = ""
+    select_chara_panel_matrix = np.zeros((num_total_slots, 6), dtype=np.int)

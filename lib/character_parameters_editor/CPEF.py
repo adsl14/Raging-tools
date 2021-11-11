@@ -689,8 +689,10 @@ def read_cs_chip_file(main_window):
     CPEV.cs_form_path = main_window.listView_2.model().item(2, 0).text()
 
     # Read the characters ID for the main panel
-    #with open(CPEV.cs_chip_path, mode="rb") as input:
-
+    with open(CPEV.cs_chip_path, mode="rb") as input:
+        for i in range(0, CPEV.num_total_slots):
+            data = input.read(1)
+            CPEV.select_chara_panel_matrix[i, 0] = int.from_bytes(data, byteorder="big")
 
 # Load the necesary animation files.
 # index_list_view (index file in the list view from pack explorer)
