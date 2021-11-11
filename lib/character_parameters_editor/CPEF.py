@@ -680,6 +680,17 @@ def write_single_character_parameters(main_window):
         file.seek(3, 1)
         file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
 
+# cs_chip functions (ID and transformations slots for the select character panel)
+def read_cs_chip_file(main_window):
+
+    # cs_chip
+    CPEV.cs_chip_path = main_window.listView_2.model().item(0, 0).text()
+    # cs_form
+    CPEV.cs_form_path = main_window.listView_2.model().item(2, 0).text()
+
+    # Read the characters ID for the main panel
+    #with open(CPEV.cs_chip_path, mode="rb") as input:
+
 
 # Load the necesary animation files.
 # index_list_view (index file in the list view from pack explorer)
@@ -2046,15 +2057,6 @@ def on_zoom_end_value_changed(main_window):
     if not CPEV.change_character:
         main_window.camera_type_key.currentData().zooms["Zoom_end"] = \
             main_window.zoom_end_value.value()
-        main_window.camera_type_key.currentData().modified = True
-
-
-def on_unk10_value_changed(main_window):
-
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
-        main_window.camera_type_key.currentData().unknowns["unknown_block_10"] = \
-            main_window.unk10_value.value()
         main_window.camera_type_key.currentData().modified = True
 
 

@@ -317,6 +317,35 @@ def load_data_to_pe_cpe(main_window):
         if main_window.cs_chip.isEnabled():
             main_window.cs_chip.setEnabled(False)
     
+    elif data == CPEV.cs_chip:
+
+        # Read all the data from the files and store it in the global_character from CPEV.
+
+        # We're not changing the character in the main panel (play combo box code)
+        CPEV.change_character = False
+
+        # Open the tab (character parameters editor)
+        if main_window.tabWidget.currentIndex() != 2:
+            main_window.tabWidget.setCurrentIndex(2)
+
+        # Open the tab operate_character_XXX_m
+        if main_window.tabWidget_2.currentIndex() != 2:
+            main_window.tabWidget_2.setCurrentIndex(2)
+
+        # Enable completely the tab character parameters editor
+        if not main_window.character_parameters_editor.isEnabled():
+            main_window.character_parameters_editor.setEnabled(True)
+
+        # Disable all the buttons (character parameters editor -> operate_resident_param)
+        if main_window.operate_resident_param_frame.isEnabled():
+            main_window.operate_resident_param_frame.setEnabled(False)
+        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+        if  main_window.operate_character_xyz_m_frame.isEnabled():
+            main_window.operate_character_xyz_m_frame.setEnabled(False)
+        # Disable all the buttons (character parameters editor -> cs_chip)
+        if not main_window.cs_chip.isEnabled():
+            main_window.cs_chip.setEnabled(True)
+
     # Generic pak file
     else:
 

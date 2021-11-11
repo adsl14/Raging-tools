@@ -6,6 +6,7 @@ class CPEV:
     # Allowed files
     operate_resident_param = 'operate_resident_param'
     operate_character_XXX_m_regex = "operate_character_0[0-9][0-9]_m"
+    cs_chip = "cs_chip"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
@@ -105,3 +106,5 @@ class CPEV:
     # --- cs_chip ---
     # panelPortraistlist
     mini_portraits_image_2 = []
+    cs_chip_path = ""
+    cs_form_path = ""
