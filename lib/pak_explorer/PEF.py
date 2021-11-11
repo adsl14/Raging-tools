@@ -4,7 +4,7 @@ from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
 from lib.character_parameters_editor.CPEF import read_character_parameters, action_change_character, \
-    open_select_chara_window, read_single_character_parameters
+    open_select_chara_window, read_single_character_parameters, read_cs_chip_file
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -319,7 +319,8 @@ def load_data_to_pe_cpe(main_window):
     
     elif data == CPEV.cs_chip:
 
-        # Read all the data from the files and store it in the global_character from CPEV.
+        # Read all the data from the files and store it in the global vars from CPEV.
+        read_cs_chip_file(main_window)
 
         # We're not changing the character in the main panel (play combo box code)
         CPEV.change_character = False
