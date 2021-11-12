@@ -104,18 +104,14 @@ class CPEV:
     size_between_animation_and_effects = 363
 
     # --- cs_chip ---
-    # panelPortraistlist
-    num_total_slots = 72
-    num_character_slots = 66
+    # QLabel objects for all the main roster
     mini_portraits_image_2 = []
     cs_chip_path = ""
     cs_form_path = ""
-    # Matrix with num slots (row)
-    # and cols in this order -> character ID, num transformations, position in cs_form, and transformations ID
-    select_chara_main_roster = np.full((num_total_slots, 8), 255)
+    # Matrix with num slots without taking account the trans slots (row)
+    # and cols in this order -> position in cs_form, num transformations, character ID, and chara ID transformations [5]
+    select_chara_main_roster = np.full((72, 8), 255)
     # Size between characters in cs_form
     size_between_character_cs_form = 36
-    # Positions in cs_form for each character.
-    positions_cs_form_character = []
-    positions_cs_form_character_search = []
-    positions_cs_form_character_edited = []
+    # slots ID that are already edited
+    select_chara_main_roster_edited = []
