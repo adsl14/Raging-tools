@@ -1,5 +1,6 @@
 from lib.packages import os, np
 
+
 class CPEV:
 
     # Allowed files
@@ -105,7 +106,16 @@ class CPEV:
     # --- cs_chip ---
     # panelPortraistlist
     num_total_slots = 72
+    num_character_slots = 66
     mini_portraits_image_2 = []
     cs_chip_path = ""
     cs_form_path = ""
-    select_chara_panel_matrix = np.zeros((num_total_slots, 6), dtype=np.int)
+    # Matrix with num slots (row)
+    # and cols in this order -> character ID, num transformations, position in cs_form, and transformations ID
+    select_chara_main_roster = np.full((num_total_slots, 8), 255)
+    # Size between characters in cs_form
+    size_between_character_cs_form = 36
+    # Positions in cs_form for each character.
+    positions_cs_form_character = []
+    positions_cs_form_character_search = []
+    positions_cs_form_character_edited = []

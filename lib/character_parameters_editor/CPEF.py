@@ -246,17 +246,24 @@ def initialize_cpe(main_window, qt_widgets):
     main_window.importAllAnimationPropertiesButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
 
-
     # --- cs_chip ---
     # Load all the mini portraits (main panel)
     CPEV.mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
 
+    # Initialize the slots
     for i in range(0, len(CPEV.mini_portraits_image_2)):
         CPEV.mini_portraits_image_2[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_noise.bmp")))
         CPEV.mini_portraits_image_2[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
 
+    # Store the positions of each character in cs_form
+    for i in range(0, CPEV.num_character_slots):
+        position = i*CPEV.num_character_slots
+        CPEV.positions_cs_form_character.append(position)
+        CPEV.positions_cs_form_character_search.append(position)
+
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
+
 
 # operate_resident_param
 def read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i):
@@ -680,6 +687,7 @@ def write_single_character_parameters(main_window):
         file.seek(3, 1)
         file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
 
+
 # cs_chip functions (ID and transformations slots for the select character panel)
 def read_cs_chip_file(main_window):
 
@@ -688,18 +696,25 @@ def read_cs_chip_file(main_window):
     # cs_form
     CPEV.cs_form_path = main_window.listView_2.model().item(2, 0).text()
 
-    # Read the characters ID for the main panel
-    with open(CPEV.cs_chip_path, mode="rb") as input:
-        for i in range(0, CPEV.num_total_slots):
-            data = input.read(1)
-            CPEV.select_chara_panel_matrix[i, 0] = int.from_bytes(data, byteorder="big")
+    # Get only the slots that are the characters
+    mini_portraits_image_2_only_chara_slots = CPEV.mini_portraits_image_2[5:]
 
-# Load the necesary animation files.
-# index_list_view (index file in the list view from pack explorer)
-# combo_box_label (label from combo box in design)
-# number_files_to_load (number of files that is necessary to load in order to save the animation.
-# animation_combo_box (combo box with all the data for each label)
-# It doesn't count the effects)
+    # Read the characters ID for the main panel
+    with open(CPEV.cs_chip_path, mode="rb") as file_cs_chip:
+        for i in range(0, CPEV.num_total_slots):
+            data = file_cs_chip.read(1)
+            CPEV.select_chara_main_roster[i, 0] = int.from_bytes(data, byteorder="big")
+            if CPEV.select_chara_main_roster[i, 0] != 255:
+                image_name = "chara_chips_" + str(CPEV.select_chara_main_roster[i, 0]).zfill(3) + ".bmp"
+            # null slots in main roster
+            else:
+                image_name = ""
+                mini_portraits_image_2_only_chara_slots[i].setStyleSheet("QLabel {}")
+
+            # Change the image slot
+            mini_portraits_image_2_only_chara_slots[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                                      image_name)))
+
 def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load, animation_combo_box):
 
     item_data_animation = []
