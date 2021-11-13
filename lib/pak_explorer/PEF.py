@@ -316,7 +316,8 @@ def load_data_to_pe_cpe(main_window):
         # Disable all the buttons (character parameters editor -> cs_chip)
         if main_window.cs_chip.isEnabled():
             main_window.cs_chip.setEnabled(False)
-    
+
+    # Check if the file is cs_chip
     elif data == CPEV.cs_chip:
 
         # Read all the data from the files and store it in the global vars from CPEV.
@@ -341,7 +342,7 @@ def load_data_to_pe_cpe(main_window):
         if main_window.operate_resident_param_frame.isEnabled():
             main_window.operate_resident_param_frame.setEnabled(False)
         # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if  main_window.operate_character_xyz_m_frame.isEnabled():
+        if main_window.operate_character_xyz_m_frame.isEnabled():
             main_window.operate_character_xyz_m_frame.setEnabled(False)
         # Disable all the buttons (character parameters editor -> cs_chip)
         if not main_window.cs_chip.isEnabled():

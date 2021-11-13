@@ -3,8 +3,9 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Animation import Animation
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
+from lib.design.select_chara_roster import Select_Chara_Roster
 from lib.packages import QLabel, QPixmap, functools, os, struct, natsorted
-from lib.design.select_chara import Ui_Dialog
+from lib.design.select_chara import Select_Chara
 
 
 def initialize_cpe(main_window, qt_widgets):
@@ -149,7 +150,7 @@ def initialize_cpe(main_window, qt_widgets):
 
     # Load the Select Chara window
     main_window.selectCharaWindow = qt_widgets.QMainWindow()
-    main_window.selectCharaUI = Ui_Dialog()
+    main_window.selectCharaUI = Select_Chara()
     main_window.selectCharaUI.setupUi(main_window.selectCharaWindow)
     CPEV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)
     for i in range(0, 100):
@@ -248,12 +249,38 @@ def initialize_cpe(main_window, qt_widgets):
 
     # --- cs_chip ---
     # Load all the mini portraits (main panel)
-    CPEV.mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
+    mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
+    CPEV.mini_portraits_image_trans = mini_portraits_image_2[:5]
+    CPEV.mini_portraits_image_chars = mini_portraits_image_2[5:]
 
     # Initialize the slots
-    for i in range(0, len(CPEV.mini_portraits_image_2)):
-        CPEV.mini_portraits_image_2[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
-        CPEV.mini_portraits_image_2[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
+    # Transformation slots
+    for i in range(0, len(CPEV.mini_portraits_image_trans)):
+        CPEV.mini_portraits_image_trans[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                          "chara_chips_101.bmp")))
+        CPEV.mini_portraits_image_trans[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
+
+    # Character slots
+    for i in range(0, len(CPEV.mini_portraits_image_chars)):
+        CPEV.mini_portraits_image_chars[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                          "chara_chips_101.bmp")))
+        CPEV.mini_portraits_image_chars[i].setStyleSheet(CPEV.styleSheetMainPanelChara)
+        CPEV.mini_portraits_image_chars[i].mousePressEvent = functools.partial(action_change_character_cs_chip,
+                                                                               main_window=main_window,
+                                                                               index_slot=i)
+
+    # Load the Select Chara roster window
+    main_window.selectCharaRosterWindow = qt_widgets.QMainWindow()
+    main_window.selectCharaRosterUI = Select_Chara_Roster()
+    main_window.selectCharaRosterUI.setupUi(main_window.selectCharaRosterWindow)
+    mini_portraits_image_select_chara_roster_window = main_window.selectCharaRosterUI.frame.findChildren(QLabel)
+    for i in range(0, len(mini_portraits_image_select_chara_roster_window)):
+        chara_id = int(mini_portraits_image_select_chara_roster_window[i].objectName().split("_")[-1])
+        mini_portraits_image_select_chara_roster_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                                          "chara_chips_" +
+                                                                                          str(chara_id).zfill(3) +
+                                                                                          ".bmp")))
+        mini_portraits_image_select_chara_roster_window[i].setStyleSheet(CPEV.styleSheetSelectChara)
 
     # Disable character parameters editor tab
     main_window.character_parameters_editor.setEnabled(False)
@@ -711,12 +738,13 @@ def read_cs_chip_file(main_window):
 
                 # null slots in main roster
                 else:
+                    # Desactivate the null slots
                     image_name = ""
-                    CPEV.mini_portraits_image_2[i+5].setStyleSheet("QLabel {}")
+                    CPEV.mini_portraits_image_chars[i].setStyleSheet("QLabel {}")
+                    CPEV.mini_portraits_image_chars[i].mousePressEvent = None
 
                 # Change the image slot
-                CPEV.mini_portraits_image_2[i+5].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                                image_name)))
+                CPEV.mini_portraits_image_chars[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
 
 
 def search_id_cs_form(file_cs_form, i):
@@ -868,7 +896,60 @@ def read_animation_files(main_window, offset_index, animation_combo_box):
     read_animation_file(main_window, 344+offset_index, "Lose", 2, animation_combo_box)
 
 
+def action_change_character_cs_chip(event, main_window, index_slot=None):
+
+    # The user is changing other slot
+    if CPEV.slot_selected != index_slot:
+
+        chara_id_old = CPEV.select_chara_main_roster[CPEV.slot_selected, 2]
+        chara_id = CPEV.select_chara_main_roster[index_slot, 2]
+
+        # Load the portrait
+        main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
+                                                              str(chara_id).zfill(3)
+                                                              + ".png")))
+        # Load the transformations
+        for i in range(0, 5):
+            chara_id_trans = CPEV.select_chara_main_roster[index_slot, i + 3]
+
+            # id is FF, we change it to noise image
+            if chara_id_trans == 255:
+                chara_id_trans = 101
+
+            # Change the image portrait
+            CPEV.mini_portraits_image_trans[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                              "chara_chips_" +
+                                                                              str(chara_id_trans).zfill(3)
+                                                                              + ".bmp")))
+
+        # Mark the selected character
+        # Reset the border color
+        if CPEV.slot_selected != -1:
+            # Main roster
+            CPEV.mini_portraits_image_chars[CPEV.slot_selected].setStyleSheet(CPEV.styleSheetMainPanelChara)
+            # Select chara roster window
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                               str(chara_id_old))
+            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectChara)
+
+        # Main roster
+        CPEV.mini_portraits_image_chars[index_slot].setStyleSheet(CPEV.styleSheetSelectCharaRoster)
+        # Select chara roster window
+        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                           str(chara_id))
+        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
+
+        # Change the old selected slot to the new one
+        CPEV.slot_selected = index_slot
+
+    else:
+
+        # Show the select chara roster window
+        main_window.selectCharaRosterWindow.show()
+
+
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
+
     # Change only if the char selected is other
     if CPEV.chara_selected != index:
 
@@ -1155,7 +1236,7 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     if trans_slot_panel_index is not None or transformation_partner_flag:
         q_label_style = CPEV.styleSheetTransformSelected
     else:
-        q_label_style = CPEV.sytelSheetFusionSelected
+        q_label_style = CPEV.stylelSheetFusionSelected
 
     # Store in a global var what slot in the transformation and fusion panel has been selected
     CPEV.trans_slot_panel_selected = trans_slot_panel_index

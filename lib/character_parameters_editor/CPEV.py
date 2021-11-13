@@ -40,7 +40,9 @@ class CPEV:
     mini_portraits_image_select_chara_window = []
     styleSheetSelectChara = "QLabel {border : 6px solid black;}"
     styleSheetTransformSelected = "QLabel {border : 5px solid red;}"
-    sytelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
+    stylelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
+    styleSheetSelectCharaRoster = "QLabel {border : 3px solid cyan;}"
+    styleSheetSelectCharaRosterWindow = "QLabel {border : 5px solid cyan;}"
 
     # List of character with their data from the file
     character_list = []
@@ -105,13 +107,16 @@ class CPEV:
 
     # --- cs_chip ---
     # QLabel objects for all the main roster
-    mini_portraits_image_2 = []
+    mini_portraits_image_trans = []
+    mini_portraits_image_chars = []
     cs_chip_path = ""
     cs_form_path = ""
+    # Index of the slot selected in the main panel
+    slot_selected = -1
     # Matrix with num slots without taking account the trans slots (row)
     # and cols in this order -> position in cs_form, num transformations, character ID, and chara ID transformations [5]
     select_chara_main_roster = np.full((72, 8), 255)
-    # Size between characters in cs_form
-    size_between_character_cs_form = 36
     # slots ID that are already edited
     select_chara_main_roster_edited = []
+    # Size between characters in cs_form
+    size_between_character_cs_form = 36
