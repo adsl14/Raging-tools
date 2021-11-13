@@ -1,3 +1,5 @@
+from lib.character_parameters_editor.CPEF_OC import write_single_character_parameters
+from lib.character_parameters_editor.CPEF_ORP import write_character_parameters
 from lib.design.Raging_tools import *
 from lib.packages import os, rmtree, QFileDialog, copyfile, \
     move, QMessageBox
@@ -14,8 +16,7 @@ from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEF import initialize_cpe, write_single_character_parameters, \
-    write_character_parameters
+from lib.character_parameters_editor.CPEF import initialize_cpe
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
