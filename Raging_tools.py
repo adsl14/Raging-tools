@@ -1,5 +1,6 @@
 from lib.character_parameters_editor.CPEF_OC import write_single_character_parameters
 from lib.character_parameters_editor.CPEF_ORP import write_character_parameters
+from lib.character_parameters_editor.CPEV_ORP import CPEVORP
 from lib.design.Raging_tools import *
 from lib.packages import os, rmtree, QFileDialog, copyfile, \
     move, QMessageBox
@@ -431,15 +432,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # --- operate_resident_param ---
                             # If the user has edited one character, we will save the file
-                            elif CPEV.character_list_edited:
+                            elif CPEVORP.character_list_edited:
 
                                 # Open the files
-                                subpak_file_character_inf = open(CPEV.resident_character_inf_path, mode="rb+")
-                                subpak_file_transformer_i = open(CPEV.resident_transformer_i_path, mode="rb+")
+                                subpak_file_character_inf = open(CPEVORP.resident_character_inf_path, mode="rb+")
+                                subpak_file_transformer_i = open(CPEVORP.resident_transformer_i_path, mode="rb+")
 
                                 print("Writing values in the file...")
                                 # Change the transformations in the file
-                                for character in CPEV.character_list_edited:
+                                for character in CPEVORP.character_list_edited:
                                     # Save all the info for each character
                                     write_character_parameters(character, subpak_file_character_inf,
                                                                subpak_file_transformer_i)
