@@ -397,7 +397,7 @@
               <bool>true</bool>
              </property>
              <attribute name="title">
-              <string>operate_resident_param</string>
+              <string>general parameters</string>
              </attribute>
              <widget class="QFrame" name="transPartner">
               <property name="geometry">
@@ -3452,7 +3452,7 @@
             </widget>
             <widget class="QWidget" name="operate_character_xyz_m_frame">
              <attribute name="title">
-              <string>operate_character_xyz_m</string>
+              <string>individual parameters</string>
              </attribute>
              <widget class="QFrame" name="ki_values">
               <property name="geometry">
@@ -5332,7 +5332,7 @@
             </widget>
             <widget class="QWidget" name="cs_chip">
              <attribute name="title">
-              <string>cs_chip</string>
+              <string>roster editor</string>
              </attribute>
              <widget class="QLabel" name="portrait_2">
               <property name="geometry">
