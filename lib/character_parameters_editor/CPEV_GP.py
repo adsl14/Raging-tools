@@ -1,6 +1,6 @@
 
 
-class CPEVORP:
+class CPEVGP:
 
     # path for character info and transformer
     resident_character_inf_path = ""

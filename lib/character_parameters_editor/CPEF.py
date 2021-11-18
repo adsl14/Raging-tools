@@ -1,6 +1,6 @@
-from lib.character_parameters_editor.CPEF_CSC import initialize_cs_chip
-from lib.character_parameters_editor.CPEF_OC import initialize_operate_character
-from lib.character_parameters_editor.CPEF_ORP import initialize_operate_resident_param
+from lib.character_parameters_editor.CPEF_RE import initialize_cs_chip
+from lib.character_parameters_editor.CPEF_IP import initialize_operate_character
+from lib.character_parameters_editor.CPEF_GP import initialize_operate_resident_param
 
 
 def initialize_cpe(main_window, qt_widgets):

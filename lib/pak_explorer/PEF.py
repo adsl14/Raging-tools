@@ -3,11 +3,11 @@ import shutil
 from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog
 
-from lib.character_parameters_editor.CPEF_CSC import read_cs_chip_file
-from lib.character_parameters_editor.CPEF_OC import read_single_character_parameters
-from lib.character_parameters_editor.CPEF_ORP import read_character_parameters, action_change_character, \
+from lib.character_parameters_editor.CPEF_RE import read_cs_chip_file
+from lib.character_parameters_editor.CPEF_IP import read_single_character_parameters
+from lib.character_parameters_editor.CPEF_GP import read_character_parameters, action_change_character, \
     open_select_chara_window
-from lib.character_parameters_editor.CPEV_ORP import CPEVORP
+from lib.character_parameters_editor.CPEV_GP import CPEVGP
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -63,8 +63,8 @@ def load_data_to_pe_cpe(main_window):
     if data == CPEV.operate_resident_param:
     
         # reset the values
-        CPEVORP.character_list_edited.clear()
-        CPEVORP.character_list.clear()
+        CPEVGP.character_list_edited.clear()
+        CPEVGP.character_list.clear()
         CPEV.chara_selected = 0  # Index of the char selected in the program
     
         # Read all the data from the files
@@ -80,12 +80,12 @@ def load_data_to_pe_cpe(main_window):
             character = Character()
     
             # Store the positions where the information is located
-            character.position_visual_parameters = i * CPEVORP.sizeVisualParameters
-            character.position_trans = i * CPEVORP.sizeTrans
+            character.position_visual_parameters = i * CPEVGP.sizeVisualParameters
+            character.position_trans = i * CPEVGP.sizeTrans
     
             # Store the information in the object and append to a list
             read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i)
-            CPEVORP.character_list.append(character)
+            CPEVGP.character_list.append(character)
     
         # Close the files
         subpak_file_character_inf.close()
@@ -113,7 +113,7 @@ def load_data_to_pe_cpe(main_window):
         main_window.label_trans_3.setVisible(False)
     
         # Get the values for the fist character of the list
-        character_zero = CPEVORP.character_list[0]
+        character_zero = CPEVGP.character_list[0]
     
         # Show the health
         main_window.health_value.setValue(character_zero.health)

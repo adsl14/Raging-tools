@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEV_OC import CPEVOC
+from lib.character_parameters_editor.CPEV_IP import CPEVIP
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.Animation import Animation
 from lib.packages import os, struct, natsorted
@@ -11,7 +11,7 @@ def initialize_operate_character(main_window):
 
     # Set the camera cutscene type
     main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
-    for element in CPEVOC.camera_types_cutscene:
+    for element in CPEVIP.camera_types_cutscene:
         main_window.camera_type_key.addItem(element)
     # Export camera button
     main_window.exportCameraButton.clicked.connect(lambda: action_export_camera_button_logic(main_window))
@@ -51,19 +51,19 @@ def initialize_operate_character(main_window):
     main_window.unk13_value.valueChanged.connect(lambda: on_unk13_value_changed(main_window))
 
     # Set the fighting style
-    for element in CPEVOC.type_of_fighting_values:
-        main_window.type_fighting_value.addItem(element, CPEVOC.type_of_fighting_values[element])
+    for element in CPEVIP.type_of_fighting_values:
+        main_window.type_fighting_value.addItem(element, CPEVIP.type_of_fighting_values[element])
 
     # Set the direction last hit combo
-    for element in CPEVOC.direction_last_hit_combo_values:
-        main_window.direction_last_hit_combo_value.addItem(element, CPEVOC.direction_last_hit_combo_values[element])
+    for element in CPEVIP.direction_last_hit_combo_values:
+        main_window.direction_last_hit_combo_value.addItem(element, CPEVIP.direction_last_hit_combo_values[element])
 
     # Set the background color combo
-    for element in CPEVOC.color_background_combo_values:
-        main_window.background_color_combo_value.addItem(element, CPEVOC.color_background_combo_values[element])
+    for element in CPEVIP.color_background_combo_values:
+        main_window.background_color_combo_value.addItem(element, CPEVIP.color_background_combo_values[element])
 
     # Set animations
-    for element in CPEVOC.animations_types:
+    for element in CPEVIP.animations_types:
         main_window.animation_type.addItem(element)
     # Export animation button
     main_window.exportAnimationButton.clicked.connect(
@@ -78,7 +78,7 @@ def initialize_operate_character(main_window):
     main_window.importAllAnimationButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_type))
     # Set animations properties
-    for element in CPEVOC.animations_types:
+    for element in CPEVIP.animations_types:
         main_window.animation_properties.addItem(element)
     # Export animation properties button
     main_window.exportAnimationPropertiesButton.clicked.connect(
@@ -99,16 +99,16 @@ def read_single_character_parameters(main_window):
     # Read all the animation values
     read_animation_files(main_window, 0, main_window.animation_type)
     main_window.animation_type.setCurrentIndex(0)
-    read_animation_files(main_window, CPEVOC.size_between_animation_and_effects, main_window.animation_properties)
+    read_animation_files(main_window, CPEVIP.size_between_animation_and_effects, main_window.animation_properties)
     main_window.animation_properties.setCurrentIndex(0)
 
     # character info
-    CPEVOC.character_i_path = main_window.listView_2.model().item(726, 0).text()
+    CPEVIP.character_i_path = main_window.listView_2.model().item(726, 0).text()
     # camera info
-    CPEVOC.camera_i_path = main_window.listView_2.model().item(727, 0).text()
+    CPEVIP.camera_i_path = main_window.listView_2.model().item(727, 0).text()
 
     # Read character info file
-    with open(CPEVOC.character_i_path, mode="rb") as file:
+    with open(CPEVIP.character_i_path, mode="rb") as file:
 
         # Speed of charging
         main_window.speed_of_charging_value.setValue(struct.unpack('>f', file.read(4))[0])
@@ -169,12 +169,12 @@ def read_single_character_parameters(main_window):
                                                                  (int.from_bytes(file.read(1), "big")))
 
     # Read camera info file
-    with open(CPEVOC.camera_i_path, mode="rb") as file:
+    with open(CPEVIP.camera_i_path, mode="rb") as file:
 
         # Move to position 208 where the first camera cutscene starts
-        file.seek(CPEVOC.position_camera_cutscene)
+        file.seek(CPEVIP.position_camera_cutscene)
 
-        for i in range(0, len(CPEVOC.camera_types_cutscene)):
+        for i in range(0, len(CPEVIP.camera_types_cutscene)):
             # Create an instance of cameraCutscene
             camera_cutscene = CameraCutscene()
 
@@ -226,7 +226,7 @@ def read_single_character_parameters(main_window):
 def write_single_character_parameters(main_window):
 
     # Save all animation info (replace first the entire files)
-    for i in range(0, len(CPEVOC.animations_types)):
+    for i in range(0, len(CPEVIP.animations_types)):
         animation_files = main_window.animation_type.itemData(i)
         animation_properties_files = main_window.animation_properties.itemData(i)
 
@@ -240,12 +240,12 @@ def write_single_character_parameters(main_window):
                     file.write(animation_properties_files[j].data)
 
     # Save all camera info
-    with open(CPEVOC.camera_i_path, mode="rb+") as file:
+    with open(CPEVIP.camera_i_path, mode="rb+") as file:
 
         # Move to position 208 where the first camera cutscene starts
-        file.seek(CPEVOC.position_camera_cutscene)
+        file.seek(CPEVIP.position_camera_cutscene)
 
-        for i in range(0, len(CPEVOC.camera_types_cutscene)):
+        for i in range(0, len(CPEVIP.camera_types_cutscene)):
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
 
@@ -285,10 +285,10 @@ def write_single_character_parameters(main_window):
 
             # Ignore this camera
             else:
-                file.seek(CPEVOC.size_each_camera_cutscene, 1)
+                file.seek(CPEVIP.size_each_camera_cutscene, 1)
 
     # Save all the info
-    with open(CPEVOC.character_i_path, mode="rb+") as file:
+    with open(CPEVIP.character_i_path, mode="rb+") as file:
         # Speed of charging
         file.write(struct.pack('>f', main_window.speed_of_charging_value.value()))
         file.write(struct.pack('>f', main_window.speed_of_charging_value_2.value()))
@@ -524,8 +524,8 @@ def export_camera(file_export_path, camera_cutscene):
 
 def action_export_camera_button_logic(main_window):
     # Ask to the user the file output
-    name_file = CPEVOC.character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
-                main_window.camera_type_key.currentText().replace(" ", "_") + "." + CPEVOC.camera_extension
+    name_file = CPEVIP.character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
+                main_window.camera_type_key.currentText().replace(" ", "_") + "." + CPEVIP.camera_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
 
     if file_export_path:
@@ -599,7 +599,7 @@ def action_import_camera_button_logic(main_window):
             size_file = len(file.read())
 
             # The file of the camera has to be 52 bytes length
-            if size_file == CPEVOC.size_each_camera_cutscene:
+            if size_file == CPEVIP.size_each_camera_cutscene:
                 file.seek(0)
             else:
                 # Wrong camera file
@@ -624,7 +624,7 @@ def action_import_camera_button_logic(main_window):
 
 def action_export_all_camera_button_logic(main_window):
     # Ask to the user the folder output
-    name_folder = CPEVOC.character_id + "_cameras"
+    name_folder = CPEVIP.character_id + "_cameras"
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras", name_folder, "")[0]
 
     if folder_export_path:
@@ -635,8 +635,8 @@ def action_export_all_camera_button_logic(main_window):
 
         # Export all the files to the folder
         for i in range(0, main_window.camera_type_key.count()):
-            name_file = CPEVOC.character_id + "_" + str(i) + "_" + \
-                        main_window.camera_type_key.itemText(i).replace(" ", "_") + "." + CPEVOC.camera_extension
+            name_file = CPEVIP.character_id + "_" + str(i) + "_" + \
+                        main_window.camera_type_key.itemText(i).replace(" ", "_") + "." + CPEVIP.camera_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
@@ -675,7 +675,7 @@ def action_import_all_camera_button_logic(main_window):
                 file.seek(0)
 
                 # Check if camera has the correct size
-                if size_file == CPEVOC.size_each_camera_cutscene:
+                if size_file == CPEVIP.size_each_camera_cutscene:
 
                     # Create an instance of cameraCutscene
                     camera_cutscene = main_window.camera_type_key.itemData(i)
@@ -707,8 +707,8 @@ def action_import_all_camera_button_logic(main_window):
 
 def action_export_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user the file output
-    name_file = CPEVOC.character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
-                animation_combo_box.currentText().replace(" ", "_") + "." + CPEVOC.animations_extension
+    name_file = CPEVIP.character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
+                animation_combo_box.currentText().replace(" ", "_") + "." + CPEVIP.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation", name_file, "")[0]
 
     # The user has selected an output
@@ -733,7 +733,7 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
 
 def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
     # Ask to the user the folder output
-    name_folder = CPEVOC.character_id + "_animations" + ("_" + properties_text if properties_text else "")
+    name_folder = CPEVIP.character_id + "_animations" + ("_" + properties_text if properties_text else "")
     folder_export_path = QFileDialog.getSaveFileName(main_window,
                                                      "Export animations" + properties_text, name_folder, "")[0]
 
@@ -745,8 +745,8 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
 
         # Export all the files to the folder
         for i in range(0, animation_combo_box.count()):
-            name_file = CPEVOC.character_id + "_" + str(i) + "_" + \
-                        animation_combo_box.itemText(i).replace(" ", "_") + "." + CPEVOC.animations_extension
+            name_file = CPEVIP.character_id + "_" + str(i) + "_" + \
+                        animation_combo_box.itemText(i).replace(" ", "_") + "." + CPEVIP.animations_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
             animation = animation_combo_box.itemData(i)
@@ -771,7 +771,7 @@ def export_animation(animation_array, file_export_path):
 
     # The header will have the 'SPAS', 'number of animation files', and the size of each
     # of one in the same order
-    header_file = bytes(CPEVOC.animations_extension.upper(), encoding='utf-8')
+    header_file = bytes(CPEVIP.animations_extension.upper(), encoding='utf-8')
     header_file = header_file + struct.pack('>I', number_anim_files)
     data_file = b''
 
@@ -841,7 +841,7 @@ def import_animation(file_export_path, animation_array, name_file=None, animatio
             header_type = file.read(4)
 
             # The header needs to have 'SPAS' as a header
-            if header_type.decode("utf-8").lower() != CPEVOC.animations_extension:
+            if header_type.decode("utf-8").lower() != CPEVIP.animations_extension:
                 if animations_files_error is not None:
                     animations_files_error.append(name_file)
                     return

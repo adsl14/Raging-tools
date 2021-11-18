@@ -15,12 +15,15 @@ class CPEV:
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
     # Color for the borders
-    styleSheetMainPanelChara = "QLabel {border : 3px solid black;}"
-    styleSheetSelectChara = "QLabel {border : 6px solid black;}"
-    styleSheetTransformSelected = "QLabel {border : 5px solid red;}"
-    stylelSheetFusionSelected = "QLabel {border : 5px solid  #33ff44;}"
+    styleSheetSelectSlotRoster = "QLabel {border : 3px solid black;}"
+    styleSheetSelectTransRoster = "QLabel {border : 3px solid red;}"
     styleSheetSelectCharaRoster = "QLabel {border : 3px solid cyan;}"
+    styleSheetSlotRosterWindow = "QLabel {border : 6px solid black;}"
+    styleSheetSelectTransRosterWindow = "QLabel {border : 5px solid red;}"
+    styleSheetSelectFusionRosterWindow = "QLabel {border : 5px solid  #33ff44;}"
     styleSheetSelectCharaRosterWindow = "QLabel {border : 5px solid cyan;}"
+
+
 
     # Flag that will tell us if the character has been changed in the main panel (avoid combo box)
     change_character = False

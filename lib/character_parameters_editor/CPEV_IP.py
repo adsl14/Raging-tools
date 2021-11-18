@@ -1,6 +1,6 @@
 
 
-class CPEVOC:
+class CPEVIP:
 
     # path and positions of files and data
     character_i_path = ""

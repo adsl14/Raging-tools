@@ -1,15 +1,19 @@
 
-class CPEVCSC:
+class CPEVRE:
 
     cs_chip_path = ""
     cs_form_path = ""
     # Index of the slot selected in the main panel
-    slot_selected = -1
-    # Size and array of trans slots
+    slot_chara_selected = -1
+    # Index of the transformation slot selected in the main panel
+    slot_trans_selected = -1
+    # Size of trans slots
     num_slots_transformations = 5
+    # Array of slots objects for the transformations
     slots_transformations = []
-    # Size and array of character slots
+    # Size character slots
     num_slots_characters = 72
+    # Array of slots objects for the characters
     slots_characters = []
     # slots that are already edited
     slots_edited = []
