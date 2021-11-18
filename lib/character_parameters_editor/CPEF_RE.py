@@ -7,6 +7,7 @@ from lib.packages import QLabel, QPixmap, functools, os
 
 
 def initialize_cs_chip(main_window, qt_widgets):
+
     # Load all the mini portraits (main panel)
     mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
     slots_trans_images = mini_portraits_image_2[:CPEVRE.num_slots_transformations]
@@ -55,8 +56,8 @@ def initialize_cs_chip(main_window, qt_widgets):
                                                                                           str(chara_id).zfill(3) +
                                                                                           ".bmp")))
         mini_portraits_image_select_chara_roster_window[i].mousePressEvent = functools.partial(action_modify_character,
-                                                               main_window=main_window,
-                                                               chara_id=chara_id)
+                                                                                               main_window=main_window,
+                                                                                               chara_id=chara_id)
         mini_portraits_image_select_chara_roster_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
 
@@ -95,6 +96,9 @@ def read_cs_chip_file(main_window):
                     slot_character.qlabel_object.setStyleSheet("QLabel {}")
                     slot_character.qlabel_object.mousePressEvent = None
 
+                    # Change to 101 so the ID is the same as noise image
+                    slot_character.chara_id = 101
+
                 # Change the image slot
                 slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
 
@@ -123,7 +127,13 @@ def search_id(file_cs_form, slot_character):
             # Get the transformations ID
             position = 19
             for i in range(0, 5):
-                slot_character.transformations_id[i] = data[position]
+
+                # Change from 255 in file to 101 in memory
+                transformation_id = data[position]
+                if transformation_id == 255:
+                    transformation_id = 101
+
+                slot_character.transformations_id[i] = transformation_id
                 position = position + 4
 
             # Stop the searching
@@ -144,22 +154,25 @@ def action_change_character(event, main_window, index_slot=None):
     old_trans_selected = old_slot_chara.transformations_id[CPEVRE.slot_trans_selected]
 
     # Reset the border color in the select chara roster window (chara)
-    if CPEVRE.slot_chara_selected != -1 and slot_chara.chara_id != old_slot_chara.chara_id:
-        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                           str(old_slot_chara.
-                                                                                               chara_id))
-        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
-    # Reset the border color in the select chara roster window (trans)
-    if CPEVRE.slot_trans_selected != -1 and slot_chara.chara_id != old_trans_selected:
+    # The selection before was a character
+    if CPEVRE.selecting_character:
 
-        # Change the ID 255 to the noise image ID
-        if old_trans_selected == 255:
-            old_trans_selected = 101
+        if CPEVRE.slot_chara_selected != -1 and slot_chara.chara_id != old_slot_chara.chara_id:
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                               str(old_slot_chara.
+                                                                                                   chara_id))
+            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
-        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                           str(old_trans_selected))
-        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+    # The selection before was a transformation
+    else:
+
+        # Reset the border color in the select chara roster window (trans)
+        if CPEVRE.slot_trans_selected != -1 and slot_chara.chara_id != old_trans_selected:
+
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                               str(old_trans_selected))
+            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
     # Change color for the selected character in chara roster window
     select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
@@ -177,17 +190,18 @@ def action_change_character(event, main_window, index_slot=None):
         for i in range(0, 5):
             chara_id_trans = slot_chara.transformations_id[i]
 
-            # id is FF, we change it to noise image
-            if chara_id_trans == 255:
-                chara_id_trans = 101
-
+            # Get the slot of the selected transformation
             slot_transform = CPEVRE.slots_transformations[i]
+
+            # Change in memory the transformations
+            slot_transform.chara_id = chara_id_trans
 
             # Change the image portrait
             slot_transform.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
                                                                         "chara_chips_" +
                                                                         str(chara_id_trans).zfill(3)
                                                                         + ".bmp")))
+
         # Reset the background color for the transformation
         if CPEVRE.slot_trans_selected != 0:
             CPEVRE.slots_transformations[CPEVRE.slot_trans_selected].qlabel_object\
@@ -214,6 +228,10 @@ def action_change_character(event, main_window, index_slot=None):
         # Show the select chara roster window
         main_window.selectCharaRosterWindow.show()
 
+    # The user is selecting a character
+    if not CPEVRE.selecting_character:
+        CPEVRE.selecting_character = True
+
 
 def action_change_transformation(event, main_window, index_slot=None):
 
@@ -225,29 +243,26 @@ def action_change_transformation(event, main_window, index_slot=None):
         old_id_selected_trans = slot_chara.transformations_id[CPEVRE.slot_trans_selected]
         id_selected_trans = slot_chara.transformations_id[index_slot]
 
-        # Reset the border color (between transformation and another transformation)
-        if id_selected_trans != old_id_selected_trans:
+        # The selection before was a character
+        if CPEVRE.selecting_character:
 
-            # Change the ID 255 to the noise image ID
-            if old_id_selected_trans == 255:
-                old_id_selected_trans = 101
+            # Reset the border color (between chara and transformation)
+            if slot_chara.chara_id != id_selected_trans:
+                # Select chara roster window
+                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                                   str(slot_chara.
+                                                                                                       chara_id))
+                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
-            # Select chara roster window
-            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.\
-                findChild(QLabel, "label_" + str(old_id_selected_trans))
-            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+        # The selection before was a transformation
+        else:
+            # Reset the border color (between transformation and another transformation)
+            if id_selected_trans != old_id_selected_trans:
 
-        # Reset the border color (between chara and transformation)
-        if slot_chara.chara_id != id_selected_trans:
-            # Select chara roster window
-            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                               str(slot_chara.
-                                                                                                   chara_id))
-            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
-
-        # Change the ID 255 to the noise image ID
-        if id_selected_trans == 255:
-            id_selected_trans = 101
+                # Select chara roster window
+                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.\
+                    findChild(QLabel, "label_" + str(old_id_selected_trans))
+                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
         # Select chara roster window
         select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
@@ -275,9 +290,12 @@ def action_change_transformation(event, main_window, index_slot=None):
             CPEVRE.slot_trans_selected = index_slot
 
         else:
-
             # Show the select chara roster window
             main_window.selectCharaRosterWindow.show()
+
+        # The user is selecting a transformation
+        if CPEVRE.selecting_character:
+            CPEVRE.selecting_character = False
 
 
 def action_modify_character(event, main_window, chara_id):
@@ -285,30 +303,74 @@ def action_modify_character(event, main_window, chara_id):
     # Get the actual slot
     slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
 
-    # If the actual ID is not equal to the selected one in the roster window, we don't modify anything
-    if slot_chara.chara_id != chara_id:
+    # The user is selecting a character
+    if CPEVRE.selecting_character:
 
-        # Reset chara portrait backtround color in roster window
-        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                           str(slot_chara.chara_id))
-        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+        # If the actual ID is not equal to the selected one in the roster window, we don't modify anything
+        if slot_chara.chara_id != chara_id:
 
-        # Change the chara ID for the selected slot
-        slot_chara.chara_id = chara_id
+            # Reset chara portrait backtround color in roster window
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                               str(slot_chara.chara_id))
+            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
-        # Change chara roster background color in roster window
-        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                           str(slot_chara.chara_id))
-        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
+            # Change the chara ID for the selected slot
+            slot_chara.chara_id = chara_id
+
+            # Change chara roster background color in roster window
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                               str(slot_chara.chara_id))
+            select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
+
+            # Change large portrait
+            main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
+                                                                  str(slot_chara.chara_id).zfill(3)
+                                                                  + ".png")))
+            # Change portrait in select chara matrix
+            slot_chara.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                    "chara_chips_" + str(slot_chara.chara_id).zfill(3)
+                                                                    + ".bmp")))
+
+            # If the character was edited before, we won't append the reference of the slot
+            if slot_chara not in CPEVRE.slots_edited:
+                CPEVRE.slots_edited.append(slot_chara)
+
+    # The user is selecting a transformation
+    elif slot_chara.transformations_id[CPEVRE.slot_trans_selected] != chara_id:
+
+        # Get the qlabel of the transformation slot
+        trans_slot = CPEVRE.slots_transformations[CPEVRE.slot_trans_selected]
 
         # Change large portrait
         main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
-                                                              str(slot_chara.chara_id).zfill(3)
+                                                              str(chara_id).zfill(3)
                                                               + ".png")))
+
         # Change portrait in select chara matrix
-        slot_chara.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                "chara_chips_" + str(slot_chara.chara_id).zfill(3)
+        trans_slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+                                                                "chara_chips_" + str(chara_id).zfill(3)
                                                                 + ".bmp")))
+
+        # Reset chara portrait backtground color in roster window
+        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                           str(trans_slot.chara_id))
+        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+
+        # If we're adding a new character as a transformation, we add the number of transformations
+        if trans_slot.chara_id == 101:
+            slot_chara.num_transformations = slot_chara.num_transformations + 1
+        # If we're removing a transformation ID, we reduce the number of transformations
+        elif chara_id == 101:
+            slot_chara.num_transformations = slot_chara.num_transformations - 1
+
+        # Change the chara ID for the selected slot
+        slot_chara.transformations_id[CPEVRE.slot_trans_selected] = chara_id
+        trans_slot.chara_id = chara_id
+
+        # Change chara roster background color in roster window
+        select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                           str(trans_slot.chara_id))
+        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
 
         # If the character was edited before, we won't append the reference of the slot
         if slot_chara not in CPEVRE.slots_edited:

@@ -7,6 +7,8 @@ class CPEVRE:
     slot_chara_selected = -1
     # Index of the transformation slot selected in the main panel
     slot_trans_selected = -1
+    # Boolean that will tell if the user is editing a character slot or trans slot
+    selecting_character = True
     # Size of trans slots
     num_slots_transformations = 5
     # Array of slots objects for the transformations

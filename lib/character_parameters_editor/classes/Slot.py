@@ -7,8 +7,8 @@ class Slot:
         # Number of transformations that has the slot
         self.num_transformations = -1
         # ID of the character
-        self.chara_id = 255
-        # ID for each transformation slot
-        self.transformations_id = [255, 255, 255, 255, 255]
+        self.chara_id = 101
+        # ID for each transformation slot (101 is Noise image)
+        self.transformations_id = [101, 101, 101, 101, 101]
         # Reference to the qlabel object in the tool
         self.qlabel_object = None
