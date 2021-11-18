@@ -190,8 +190,8 @@ def action_change_character(event, main_window, index_slot=None):
                                                                         + ".bmp")))
         # Reset the background color for the transformation
         if CPEVRE.slot_trans_selected != 0:
-            CPEVRE.slots_transformations[CPEVRE.slot_trans_selected].qlabel_object.setStyleSheet\
-                (CPEV.styleSheetSelectSlotRoster)
+            CPEVRE.slots_transformations[CPEVRE.slot_trans_selected].qlabel_object\
+                .setStyleSheet(CPEV.styleSheetSelectSlotRoster)
 
             # Change background color for the first transformation slot
             CPEVRE.slots_transformations[0].qlabel_object.setStyleSheet(CPEV.styleSheetSelectTransRoster)
@@ -233,8 +233,8 @@ def action_change_transformation(event, main_window, index_slot=None):
                 old_id_selected_trans = 101
 
             # Select chara roster window
-            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                               str(old_id_selected_trans))
+            select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.\
+                findChild(QLabel, "label_" + str(old_id_selected_trans))
             select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
         # Reset the border color (between chara and transformation)
