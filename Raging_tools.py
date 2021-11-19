@@ -1,6 +1,8 @@
 from lib.character_parameters_editor.CPEF_IP import write_single_character_parameters
 from lib.character_parameters_editor.CPEF_GP import write_character_parameters
+from lib.character_parameters_editor.CPEF_RE import write_cs_chip_file
 from lib.character_parameters_editor.CPEV_GP import CPEVGP
+from lib.character_parameters_editor.CPEV_RE import CPEVRE
 from lib.design.Raging_tools import *
 from lib.packages import os, rmtree, QFileDialog, copyfile, \
     move, QMessageBox
@@ -448,6 +450,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 # Close the files
                                 subpak_file_character_inf.close()
                                 subpak_file_transformer_i.close()
+
+                                # Pack the files
+                                print("Packing the file...")
+                                pack_and_save_file(self, path_output_file)
+
+                            # --- cs_chip ---
+                            # If the user has edited one character, we will save the file
+                            elif CPEVRE.slots_edited:
+
+                                # Save all the info
+                                print("Writing values in the file...")
+                                write_cs_chip_file()
 
                                 # Pack the files
                                 print("Packing the file...")

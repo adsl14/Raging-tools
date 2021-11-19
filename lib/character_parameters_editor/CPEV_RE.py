@@ -1,6 +1,7 @@
 
 class CPEVRE:
 
+    roster_editor_first_activation = True
     cs_chip_path = ""
     cs_form_path = ""
     # Index of the slot selected in the main panel

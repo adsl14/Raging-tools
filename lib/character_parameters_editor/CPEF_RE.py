@@ -71,14 +71,16 @@ def read_cs_chip_file(main_window):
     with open(CPEVRE.cs_chip_path, mode="rb") as file_cs_chip:
         with open(CPEVRE.cs_form_path, mode="rb") as file_cs_form:
 
-            # Get what ID of character will be used in the main roster (we start in 5 because from 0 to 4 are the
-            # transformation slots)
+            # Get what ID of character will be used in the main roster
             for i in range(0, CPEVRE.num_slots_characters):
 
+                # get a slot object
                 slot_character = CPEVRE.slots_characters[i]
 
+                # Read the byte and store the values
                 data = file_cs_chip.read(1)
                 slot_character.chara_id = int.from_bytes(data, byteorder="big")
+                slot_character.position_cs_chip = i
 
                 # If the ID is not FF, we will change the image slot
                 if slot_character.chara_id != 255:
@@ -102,6 +104,30 @@ def read_cs_chip_file(main_window):
                 # Change the image slot
                 slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
 
+
+def write_cs_chip_file():
+
+    # Write the slots that were edited
+    with open(CPEVRE.cs_chip_path, mode="rb+") as file_cs_chip:
+        with open(CPEVRE.cs_form_path, mode="rb+") as file_cs_form:
+
+            # Get all the slots that were edited
+            for slot in CPEVRE.slots_edited:
+
+                # Write in cs_chip
+                file_cs_chip.seek(slot.position_cs_chip)
+                file_cs_chip.write(slot.chara_id.to_bytes(1, byteorder="big"))
+
+                # Write in cs_form
+                file_cs_form.seek(slot.position_cs_form + 11)
+                file_cs_form.write(slot.num_transformations.to_bytes(1, byteorder="big"))
+                file_cs_form.write(b'\x00\x00\x00' + slot.chara_id.to_bytes(1, byteorder="big"))
+
+                for transformation in slot.transformations_id:
+                    if transformation != 101:
+                        file_cs_form.write(b'\x00\x00\x00' + transformation.to_bytes(1, byteorder="big"))
+                    else:
+                        file_cs_form.write(b'\xFF\xFF\xFF\xFF')
 
 # Read the file cs_form searching the ID from cs_chip
 def search_id(file_cs_form, slot_character):

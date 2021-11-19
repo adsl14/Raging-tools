@@ -1,13 +1,14 @@
 import shutil
 
 from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog, QLabel
 
 from lib.character_parameters_editor.CPEF_RE import read_cs_chip_file
 from lib.character_parameters_editor.CPEF_IP import read_single_character_parameters
 from lib.character_parameters_editor.CPEF_GP import read_character_parameters, action_change_character, \
     open_select_chara_window
 from lib.character_parameters_editor.CPEV_GP import CPEVGP
+from lib.character_parameters_editor.CPEV_RE import CPEVRE
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -322,6 +323,46 @@ def load_data_to_pe_cpe(main_window):
 
     # Check if the file is cs_chip
     elif data == CPEV.cs_chip:
+
+        # reset the values only if we activate again the roster editor tab
+        if not CPEVRE.roster_editor_first_activation:
+
+            # Get the slot of the selected character and the slot of the selected transformation
+            slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
+            slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+            slot_trans = CPEVRE.slots_transformations[CPEVRE.slot_trans_selected]
+            slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+
+            # Reset only the background color for the slot that was selected before (selecting character in cyan, or
+            # selecting transformation in red)
+            if CPEVRE.selecting_character:
+                # Reset slot in roster window
+                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                                   str(slot_chara.
+                                                                                                       chara_id))
+                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+            else:
+
+                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                                   str(slot_trans.
+                                                                                                       chara_id))
+                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+
+            # Reset the rest of the vars
+            main_window.portrait_2.setPixmap(QPixmap(""))
+            CPEVRE.slots_edited.clear()
+            for i in range(0, CPEVRE.num_slots_characters):
+                slot = CPEVRE.slots_characters[i]
+                slot.reset()
+            for i in range(0, CPEVRE.num_slots_transformations):
+                slot = CPEVRE.slots_transformations[i]
+                slot.reset()
+                slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
+            CPEVRE.slot_chara_selected = -1
+            CPEVRE.slot_trans_selected = -1
+            CPEVRE.selecting_character = True
+        else:
+            CPEVRE.roster_editor_first_activation = False
 
         # Read all the data from the files and store it in the global vars from CPEV.
         read_cs_chip_file(main_window)
