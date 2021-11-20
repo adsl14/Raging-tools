@@ -11,11 +11,13 @@ from lib.vram_explorer.classes.Tx2dInfo import Tx2dInfo
 def initialize_ve(main_window):
 
     # Buttons
-    main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
     main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
+    main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
+    main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
     main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
-    main_window.exportButton.setEnabled(False)
     main_window.exportAllButton.setEnabled(False)
+    main_window.importAllButton.setEnabled(False)
+    main_window.exportButton.setEnabled(False)
     main_window.importButton.setEnabled(False)
 
     # Labels
@@ -70,9 +72,10 @@ def load_data_to_ve(main_window):
                            VEV.tx2d_infos[0].height)
 
     # Enable the buttons
-    main_window.exportButton.setEnabled(True)
     main_window.exportAllButton.setEnabled(True)
+    main_window.importAllButton.setEnabled(True)
     main_window.importButton.setEnabled(True)
+    main_window.exportButton.setEnabled(True)
 
     # Show the text labels
     main_window.fileNameText.setText(basename.split(".")[0])
@@ -590,6 +593,10 @@ def action_export_all_logic(main_window):
         if message_open_exported_files == msg.Yes:
             # Show the path folder to the user
             os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def action_import_all_logic(main_window):
+    pass
 
 
 def action_import_logic(main_window):

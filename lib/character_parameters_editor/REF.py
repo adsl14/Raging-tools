@@ -1,5 +1,5 @@
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEV_RE import CPEVRE
+from lib.character_parameters_editor.REV import REV
 from lib.character_parameters_editor.classes.Slot import Slot
 
 from lib.design.select_chara_roster import Select_Chara_Roster
@@ -10,12 +10,12 @@ def initialize_cs_chip(main_window, qt_widgets):
 
     # Load all the mini portraits (main panel)
     mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
-    slots_trans_images = mini_portraits_image_2[:CPEVRE.num_slots_transformations]
-    slots_characters_images = mini_portraits_image_2[CPEVRE.num_slots_transformations:]
+    slots_trans_images = mini_portraits_image_2[:REV.num_slots_transformations]
+    slots_characters_images = mini_portraits_image_2[REV.num_slots_transformations:]
 
     # Initialize the slots
     # Transformation slots
-    for i in range(0, CPEVRE.num_slots_transformations):
+    for i in range(0, REV.num_slots_transformations):
         slot = Slot()
 
         slot.qlabel_object = slots_trans_images[i]
@@ -27,10 +27,10 @@ def initialize_cs_chip(main_window, qt_widgets):
                                                                index_slot=i)
 
         # Store te object in the trans array
-        CPEVRE.slots_transformations.append(slot)
+        REV.slots_transformations.append(slot)
 
     # Character slots
-    for i in range(0, CPEVRE.num_slots_characters):
+    for i in range(0, REV.num_slots_characters):
         slot = Slot()
 
         slot.qlabel_object = slots_characters_images[i]
@@ -42,7 +42,7 @@ def initialize_cs_chip(main_window, qt_widgets):
                                                                index_slot=i)
 
         # Store te object in the character array
-        CPEVRE.slots_characters.append(slot)
+        REV.slots_characters.append(slot)
 
     # Load the Select Chara roster window
     main_window.selectCharaRosterWindow = qt_widgets.QMainWindow()
@@ -63,19 +63,19 @@ def initialize_cs_chip(main_window, qt_widgets):
 
 def read_cs_chip_file(main_window):
     # cs_chip
-    CPEVRE.cs_chip_path = main_window.listView_2.model().item(0, 0).text()
+    REV.cs_chip_path = main_window.listView_2.model().item(0, 0).text()
     # cs_form
-    CPEVRE.cs_form_path = main_window.listView_2.model().item(2, 0).text()
+    REV.cs_form_path = main_window.listView_2.model().item(2, 0).text()
 
     # Read the characters ID for the main panel
-    with open(CPEVRE.cs_chip_path, mode="rb") as file_cs_chip:
-        with open(CPEVRE.cs_form_path, mode="rb") as file_cs_form:
+    with open(REV.cs_chip_path, mode="rb") as file_cs_chip:
+        with open(REV.cs_form_path, mode="rb") as file_cs_form:
 
             # Get what ID of character will be used in the main roster
-            for i in range(0, CPEVRE.num_slots_characters):
+            for i in range(0, REV.num_slots_characters):
 
                 # get a slot object
-                slot_character = CPEVRE.slots_characters[i]
+                slot_character = REV.slots_characters[i]
 
                 # Read the byte and store the values
                 data = file_cs_chip.read(1)
@@ -108,11 +108,11 @@ def read_cs_chip_file(main_window):
 def write_cs_chip_file():
 
     # Write the slots that were edited
-    with open(CPEVRE.cs_chip_path, mode="rb+") as file_cs_chip:
-        with open(CPEVRE.cs_form_path, mode="rb+") as file_cs_form:
+    with open(REV.cs_chip_path, mode="rb+") as file_cs_chip:
+        with open(REV.cs_form_path, mode="rb+") as file_cs_form:
 
             # Get all the slots that were edited
-            for slot in CPEVRE.slots_edited:
+            for slot in REV.slots_edited:
 
                 # Write in cs_chip
                 file_cs_chip.seek(slot.position_cs_chip)
@@ -133,11 +133,11 @@ def write_cs_chip_file():
 # Read the file cs_form searching the ID from cs_chip
 def search_id(file_cs_form, slot_character):
 
-    data = file_cs_form.read(CPEVRE.size_between_character_cs_form)
+    data = file_cs_form.read(REV.size_between_character_cs_form)
     while data:
 
         # Get the position
-        position = file_cs_form.tell() - CPEVRE.size_between_character_cs_form
+        position = file_cs_form.tell() - REV.size_between_character_cs_form
 
         # Get the ID of the character for the roster
         chara_id_cs_form = data[15]
@@ -167,7 +167,7 @@ def search_id(file_cs_form, slot_character):
             break
 
         # Read the next 36 bytes
-        data = file_cs_form.read(CPEVRE.size_between_character_cs_form)
+        data = file_cs_form.read(REV.size_between_character_cs_form)
 
     # Move the pointer of the file to the beginning
     file_cs_form.seek(0)
@@ -176,16 +176,16 @@ def search_id(file_cs_form, slot_character):
 def action_change_character(event, main_window, index_slot=None):
 
     # Get the chara slot object (old and selected one)
-    old_slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
-    slot_chara = CPEVRE.slots_characters[index_slot]
-    old_trans_selected = old_slot_chara.transformations_id[CPEVRE.slot_trans_selected]
+    old_slot_chara = REV.slots_characters[REV.slot_chara_selected]
+    slot_chara = REV.slots_characters[index_slot]
+    old_trans_selected = old_slot_chara.transformations_id[REV.slot_trans_selected]
 
     # Reset the border color in the select chara roster window (chara)
 
     # The selection before was a character
-    if CPEVRE.selecting_character:
+    if REV.selecting_character:
 
-        if CPEVRE.slot_chara_selected != -1 and slot_chara.chara_id != old_slot_chara.chara_id:
+        if REV.slot_chara_selected != -1 and slot_chara.chara_id != old_slot_chara.chara_id:
             select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
                                                                                                str(old_slot_chara.
                                                                                                    chara_id))
@@ -195,7 +195,7 @@ def action_change_character(event, main_window, index_slot=None):
     else:
 
         # Reset the border color in the select chara roster window (trans)
-        if CPEVRE.slot_trans_selected != -1 and slot_chara.chara_id != old_trans_selected:
+        if REV.slot_trans_selected != -1 and slot_chara.chara_id != old_trans_selected:
 
             select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
                                                                                                str(old_trans_selected))
@@ -207,7 +207,7 @@ def action_change_character(event, main_window, index_slot=None):
     select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
 
     # The user is changing other slot
-    if CPEVRE.slot_chara_selected != index_slot:
+    if REV.slot_chara_selected != index_slot:
 
         # Load the portrait
         main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -218,7 +218,7 @@ def action_change_character(event, main_window, index_slot=None):
             chara_id_trans = slot_chara.transformations_id[i]
 
             # Get the slot of the selected transformation
-            slot_transform = CPEVRE.slots_transformations[i]
+            slot_transform = REV.slots_transformations[i]
 
             # Change in memory the transformations
             slot_transform.chara_id = chara_id_trans
@@ -230,17 +230,17 @@ def action_change_character(event, main_window, index_slot=None):
                                                                         + ".bmp")))
 
         # Reset the background color for the transformation
-        if CPEVRE.slot_trans_selected != 0:
-            CPEVRE.slots_transformations[CPEVRE.slot_trans_selected].qlabel_object\
+        if REV.slot_trans_selected != 0:
+            REV.slots_transformations[REV.slot_trans_selected].qlabel_object\
                 .setStyleSheet(CPEV.styleSheetSelectSlotRoster)
 
             # Change background color for the first transformation slot
-            CPEVRE.slots_transformations[0].qlabel_object.setStyleSheet(CPEV.styleSheetSelectTransRoster)
-            CPEVRE.slot_trans_selected = 0
+            REV.slots_transformations[0].qlabel_object.setStyleSheet(CPEV.styleSheetSelectTransRoster)
+            REV.slot_trans_selected = 0
 
         # Mark the selected character in the character roster window
         # Reset the border color
-        if CPEVRE.slot_chara_selected != -1:
+        if REV.slot_chara_selected != -1:
             # Main roster
             old_slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
 
@@ -248,7 +248,7 @@ def action_change_character(event, main_window, index_slot=None):
         slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectCharaRoster)
 
         # Change the old selected slot to the new one
-        CPEVRE.slot_chara_selected = index_slot
+        REV.slot_chara_selected = index_slot
 
     else:
 
@@ -256,22 +256,22 @@ def action_change_character(event, main_window, index_slot=None):
         main_window.selectCharaRosterWindow.show()
 
     # The user is selecting a character
-    if not CPEVRE.selecting_character:
-        CPEVRE.selecting_character = True
+    if not REV.selecting_character:
+        REV.selecting_character = True
 
 
 def action_change_transformation(event, main_window, index_slot=None):
 
     # Do nothing if the user doesn't select any character at the start of the tool
-    if CPEVRE.slot_chara_selected != -1:
+    if REV.slot_chara_selected != -1:
 
         # Get the chara slot object and the ID of the transformation that the user has selected in main roster
-        slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
-        old_id_selected_trans = slot_chara.transformations_id[CPEVRE.slot_trans_selected]
+        slot_chara = REV.slots_characters[REV.slot_chara_selected]
+        old_id_selected_trans = slot_chara.transformations_id[REV.slot_trans_selected]
         id_selected_trans = slot_chara.transformations_id[index_slot]
 
         # The selection before was a character
-        if CPEVRE.selecting_character:
+        if REV.selecting_character:
 
             # Reset the border color (between chara and transformation)
             if slot_chara.chara_id != id_selected_trans:
@@ -297,11 +297,11 @@ def action_change_transformation(event, main_window, index_slot=None):
         select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectTransRosterWindow)
 
         # The user is changing other slot
-        if CPEVRE.slot_trans_selected != index_slot:
+        if REV.slot_trans_selected != index_slot:
 
             # Get the trans slot qlabel objects
-            old_slot_trans = CPEVRE.slots_transformations[CPEVRE.slot_trans_selected]
-            slot_trans = CPEVRE.slots_transformations[index_slot]
+            old_slot_trans = REV.slots_transformations[REV.slot_trans_selected]
+            slot_trans = REV.slots_transformations[index_slot]
 
             # Load the portrait
             main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -314,24 +314,24 @@ def action_change_transformation(event, main_window, index_slot=None):
             slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectTransRoster)
 
             # Change the old selected trans slot to the new one
-            CPEVRE.slot_trans_selected = index_slot
+            REV.slot_trans_selected = index_slot
 
         else:
             # Show the select chara roster window
             main_window.selectCharaRosterWindow.show()
 
         # The user is selecting a transformation
-        if CPEVRE.selecting_character:
-            CPEVRE.selecting_character = False
+        if REV.selecting_character:
+            REV.selecting_character = False
 
 
 def action_modify_character(event, main_window, chara_id):
 
     # Get the actual slot
-    slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
+    slot_chara = REV.slots_characters[REV.slot_chara_selected]
 
     # The user is selecting a character
-    if CPEVRE.selecting_character:
+    if REV.selecting_character:
 
         # If the actual ID is not equal to the selected one in the roster window, we don't modify anything
         if slot_chara.chara_id != chara_id:
@@ -359,14 +359,14 @@ def action_modify_character(event, main_window, chara_id):
                                                                     + ".bmp")))
 
             # If the character was edited before, we won't append the reference of the slot
-            if slot_chara not in CPEVRE.slots_edited:
-                CPEVRE.slots_edited.append(slot_chara)
+            if slot_chara not in REV.slots_edited:
+                REV.slots_edited.append(slot_chara)
 
     # The user is selecting a transformation
-    elif slot_chara.transformations_id[CPEVRE.slot_trans_selected] != chara_id:
+    elif slot_chara.transformations_id[REV.slot_trans_selected] != chara_id:
 
         # Get the qlabel of the transformation slot
-        trans_slot = CPEVRE.slots_transformations[CPEVRE.slot_trans_selected]
+        trans_slot = REV.slots_transformations[REV.slot_trans_selected]
 
         # Change large portrait
         main_window.portrait_2.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -391,7 +391,7 @@ def action_modify_character(event, main_window, chara_id):
             slot_chara.num_transformations = slot_chara.num_transformations - 1
 
         # Change the chara ID for the selected slot
-        slot_chara.transformations_id[CPEVRE.slot_trans_selected] = chara_id
+        slot_chara.transformations_id[REV.slot_trans_selected] = chara_id
         trans_slot.chara_id = chara_id
 
         # Change chara roster background color in roster window
@@ -400,8 +400,8 @@ def action_modify_character(event, main_window, chara_id):
         select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
 
         # If the character was edited before, we won't append the reference of the slot
-        if slot_chara not in CPEVRE.slots_edited:
-            CPEVRE.slots_edited.append(slot_chara)
+        if slot_chara not in REV.slots_edited:
+            REV.slots_edited.append(slot_chara)
 
     # Close the Window
     main_window.selectCharaRosterWindow.close()

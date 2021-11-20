@@ -3,12 +3,12 @@ import shutil
 from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
 from PyQt5.QtWidgets import QFileDialog, QLabel
 
-from lib.character_parameters_editor.CPEF_RE import read_cs_chip_file
-from lib.character_parameters_editor.CPEF_IP import read_single_character_parameters
-from lib.character_parameters_editor.CPEF_GP import read_character_parameters, action_change_character, \
+from lib.character_parameters_editor.REF import read_cs_chip_file
+from lib.character_parameters_editor.IPF import read_single_character_parameters
+from lib.character_parameters_editor.GPF import read_character_parameters, action_change_character, \
     open_select_chara_window
-from lib.character_parameters_editor.CPEV_GP import CPEVGP
-from lib.character_parameters_editor.CPEV_RE import CPEVRE
+from lib.character_parameters_editor.GPV import GPV
+from lib.character_parameters_editor.REV import REV
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
 from lib.functions import del_rw
 from lib.pak_explorer.PEV import PEV
@@ -64,8 +64,8 @@ def load_data_to_pe_cpe(main_window):
     if data == CPEV.operate_resident_param:
     
         # reset the values
-        CPEVGP.character_list_edited.clear()
-        CPEVGP.character_list.clear()
+        GPV.character_list_edited.clear()
+        GPV.character_list.clear()
         CPEV.chara_selected = 0  # Index of the char selected in the program
     
         # Read all the data from the files
@@ -81,12 +81,12 @@ def load_data_to_pe_cpe(main_window):
             character = Character()
     
             # Store the positions where the information is located
-            character.position_visual_parameters = i * CPEVGP.sizeVisualParameters
-            character.position_trans = i * CPEVGP.sizeTrans
+            character.position_visual_parameters = i * GPV.sizeVisualParameters
+            character.position_trans = i * GPV.sizeTrans
     
             # Store the information in the object and append to a list
             read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i)
-            CPEVGP.character_list.append(character)
+            GPV.character_list.append(character)
     
         # Close the files
         subpak_file_character_inf.close()
@@ -114,7 +114,7 @@ def load_data_to_pe_cpe(main_window):
         main_window.label_trans_3.setVisible(False)
     
         # Get the values for the fist character of the list
-        character_zero = CPEVGP.character_list[0]
+        character_zero = GPV.character_list[0]
     
         # Show the health
         main_window.health_value.setValue(character_zero.health)
@@ -325,17 +325,17 @@ def load_data_to_pe_cpe(main_window):
     elif data == CPEV.cs_chip:
 
         # reset the values only if we activate again the roster editor tab
-        if not CPEVRE.roster_editor_first_activation:
+        if not REV.roster_editor_first_activation:
 
             # Get the slot of the selected character and the slot of the selected transformation
-            slot_chara = CPEVRE.slots_characters[CPEVRE.slot_chara_selected]
+            slot_chara = REV.slots_characters[REV.slot_chara_selected]
             slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
-            slot_trans = CPEVRE.slots_transformations[CPEVRE.slot_trans_selected]
+            slot_trans = REV.slots_transformations[REV.slot_trans_selected]
             slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
 
             # Reset only the background color for the slot that was selected before (selecting character in cyan, or
             # selecting transformation in red)
-            if CPEVRE.selecting_character:
+            if REV.selecting_character:
                 # Reset slot in roster window
                 select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
                                                                                                    str(slot_chara.
@@ -350,19 +350,19 @@ def load_data_to_pe_cpe(main_window):
 
             # Reset the rest of the vars
             main_window.portrait_2.setPixmap(QPixmap(""))
-            CPEVRE.slots_edited.clear()
-            for i in range(0, CPEVRE.num_slots_characters):
-                slot = CPEVRE.slots_characters[i]
+            REV.slots_edited.clear()
+            for i in range(0, REV.num_slots_characters):
+                slot = REV.slots_characters[i]
                 slot.reset()
-            for i in range(0, CPEVRE.num_slots_transformations):
-                slot = CPEVRE.slots_transformations[i]
+            for i in range(0, REV.num_slots_transformations):
+                slot = REV.slots_transformations[i]
                 slot.reset()
                 slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
-            CPEVRE.slot_chara_selected = -1
-            CPEVRE.slot_trans_selected = -1
-            CPEVRE.selecting_character = True
+            REV.slot_chara_selected = -1
+            REV.slot_trans_selected = -1
+            REV.selecting_character = True
         else:
-            CPEVRE.roster_editor_first_activation = False
+            REV.roster_editor_first_activation = False
 
         # Read all the data from the files and store it in the global vars from CPEV.
         read_cs_chip_file(main_window)
