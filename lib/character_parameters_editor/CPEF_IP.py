@@ -367,13 +367,17 @@ def read_animation_file(main_window, index_list_view, combo_box_label, number_fi
 def read_animation_files(main_window, offset_index, animation_combo_box):
 
     # Idle ground
-    read_animation_file(main_window, 0+offset_index, "Idle ground", 1, animation_combo_box)
+    read_animation_file(main_window, offset_index, "Idle ground", 1, animation_combo_box)
     # Idle fly
     read_animation_file(main_window, 1+offset_index, "Idle fly", 1, animation_combo_box)
     # Charge (in, loop)
     read_animation_file(main_window, 2+offset_index, "Charge", 2, animation_combo_box)
     # Charge max
-    read_animation_file(main_window, 3+offset_index, "Charge max", 1, animation_combo_box)
+    read_animation_file(main_window, 4+offset_index, "Charge max", 1, animation_combo_box)
+    # Idle ground tired
+    read_animation_file(main_window, 5+offset_index, "Idle ground tired", 1, animation_combo_box)
+    # Idle fly tired
+    read_animation_file(main_window, 6+offset_index, "Idle fly tired", 1, animation_combo_box)
     # Rush attack ground
     read_animation_file(main_window, 66+offset_index, "Rush attack ground", 1, animation_combo_box)
     read_animation_file(main_window, 67+offset_index, "Rush attack ground 2", 1, animation_combo_box)
@@ -524,7 +528,7 @@ def export_camera(file_export_path, camera_cutscene):
 
 def action_export_camera_button_logic(main_window):
     # Ask to the user the file output
-    name_file = CPEVIP.character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
+    name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
                 main_window.camera_type_key.currentText().replace(" ", "_") + "." + CPEVIP.camera_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
 
@@ -624,7 +628,7 @@ def action_import_camera_button_logic(main_window):
 
 def action_export_all_camera_button_logic(main_window):
     # Ask to the user the folder output
-    name_folder = CPEVIP.character_id + "_cameras"
+    name_folder = CPEV.file_character_id + "_cameras"
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras", name_folder, "")[0]
 
     if folder_export_path:
@@ -635,7 +639,7 @@ def action_export_all_camera_button_logic(main_window):
 
         # Export all the files to the folder
         for i in range(0, main_window.camera_type_key.count()):
-            name_file = CPEVIP.character_id + "_" + str(i) + "_" + \
+            name_file = CPEV.file_character_id + "_" + str(i) + "_" + \
                         main_window.camera_type_key.itemText(i).replace(" ", "_") + "." + CPEVIP.camera_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
@@ -707,7 +711,7 @@ def action_import_all_camera_button_logic(main_window):
 
 def action_export_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user the file output
-    name_file = CPEVIP.character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
+    name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
                 animation_combo_box.currentText().replace(" ", "_") + "." + CPEVIP.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation", name_file, "")[0]
 
@@ -733,7 +737,7 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
 
 def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
     # Ask to the user the folder output
-    name_folder = CPEVIP.character_id + "_animations" + ("_" + properties_text if properties_text else "")
+    name_folder = CPEV.file_character_id + "_animations" + ("_" + properties_text if properties_text else "")
     folder_export_path = QFileDialog.getSaveFileName(main_window,
                                                      "Export animations" + properties_text, name_folder, "")[0]
 
@@ -745,7 +749,7 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
 
         # Export all the files to the folder
         for i in range(0, animation_combo_box.count()):
-            name_file = CPEVIP.character_id + "_" + str(i) + "_" + \
+            name_file = CPEV.file_character_id + "_" + str(i) + "_" + \
                         animation_combo_box.itemText(i).replace(" ", "_") + "." + CPEVIP.animations_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 

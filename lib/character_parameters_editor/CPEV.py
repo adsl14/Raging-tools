@@ -23,5 +23,8 @@ class CPEV:
     styleSheetSelectFusionRosterWindow = "QLabel {border : 5px solid  #33ff44;}"
     styleSheetSelectCharaRosterWindow = "QLabel {border : 5px solid cyan;}"
 
+    # ID of the character
+    file_character_id = ""
+
     # Flag that will tell us if the character has been changed in the main panel (avoid combo box)
     change_character = False

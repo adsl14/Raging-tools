@@ -29,4 +29,3 @@ class Slot:
         # ID for each transformation slot (101 is Noise image)
         for i in range(0, len(self.transformations_id)):
             self.transformations_id[i] = 101
-

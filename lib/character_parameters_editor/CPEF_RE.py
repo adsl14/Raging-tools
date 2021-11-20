@@ -129,6 +129,7 @@ def write_cs_chip_file():
                     else:
                         file_cs_form.write(b'\xFF\xFF\xFF\xFF')
 
+
 # Read the file cs_form searching the ID from cs_chip
 def search_id(file_cs_form, slot_character):
 
