@@ -1,8 +1,8 @@
-from lib.character_parameters_editor.CPEF_IP import write_single_character_parameters
-from lib.character_parameters_editor.CPEF_GP import write_character_parameters
-from lib.character_parameters_editor.CPEF_RE import write_cs_chip_file
-from lib.character_parameters_editor.CPEV_GP import CPEVGP
-from lib.character_parameters_editor.CPEV_RE import CPEVRE
+from lib.character_parameters_editor.IPF import write_single_character_parameters
+from lib.character_parameters_editor.GPF import write_character_parameters
+from lib.character_parameters_editor.REF import write_cs_chip_file
+from lib.character_parameters_editor.GPV import GPV
+from lib.character_parameters_editor.REV import REV
 from lib.design.Raging_tools import *
 from lib.packages import os, rmtree, QFileDialog, copyfile, \
     move, QMessageBox
@@ -434,15 +434,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # --- operate_resident_param ---
                             # If the user has edited one character, we will save the file
-                            elif CPEVGP.character_list_edited:
+                            elif GPV.character_list_edited:
 
                                 # Open the files
-                                subpak_file_character_inf = open(CPEVGP.resident_character_inf_path, mode="rb+")
-                                subpak_file_transformer_i = open(CPEVGP.resident_transformer_i_path, mode="rb+")
+                                subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
+                                subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
 
                                 print("Writing values in the file...")
                                 # Change the transformations in the file
-                                for character in CPEVGP.character_list_edited:
+                                for character in GPV.character_list_edited:
                                     # Save all the info for each character
                                     write_character_parameters(character, subpak_file_character_inf,
                                                                subpak_file_transformer_i)
@@ -457,7 +457,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # --- cs_chip ---
                             # If the user has edited one character, we will save the file
-                            elif CPEVRE.slots_edited:
+                            elif REV.slots_edited:
 
                                 # Save all the info
                                 print("Writing values in the file...")
