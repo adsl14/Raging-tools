@@ -173,6 +173,18 @@ def search_id(file_cs_form, slot_character):
     file_cs_form.seek(0)
 
 
+# Calculate the number of transformations when the user add or remove a transformation
+def get_num_transformations(slot_chara):
+
+    # If we find a transformation ID that is not 101 (not empty slot), we return the position where we found a
+    # transformation slot that is actually a character
+    for i in range(REV.num_slots_transformations - 1, -1, -1):
+        if slot_chara.transformations_id[i] != 101:
+            return i + 1
+
+    return 0
+
+
 def action_change_character(event, main_window, index_slot=None):
 
     # Get the chara slot object (old and selected one)
@@ -214,7 +226,7 @@ def action_change_character(event, main_window, index_slot=None):
                                                               str(slot_chara.chara_id).zfill(3)
                                                               + ".png")))
         # Load the transformations
-        for i in range(0, 5):
+        for i in range(0, REV.num_slots_transformations):
             chara_id_trans = slot_chara.transformations_id[i]
 
             # Get the slot of the selected transformation
@@ -383,16 +395,12 @@ def action_modify_character(event, main_window, chara_id):
                                                                                            str(trans_slot.chara_id))
         select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
-        # If we're adding a new character as a transformation, we add the number of transformations
-        if trans_slot.chara_id == 101:
-            slot_chara.num_transformations = slot_chara.num_transformations + 1
-        # If we're removing a transformation ID, we reduce the number of transformations
-        elif chara_id == 101:
-            slot_chara.num_transformations = slot_chara.num_transformations - 1
-
         # Change the chara ID for the selected slot
         slot_chara.transformations_id[REV.slot_trans_selected] = chara_id
         trans_slot.chara_id = chara_id
+
+        # Change the number of transformations for the character slot
+        slot_chara.num_transformations = get_num_transformations(slot_chara)
 
         # Change chara roster background color in roster window
         select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
