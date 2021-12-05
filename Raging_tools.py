@@ -24,7 +24,7 @@ from lib.character_parameters_editor.CPEF import initialize_cpe
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
-    # old path where the user loaded before the file
+    # old path where the user loaded the previous file
     old_path_file = ""
 
     def __init__(self, *args, **kwargs):
@@ -202,12 +202,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_logic(self):
 
-        extension_pak = "Pack files (*.zpak)"
+        extension_pak = "Pack files (.zpak)"
         extension_spr_vram = "Info/Texture files (folder)"
 
         # Ask to the user where to save the file
+        path_output_file = os.path.splitext(MainWindow.old_path_file)[0]
         path_output_file, extension = QFileDialog.getSaveFileName(self,
-                                                                  "Save file", os.path.abspath(os.getcwd()),
+                                                                  "Save file", path_output_file,
                                                                   extension_pak + ";;" + extension_spr_vram)
 
         # The user has selected a path
@@ -215,9 +216,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Save spr_vram in a folder
             if extension == extension_spr_vram:
-
-                # Remove the extension in order to get the path as a folder
-                path_output_file = os.path.splitext(path_output_file)[0]
 
                 if not VEV.tx2_datas:
                     msg = QMessageBox()
@@ -399,10 +397,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # If the users click on 'Yes', it will open the path where the files were saved
                     if message_open_saved_files == msg.Yes:
                         # Show the path folder to the user
-                        os.system('explorer.exe ' + path_output_file)
+                        os.system('explorer.exe ' + path_output_file.replace("/","\\"))
 
             # Save pak file
             else:
+
+                # Add the extension .zpak
+                path_output_file = path_output_file + ".zpak"
 
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():

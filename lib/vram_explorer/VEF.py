@@ -35,7 +35,7 @@ def load_data_to_ve(main_window):
     VEV.tx2d_infos.clear()
     VEV.textures_index_edited.clear()
 
-    basename = os.path.basename(VEV.spr_file_path)
+    basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
     # Open spr and vram
     open_spr_file(VEV.spr_file_path)
@@ -78,7 +78,7 @@ def load_data_to_ve(main_window):
     main_window.exportButton.setEnabled(True)
 
     # Show the text labels
-    main_window.fileNameText.setText(basename.split(".")[0])
+    main_window.fileNameText.setText(basename)
     main_window.fileNameText.setVisible(True)
     main_window.encodingImageText.setText(
         "Encoding: %s" % (get_encoding_name(VEV.tx2d_infos[VEV.current_selected_texture].dxt_encoding)))
@@ -526,20 +526,17 @@ def action_export_logic(main_window):
     # If the encoding is DXT5 or DXT1, we show the dds image
     if VEV.tx2d_infos[VEV.current_selected_texture].dxt_encoding != 0:
         # Save dds file
-        export_path = QFileDialog.getSaveFileName(main_window, "Save file", os.path.join(os.path.abspath(os.getcwd()),
-                                                                                         VEV.tx2_datas[
-                                                                                         VEV.current_selected_texture]
-                                                                                         .name + ".dds"),
+        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
+            VEV.spr_file_path, VEV.tx2_datas[VEV.current_selected_texture].name + ".dds"),
                                                   "DDS file (*.dds)")[0]
 
         data = VEV.tx2_datas[VEV.current_selected_texture].data
 
     else:
         # Save bmp file
-        export_path = QFileDialog.getSaveFileName(main_window, "Export texture",
-                                                  os.path.join(os.path.abspath(os.getcwd()),
-                                                               VEV.tx2_datas[VEV.current_selected_texture].name +
-                                                               ".bmp"), "BMP file (*.bmp)")[0]
+        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
+            VEV.spr_file_path, VEV.tx2_datas[VEV.current_selected_texture].name + ".bmp"),
+                                                  "BMP file (*.bmp)")[0]
 
         if VEV.tx2_datas[VEV.current_selected_texture].extension != "png":
             data = VEV.tx2_datas[VEV.current_selected_texture].data
@@ -555,9 +552,8 @@ def action_export_logic(main_window):
 def action_export_all_logic(main_window):
 
     # Ask to the user where to save the files
-    name_folder = os.path.splitext(VEV.vram_file_path)[0]
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.join(
-                                                   os.path.abspath(os.getcwd()), name_folder))[0]
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.splitext(
+        VEV.spr_file_path)[0])[0]
 
     # Check if the user selected the folder
     if folder_export_path:
@@ -792,7 +788,7 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
 def action_import_all_logic(main_window):
 
     # Ask to the user from where to import the files into the tool
-    folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures", "")
+    folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures", VEV.spr_file_path)
 
     message = ""
 
@@ -831,17 +827,13 @@ def action_import_logic(main_window):
     # Open spr file
     # For DDS
     if VEV.tx2d_infos[VEV.current_selected_texture].dxt_encoding != 0:
-        import_path = QFileDialog.getOpenFileName(main_window, "Import texture",
-                                                  os.path.join(os.path.abspath(VEV.spr_file_path),
-                                                               VEV.tx2_datas[VEV.current_selected_texture].name +
-                                                               ".dds"),
+        import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(
+            VEV.spr_file_path, VEV.tx2_datas[VEV.current_selected_texture].name + ".dds"),
                                                   "DDS file (*.dds)")[0]
     # For BMP (rgba image)
     else:
-        import_path = QFileDialog.getOpenFileName(main_window, "Import texture",
-                                                  os.path.join(os.path.abspath(VEV.spr_file_path),
-                                                               VEV.tx2_datas[VEV.current_selected_texture].name +
-                                                               ".bmp"),
+        import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(
+            VEV.spr_file_path, VEV.tx2_datas[VEV.current_selected_texture].name + ".bmp"),
                                                   "BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
