@@ -397,7 +397,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # If the users click on 'Yes', it will open the path where the files were saved
                     if message_open_saved_files == msg.Yes:
                         # Show the path folder to the user
-                        os.system('explorer.exe ' + path_output_file.replace("/","\\"))
+                        os.system('explorer.exe ' + path_output_file.replace("/", "\\"))
 
             # Save pak file
             else:
