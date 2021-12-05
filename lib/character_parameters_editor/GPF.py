@@ -146,11 +146,12 @@ def initialize_operate_resident_param(main_window, qt_widgets):
     main_window.selectCharaUI = Select_Chara()
     main_window.selectCharaUI.setupUi(main_window.selectCharaWindow)
     GPV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)
-    for i in range(0, 100):
+    for i in range(0, len(GPV.mini_portraits_image_select_chara_window)):
+        label_id_image = GPV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
         GPV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
-                                                                                          "chara_chips_0" + str(
-                                                                                              i).zfill(
-                                                                                              2) + ".bmp")))
+                                                                                          "chara_chips_" +
+                                                                                       label_id_image.zfill(3)
+                                                                                       + ".bmp")))
         GPV.mini_portraits_image_select_chara_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
         GPV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
@@ -607,13 +608,6 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
     # Check if the user wants to edit the transformation slot
     if GPV.trans_slot_panel_selected is not None:
 
-        # If the selected character in the window is the same as in the panel transformations,
-        # we assume there won't be any transformation in that slot
-        # so it will be 100
-        if GPV.character_list[GPV.chara_selected].transformations[GPV.trans_slot_panel_selected] == \
-                char_selected_new:
-            char_selected_new = 100
-
         # Change the transformation in our array of characters
         GPV.character_list[GPV.chara_selected].transformations[
             GPV.trans_slot_panel_selected] = char_selected_new
@@ -655,13 +649,6 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
     # transformation partner slot
     elif GPV.transformation_partner_flag:
 
-        # If the selected character in the window is the same as in the transformation partner slot,
-        # we assume there won't be any transformation partner in that slot
-        # so it will be 100
-        if GPV.character_list[GPV.chara_selected].transformation_partner == \
-                char_selected_new:
-            char_selected_new = 100
-
         # Change the fusion in our array of characters
         GPV.character_list[GPV.chara_selected].transformation_partner = char_selected_new
 
@@ -678,13 +665,6 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
 
     # fusion slot
     elif GPV.fusion_slot_panel_selected is not None:
-
-        # If the selected character in the window is the same as in the panel fusions,
-        # we assume there won't be any fusion in that slot
-        # so it will be 100
-        if GPV.character_list[GPV.chara_selected].fusions[GPV.fusion_slot_panel_selected] == \
-                char_selected_new:
-            char_selected_new = 100
 
         # Change the fusion in our array of characters
         GPV.character_list[GPV.chara_selected].fusions[GPV.fusion_slot_panel_selected] = char_selected_new
@@ -726,13 +706,6 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
     # fusion partner trigger slot
     elif GPV.fusion_partner_flag[0]:
 
-        # If the selected character in the window is the same as in the potara partner slot,
-        # we assume there won't be any potara partner in that slot
-        # so it will be 100
-        if GPV.character_list[GPV.chara_selected].fusion_partner[0] == \
-                char_selected_new:
-            char_selected_new = 100
-
         # Change the fusion in our array of characters
         GPV.character_list[GPV.chara_selected].fusion_partner[0] = char_selected_new
 
@@ -751,13 +724,6 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
 
     # fusion partner visual slot
     elif GPV.fusion_partner_flag[1]:
-
-        # If the selected character in the window is the same as in the metamoran partner slot,
-        # we assume there won't be any metamoran partner in that slot
-        # so it will be 100
-        if GPV.character_list[GPV.chara_selected].fusion_partner[1] == \
-                char_selected_new:
-            char_selected_new = 100
 
         # Change the fusion in our array of characters
         GPV.character_list[GPV.chara_selected].fusion_partner[1] = char_selected_new
@@ -794,39 +760,27 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     GPV.fusion_partner_flag[0] = fusion_partner_trigger_flag
     GPV.fusion_partner_flag[1] = fusion_partner_visual_flag
 
-    # The character selected in the slot panel (trans or fusion) is not empty
-    if index != 100:
+    # The previous chara selected and the new are differents
+    if GPV.previous_chara_selected_character_window != index:
 
-        # The previous chara selected and the new are differents
-        if GPV.previous_chara_selected_character_window != index:
+        # Add the color border to the character that has been selected in the trans/fusion slot
+        GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
 
-            # Add the color border to the character that has been selected in the trans/fusion slot
-            GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
-
-            # Reset the previous character select if is not a empty character
-            if GPV.previous_chara_selected_character_window != 100:
-                GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window] \
-                    .setStyleSheet(CPEV.styleSheetSlotRosterWindow)
-
-            # Store the actual character selected in the select character window
-            GPV.previous_chara_selected_character_window = index
-
-        # If the color border isn't the same, means the user has selected a different slot (trans or fusion
-        # or partners)
-        elif GPV.mini_portraits_image_select_chara_window[index].styleSheet() != q_label_style:
-
-            # Add the color border to the character that has been selected in the trans/fusion slot
-            GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
-
-            # Store the actual character selected in the select character window
-            GPV.previous_chara_selected_character_window = index
-
-    # If the index is 100 (means there's no character transformation),
-    # we will remove the red/green border for the previous character transform panel
-    elif GPV.previous_chara_selected_character_window != index:
-        GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window] \
+        # Reset the previous character select
+        GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window]\
             .setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
+        # Store the actual character selected in the select character window
+        GPV.previous_chara_selected_character_window = index
+
+    # If the color border isn't the same, means the user has selected a different slot (trans or fusion
+    # or partners)
+    elif GPV.mini_portraits_image_select_chara_window[index].styleSheet() != q_label_style:
+
+        # Add the color border to the character that has been selected in the trans/fusion slot
+        GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
+
+        # Store the actual character selected in the select character window
         GPV.previous_chara_selected_character_window = index
 
     main_window.selectCharaWindow.show()
