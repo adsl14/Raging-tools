@@ -18,7 +18,7 @@ class CPEV:
     styleSheetSelectSlotRoster = "QLabel {border : 3px solid black;}"
     styleSheetSelectTransRoster = "QLabel {border : 3px solid red;}"
     styleSheetSelectCharaRoster = "QLabel {border : 3px solid cyan;}"
-    styleSheetSlotRosterWindow = "QLabel {border : 6px solid black;}"
+    styleSheetSlotRosterWindow = "QLabel {border : 3px solid black;}"
     styleSheetSelectTransRosterWindow = "QLabel {border : 5px solid red;}"
     styleSheetSelectFusionRosterWindow = "QLabel {border : 5px solid  #33ff44;}"
     styleSheetSelectCharaRosterWindow = "QLabel {border : 5px solid cyan;}"

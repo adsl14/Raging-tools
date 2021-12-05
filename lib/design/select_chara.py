@@ -20,6 +20,7 @@ class Select_Chara(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.frame = QtWidgets.QFrame(self.verticalLayoutWidget)
         self.frame.setEnabled(True)
+        self.frame.setStyleSheet("background-color: rgb(0, 0, 0);")
         self.frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.frame.setObjectName("frame")
