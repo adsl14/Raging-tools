@@ -378,6 +378,8 @@ def read_animation_files(main_window, offset_index, animation_combo_box):
     read_animation_file(main_window, 5+offset_index, "Idle ground tired", 1, animation_combo_box)
     # Idle fly tired
     read_animation_file(main_window, 6+offset_index, "Idle fly tired", 1, animation_combo_box)
+    # Dash
+    read_animation_file(main_window, 52+offset_index, "Dash", 1, animation_combo_box)
     # Rush attack ground
     read_animation_file(main_window, 66+offset_index, "Rush attack ground", 1, animation_combo_box)
     read_animation_file(main_window, 67+offset_index, "Rush attack ground 2", 1, animation_combo_box)
@@ -530,7 +532,8 @@ def action_export_camera_button_logic(main_window):
     # Ask to the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
                 main_window.camera_type_key.currentText().replace(" ", "_") + "." + IPV.camera_extension
-    file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera", name_file, "")[0]
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
 
     if file_export_path:
 
@@ -594,7 +597,10 @@ def import_camera(camera_cutscene, file):
 
 def action_import_camera_button_logic(main_window):
     # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera", main_window.old_path_file, "")[0]
+    name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
+                main_window.camera_type_key.currentText().replace(" ", "_") + "." + IPV.camera_extension
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
 
     if os.path.exists(file_export_path):
 
@@ -629,7 +635,8 @@ def action_import_camera_button_logic(main_window):
 def action_export_all_camera_button_logic(main_window):
     # Ask to the user the folder output
     name_folder = CPEV.file_character_id + "_cameras"
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras", name_folder, "")[0]
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras",
+                                                     os.path.join(main_window.old_path_file, name_folder), "")[0]
 
     if folder_export_path:
 
@@ -661,7 +668,7 @@ def action_export_all_camera_button_logic(main_window):
 
 def action_import_all_camera_button_logic(main_window):
     # Ask to the user from what file wants to open the camera files
-    folder_import = QFileDialog.getExistingDirectory(main_window, "Import cameras", "")
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import cameras", main_window.old_path_file)
 
     cameras_files_error = []
 
@@ -713,7 +720,8 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user the file output
     name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
                 animation_combo_box.currentText().replace(" ", "_") + "." + IPV.animations_extension
-    file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation", name_file, "")[0]
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
 
     # The user has selected an output
     if file_export_path:
@@ -739,7 +747,8 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
     # Ask to the user the folder output
     name_folder = CPEV.file_character_id + "_animations" + ("_" + properties_text if properties_text else "")
     folder_export_path = QFileDialog.getSaveFileName(main_window,
-                                                     "Export animations" + properties_text, name_folder, "")[0]
+                                                     "Export animations" + properties_text,
+                                                     os.path.join(main_window.old_path_file, name_folder), "")[0]
 
     if folder_export_path:
 
@@ -795,7 +804,10 @@ def export_animation(animation_array, file_export_path):
 
 def action_import_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation", main_window.old_path_file, "")[0]
+    name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
+                animation_combo_box.currentText().replace(" ", "_") + "." + IPV.animations_extension
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
 
     if os.path.exists(file_export_path):
         # Import a single animation
@@ -808,7 +820,7 @@ def action_import_animation_button_logic(main_window, animation_combo_box):
 
 def action_import_all_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user from what file wants to open the camera files
-    folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", "")
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", main_window.old_path_file)
 
     animations_files_error = []
 

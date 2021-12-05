@@ -202,8 +202,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_logic(self):
 
-        extension_pak = "Pack files (.zpak)"
-        extension_spr_vram = "Info/Texture files (folder)"
+        extension_pak = "Pack files ()"
+        extension_spr_vram = "Info/Texture files ()"
 
         # Ask to the user where to save the file
         path_output_file = os.path.splitext(MainWindow.old_path_file)[0]
