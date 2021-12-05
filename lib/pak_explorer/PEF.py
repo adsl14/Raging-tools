@@ -66,14 +66,14 @@ def load_data_to_pe_cpe(main_window):
         # reset the values
         GPV.character_list_edited.clear()
         GPV.character_list.clear()
-        CPEV.chara_selected = 0  # Index of the char selected in the program
+        GPV.chara_selected = 0  # Index of the char selected in the program
     
         # Read all the data from the files
         # character_info and transformer_i
-        CPEV.resident_character_inf_path = main_window.listView_2.model().item(3, 0).text()
-        CPEV.resident_transformer_i_path = main_window.listView_2.model().item(11, 0).text()
-        subpak_file_character_inf = open(CPEV.resident_character_inf_path, mode="rb")
-        subpak_file_transformer_i = open(CPEV.resident_transformer_i_path, mode="rb")
+        GPV.resident_character_inf_path = main_window.listView_2.model().item(3, 0).text()
+        GPV.resident_transformer_i_path = main_window.listView_2.model().item(11, 0).text()
+        subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
+        subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
     
         # Read the data from the files and store the parameters
         for i in range(0, 100):
@@ -293,7 +293,7 @@ def load_data_to_pe_cpe(main_window):
         # Save the id of the character to the character parameters editor tab
         CPEV.file_character_id = data.split("_")[2]
 
-        # Read all the data from the files and store it in the global_character from CPEV.
+        # Read all the data from the files and store it in the global_character from IPV.
         read_single_character_parameters(main_window)
 
         # We're not changing the character in the main panel (play combo box code)
@@ -364,7 +364,7 @@ def load_data_to_pe_cpe(main_window):
         else:
             REV.roster_editor_first_activation = False
 
-        # Read all the data from the files and store it in the global vars from CPEV.
+        # Read all the data from the files and store it in the global vars from REV.
         read_cs_chip_file(main_window)
 
         # We're not changing the character in the main panel (play combo box code)
