@@ -5036,8 +5036,8 @@
               <widget class="QLabel" name="type_fighting_text">
                <property name="geometry">
                 <rect>
-                 <x>80</x>
-                 <y>130</y>
+                 <x>20</x>
+                 <y>80</y>
                  <width>91</width>
                  <height>16</height>
                 </rect>
@@ -5052,8 +5052,8 @@
               <widget class="QComboBox" name="type_fighting_value">
                <property name="geometry">
                 <rect>
-                 <x>80</x>
-                 <y>150</y>
+                 <x>20</x>
+                 <y>100</y>
                  <width>81</width>
                  <height>21</height>
                 </rect>
@@ -5079,9 +5079,9 @@
                <property name="geometry">
                 <rect>
                  <x>20</x>
-                 <y>100</y>
-                 <width>81</width>
-                 <height>21</height>
+                 <y>153</y>
+                 <width>121</width>
+                 <height>22</height>
                 </rect>
                </property>
               </widget>
@@ -5089,7 +5089,7 @@
                <property name="geometry">
                 <rect>
                  <x>20</x>
-                 <y>77</y>
+                 <y>130</y>
                  <width>101</width>
                  <height>16</height>
                 </rect>

@@ -165,8 +165,9 @@ def read_single_character_parameters(main_window):
 
         # Color background fast combo
         file.seek(3, 1)
+        a = int.from_bytes(file.read(1), "big")
         main_window.background_color_combo_value.setCurrentIndex(main_window.background_color_combo_value.findData
-                                                                 (int.from_bytes(file.read(1), "big")))
+                                                                 (a))
 
     # Read camera info file
     with open(IPV.camera_i_path, mode="rb") as file:
