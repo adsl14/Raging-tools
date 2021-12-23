@@ -1,5 +1,6 @@
 from lib.packages import os, np, datetime
-from lib.vram_explorer.classes.SprpStruct import SprpStruct
+from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
+from lib.vram_explorer.classes.SPRP.SprpHeader import SprpHeader
 
 
 class VEV:
@@ -24,17 +25,12 @@ class VEV:
 	spr_file_path = ""
 	vram_file_path = ""
 
-	# Struct data
-	sprp_struct = SprpStruct()
+	# SPRP classes
+	sprp_header = SprpHeader()
+	sprp_file = SprpFile()
 
-	# Meta information (offset to tx2dInfos)
-	sprpDatasInfo = []
-	# Information of the textures
-	tx2d_infos = []
-	# The textures itself
-	tx2_datas = []
-	# offset of the spr file
-	data_offset_header = 0
+	# Allowed data type to be readed
+	data_type_allowed = [b"TX2D", b"MTRL"]
 	# Indexes of textures edited
 	textures_index_edited = []
 	# Quanty of difference between the modifed texture and the old one

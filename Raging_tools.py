@@ -217,7 +217,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Save spr_vram in a folder
             if extension == extension_spr_vram:
 
-                if not VEV.tx2_datas:
+                if not VEV.sprp_file.type_info:
                     msg = QMessageBox()
                     msg.setWindowTitle("Warning")
                     msg.setText("There is no file loaded.")
@@ -247,55 +247,62 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     with open(spr_export_path, mode="rb+") as output_file_spr:
                         first_index_texture_edited = VEV.textures_index_edited[0]
                         # Move where the information starts to the first modified texture
-                        output_file_spr.seek(VEV.sprp_struct.data_base +
-                                             VEV.sprpDatasInfo[first_index_texture_edited].data_offset + 12)
+                        output_file_spr.seek(VEV.sprp_file.data_base +
+                                             VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                             .data_offset + 12)
                         # Change the size
-                        output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited].
-                                              data_size.to_bytes(4, byteorder="big"))
+                        output_file_spr.write(VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                              .data.data_size.to_bytes(4, byteorder="big"))
                         # Change width
-                        output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited]
-                                              .width.to_bytes(2, byteorder="big"))
+                        output_file_spr.write(VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                              .data.width.to_bytes(2, byteorder="big"))
                         # Change height
-                        output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited]
-                                              .height.to_bytes(2, byteorder="big"))
+                        output_file_spr.write(VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                              .data.height.to_bytes(2, byteorder="big"))
                         # Change mip_maps
                         output_file_spr.seek(2, os.SEEK_CUR)
-                        output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited].
-                                              mip_maps.to_bytes(2, byteorder="big"))
+                        output_file_spr.write(VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                              .data.mip_maps.to_bytes(2, byteorder="big"))
                         # Change dxt encoding
                         output_file_spr.seek(8, os.SEEK_CUR)
-                        output_file_spr.write(VEV.tx2d_infos[first_index_texture_edited].
-                                              dxt_encoding.to_bytes(1, byteorder="big"))
+                        output_file_spr.write(VEV.sprp_file.type_info[0].data_info[first_index_texture_edited]
+                                              .data.dxt_encoding.to_bytes(1, byteorder="big"))
 
                         # Check if is the last texture modified and there is no more textures in the bottom
-                        if first_index_texture_edited + 1 < VEV.sprp_struct.data_count:
+                        if first_index_texture_edited + 1 < VEV.sprp_file.type_info[0].data_count:
                             # Get the quanty difference for the first texture modified
                             quanty_aux = VEV.offset_quanty_difference[first_index_texture_edited]
                             # Reset offset difference for the first texture edited
                             VEV.offset_quanty_difference[first_index_texture_edited] = 0
                             first_index_texture_edited += 1
-                            for i in range(first_index_texture_edited, VEV.sprp_struct.data_count):
+                            for i in range(first_index_texture_edited, VEV.sprp_file.type_info[0].data_count):
 
                                 # Move where the information starts to the next textures
-                                output_file_spr.seek(VEV.sprp_struct.data_base + VEV.sprpDatasInfo[i].data_offset + 4)
+                                output_file_spr.seek(VEV.sprp_file.data_base + VEV.sprp_file.type_info[0]
+                                                     .data_info[i].data_offset + 4)
                                 # Update the offset
-                                VEV.tx2d_infos[i].data_offset += quanty_aux
-                                output_file_spr.write(int(abs(VEV.tx2d_infos[i].data_offset)).
-                                                      to_bytes(4, byteorder="big"))
+                                VEV.sprp_file.type_info[0].data_info[i].data.data_offset += quanty_aux
+                                output_file_spr.write(int(abs(VEV.sprp_file.type_info[0].data_info[i]
+                                                              .data.data_offset)).to_bytes(4, byteorder="big"))
                                 output_file_spr.seek(4, os.SEEK_CUR)
 
                                 # Write the new data size
-                                output_file_spr.write(VEV.tx2d_infos[i].data_size.to_bytes(4, byteorder="big"))
+                                output_file_spr.write(VEV.sprp_file.type_info[0].data_info[i].data.data_size
+                                                      .to_bytes(4, byteorder="big"))
                                 # Write the new  width
-                                output_file_spr.write(VEV.tx2d_infos[i].width.to_bytes(2, byteorder="big"))
+                                output_file_spr.write(VEV.sprp_file.type_info[0].data_info[i].data.width
+                                                      .to_bytes(2, byteorder="big"))
                                 # Write the new  height
-                                output_file_spr.write(VEV.tx2d_infos[i].height.to_bytes(2, byteorder="big"))
+                                output_file_spr.write(VEV.sprp_file.type_info[0].data_info[i].data.height
+                                                      .to_bytes(2, byteorder="big"))
                                 # Write the new  mip_maps
                                 output_file_spr.seek(2, os.SEEK_CUR)
-                                output_file_spr.write(VEV.tx2d_infos[i].mip_maps.to_bytes(2, byteorder="big"))
+                                output_file_spr.write(VEV.sprp_file.type_info[0].data_info[i].data.mip_maps
+                                                      .to_bytes(2, byteorder="big"))
                                 # Write the new  dxt encoding
                                 output_file_spr.seek(8, os.SEEK_CUR)
-                                output_file_spr.write(VEV.tx2d_infos[i].dxt_encoding.to_bytes(1, byteorder="big"))
+                                output_file_spr.write(VEV.sprp_file.type_info[0].data_info[i].data.dxt_encoding
+                                                      .to_bytes(1, byteorder="big"))
 
                                 # Increment the difference only if the difference is not 0 and reset the
                                 # offset differency array
@@ -312,8 +319,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Get each offset texture and write over the original file
                             for texture_index in VEV.textures_index_edited:
-                                tx2d_info = VEV.tx2d_infos[texture_index]
-                                tx2d_data = VEV.tx2_datas[texture_index]
+                                tx2d_info = VEV.sprp_file.type_info[0].data_info[texture_index].data
                                 data = input_file.read(
                                     abs(tx2d_info.data_offset_old + texture_offset - input_file.tell()))
                                 output_file.write(data)
@@ -321,27 +327,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # It's a DDS image
                                 if tx2d_info.dxt_encoding != 0:
-                                    output_file.write(VEV.tx2_datas[texture_index].data[128:])
+                                    output_file.write(VEV.sprp_file.type_info[0].data_info[texture_index]
+                                                      .data.tx2d_vram.data[128:])
                                 else:
 
-                                    if tx2d_data.extension != "png":
+                                    if VEV.sprp_file.type_info[0].data_info[texture_index].extension != "png":
                                         # We're dealing with a shader. We have to change the endian
                                         if tx2d_info.height == 1:
-                                            output_file.write(change_endian(VEV.tx2_datas[texture_index].data[54:]))
+                                            output_file.write(change_endian(VEV.sprp_file.type_info[0]
+                                                                            .data_info[texture_index]
+                                                                            .data.tx2d_vram.data[54:]))
                                         else:
-                                            output_file.write(VEV.tx2_datas[texture_index].data[54:])
+                                            output_file.write(VEV.sprp_file.type_info[0].data_info[texture_index]
+                                                              .data.tx2d_vram.data[54:])
                                     else:
                                         # Write in disk the data swizzled
                                         with open("tempSwizzledImage", mode="wb") as file:
-                                            file.write(VEV.tx2_datas[texture_index].data)
+                                            file.write(VEV.sprp_file.type_info[0].data_info[texture_index]
+                                                       .data.tx2d_vram.data)
 
                                         # Write in disk the data unswizzled
                                         with open("tempUnSwizzledImage", mode="wb") as file:
-                                            file.write(VEV.tx2_datas[texture_index].data_unswizzle[54:])
+                                            file.write(VEV.sprp_file.type_info[0].data_info[texture_index]
+                                                       .data.tx2d_vram.data_unswizzle[54:])
 
                                         # Write in disk the indexes
                                         with open("Indexes.txt", mode="w") as file:
-                                            for index in VEV.tx2_datas[texture_index].indexes_unswizzle_algorithm:
+                                            for index in VEV.sprp_file.type_info[0].data_info[texture_index].data\
+                                                    .tx2d_vram.indexes_unswizzle_algorithm:
                                                 file.write(index + ";")
 
                                         # Run the exe file of 'swizzle.exe' with the option '-s' to swizzle the image
@@ -352,7 +365,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                         # Get the data from the .exe
                                         with open("tempSwizzledImageModified", mode="rb") as file:
-                                            VEV.tx2_datas[texture_index].data = file.read()
+                                            VEV.sprp_file.type_info[0].data_info[texture_index]\
+                                                .data.tx2d_vram.data = file.read()
 
                                         # Remove the temp files
                                         os.remove("tempSwizzledImage")
@@ -360,7 +374,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         os.remove("Indexes.txt")
                                         os.remove("tempSwizzledImageModified")
 
-                                        output_file.write(VEV.tx2_datas[texture_index].data)
+                                        output_file.write(VEV.sprp_file.type_info[0].data_info[texture_index]
+                                                          .data.tx2d_vram.data)
 
                             # Write the rest of the data to the new file
                             data = input_file.read()
@@ -374,7 +389,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # final output file
                     with open(spr_export_path, mode="rb+") as output_file:
                         # Change the vram size adding the difference in positive or negative
-                        output_file.seek(VEV.data_offset_header + 48)
+                        output_file.seek(48)
                         output_file.write(vram_new_size.to_bytes(4, byteorder='big'))
 
                     # SPR file. We won't compress
