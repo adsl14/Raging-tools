@@ -234,6 +234,44 @@ def read_dds_file(file_path):
     return img
 
 
+def get_texture_name_from_spr(file, tx2_data, i):
+
+    # Read the file until we find the '00' byte value
+    while True:
+
+        # Read one char
+        data = file.read(1)
+
+        # If the value is not 00, we store the char
+        if data != bytes.fromhex('00'):
+            tx2_data.name += data.decode('utf-8')
+        # The texture name is already stored. We clean it
+        else:
+            # Get the name splitted by '.'
+            name_splitted = tx2_data.name.split(".")
+            tx2_data.name = ""
+
+            # Get the name and extension separatelly
+            for i in range(0, len(name_splitted) - 1):
+                tx2_data.name += name_splitted[i]
+            tx2_data.extension = name_splitted[-1]
+
+            # The max number of char for the name is 250
+            name_size = len(tx2_data.name)
+            if name_size > 250:
+                tx2_data.name = tx2_data.name[name_size - 250:]
+
+            # There're textures that doesn't have name. We create a default one
+            if not tx2_data.name:
+                tx2_data.name = "texture_" + str(i)
+
+            # Store the object class in the array
+            VEV.tx2_datas.append(tx2_data)
+
+            # Finish the reading of the file
+            break
+
+
 def open_spr_file(spr_path):
 
     with open(spr_path, mode='rb') as file:
@@ -253,94 +291,6 @@ def open_spr_file(spr_path):
         file.seek(VEV.sprp_struct.type_info_base + 8)
         VEV.sprp_struct.data_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
-        # Read the first four bytes to check if the file is SPRP (50) or SPR (00).
-        # SPR -> there is no names for each texture
-        file.seek(3)
-        data_type = file.read(1)
-        if data_type != bytes.fromhex('00'):
-            # Get the names of each texture
-            file.seek(VEV.sprp_struct.string_base + 1)
-            texture_name = ""
-            counter = 0
-            record_byte = True
-            while True:
-                data = file.read(1)
-                if record_byte:
-                    if data == bytes.fromhex('2E'):
-
-                        # Get the extension
-                        pointer = file.tell()
-                        extension = ""
-                        while True:
-                            data = file.read(1)
-                            if data != bytes.fromhex('00'):
-                                extension = extension + data.decode('utf-8')
-                            else:
-                                file.seek(pointer)
-                                break
-                        # Store in a instance, the properties of the texture
-                        tx2_data = Tx2Data()
-                        tx2_data.extension = extension
-
-                        # If the name of the texture has been already used, we add the string '_2', or '_3', etc
-                        counter_name = 1
-                        texture_name_aux = texture_name
-                        for tx2_data_element in VEV.tx2_datas:
-                            while True:
-                                if texture_name_aux in tx2_data_element.name:
-                                    counter_name += 1
-                                    texture_name_aux = texture_name + "_" + str(counter_name)
-                                else:
-                                    break
-                        texture_name = texture_name_aux
-
-                        # If the name of the texture is greater than 250 (250 + 4 (.dds) = 254, we reduce the size
-                        # of the string
-                        if len(texture_name) > 250:
-                            texture_name = texture_name[len(texture_name) - 250:]
-
-                        # Clean the texture name from special characters
-                        texture_name = texture_name.replace("|", "_")
-
-                        # Store in a instance, the properties of the texture
-                        tx2_data.name = texture_name
-                        VEV.tx2_datas.append(tx2_data)
-                        texture_name = ""
-                        counter += 1
-                        if counter == VEV.sprp_struct.data_count:
-                            break
-                        record_byte = False
-                        continue
-
-                    # If in the middle of the string there is a '00' value, we replace it with '_' in hex
-                    elif data == bytes.fromhex('00'):
-                        data = "_".encode()
-                    # 82 is ‚
-                    elif data == bytes.fromhex('82'):
-                        data = "‚".encode()
-                    # 8C is Œ
-                    elif data == bytes.fromhex('8C'):
-                        data = "Œ".encode()
-
-                    # If the texture name has the value 'TX2D', it means that the .spr hasn't got all the textureNames.
-                    # We will stop the loop and create defaults ones
-                    if texture_name.__contains__("TX2D"):
-                        VEV.tx2_datas.clear()
-                        for i in range(0, VEV.sprp_struct.data_count):
-                            tx2_data.name = "unknown_name_" + str(i + 1)
-                            VEV.tx2_datas.append(tx2_data)
-                        break
-
-                    texture_name += data.decode('utf-8')
-                else:
-                    if data == bytes.fromhex('00'):
-                        record_byte = True
-        else:
-            for i in range(0, VEV.sprp_struct.data_count):
-                tx2_data = Tx2Data()
-                tx2_data.name = "unknown_name_" + str(i + 1)
-                VEV.tx2_datas.append(tx2_data)
-
         # Create a numpy array of zeros
         VEV.offset_quanty_difference = np.zeros(VEV.sprp_struct.data_count)
 
@@ -356,8 +306,14 @@ def open_spr_file(spr_path):
             sprp_data_info.dataSize = int.from_bytes(file.read(VEV.bytes2Read), "big")
             VEV.sprpDatasInfo.append(sprp_data_info)
 
+            # Store the name of the texture
+            aux_pointer = file.tell()
+            file.seek(VEV.sprp_struct.string_base + sprp_data_info.name_offset)
+            tx2_data = Tx2Data()
+            get_texture_name_from_spr(file, tx2_data, i)
+
             # Move to the next start offset
-            file.seek(12, os.SEEK_CUR)
+            file.seek(aux_pointer + 12)
 
         # Get the data itself
         for sprpDataInfo in VEV.sprpDatasInfo:
