@@ -333,6 +333,9 @@ def open_spr_file(spr_path):
                 sprp_data_entry.data_info.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 sprp_data_entry.data_info.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 sprp_data_entry.data_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                sprp_data_entry.data_info.child_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                sprp_data_entry.data_info.child_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                file.seek(4, os.SEEK_CUR)
 
                 # Store the actual pointer in the file in order to read the following data_entry
                 aux_pointer_data_entry = file.tell()
@@ -374,7 +377,7 @@ def open_spr_file(spr_path):
                 sprp_type_entry.data_entry.append(sprp_data_entry)
 
                 # Move to the next data_entry
-                file.seek(aux_pointer_data_entry + 12)
+                file.seek(aux_pointer_data_entry)
 
             # Store the type_entry to the dictionary of type_entries
             VEV.sprp_file.type_entry[sprp_type_entry.data_type] = sprp_type_entry
