@@ -15,18 +15,20 @@ class VEV:
 
 	# number of bytes that usually reads the program
 	bytes2Read = 4
-	# Current selected texture in the list view
-	current_selected_texture = 0
 	# Temp folder name
 	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
 
-	# Paths where are the files
+	# *** vars that need to be reseted when loading a new spr/vram file ***
+	# --- SPR vars ---
+	# Path where the spr file is located
 	spr_file_path = ""
-	vram_file_path = ""
-
 	# SPRP file class
 	sprp_file = SprpFile()
-
+	# --- VRAM vars ---
+	# Path where the vram file is located
+	vram_file_path = ""
+	# Current selected texture in the list view
+	current_selected_texture = 0
 	# Indexes of textures edited
 	textures_index_edited = []
 	# Quanty of difference between the modifed texture and the old one
