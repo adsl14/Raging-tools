@@ -761,7 +761,7 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
                 main_window.imageTexture.clear()
 
         # it's a BMP modded image
-        elif header[:3] == b'BM6':
+        elif header[:2] == b'BM':
 
             # Get the height and width of the modified image
             file.seek(18)
