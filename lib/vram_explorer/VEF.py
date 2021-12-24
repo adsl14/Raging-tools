@@ -17,10 +17,12 @@ def initialize_ve(main_window):
     main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
     main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
     main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
+    main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
     main_window.exportAllButton.setEnabled(False)
     main_window.importAllButton.setEnabled(False)
     main_window.exportButton.setEnabled(False)
     main_window.importButton.setEnabled(False)
+    main_window.removeButton.setEnabled(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -77,6 +79,7 @@ def load_data_to_ve(main_window):
     main_window.importAllButton.setEnabled(True)
     main_window.importButton.setEnabled(True)
     main_window.exportButton.setEnabled(True)
+    main_window.removeButton.setEnabled(False)
 
     # Show the text labels
     main_window.fileNameText.setText(basename)
@@ -116,38 +119,49 @@ def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_enco
 
     # Check resolution
     if width != tx2d_info.width or height != tx2d_info.height:
-        message = "<li> The size should be " + str(tx2d_info.width) \
+        message = "<li> The original size is " + str(tx2d_info.width) \
             + "x" + str(tx2d_info.height) \
             + ". The imported texture is " + str(width) + "x" + str(height) + ".</li>"
 
     # Check mip_maps
     if tx2d_info.mip_maps != mip_maps:
-        message = message + "<li> The Mipmaps should be " + str(tx2d_info.mip_maps) \
+        message = message + "<li> The original Mipmaps has " + str(tx2d_info.mip_maps) \
             + ". The imported texture has " + str(mip_maps) + ".</li>"
 
     # Check encoding
     dxt_encoding_text_original = get_encoding_name(tx2d_info.dxt_encoding)
     if dxt_encoding_text_original != dxt_encoding_text:
-        message = message + "<li> The encoding should be " + dxt_encoding_text_original \
+        message = message + "<li> The original encoding is " + dxt_encoding_text_original \
                   + ". The imported texture is " + dxt_encoding_text + ".</li>"
 
     return message
 
 
-def validation_bmp_imported_texture(tx2d_info, width, height, number_bits):
+def validation_bmp_imported_texture(tx2d_info, width, height, number_bits, mip_maps, dxt_encoding_text):
 
     message = ""
 
     # Check resolution
     if width != tx2d_info.width or height != tx2d_info.height:
-        message = "<li>The size has to be " + str(tx2d_info.width) \
+        message = "<li>The original size is " + str(tx2d_info.width) \
             + "x" + str(tx2d_info.height) \
-            + " and not " + str(width) + "x" + str(height) + ".</li>"
+            + ". The imported texture is " + str(width) + "x" + str(height) + ".</li>"
 
     # Check number of bits
     if 32 != number_bits:
-        message = message + "<li>The number of bits has to be " + str(32) \
-            + " and not " + str(number_bits) + " bits.</li>"
+        message = message + "<li>The original number of bits is " + str(32) \
+            + ". The imported texture is " + str(number_bits) + " bits.</li>"
+
+    # Check mip_maps
+    if tx2d_info.mip_maps != mip_maps:
+        message = message + "<li> The original Mipmaps has " + str(tx2d_info.mip_maps) \
+            + ". The imported texture has " + str(mip_maps) + ".</li>"
+
+    # Check encoding
+    dxt_encoding_text_original = get_encoding_name(tx2d_info.dxt_encoding)
+    if dxt_encoding_text_original != dxt_encoding_text:
+        message = message + "<li> The original encoding is " + dxt_encoding_text_original \
+                  + ". The imported texture is " + dxt_encoding_text + ".</li>"
 
     return message
 
@@ -638,198 +652,240 @@ def action_export_all_logic(main_window):
 def import_texture(main_window, import_file_path, texture_index_list, ask_user):
 
     with open(import_file_path, mode="rb") as file:
-        header = file.read(2).hex()
+        header = file.read(4)
 
         # It's a DDS modded image
-        if header != "424d":
+        if header == b'DDS ':
 
-            # It's a DDS file the selected texture
-            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.dxt_encoding != 0:
+            # Get the height and width of the modified image
+            file.seek(12)
+            height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # Get the mipmaps
+            file.seek(28)
+            mip_maps = int.from_bytes(file.read(1), 'big')
+            # Get the dxtencoding
+            file.seek(84)
+            dxt_encoding_text = file.read(VEV.bytes2Read).decode()
+            dxt_encoding = get_dxt_value(dxt_encoding_text)
 
-                # Get the height and width of the modified image
-                file.seek(12)
-                height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
-                width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
-                # Get the mipmaps
-                file.seek(28)
-                mip_maps = int.from_bytes(file.read(1), 'big')
-                # Get the dxtencoding
-                file.seek(84)
-                dxt_encoding_text = file.read(VEV.bytes2Read).decode()
-                dxt_encoding = get_dxt_value(dxt_encoding_text)
+            message = validation_dds_imported_texture(VEV.sprp_file.type_entry[b'TX2D']
+                                                      .data_entry[texture_index_list].data_info.data, width,
+                                                      height, mip_maps, dxt_encoding_text)
 
-                message = validation_dds_imported_texture(VEV.sprp_file.type_entry[b'TX2D']
-                                                          .data_entry[texture_index_list].data_info.data, width,
-                                                          height, mip_maps, dxt_encoding_text)
+            # If the message is empty, there is no differences between original and modified one
+            if message:
 
-                # If the message is empty, there is no differences between original and modified one
-                if message:
+                # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
+                # properties as the original texture due to the swizzled algorithm
+                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.extension == "png" \
+                    and VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data\
+                        .dxt_encoding == 0:
 
-                    # This will be used to ask the user if he/she wants to replace the texture eventhough it has
-                    # differences between original texture and modified one
-                    if ask_user:
-                        msg = QMessageBox()
-
-                        # Concatenate the base message and the differences the tool has found
-                        message = VEV.message_base_import_DDS_start + "<ul>" + message + "</ul>" + \
-                            VEV.message_base_import_DDS_end
-
-                        # Ask to the user if he/she is sure that wants to replace the texture
-                        msg.setWindowTitle("Warning")
-                        message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-                        # If the users click on 'No', the modified texture won't be imported
-                        if message_import_result == msg.No:
-                            return
-                    else:
-                        return "<li>" + os.path.basename(import_file_path) + " has a resolution, mipmaps, or " \
-                                                                             "encoding not equal to the original " \
-                                                                             "texture.</li>"
-
-                # Get all the data
-                file.seek(0)
-                data = file.read()
-
-                # Importing the texture
-                # Get the difference in size between original and modified in order to change the offsets
-                len_data = len(data[128:])
-                difference = len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
-                    .data_info.data.data_size
-                if difference != 0:
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.data_size = len_data
-                    VEV.offset_quanty_difference[texture_index_list] = difference
-
-                # Change width
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width != width:
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width = width
-                    main_window.sizeImageText.setText(
-                        "Resolution: %dx%d" % (width, VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
-                                               .data_info.data.height))
-                # Change height
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height != height:
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height = height
-                    main_window.sizeImageText.setText(
-                        "Resolution: %dx%d" % (VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
-                                               .data_info.data.width, height))
-
-                # Change mipMaps
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps != mip_maps:
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps = mip_maps
-                    main_window.mipMapsImageText.setText("Mipmaps: %s" % mip_maps)
-
-                # Change dxt encoding
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
-                        .data_info.data.dxt_encoding != dxt_encoding:
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
-                        .data_info.data.dxt_encoding = dxt_encoding
-                    main_window.encodingImageText.setText("Encoding: %s" %
-                                                          (get_encoding_name(dxt_encoding)))
-
-                # Change texture in the array
-                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.tx2d_vram.data = data
-
-                # Add the index texture that has been modified
-                # (if it was added before, we won't added twice)
-                if texture_index_list not in VEV.textures_index_edited:
-                    VEV.textures_index_edited.append(texture_index_list)
-
-                try:
-                    # Show texture in the program
-                    if VEV.current_selected_texture == texture_index_list:
-                        show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
-
-                except OSError:
-                    main_window.imageTexture.clear()
-
-            else:
-                if ask_user:
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
-                    msg.setText("The image you're importing is DDS and should be BMP")
+                    msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
                     msg.exec()
-                else:
-                    return "<li>" + os.path.basename(import_file_path) + " has a not supported BMP format.</li>"
+                    return
+
+                # This will be used to ask the user if he/she wants to replace the texture eventhough it has
+                # differences between original texture and modified one
+                elif ask_user:
+                    msg = QMessageBox()
+
+                    # Concatenate the base message and the differences the tool has found
+                    message = VEV.message_base_import_texture_start + "<ul>" + message + "</ul>" + \
+                        VEV.message_base_import_texture_end
+
+                    # Ask to the user if he/she is sure that wants to replace the texture
+                    msg.setWindowTitle("Warning")
+                    message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+                    # If the users click on 'No', the modified texture won't be imported
+                    if message_import_result == msg.No:
+                        return
+
+            # Get all the data
+            file.seek(0)
+            data = file.read()
+
+            # Importing the texture
+            # Get the difference in size between original and modified in order to change the offsets
+            len_data = len(data[128:])
+            difference = len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                .data_info.data.data_size_old
+            if difference != 0:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.data_size = len_data
+                VEV.offset_quanty_difference[texture_index_list] = difference
+
+            # Change width
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width != width:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width = width
+                main_window.sizeImageText.setText(
+                    "Resolution: %dx%d" % (width, VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
+                                           .data_info.data.height))
+            # Change height
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height != height:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height = height
+                main_window.sizeImageText.setText(
+                    "Resolution: %dx%d" % (VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
+                                           .data_info.data.width, height))
+
+            # Change mipMaps
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps != mip_maps:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps = mip_maps
+                main_window.mipMapsImageText.setText("Mipmaps: %s" % mip_maps)
+
+            # Change dxt encoding
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                    .data_info.data.dxt_encoding != dxt_encoding:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                    .data_info.data.dxt_encoding = dxt_encoding
+                main_window.encodingImageText.setText("Encoding: %s" %
+                                                      (get_encoding_name(dxt_encoding)))
+
+            # Change texture in the array
+            VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.tx2d_vram.data = data
+
+            # Add the index texture that has been modified
+            # (if it was added before, we won't added twice)
+            if texture_index_list not in VEV.textures_index_edited:
+                VEV.textures_index_edited.append(texture_index_list)
+
+            try:
+                # Show texture in the program
+                if VEV.current_selected_texture == texture_index_list:
+                    show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
+
+            except OSError:
+                main_window.imageTexture.clear()
 
         # it's a BMP modded image
-        else:
-            # It's a BMP file the selected texture
-            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.dxt_encoding == 0:
+        elif header[:3] == b'BM6':
 
-                # Get the height and width of the modified image
-                file.seek(18)
-                width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
-                height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # Get the height and width of the modified image
+            file.seek(18)
+            width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
 
-                # Get the number of bits
-                file.seek(28)
-                number_bits = int.from_bytes(file.read(2), 'little')
+            # Get the number of bits
+            file.seek(28)
+            number_bits = int.from_bytes(file.read(2), 'little')
 
-                # Validate the BMP imported texture
-                message = validation_bmp_imported_texture(VEV.sprp_file.type_entry[b'TX2D']
-                                                          .data_entry[texture_index_list].data_info.data,
-                                                          width, height, number_bits)
+            # Validate the BMP imported texture
+            message = validation_bmp_imported_texture(VEV.sprp_file.type_entry[b'TX2D']
+                                                      .data_entry[texture_index_list].data_info.data,
+                                                      width, height, number_bits, 1, "RGBA")
 
-                # If there is a message, it has detected differences
-                if message:
+            # If there is a message, it has detected differences
+            if message:
 
-                    # This will be used to ask the user if he/she wants to replace the texture eventhough it has
-                    # differences between original texture and modified one
-                    if ask_user:
-                        msg = QMessageBox()
-                        msg.setWindowTitle("Error")
-                        msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
-                        msg.exec()
-                        return
-                    else:
-                        return "<li>" + os.path.basename(import_file_path) + " has a resolution or number of bits " \
-                                                                        "not equal to the original texture.</li>"
+                # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
+                # properties as the original texture due to the swizzled algorithm
+                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.extension == "png" \
+                    and VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data\
+                        .dxt_encoding == 0:
 
-                # Get all the data
-                file.seek(0)
-                data = file.read()
-
-                # Get the difference in size between original and modified. If the size in each of one is
-                # different, we gather the data modified but only the exact number of bytes from the original
-                # in order to avoid the corruption of the files
-                len_data = len(data[54:])
-                difference = abs(len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
-                                 .data_info.data.data_size)
-                if difference != 0:
-                    data = data[:-difference]
-
-                # It's not png file
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.extension != "png":
-                    # Importing the texture
-                    # Change texture in the array
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data\
-                        .tx2d_vram.data = data
-
-                else:
-                    # Importing the texture
-                    # Change texture in the array
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
-                        .data_info.data.tx2d_vram.data_unswizzle = data
-
-                # Add the index texture that has been modified (if it was added before,
-                # we won't added twice)
-                if texture_index_list not in VEV.textures_index_edited:
-                    VEV.textures_index_edited.append(texture_index_list)
-
-                try:
-                    # Show texture in the program
-                    if VEV.current_selected_texture == texture_index_list:
-                        show_bmp_image(main_window.imageTexture, data, width, height)
-
-                except OSError:
-                    main_window.imageTexture.clear()
-            else:
-                if ask_user:
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
-                    msg.setText("The image you're importing is BMP and should be DDS")
+                    msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
                     msg.exec()
-                else:
-                    return "<li>" + os.path.basename(import_file_path) + " has a not supported DDS format.</li>"
+                    return
+
+                # This will be used to ask the user if he/she wants to replace the texture eventhough it has
+                # differences between original texture and modified one
+                elif ask_user:
+                    msg = QMessageBox()
+
+                    # Concatenate the base message and the differences the tool has found
+                    message = VEV.message_base_import_texture_start + "<ul>" + message + "</ul>" + \
+                        VEV.message_base_import_texture_end
+
+                    # Ask to the user if he/she is sure that wants to replace the texture
+                    msg.setWindowTitle("Warning")
+                    message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+                    # If the users click on 'No', the modified texture won't be imported
+                    if message_import_result == msg.No:
+                        return
+
+            # Get all the data
+            file.seek(0)
+            data = file.read()
+
+            # We gather the data modified but only a number of bytes that the mod of 4 is 0, so always will have
+            # blocks of four bytes. Doing this, we avoid to corrupt the file
+            len_data = len(data[54:])
+            mod_4 = len_data % 4
+            if mod_4 != 0:
+                len_data = len_data - mod_4
+            data = data[:len_data + 54]
+
+            # Get the difference in size between original and modified in order to change the offsets
+            difference = len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                .data_info.data.data_size_old
+            if difference != 0:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.data_size = len_data
+                VEV.offset_quanty_difference[texture_index_list] = difference
+
+            # Change width
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width != width:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width = width
+                main_window.sizeImageText.setText(
+                    "Resolution: %dx%d" % (width, VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
+                                           .data_info.data.height))
+            # Change height
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height != height:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.height = height
+                main_window.sizeImageText.setText(
+                    "Resolution: %dx%d" % (VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]
+                                           .data_info.data.width, height))
+
+            # Change mipMaps
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps != 1:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.mip_maps = 1
+                main_window.mipMapsImageText.setText("Mipmaps: %s" % 1)
+
+            # Change dxt encoding
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                    .data_info.data.dxt_encoding != 0:
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
+                    .data_info.data.dxt_encoding = 0
+                main_window.encodingImageText.setText("Encoding: %s" %
+                                                      (get_encoding_name(0)))
+
+            # It's png swizzled texture file
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.extension != "png":
+                # Importing the texture
+                # Change texture in the array
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data \
+                    .tx2d_vram.data = data
+            else:
+                # Importing the texture
+                # Change texture in the array
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list] \
+                    .data_info.data.tx2d_vram.data_unswizzle = data
+
+            # Add the index texture that has been modified (if it was added before,
+            # we won't added twice)
+            if texture_index_list not in VEV.textures_index_edited:
+                VEV.textures_index_edited.append(texture_index_list)
+
+            try:
+                # Show texture in the program
+                if VEV.current_selected_texture == texture_index_list:
+                    show_bmp_image(main_window.imageTexture, data, width, height)
+
+            except OSError:
+                main_window.imageTexture.clear()
+
+        else:
+            # Wrong texture file
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid texture file.")
+            msg.exec()
+            return
 
     return ""
 
@@ -873,17 +929,57 @@ def action_import_all_logic(main_window):
 
 def action_import_logic(main_window):
 
-    # Open spr file
-    # For DDS
-    if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.dxt_encoding != 0:
-        import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(
-            VEV.spr_file_path, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.name
-            + ".dds"), "DDS file (*.dds)")[0]
-    # For BMP (rgba image)
-    else:
-        import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(
-            VEV.spr_file_path, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.name
-            + ".bmp"), "BMP file (*.bmp)")[0]
+    # Open texture file
+    import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(VEV.spr_file_path, ""),
+                                              "Supported files (*.dds *.bmp) "
+                                              ";; DDS file (*.dds) "
+                                              ";; BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
         import_texture(main_window, import_path, VEV.current_selected_texture, True)
+
+
+def action_remove_logic(main_window):
+
+    # Ask to the user if is sure to remove the texture
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    message = "The texture will be removed. Are you sure to continue?"
+    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+    # Check if the user has selected something
+    if answer:
+
+        # The user wants to remove the selected texture
+        if answer == msg.Yes:
+
+            # Save the difference in negative of the removed texture
+            VEV.offset_quanty_difference[VEV.current_selected_texture] = -VEV.sprp_file.type_entry[b'TX2D'] \
+                .data_entry[VEV.current_selected_texture].data_info.data.data_size
+            # The texture size will be 0
+            VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.data_size = 0
+            # Change texture in the array
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data\
+               .dxt_encoding != 0:
+                # Importing the texture
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data \
+                    .tx2d_vram.data = b''
+            else:
+                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.extension != \
+                   "png":
+                    # Importing the texture
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data \
+                        .tx2d_vram.data = b''
+                # It's png swizzled texture file
+                else:
+                    # Importing the texture
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture] \
+                        .data_info.data.tx2d_vram.data_unswizzle = b''
+
+            # Add the index texture that has been modified
+            # (if it was added before, we won't added twice)
+            if VEV.current_selected_texture not in VEV.textures_index_edited:
+                VEV.textures_index_edited.append(VEV.current_selected_texture)
+
+            # Remove image in the tool view
+            main_window.imageTexture.clear()

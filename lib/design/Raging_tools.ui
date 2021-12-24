@@ -67,7 +67,7 @@
              <number>1</number>
             </property>
             <layout class="QGridLayout" name="gridLayout_5">
-             <item row="1" column="1" colspan="6">
+             <item row="1" column="1" colspan="7">
               <widget class="QFrame" name="frame_3">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -150,48 +150,6 @@
                </layout>
               </widget>
              </item>
-             <item row="6" column="5">
-              <widget class="QPushButton" name="exportButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>E&amp;xport...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="6" column="6">
-              <widget class="QPushButton" name="importButton">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>I&amp;mport...</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="3">
-              <widget class="QLabel" name="encodingImageText">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Encoding: DXT5</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QLabel" name="sizeImageText">
                <property name="sizePolicy">
@@ -211,6 +169,35 @@
                </property>
               </widget>
              </item>
+             <item row="0" column="3">
+              <widget class="QLabel" name="encodingImageText">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Encoding: DXT5</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="7">
+              <widget class="QPushButton" name="importButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>I&amp;mport...</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="2">
               <widget class="QLabel" name="mipMapsImageText">
                <property name="sizePolicy">
@@ -224,6 +211,32 @@
                </property>
                <property name="alignment">
                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="6">
+              <widget class="QPushButton" name="exportButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>E&amp;xport...</string>
+               </property>
+              </widget>
+             </item>
+             <item row="6" column="5">
+              <widget class="QPushButton" name="removeButton">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>Remove</string>
                </property>
               </widget>
              </item>
@@ -6895,7 +6908,7 @@
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">

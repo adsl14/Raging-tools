@@ -9,8 +9,8 @@ class VEV:
 	swizzle_path = os.path.join("lib", "vram_explorer", "resources", "swizzle.exe")
 
 	# Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
-	message_base_import_DDS_start = "The new texture has the following differences from the original:"
-	message_base_import_DDS_end = "The textures could show in the game not propertly. Do you want to continue?"
+	message_base_import_texture_start = "The new texture has the following differences from the original:"
+	message_base_import_texture_end = "Do you want to continue?"
 	message_base_import_BMP_start = "There are some errors while importing the texture:"
 
 	# number of bytes that usually reads the program
