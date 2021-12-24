@@ -1,6 +1,5 @@
 from lib.packages import os, np, datetime
 from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
-from lib.vram_explorer.classes.SPRP.SprpHeader import SprpHeader
 
 
 class VEV:
@@ -25,12 +24,9 @@ class VEV:
 	spr_file_path = ""
 	vram_file_path = ""
 
-	# SPRP classes
-	sprp_header = SprpHeader()
+	# SPRP file class
 	sprp_file = SprpFile()
 
-	# Allowed data type to be readed
-	data_type_allowed = [b"TX2D", b"MTRL"]
 	# Indexes of textures edited
 	textures_index_edited = []
 	# Quanty of difference between the modifed texture and the old one
