@@ -31,10 +31,6 @@ def initialize_ve(main_window):
 
 def load_data_to_ve(main_window):
 
-    # Clean the variables
-    VEV.sprp_file = SprpFile()
-    VEV.textures_index_edited.clear()
-
     basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
     # Open spr and vram
@@ -42,7 +38,6 @@ def load_data_to_ve(main_window):
     open_vram_file(VEV.vram_file_path)
 
     # Add the names to the list view
-    VEV.current_selected_texture = 0
     model = QStandardItemModel()
     main_window.listView.setModel(model)
     item_0 = QStandardItem(VEV.sprp_file.type_entry[b'TX2D'].data_entry[0].data_info.name)
@@ -291,6 +286,9 @@ def get_name_from_spr(file, sprp_data_info):
 
 def open_spr_file(spr_path):
 
+    # Clean vars
+    VEV.sprp_file = SprpFile()
+
     with open(spr_path, mode='rb') as file:
 
         # Create SPRP_HEADER
@@ -386,11 +384,16 @@ def open_spr_file(spr_path):
             # Update the type_entry offset
             type_entry_offset += sprp_type_entry.data_count * 32
 
-        # Create a numpy array of zeros for the differences in size of the textures
-        VEV.offset_quanty_difference = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
-
 
 def open_vram_file(vram_path):
+
+    # Clean vars
+    # Current selected texture in the list view
+    VEV.current_selected_texture = 0
+    # The texture indexes that are edited
+    VEV.textures_index_edited.clear()
+    # A numpy array of zeros for the differences in size of the textures
+    VEV.offset_quanty_difference = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
 
     with open(vram_path, mode="rb") as file:
 
