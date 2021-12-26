@@ -3,7 +3,10 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from lib.packages import os, image, QImage, QPixmap, np
 from lib.vram_explorer.VEV import VEV
+from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
+from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
 from lib.vram_explorer.classes.SPRP.SprpDataEntry import SprpDataEntry
+from lib.vram_explorer.classes.SPRP.SprpDataInfo import SprpDataInfo
 from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
 from lib.vram_explorer.classes.SPRP.SprpTypeEntry import SprpTypeEntry
 from lib.vram_explorer.classes.TX2D.Tx2dInfo import Tx2dInfo
@@ -23,6 +26,8 @@ def initialize_ve(main_window):
     main_window.exportButton.setEnabled(False)
     main_window.importButton.setEnabled(False)
     main_window.removeButton.setEnabled(False)
+
+    main_window.removeButton.setVisible(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -79,7 +84,7 @@ def load_data_to_ve(main_window):
     main_window.importAllButton.setEnabled(True)
     main_window.importButton.setEnabled(True)
     main_window.exportButton.setEnabled(True)
-    main_window.removeButton.setEnabled(False)
+    main_window.removeButton.setEnabled(True)
 
     # Show the text labels
     main_window.fileNameText.setText(basename)
@@ -283,7 +288,7 @@ def get_name_from_spr(file, sprp_data_info):
             # Get the name and extension separatelly
             if tam_name_splitted > 1:
                 for i in range(0, tam_name_splitted - 1):
-                    sprp_data_info.name += name_splitted[i]
+                    sprp_data_info.name += name_splitted[i] + ("." if i < tam_name_splitted - 2 else "")
                 sprp_data_info.extension = name_splitted[-1]
             else:
                 sprp_data_info.name = name_splitted[0]
@@ -296,6 +301,110 @@ def get_name_from_spr(file, sprp_data_info):
 
             # Finish the reading of the file
             break
+
+
+def read_children(file, sprp_data_info):
+
+    file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_base)
+
+    for _ in range(sprp_data_info.child_count):
+        sprp_data_info_child = SprpDataInfo()
+
+        sprp_data_info_child.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+        sprp_data_info_child.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+        sprp_data_info_child.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+        sprp_data_info_child.child_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+        sprp_data_info_child.child_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+        # Get the name for the data_info
+        aux_pointer_file = file.tell()
+        file.seek(VEV.sprp_file.string_base + sprp_data_info_child.name_offset)
+        get_name_from_spr(file, sprp_data_info_child)
+        base_name_size = len(sprp_data_info_child.name)
+        extension_size = len(sprp_data_info_child.extension)
+        sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
+        file.seek(aux_pointer_file)
+
+        # Get all the children sprp_data_info
+        if sprp_data_info_child.child_count > 0:
+            read_children(file, sprp_data_info_child)
+            file.seek(aux_pointer_file)
+
+        # Store each children to the array
+        sprp_data_info.child_info.append(sprp_data_info_child)
+
+
+def write_children(file, sprp_data_info, relative_name_offset_quanty_accumulated,
+                   relative_data_offset_quanty_accumulated):
+
+    file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_base)
+
+    for i in range(sprp_data_info.child_count):
+        sprp_data_info_child = sprp_data_info.child_info[i]
+
+        # Update name_offset
+        file.write(int(sprp_data_info_child.name_offset + relative_name_offset_quanty_accumulated)
+                   .to_bytes(4, byteorder="big"))
+
+        # Update data_offset
+        file.write(int(sprp_data_info_child.data_offset + relative_data_offset_quanty_accumulated)
+                   .to_bytes(4, byteorder="big"))
+
+        # Get all the children sprp_data_info
+        file.seek(8, os.SEEK_CUR)
+        if sprp_data_info_child.child_count > 0:
+            file.write(int(sprp_data_info_child.child_offset + relative_data_offset_quanty_accumulated)
+                       .to_bytes(4, byteorder="big"))
+            aux_pointer_file = file.tell()
+            write_children(file, sprp_data_info_child, relative_name_offset_quanty_accumulated,
+                           relative_data_offset_quanty_accumulated)
+            file.seek(aux_pointer_file)
+        else:
+            file.seek(4, os.SEEK_CUR)
+
+
+def update_offset_data_info(file, data_entry, relative_name_offset_quanty_accumulated,
+                            relative_data_offset_quanty_accumulated):
+
+    # Update data_offset (only when the data_offset of the data_entry is not 0)
+    if data_entry.data_info.data_size > 0:
+        file.write(int(data_entry.data_info.data_offset +
+                       relative_data_offset_quanty_accumulated).to_bytes(4, byteorder="big"))
+    else:
+        file.seek(4, os.SEEK_CUR)
+
+    # Update child_offset
+    file.seek(8, os.SEEK_CUR)
+    if data_entry.data_info.child_count > 0:
+        file.write(int(data_entry.data_info.child_offset +
+                       relative_data_offset_quanty_accumulated).to_bytes(4, byteorder="big"))
+        aux_pointer_file = file.tell()
+        write_children(file, data_entry.data_info,
+                       relative_name_offset_quanty_accumulated, relative_data_offset_quanty_accumulated)
+        file.seek(aux_pointer_file + 4)
+    else:
+        file.seek(8, os.SEEK_CUR)
+
+
+def update_tx2d_data(file, index):
+
+    # Change the size
+    file.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[index].
+               data_info.data.data_size.to_bytes(4, byteorder="big"))
+    # Change width
+    file.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[index].
+               data_info.data.width.to_bytes(2, byteorder="big"))
+    # Change height
+    file.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[index].
+               data_info.data.height.to_bytes(2, byteorder="big"))
+    # Change mip_maps
+    file.seek(2, os.SEEK_CUR)
+    file.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[index].
+               data_info.data.mip_maps.to_bytes(2, byteorder="big"))
+    # Change dxt encoding
+    file.seek(8, os.SEEK_CUR)
+    file.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[index].
+               data_info.data.dxt_encoding.to_bytes(1, byteorder="big"))
 
 
 def open_spr_file(spr_path):
@@ -354,20 +463,28 @@ def open_spr_file(spr_path):
                 # Store the actual pointer in the file in order to read the following data_entry
                 aux_pointer_data_entry = file.tell()
 
+                # Get all the children sprp_data_info
+                if sprp_data_entry.data_info.child_count > 0:
+                    read_children(file, sprp_data_entry.data_info)
+
                 # Store the name of the sprp_data_info
                 file.seek(VEV.sprp_file.string_base + sprp_data_entry.data_info.name_offset)
                 # Everything that is not SPR in the header, has names for each data
                 if VEV.sprp_file.sprp_header.data_tag != b"SPR\x00":
                     get_name_from_spr(file, sprp_data_entry.data_info)
+                    base_name_size = len(sprp_data_entry.data_info.name)
+                    extension_size = len(sprp_data_entry.data_info.extension)
+                    sprp_data_entry.data_info.name_size = 1 + base_name_size + (extension_size + 1
+                                                                                if extension_size > 0 else 0)
                 # If the data header is SPR, we create custom names
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
 
-                # Move where the actual information starts
-                file.seek(VEV.sprp_file.data_base + sprp_data_entry.data_info.data_offset)
-
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_base + sprp_data_entry.data_info.data_offset)
 
                     # Create the TX2D info
                     sprp_data_entry.data_info.data = Tx2dInfo()
@@ -386,6 +503,27 @@ def open_spr_file(spr_path):
                     sprp_data_entry.data_info.data.dxt_encoding = int.from_bytes(file.read(1), "big")
 
                     sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
+
+                # Save the data when is the type MTRL
+                elif sprp_type_entry.data_type == b"MTRL":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_base + sprp_data_entry.data_info.data_offset)
+
+                    # Create the MTRL info
+                    sprp_data_entry.data_info.data = MtrlInfo()
+
+                    # Read unk data
+                    sprp_data_entry.data_info.data.unk_00 = file.read(112)
+
+                    # Read each layer (the max number is 10)
+                    for _ in range(0, 10):
+                        mtrlLayer = MtrlLayer()
+                        mtrlLayer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        mtrlLayer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                        # Store the layer in the actual material
+                        sprp_data_entry.data_info.data.layers.append(mtrlLayer)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -409,8 +547,15 @@ def open_vram_file(vram_path):
     VEV.current_selected_texture = 0
     # The texture indexes that are edited
     VEV.textures_index_edited.clear()
-    # A numpy array of zeros for the differences in size of the textures
-    VEV.offset_quanty_difference = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
+    VEV.textures_index_removed.clear()
+    # Acumulated size difference for the data_info offset
+    VEV.relative_data_info_offset_quanty = 0
+    # A numpy array of zeros for the differences in size for the name_offset
+    VEV.relative_name_offset_quanty = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
+    # A numpy array of zeros for the differences in size for the data_offset
+    VEV.relative_data_offset_quanty = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
+    # A numpy array of zeros for the differences in size of the data (vram)
+    VEV.vram_offset_quanty_difference = np.zeros(VEV.sprp_file.type_entry[b'TX2D'].data_count)
 
     with open(vram_path, mode="rb") as file:
 
@@ -533,30 +678,40 @@ def action_item(q_model_index, image_texture, encoding_image_text, mip_maps_imag
     if VEV.current_selected_texture != q_model_index.row():
         VEV.current_selected_texture = q_model_index.row()
 
-        # If the encoding is DXT5 or DXT1, we show the dds image
-        if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.dxt_encoding != 0:
-            # Create the dds in disk and open it
-            show_dds_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                           .data_info.data.tx2d_vram.data,
-                           VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.
-                           data.width,
-                           VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.
-                           data.height)
-        else:
-            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.extension != "png":
-                show_bmp_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+        # Only shows the texture when the size is different from 0
+        if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.data_size != 0:
+
+            # If the encoding is DXT5 or DXT1, we show the dds image
+            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.dxt_encoding \
+               != 0:
+                # Create the dds in disk and open it
+                show_dds_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
                                .data_info.data.tx2d_vram.data,
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                               .data_info.data.width,
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                               .data_info.data.height)
+                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.
+                               data.width,
+                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.
+                               data.height)
             else:
-                show_bmp_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                               .data_info.data.tx2d_vram.data_unswizzle,
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                               .data_info.data.width,
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
-                               .data_info.data.height)
+                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.extension \
+                   != "png":
+                    show_bmp_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].
+                                   data_entry[VEV.current_selected_texture]
+                                   .data_info.data.tx2d_vram.data,
+                                   VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+                                   .data_info.data.width,
+                                   VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+                                   .data_info.data.height)
+                else:
+                    show_bmp_image(image_texture, VEV.sprp_file.type_entry[b'TX2D'].
+                                   data_entry[VEV.current_selected_texture]
+                                   .data_info.data.tx2d_vram.data_unswizzle,
+                                   VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+                                   .data_info.data.width,
+                                   VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+                                   .data_info.data.height)
+        else:
+            # Remove image in the tool view
+            image_texture.clear()
 
         encoding_image_text.setText(
             "Encoding: %s" % (get_encoding_name(VEV.sprp_file.type_entry[b'TX2D']
@@ -714,9 +869,10 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             len_data = len(data[128:])
             difference = len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
                 .data_info.data.data_size_old
-            if difference != 0:
+            if difference != 0 or VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].\
+               data_info.data.data_size == 0:
                 VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.data_size = len_data
-                VEV.offset_quanty_difference[texture_index_list] = difference
+                VEV.vram_offset_quanty_difference[texture_index_list] = difference
 
             # Change width
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width != width:
@@ -751,6 +907,12 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             # (if it was added before, we won't added twice)
             if texture_index_list not in VEV.textures_index_edited:
                 VEV.textures_index_edited.append(texture_index_list)
+            elif texture_index_list in VEV.textures_index_removed:
+                # If the texture was removed before, we reset the offset differences
+                VEV.relative_name_offset_quanty[texture_index_list] = 0
+                VEV.relative_data_info_offset_quanty -= 32
+                VEV.relative_data_offset_quanty[texture_index_list] = 0
+                VEV.textures_index_removed.remove(texture_index_list)
 
             try:
                 # Show texture in the program
@@ -824,9 +986,10 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             # Get the difference in size between original and modified in order to change the offsets
             difference = len_data - VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list]\
                 .data_info.data.data_size_old
-            if difference != 0:
+            if difference != 0 or VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].\
+               data_info.data.data_size == 0:
                 VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.data_size = len_data
-                VEV.offset_quanty_difference[texture_index_list] = difference
+                VEV.vram_offset_quanty_difference[texture_index_list] = difference
 
             # Change width
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data.width != width:
@@ -870,6 +1033,12 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             # we won't added twice)
             if texture_index_list not in VEV.textures_index_edited:
                 VEV.textures_index_edited.append(texture_index_list)
+            elif texture_index_list in VEV.textures_index_removed:
+                # If the texture was removed before, we reset the offset differences
+                VEV.relative_name_offset_quanty[texture_index_list] = 0
+                VEV.relative_data_info_offset_quanty -= 32
+                VEV.relative_data_offset_quanty[texture_index_list] = 0
+                VEV.textures_index_removed.remove(texture_index_list)
 
             try:
                 # Show texture in the program
@@ -943,43 +1112,58 @@ def action_remove_logic(main_window):
 
     # Ask to the user if is sure to remove the texture
     msg = QMessageBox()
-    msg.setWindowTitle("Message")
-    message = "The texture will be removed. Are you sure to continue?"
-    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
 
-    # Check if the user has selected something
-    if answer:
+    if VEV.current_selected_texture not in VEV.textures_index_removed:
 
-        # The user wants to remove the selected texture
-        if answer == msg.Yes:
+        msg.setWindowTitle("Message")
+        message = "The texture will be removed. Are you sure to continue?"
+        answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
 
-            # Save the difference in negative of the removed texture
-            VEV.offset_quanty_difference[VEV.current_selected_texture] = -VEV.sprp_file.type_entry[b'TX2D'] \
-                .data_entry[VEV.current_selected_texture].data_info.data.data_size
-            # The texture size will be 0
-            VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.data_size = 0
-            # Change texture in the array
-            if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data\
-               .dxt_encoding != 0:
-                # Importing the texture
-                VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data \
-                    .tx2d_vram.data = b''
-            else:
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.extension != \
-                   "png":
-                    # Importing the texture
+        # Check if the user has selected something
+        if answer:
+
+            # The user wants to remove the selected texture
+            if answer == msg.Yes:
+
+                # Save the differences for the offsets update
+                VEV.relative_name_offset_quanty[VEV.current_selected_texture] = - VEV.sprp_file.type_entry[b'TX2D'].\
+                    data_entry[VEV.current_selected_texture].data_info.name_size
+                VEV.relative_data_info_offset_quanty += -32
+                VEV.relative_data_offset_quanty[VEV.current_selected_texture] = - VEV.sprp_file.type_entry[b'TX2D'].\
+                    data_entry[VEV.current_selected_texture].data_info.data_size
+                VEV.vram_offset_quanty_difference[VEV.current_selected_texture] = \
+                    -VEV.sprp_file.type_entry[b'TX2D'] \
+                    .data_entry[VEV.current_selected_texture].data_info.data.data_size_old
+
+                # The texture size will be 0
+                VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.data_size = 0
+
+                # Change texture in the array
+                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data.\
+                   dxt_encoding == 0:
+
+                    if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.extension \
+                       != "png":
+                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data \
+                            .tx2d_vram.data = b''
+                    # It's png swizzled texture file
+                    else:
+                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture] \
+                            .data_info.data.tx2d_vram.data_unswizzle = b''
+
+                else:
                     VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].data_info.data \
                         .tx2d_vram.data = b''
-                # It's png swizzled texture file
-                else:
-                    # Importing the texture
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture] \
-                        .data_info.data.tx2d_vram.data_unswizzle = b''
 
-            # Add the index texture that has been modified
-            # (if it was added before, we won't added twice)
-            if VEV.current_selected_texture not in VEV.textures_index_edited:
+                # Add the index texture that has been modified
+                # (if it was added before, we won't added twice)
+                VEV.textures_index_removed.append(VEV.current_selected_texture)
                 VEV.textures_index_edited.append(VEV.current_selected_texture)
 
-            # Remove image in the tool view
-            main_window.imageTexture.clear()
+                # Remove image in the tool view
+                main_window.imageTexture.clear()
+    else:
+        msg.setWindowTitle("Error")
+        message = "There is no texture to remove"
+        msg.setText(message)
+        msg.exec()

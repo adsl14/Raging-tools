@@ -10,7 +10,7 @@ from lib.functions import del_rw
 
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import change_endian, load_data_to_ve
+from lib.vram_explorer.VEF import change_endian, load_data_to_ve, update_offset_data_info, update_tx2d_data
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
@@ -243,87 +243,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Create a copy of the original file
                     copyfile(VEV.spr_file_path, spr_export_path)
 
-                    # Update the offsets
-                    with open(spr_export_path, mode="rb+") as output_file_spr:
-                        first_index_texture_edited = VEV.textures_index_edited[0]
-                        # Move where the information starts to the first modified texture
-                        output_file_spr.seek(VEV.sprp_file.data_base +
-                                             VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                             .data_info.data_offset + 12)
-                        # Change the size
-                        output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                              .data_info.data.data_size.to_bytes(4, byteorder="big"))
-                        # Change width
-                        output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                              .data_info.data.width.to_bytes(2, byteorder="big"))
-                        # Change height
-                        output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                              .data_info.data.height.to_bytes(2, byteorder="big"))
-                        # Change mip_maps
-                        output_file_spr.seek(2, os.SEEK_CUR)
-                        output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                              .data_info.data.mip_maps.to_bytes(2, byteorder="big"))
-                        # Change dxt encoding
-                        output_file_spr.seek(8, os.SEEK_CUR)
-                        output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[first_index_texture_edited]
-                                              .data_info.data.dxt_encoding.to_bytes(1, byteorder="big"))
-
-                        # Check if is the last texture modified and there is no more textures in the bottom
-                        if first_index_texture_edited + 1 < VEV.sprp_file.type_entry[b'TX2D'].data_count:
-                            # Get the quanty difference for the first texture modified
-                            quanty_aux = VEV.offset_quanty_difference[first_index_texture_edited]
-                            # Reset offset difference for the first texture edited
-                            VEV.offset_quanty_difference[first_index_texture_edited] = 0
-                            first_index_texture_edited += 1
-                            for i in range(first_index_texture_edited, VEV.sprp_file.type_entry[b'TX2D'].data_count):
-
-                                # Move where the information starts to the next textures
-                                output_file_spr.seek(VEV.sprp_file.data_base + VEV.sprp_file.type_entry[b'TX2D']
-                                                     .data_entry[i].data_info.data_offset + 4)
-                                # Update the offset
-                                VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset += quanty_aux
-                                output_file_spr.write(int(abs(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info
-                                                              .data.data_offset)).to_bytes(4, byteorder="big"))
-                                output_file_spr.seek(4, os.SEEK_CUR)
-
-                                # Write the new data size
-                                output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
-                                                      .data_info.data.data_size.to_bytes(4, byteorder="big"))
-                                # Write the new  width
-                                output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
-                                                      .data_info.data.width.to_bytes(2, byteorder="big"))
-                                # Write the new  height
-                                output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
-                                                      .data_info.data.height.to_bytes(2, byteorder="big"))
-                                # Write the new  mip_maps
-                                output_file_spr.seek(2, os.SEEK_CUR)
-                                output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D']
-                                                      .data_entry[i].data_info.data
-                                                      .mip_maps.to_bytes(2, byteorder="big"))
-                                # Write the new  dxt encoding
-                                output_file_spr.seek(8, os.SEEK_CUR)
-                                output_file_spr.write(VEV.sprp_file.type_entry[b'TX2D']
-                                                      .data_entry[i].data_info
-                                                      .data.dxt_encoding.to_bytes(1, byteorder="big"))
-
-                                # Increment the difference only if the difference is not 0 and reset the
-                                # offset differency array
-                                if VEV.offset_quanty_difference[i] != 0:
-                                    quanty_aux += VEV.offset_quanty_difference[i]
-                                    VEV.offset_quanty_difference[i] = 0
-
-                    # replacing textures
+                    # replacing textures (vram)
                     with open(vram_export_path, mode="wb") as output_file:
                         with open(VEV.vram_file_path, mode="rb") as input_file:
-
-                            # SPR header
-                            texture_offset = 0
 
                             # Get each offset texture and write over the original file
                             for texture_index in VEV.textures_index_edited:
                                 tx2d_info = VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index].data_info.data
-                                data = input_file.read(
-                                    abs(tx2d_info.data_offset_old + texture_offset - input_file.tell()))
+                                data = input_file.read(tx2d_info.data_offset_old - input_file.tell())
                                 output_file.write(data)
                                 input_file.seek(tx2d_info.data_size_old, os.SEEK_CUR)
 
@@ -389,14 +316,275 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # since it's in the end of the file
                             vram_new_size = output_file.tell()
 
-                    # Change the header of pos 48 in spr file because in that place indicates the size of the
-                    # final output file
-                    with open(spr_export_path, mode="rb+") as output_file:
-                        # Change the vram size adding the difference in positive or negative
-                        output_file.seek(48)
-                        output_file.write(vram_new_size.to_bytes(4, byteorder='big'))
+                    # Update the offsets (spr)
+                    with open(spr_export_path, mode="rb+") as output_file_spr:
 
-                    # SPR file. We won't compress
+                        first_index_texture_edited = VEV.textures_index_edited[0]
+
+                        # --- Update the data itself from the TX2D data_offset (only the first texture edited) ---
+                        if first_index_texture_edited not in VEV.textures_index_removed:
+
+                            # Move where the information starts to the first modified texture
+                            output_file_spr.seek(VEV.sprp_file.data_base +
+                                                 VEV.sprp_file.type_entry[b'TX2D'].
+                                                 data_entry[first_index_texture_edited]
+                                                 .data_info.data_offset + 12)
+
+                            # Update tx2d_data
+                            update_tx2d_data(output_file_spr, first_index_texture_edited)
+
+                        # --- Update the data itself from the TX2D data_offset (after first texture edited) ---
+                        # Check if is the last texture modified and there is no more textures in the bottom
+                        if first_index_texture_edited + 1 < VEV.sprp_file.type_entry[b'TX2D'].data_count:
+                            # Get the quanty difference for the first texture modified
+                            quanty_aux = VEV.vram_offset_quanty_difference[first_index_texture_edited]
+                            for i in range(first_index_texture_edited+1, VEV.sprp_file.type_entry[b'TX2D'].data_count):
+
+                                # Only update the data from the TX2D data_offset when the texture is not included
+                                # in the removed ones
+                                if i not in VEV.textures_index_removed:
+                                    # Move where the information starts to the next textures
+                                    output_file_spr.seek(VEV.sprp_file.data_base + VEV.sprp_file.type_entry[b'TX2D']
+                                                         .data_entry[i].data_info.data_offset + 4)
+                                    # Update the offset
+                                    output_file_spr.write(int(abs(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
+                                                                  .data_info
+                                                                  .data.data_offset + quanty_aux))
+                                                          .to_bytes(4, byteorder="big"))
+                                    output_file_spr.seek(4, os.SEEK_CUR)
+
+                                    # Update tx2d_data
+                                    update_tx2d_data(output_file_spr, i)
+
+                                # Increment the difference only if the difference is not 0 and reset the
+                                # offset differency array
+                                if VEV.vram_offset_quanty_difference[i] != 0:
+                                    quanty_aux += VEV.vram_offset_quanty_difference[i]
+
+                        # Change the header of pos 48 in spr file because in that place indicates the size of the
+                        # final output file
+                        output_file_spr.seek(48)
+                        output_file_spr.write(vram_new_size.to_bytes(4, byteorder='big'))
+
+                        # --- Update the data_info offsets when we remove a texture ---
+                        if VEV.textures_index_removed:
+
+                            # Update each data_info
+                            output_file_spr.seek(VEV.sprp_file.data_info_base)
+                            reduce_index_quanty = 0
+                            relative_name_offset_quanty_accumulated = 0
+                            relative_name_offsets_quanty_per_txt = {}
+                            relative_data_offset_quanty_accumulated = 0
+                            for type_entry in VEV.sprp_file.type_entry:
+                                for i in range(0, VEV.sprp_file.type_entry[type_entry].data_count):
+
+                                    data_entry = VEV.sprp_file.type_entry[type_entry].data_entry[i]
+
+                                    if type_entry != b'TX2D':
+
+                                        output_file_spr.seek(8, os.SEEK_CUR)
+                                        # Update name_offset
+                                        output_file_spr.write(int(data_entry.data_info.name_offset +
+                                                                  relative_name_offset_quanty_accumulated).
+                                                              to_bytes(4, byteorder="big"))
+                                        # Update data_offset and child_offset
+                                        update_offset_data_info(output_file_spr, type_entry, data_entry,
+                                                                relative_name_offset_quanty_accumulated,
+                                                                relative_data_offset_quanty_accumulated)
+
+                                        # Update the offsets of each layer
+                                        if type_entry == b'MTRL':
+
+                                            # Get the actual position of the file
+                                            aux_pointer = output_file_spr.tell()
+
+                                            # Move to the position where is located all the layers for the material
+                                            # We add 112 at the end because the first 112 bytes are unk data
+                                            output_file_spr.seek(data_entry.data_info.data_offset +
+                                                                 VEV.sprp_file.data_base + 112)
+
+                                            # Get one material
+                                            mtrl_info = data_entry.data_info.data
+
+                                            # Get each layer for the material
+                                            for j in range(0, 10):
+
+                                                # Get the layer
+                                                layer = mtrl_info.layers[j]
+
+                                                # Update layer name offset only when the output is positive
+                                                if layer.layer_name_offset != 0:
+                                                    output_file_spr.write(int(layer.layer_name_offset +
+                                                                              relative_name_offset_quanty_accumulated)
+                                                                          .to_bytes(4, byteorder="big"))
+                                                else:
+                                                    output_file_spr.seek(4, os.SEEK_CUR)
+
+                                                # Update source name offset only when the output his offset is not
+                                                # 0 and is aiming to a texture
+                                                if layer.source_name_offset != 0 and layer.source_name_offset in \
+                                                   relative_name_offsets_quanty_per_txt:
+
+                                                    relative_name_offset_per_txt = \
+                                                        relative_name_offsets_quanty_per_txt[layer.source_name_offset]
+
+                                                    # We write the new offset only if it's positive
+                                                    new_offset = layer.source_name_offset + relative_name_offset_per_txt
+                                                    if new_offset > 0:
+                                                        output_file_spr.write(int(new_offset)
+                                                                              .to_bytes(4, byteorder="big"))
+                                                    else:
+                                                        output_file_spr.write(b'\00\00\00\00')
+                                                else:
+                                                    output_file_spr.seek(4, os.SEEK_CUR)
+
+                                            # Restore the position of the file
+                                            output_file_spr.seek(aux_pointer)
+
+                                    else:
+
+                                        # Save the accumulated offset for the name_offset.
+                                        # Also, save the accumulated offset
+                                        # but for each texture in a dictionary of name_offsets
+                                        relative_name_offset_quanty_accumulated += VEV.relative_name_offset_quanty[i]
+                                        relative_name_offsets_quanty_per_txt[data_entry.data_info.
+                                                                             name_offset] = \
+                                            relative_name_offset_quanty_accumulated
+                                        # Save the accumulated offset for the data_offset
+                                        relative_data_offset_quanty_accumulated += VEV.relative_data_offset_quanty[i]
+
+                                        # Update only the 'TX2D' entries that won't be removed
+                                        if i not in VEV.textures_index_removed:
+
+                                            if i > first_index_texture_edited:
+                                                output_file_spr.seek(4, os.SEEK_CUR)
+                                                # Update index
+                                                output_file_spr.write((data_entry.index + reduce_index_quanty).
+                                                                      to_bytes(4, byteorder="big"))
+                                                # Update name_offset
+                                                output_file_spr.write(
+                                                    int(data_entry.data_info.name_offset +
+                                                        relative_name_offset_quanty_accumulated)
+                                                    .to_bytes(4, byteorder="big"))
+
+                                                # Update data_offset and child_offset
+                                                update_offset_data_info(output_file_spr, type_entry, data_entry,
+                                                                        relative_name_offset_quanty_accumulated,
+                                                                        relative_data_offset_quanty_accumulated)
+                                            else:
+                                                output_file_spr.seek(32, os.SEEK_CUR)
+
+                                        else:
+                                            reduce_index_quanty -= 1
+                                            output_file_spr.seek(32, os.SEEK_CUR)
+
+                            # Update the name_offset
+                            output_file_spr.seek(16)
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.name_offset +
+                                                       relative_name_offset_quanty_accumulated))
+                                                  .to_bytes(4, byteorder="big"))
+                            # Update the string_table_size
+                            output_file_spr.seek(4, os.SEEK_CUR)
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.string_table_size +
+                                                       relative_name_offset_quanty_accumulated))
+                                                  .to_bytes(4, byteorder="big"))
+
+                            # Update the data_info_size
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.data_info_size +
+                                                       VEV.relative_data_info_offset_quanty))
+                                                  .to_bytes(4, byteorder="big"))
+
+                            # Update the data_block_size
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.data_block_size +
+                                                       relative_data_offset_quanty_accumulated))
+                                                  .to_bytes(4, byteorder="big"))
+
+                            # Update the ioram_name_offset and vram_name_offset
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.ioram_name_offset +
+                                                       relative_name_offset_quanty_accumulated))
+                                                  .to_bytes(4, byteorder="big"))
+                            output_file_spr.seek(4, os.SEEK_CUR)
+                            output_file_spr.write(int((VEV.sprp_file.sprp_header.vram_name_offset +
+                                                       relative_name_offset_quanty_accumulated))
+                                                  .to_bytes(4, byteorder="big"))
+
+                            # Update type_entry data_count
+                            output_file_spr.seek(VEV.sprp_file.type_info_base)
+                            output_file_spr.seek(8, os.SEEK_CUR)
+                            output_file_spr.write(int((VEV.sprp_file.type_entry[b'TX2D'].data_count -
+                                                       len(VEV.textures_index_removed)))
+                                                  .to_bytes(4, byteorder="big"))
+
+                            # Recreate a new spr file with the removed data
+                            output_file_spr.seek(0)
+                            spr_export_path_rewrited = VEV.spr_file_path.replace(".spr", "_r.spr")
+                            with open(spr_export_path_rewrited, mode="wb") as output_file_spr_r:
+
+                                # New header
+                                header = output_file_spr.read(VEV.sprp_file.string_base)
+
+                                # New data
+                                data_name = b''
+                                data_info = b''
+                                data = b''
+
+                                # Create the new names for the textures
+                                aux_pointer_data_name = VEV.sprp_file.string_base
+                                aux_pointer_data_info = VEV.sprp_file.data_info_base
+                                aux_pointer_data = VEV.sprp_file.data_base
+                                for i in range(0, VEV.sprp_file.type_entry[b'TX2D'].data_count):
+
+                                    name_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.name_size
+
+                                    if i not in VEV.textures_index_removed:
+                                        # Store the name
+                                        output_file_spr.seek(aux_pointer_data_name)
+                                        data_name += output_file_spr.read(name_size)
+                                        aux_pointer_data_name = output_file_spr.tell()
+
+                                        # Store the data info
+                                        output_file_spr.seek(aux_pointer_data_info)
+                                        data_info += output_file_spr.read(32)
+                                        aux_pointer_data_info = output_file_spr.tell()
+
+                                        # Store the data
+                                        data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data_size
+                                        output_file_spr.seek(aux_pointer_data)
+                                        data += output_file_spr.read(data_size + 12)
+                                        aux_pointer_data = output_file_spr.tell()
+                                    else:
+
+                                        # Increase data_name offset aux
+                                        aux_pointer_data_name += name_size
+
+                                        # Increase data_info offset aux
+                                        aux_pointer_data_info += 32
+
+                                        # Store only the 12 bytes of data the texture
+                                        data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data_size
+                                        output_file_spr.seek(aux_pointer_data + data_size)
+                                        data += output_file_spr.read(12)
+                                        aux_pointer_data = output_file_spr.tell()
+
+                                # Store the rest of the data_name
+                                output_file_spr.seek(aux_pointer_data_name)
+                                data_name += output_file_spr.read(VEV.sprp_file.data_info_base - output_file_spr.tell())
+
+                                # Store the rest of the type_entries sections
+                                output_file_spr.seek(aux_pointer_data_info)
+                                data_info += output_file_spr.read(VEV.sprp_file.data_base - output_file_spr.tell())
+
+                                # Store the rest of the data sections
+                                output_file_spr.seek(aux_pointer_data)
+                                data += output_file_spr.read()
+
+                                # Write the new reestructured spr
+                                output_file_spr_r.write(header + data_name + data_info + data)
+
+                            # Get the new spr rewritted
+                            output_file_spr.close()
+                            os.remove(spr_export_path)
+                            os.rename(spr_export_path_rewrited, spr_export_path)
 
                     basename_spr = os.path.basename(spr_export_path).replace("_m.", ".")
                     basename_vram = os.path.basename(vram_export_path).replace("_m.", ".")

@@ -1,4 +1,4 @@
-from lib.packages import os, np, datetime
+from lib.packages import os, datetime
 from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
 
 
@@ -31,5 +31,14 @@ class VEV:
 	current_selected_texture = 0
 	# Indexes of textures edited
 	textures_index_edited = []
-	# Quanty of difference between the modifed texture and the old one
-	offset_quanty_difference = np.array(0)
+	# Indexes of textures removed
+	textures_index_removed = []
+
+	# Relative acumulated offset for name_offset and data_offset
+	relative_name_offset_quanty = []
+	relative_data_info_offset_quanty = 0
+	relative_data_offset_quanty = []
+	# Quanty of difference in each data
+	vram_offset_quanty_difference = []
+	material_type_names = [b'COLORMAP', b'TOONMAP', b'INCANDESCENCEMAP_RAMP', b'DbzCharMtrl']
+	color_map_material = [b'COLORMAP0', b'COLORMAP1']
