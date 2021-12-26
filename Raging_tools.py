@@ -388,7 +388,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                                   relative_name_offset_quanty_accumulated).
                                                               to_bytes(4, byteorder="big"))
                                         # Update data_offset and child_offset
-                                        update_offset_data_info(output_file_spr, type_entry, data_entry,
+                                        update_offset_data_info(output_file_spr, data_entry,
                                                                 relative_name_offset_quanty_accumulated,
                                                                 relative_data_offset_quanty_accumulated)
 
@@ -468,7 +468,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                     .to_bytes(4, byteorder="big"))
 
                                                 # Update data_offset and child_offset
-                                                update_offset_data_info(output_file_spr, type_entry, data_entry,
+                                                update_offset_data_info(output_file_spr, data_entry,
                                                                         relative_name_offset_quanty_accumulated,
                                                                         relative_data_offset_quanty_accumulated)
                                             else:
