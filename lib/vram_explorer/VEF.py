@@ -32,7 +32,7 @@ def initialize_ve(main_window):
     main_window.importButton.setEnabled(False)
     main_window.removeButton.setEnabled(False)
 
-    #main_window.removeButton.setVisible(False)
+    main_window.removeButton.setVisible(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -382,7 +382,6 @@ def read_children(file, sprp_data_info, type_section):
                     print(scne_eye_info.eyes_data[-1].unk00_name_offset)
 
                 sprp_data_info_child.data = scne_eye_info
-
 
         # Restore the pointer of the file in order to read the following children
         file.seek(aux_pointer_file)
