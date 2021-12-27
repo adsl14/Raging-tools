@@ -11,5 +11,5 @@ class SprpDataInfo:
         self.child_offset = 0
         # SprpDataInfo
         self.child_info = []
-        # Could be Tx2dInfo, MtrlInfo, IoramInfo
+        # Could be Tx2dInfo, MtrlInfo
         self.data = None

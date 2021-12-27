@@ -5,6 +5,11 @@ from lib.packages import os, image, QImage, QPixmap, np
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
 from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
+from lib.vram_explorer.classes.SCNE.EyeData import EyeData
+from lib.vram_explorer.classes.SCNE.ScneEyeInfo import ScneEyeInfo
+from lib.vram_explorer.classes.SCNE.ScneMaterial import ScneMaterial
+from lib.vram_explorer.classes.SCNE.ScneMaterialInfo import ScneMaterialInfo
+from lib.vram_explorer.classes.SCNE.ScneModel import ScneModel
 from lib.vram_explorer.classes.SPRP.SprpDataEntry import SprpDataEntry
 from lib.vram_explorer.classes.SPRP.SprpDataInfo import SprpDataInfo
 from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
@@ -27,7 +32,7 @@ def initialize_ve(main_window):
     main_window.importButton.setEnabled(False)
     main_window.removeButton.setEnabled(False)
 
-    main_window.removeButton.setVisible(False)
+    #main_window.removeButton.setVisible(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -303,7 +308,7 @@ def get_name_from_spr(file, sprp_data_info):
             break
 
 
-def read_children(file, sprp_data_info):
+def read_children(file, sprp_data_info, type_section):
 
     file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_base)
 
@@ -323,18 +328,75 @@ def read_children(file, sprp_data_info):
         base_name_size = len(sprp_data_info_child.name)
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
+
+        # Get the scene data
+        if type_section == b'SCNE':
+
+            # If the parent name is NODES, we store the scene model in the child data
+            if sprp_data_info.name == "[NODES]":
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                scne_model = ScneModel()
+                scne_model.unk00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.unk04_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.unk08_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.unk0c_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.unk10_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                sprp_data_info_child.data = scne_model
+
+            # If the children name is MATERIAL, we store the scene material in the child data
+            elif sprp_data_info_child.name == "[MATERIAL]":
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                scne_material = ScneMaterial()
+
+                scne_material.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_material.unk04 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_material.material_info_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                for _ in range(0, scne_material.material_info_count):
+                    scne_materia_info = ScneMaterialInfo()
+
+                    scne_materia_info.unk00_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    scne_materia_info.unk04_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                    scne_material.material_info.append(scne_materia_info)
+
+                sprp_data_info_child.data = scne_material
+
+            # If the children name is DbzEyeInfo, we store the scene eye info in the child data
+            elif sprp_data_info_child.name == "DbzEyeInfo":
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                scne_eye_info = ScneEyeInfo()
+
+                # Get each eye_data
+                for _ in range(0, 3):
+                    eye_data = EyeData()
+                    eye_data.unk00_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    file.seek(108, os.SEEK_CUR)
+
+                    scne_eye_info.eyes_data.append(eye_data)
+                    print(scne_eye_info.eyes_data[-1].unk00_name_offset)
+
+                sprp_data_info_child.data = scne_eye_info
+
+
+        # Restore the pointer of the file in order to read the following children
         file.seek(aux_pointer_file)
 
-        # Get all the children sprp_data_info
+        # Get all the children sprp_data_info for the actual children in the loop section
         if sprp_data_info_child.child_count > 0:
-            read_children(file, sprp_data_info_child)
+            read_children(file, sprp_data_info_child, type_section)
             file.seek(aux_pointer_file)
 
         # Store each children to the array
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(file, sprp_data_info, relative_name_offset_quanty_accumulated,
+def write_children(file, sprp_data_info, type_section, relative_name_offset_quanty_accumulated,
                    relative_data_offset_quanty_accumulated):
 
     file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_base)
@@ -353,13 +415,102 @@ def write_children(file, sprp_data_info, relative_name_offset_quanty_accumulated
         else:
             file.seek(4, os.SEEK_CUR)
 
+        # Write the scene data
+        if type_section == b'SCNE':
+
+            # If the parent name is NODES, we write the scene model
+            if sprp_data_info.name == "[NODES]":
+
+                aux_pointer_file = file.tell()
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                file.seek(4, os.SEEK_CUR)
+                if sprp_data_info_child.data.unk04_name_offset > 0:
+                    file.write(int(sprp_data_info_child.data.unk04_name_offset +
+                                   relative_name_offset_quanty_accumulated)
+                               .to_bytes(4, byteorder="big"))
+                else:
+                    file.seek(4, os.SEEK_CUR)
+                if sprp_data_info_child.data.unk08_name_offset > 0:
+                    file.write(int(sprp_data_info_child.data.unk08_name_offset +
+                                   relative_name_offset_quanty_accumulated)
+                               .to_bytes(4, byteorder="big"))
+                else:
+                    file.seek(4, os.SEEK_CUR)
+                if sprp_data_info_child.data.unk0c_name_offset > 0:
+                    file.write(int(sprp_data_info_child.data.unk0c_name_offset +
+                                   relative_name_offset_quanty_accumulated)
+                               .to_bytes(4, byteorder="big"))
+                else:
+                    file.seek(4, os.SEEK_CUR)
+                if sprp_data_info_child.data.unk10_name_offset > 0:
+                    file.write(int(sprp_data_info_child.data.unk10_name_offset +
+                                   relative_name_offset_quanty_accumulated)
+                               .to_bytes(4, byteorder="big"))
+                else:
+                    file.seek(4, os.SEEK_CUR)
+
+                file.seek(aux_pointer_file)
+
+            # If the children name is MATERIAL, we write the scene model
+            elif sprp_data_info_child.name == "[MATERIAL]":
+
+                aux_pointer_file = file.tell()
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                # Write the name_offset of scne_material
+                if sprp_data_info_child.data.name_offset > 0:
+                    file.write(int(sprp_data_info_child.data.name_offset + relative_name_offset_quanty_accumulated)
+                               .to_bytes(4, byteorder="big"))
+                else:
+                    file.seek(4, os.SEEK_CUR)
+                file.seek(8, os.SEEK_CUR)
+
+                for j in range(0, sprp_data_info_child.data.material_info_count):
+
+                    if sprp_data_info_child.data.material_info[j].unk00_name_offset > 0:
+                        file.write(int(sprp_data_info_child.data.material_info[j].unk00_name_offset +
+                                       relative_name_offset_quanty_accumulated)
+                                   .to_bytes(4, byteorder="big"))
+                    else:
+                        file.seek(4, os.SEEK_CUR)
+                    if sprp_data_info_child.data.material_info[j].unk04_name_offset > 0:
+                        file.write(
+                            int(sprp_data_info_child.data.material_info[j].unk04_name_offset +
+                                relative_name_offset_quanty_accumulated)
+                            .to_bytes(4, byteorder="big"))
+                    else:
+                        file.seek(4, os.SEEK_CUR)
+                    file.seek(4, os.SEEK_CUR)
+
+                file.seek(aux_pointer_file)
+
+            # If the children name is DbzEyeInfo, we write the scene model
+            elif sprp_data_info_child.name == "DbzEyeInfo":
+
+                aux_pointer_file = file.tell()
+                file.seek(VEV.sprp_file.data_base + sprp_data_info_child.data_offset)
+
+                # Write each eye_data
+                for j in range(0, 3):
+
+                    if sprp_data_info_child.data.eyes_data[j].unk00_name_offset > 0:
+                        file.write(int(sprp_data_info_child.data.eyes_data[j].unk00_name_offset +
+                                       relative_name_offset_quanty_accumulated)
+                                   .to_bytes(4, byteorder="big"))
+                    else:
+                        file.seek(4, os.SEEK_CUR)
+                    file.seek(108, os.SEEK_CUR)
+
+                file.seek(aux_pointer_file)
+
         # Get all the children sprp_data_info
         file.seek(8, os.SEEK_CUR)
         if sprp_data_info_child.child_count > 0:
             file.write(int(sprp_data_info_child.child_offset + relative_data_offset_quanty_accumulated)
                        .to_bytes(4, byteorder="big"))
             aux_pointer_file = file.tell()
-            write_children(file, sprp_data_info_child, relative_name_offset_quanty_accumulated,
+            write_children(file, sprp_data_info_child, type_section, relative_name_offset_quanty_accumulated,
                            relative_data_offset_quanty_accumulated)
             file.seek(aux_pointer_file)
         else:
@@ -386,7 +537,7 @@ def update_offset_data_info(file, data_entry, relative_name_offset_quanty_accumu
         file.write(int(data_entry.data_info.child_offset +
                        relative_data_offset_quanty_accumulated).to_bytes(4, byteorder="big"))
         aux_pointer_file = file.tell()
-        write_children(file, data_entry.data_info,
+        write_children(file, data_entry.data_info, data_entry.data_type,
                        relative_name_offset_quanty_accumulated, relative_data_offset_quanty_accumulated)
         file.seek(aux_pointer_file + 4)
     else:
@@ -470,10 +621,6 @@ def open_spr_file(spr_path):
                 # Store the actual pointer in the file in order to read the following data_entry
                 aux_pointer_data_entry = file.tell()
 
-                # Get all the children sprp_data_info
-                if sprp_data_entry.data_info.child_count > 0:
-                    read_children(file, sprp_data_entry.data_info)
-
                 # Store the name of the sprp_data_info
                 file.seek(VEV.sprp_file.string_base + sprp_data_entry.data_info.name_offset)
                 # Everything that is not SPR in the header, has names for each data
@@ -486,6 +633,10 @@ def open_spr_file(spr_path):
                 # If the data header is SPR, we create custom names
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
+
+                # Get all the children sprp_data_info
+                if sprp_data_entry.data_info.child_count > 0:
+                    read_children(file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
