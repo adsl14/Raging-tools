@@ -322,16 +322,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         first_index_texture_edited = VEV.textures_index_edited[0]
 
                         # --- Update the data itself from the TX2D data_offset (only the first texture edited) ---
-                        if first_index_texture_edited not in VEV.textures_index_removed:
+                        # Move where the information starts to the first modified texture
+                        output_file_spr.seek(VEV.sprp_file.data_base +
+                                             VEV.sprp_file.type_entry[b'TX2D'].
+                                             data_entry[first_index_texture_edited]
+                                             .data_info.data_offset + 12)
 
-                            # Move where the information starts to the first modified texture
-                            output_file_spr.seek(VEV.sprp_file.data_base +
-                                                 VEV.sprp_file.type_entry[b'TX2D'].
-                                                 data_entry[first_index_texture_edited]
-                                                 .data_info.data_offset + 12)
-
-                            # Update tx2d_data
-                            update_tx2d_data(output_file_spr, first_index_texture_edited)
+                        # Update tx2d_data
+                        update_tx2d_data(output_file_spr, first_index_texture_edited)
 
                         # --- Update the data itself from the TX2D data_offset (after first texture edited) ---
                         # Check if is the last texture modified and there is no more textures in the bottom
@@ -366,7 +364,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         output_file_spr.seek(48)
                         output_file_spr.write(vram_new_size.to_bytes(4, byteorder='big'))
 
-                        # --- Update the data_info offsets when we remove a texture ---
+                        # --- Update the data_info offsets when we remove a texture (this won't be used for now) ---
                         if VEV.textures_index_removed:
 
                             # Update each data_info
