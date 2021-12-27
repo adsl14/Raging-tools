@@ -38,7 +38,5 @@ class VEV:
 	relative_name_offset_quanty = []
 	relative_data_info_offset_quanty = 0
 	relative_data_offset_quanty = []
-	# Quanty of difference in each data
+	# offset quanty difference in each texture data
 	vram_offset_quanty_difference = []
-	material_type_names = [b'COLORMAP', b'TOONMAP', b'INCANDESCENCEMAP_RAMP', b'DbzCharMtrl']
-	color_map_material = [b'COLORMAP0', b'COLORMAP1']

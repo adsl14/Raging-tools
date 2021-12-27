@@ -346,9 +346,12 @@ def write_children(file, sprp_data_info, relative_name_offset_quanty_accumulated
         file.write(int(sprp_data_info_child.name_offset + relative_name_offset_quanty_accumulated)
                    .to_bytes(4, byteorder="big"))
 
-        # Update data_offset
-        file.write(int(sprp_data_info_child.data_offset + relative_data_offset_quanty_accumulated)
-                   .to_bytes(4, byteorder="big"))
+        # Update data_offset (only when the data_offset of the data_entry is not 0)
+        if sprp_data_info_child.data_size > 0:
+            file.write(int(sprp_data_info_child.data_offset + relative_data_offset_quanty_accumulated)
+                       .to_bytes(4, byteorder="big"))
+        else:
+            file.seek(4, os.SEEK_CUR)
 
         # Get all the children sprp_data_info
         file.seek(8, os.SEEK_CUR)
@@ -365,6 +368,10 @@ def write_children(file, sprp_data_info, relative_name_offset_quanty_accumulated
 
 def update_offset_data_info(file, data_entry, relative_name_offset_quanty_accumulated,
                             relative_data_offset_quanty_accumulated):
+    # Update name_offset
+    file.write(int(data_entry.data_info.name_offset +
+                   relative_name_offset_quanty_accumulated)
+               .to_bytes(4, byteorder="big"))
 
     # Update data_offset (only when the data_offset of the data_entry is not 0)
     if data_entry.data_info.data_size > 0:

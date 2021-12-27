@@ -372,9 +372,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update each data_info
                             output_file_spr.seek(VEV.sprp_file.data_info_base)
                             reduce_index_quanty = 0
-                            relative_name_offset_quanty_accumulated = 0
-                            relative_name_offsets_quanty_per_txt = {}
-                            relative_data_offset_quanty_accumulated = 0
+                            name_offset_quanty = 0
+                            name_offsets_quanty_per_txt = {}
+                            data_offset_quanty = 0
                             for type_entry in VEV.sprp_file.type_entry:
                                 for i in range(0, VEV.sprp_file.type_entry[type_entry].data_count):
 
@@ -383,14 +383,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     if type_entry != b'TX2D':
 
                                         output_file_spr.seek(8, os.SEEK_CUR)
-                                        # Update name_offset
-                                        output_file_spr.write(int(data_entry.data_info.name_offset +
-                                                                  relative_name_offset_quanty_accumulated).
-                                                              to_bytes(4, byteorder="big"))
+
                                         # Update data_offset and child_offset
                                         update_offset_data_info(output_file_spr, data_entry,
-                                                                relative_name_offset_quanty_accumulated,
-                                                                relative_data_offset_quanty_accumulated)
+                                                                name_offset_quanty,
+                                                                data_offset_quanty)
 
                                         # Update the offsets of each layer
                                         if type_entry == b'MTRL':
@@ -412,31 +409,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                 # Get the layer
                                                 layer = mtrl_info.layers[j]
 
-                                                # Update layer name offset only when the output is positive
-                                                if layer.layer_name_offset != 0:
-                                                    output_file_spr.write(int(layer.layer_name_offset +
-                                                                              relative_name_offset_quanty_accumulated)
-                                                                          .to_bytes(4, byteorder="big"))
-                                                else:
-                                                    output_file_spr.seek(4, os.SEEK_CUR)
-
                                                 # Update source name offset only when the output his offset is not
-                                                # 0 and is aiming to a texture
-                                                if layer.source_name_offset != 0 and layer.source_name_offset in \
-                                                   relative_name_offsets_quanty_per_txt:
+                                                # 0
+                                                if layer.source_name_offset != 0:
 
-                                                    relative_name_offset_per_txt = \
-                                                        relative_name_offsets_quanty_per_txt[layer.source_name_offset]
+                                                    # is aiming to a texture
+                                                    if layer.source_name_offset in name_offsets_quanty_per_txt:
 
-                                                    # We write the new offset only if it's positive
-                                                    new_offset = layer.source_name_offset + relative_name_offset_per_txt
-                                                    if new_offset > 0:
-                                                        output_file_spr.write(int(new_offset)
-                                                                              .to_bytes(4, byteorder="big"))
+                                                        relative_name_offset_per_txt = \
+                                                            name_offsets_quanty_per_txt[layer.source_name_offset]
+
+                                                        # We write the new offset only
+                                                        new_offset = layer.source_name_offset + \
+                                                            relative_name_offset_per_txt
+                                                        # if it's positive, means we have to update the offsets since
+                                                        # this materials are using textures that won't get removed
+                                                        if new_offset > 0:
+                                                            # Update layer name offset only when the output is positive
+                                                            output_file_spr.write(int(layer.layer_name_offset +
+                                                                                      name_offset_quanty)
+                                                                                  .to_bytes(4, byteorder="big"))
+
+                                                            output_file_spr.write(int(new_offset)
+                                                                                  .to_bytes(4, byteorder="big"))
+                                                        else:
+                                                            output_file_spr.write(b'\00\00\00\00')
+                                                            output_file_spr.write(b'\00\00\00\00')
                                                     else:
-                                                        output_file_spr.write(b'\00\00\00\00')
+                                                        # Update layer name offset only when the output is positive
+                                                        output_file_spr.write(int(layer.layer_name_offset +
+                                                                                  name_offset_quanty)
+                                                                              .to_bytes(4, byteorder="big"))
+                                                        output_file_spr.seek(4, os.SEEK_CUR)
                                                 else:
-                                                    output_file_spr.seek(4, os.SEEK_CUR)
+                                                    output_file_spr.seek(8, os.SEEK_CUR)
 
                                             # Restore the position of the file
                                             output_file_spr.seek(aux_pointer)
@@ -446,12 +452,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         # Save the accumulated offset for the name_offset.
                                         # Also, save the accumulated offset
                                         # but for each texture in a dictionary of name_offsets
-                                        relative_name_offset_quanty_accumulated += VEV.relative_name_offset_quanty[i]
-                                        relative_name_offsets_quanty_per_txt[data_entry.data_info.
-                                                                             name_offset] = \
-                                            relative_name_offset_quanty_accumulated
+                                        name_offset_quanty += VEV.relative_name_offset_quanty[i]
+                                        name_offsets_quanty_per_txt[data_entry.data_info.name_offset] = \
+                                            name_offset_quanty
                                         # Save the accumulated offset for the data_offset
-                                        relative_data_offset_quanty_accumulated += VEV.relative_data_offset_quanty[i]
+                                        data_offset_quanty += VEV.relative_data_offset_quanty[i]
 
                                         # Update only the 'TX2D' entries that won't be removed
                                         if i not in VEV.textures_index_removed:
@@ -461,16 +466,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                 # Update index
                                                 output_file_spr.write((data_entry.index + reduce_index_quanty).
                                                                       to_bytes(4, byteorder="big"))
-                                                # Update name_offset
-                                                output_file_spr.write(
-                                                    int(data_entry.data_info.name_offset +
-                                                        relative_name_offset_quanty_accumulated)
-                                                    .to_bytes(4, byteorder="big"))
 
                                                 # Update data_offset and child_offset
                                                 update_offset_data_info(output_file_spr, data_entry,
-                                                                        relative_name_offset_quanty_accumulated,
-                                                                        relative_data_offset_quanty_accumulated)
+                                                                        name_offset_quanty,
+                                                                        data_offset_quanty)
                                             else:
                                                 output_file_spr.seek(32, os.SEEK_CUR)
 
@@ -481,12 +481,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the name_offset
                             output_file_spr.seek(16)
                             output_file_spr.write(int((VEV.sprp_file.sprp_header.name_offset +
-                                                       relative_name_offset_quanty_accumulated))
+                                                       name_offset_quanty))
                                                   .to_bytes(4, byteorder="big"))
                             # Update the string_table_size
                             output_file_spr.seek(4, os.SEEK_CUR)
                             output_file_spr.write(int((VEV.sprp_file.sprp_header.string_table_size +
-                                                       relative_name_offset_quanty_accumulated))
+                                                       name_offset_quanty))
                                                   .to_bytes(4, byteorder="big"))
 
                             # Update the data_info_size
@@ -496,16 +496,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Update the data_block_size
                             output_file_spr.write(int((VEV.sprp_file.sprp_header.data_block_size +
-                                                       relative_data_offset_quanty_accumulated))
+                                                       data_offset_quanty))
                                                   .to_bytes(4, byteorder="big"))
 
                             # Update the ioram_name_offset and vram_name_offset
                             output_file_spr.write(int((VEV.sprp_file.sprp_header.ioram_name_offset +
-                                                       relative_name_offset_quanty_accumulated))
+                                                       name_offset_quanty))
                                                   .to_bytes(4, byteorder="big"))
                             output_file_spr.seek(4, os.SEEK_CUR)
                             output_file_spr.write(int((VEV.sprp_file.sprp_header.vram_name_offset +
-                                                       relative_name_offset_quanty_accumulated))
+                                                       name_offset_quanty))
                                                   .to_bytes(4, byteorder="big"))
 
                             # Update type_entry data_count
