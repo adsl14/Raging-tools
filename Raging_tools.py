@@ -10,7 +10,7 @@ from lib.functions import del_rw
 
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import change_endian, load_data_to_ve, update_offset_data_info, update_tx2d_data
+from lib.vram_explorer.VEF import change_endian, load_data_to_ve, update_tx2d_data
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
@@ -321,7 +321,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         first_index_texture_edited = VEV.textures_index_edited[0]
 
-                        # --- Update the data itself from the TX2D data_offset (only the first texture edited) ---
                         # Move where the information starts to the first modified texture
                         output_file_spr.seek(VEV.sprp_file.data_base +
                                              VEV.sprp_file.type_entry[b'TX2D'].
@@ -331,28 +330,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Update tx2d_data
                         update_tx2d_data(output_file_spr, first_index_texture_edited)
 
-                        # --- Update the data itself from the TX2D data_offset (after first texture edited) ---
                         # Check if is the last texture modified and there is no more textures in the bottom
                         if first_index_texture_edited + 1 < VEV.sprp_file.type_entry[b'TX2D'].data_count:
                             # Get the quanty difference for the first texture modified
                             quanty_aux = VEV.vram_offset_quanty_difference[first_index_texture_edited]
                             for i in range(first_index_texture_edited+1, VEV.sprp_file.type_entry[b'TX2D'].data_count):
 
-                                # Only update the data from the TX2D data_offset when the texture is not included
-                                # in the removed ones
-                                if i not in VEV.textures_index_removed:
-                                    # Move where the information starts to the next textures
-                                    output_file_spr.seek(VEV.sprp_file.data_base + VEV.sprp_file.type_entry[b'TX2D']
-                                                         .data_entry[i].data_info.data_offset + 4)
-                                    # Update the offset
-                                    output_file_spr.write(int(abs(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
-                                                                  .data_info
-                                                                  .data.data_offset + quanty_aux))
-                                                          .to_bytes(4, byteorder="big"))
-                                    output_file_spr.seek(4, os.SEEK_CUR)
+                                # Move where the information starts to the next textures
+                                output_file_spr.seek(VEV.sprp_file.data_base + VEV.sprp_file.type_entry[b'TX2D']
+                                                     .data_entry[i].data_info.data_offset + 4)
+                                # Update the offset
+                                output_file_spr.write(int(abs(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
+                                                              .data_info
+                                                              .data.data_offset + quanty_aux))
+                                                      .to_bytes(4, byteorder="big"))
+                                output_file_spr.seek(4, os.SEEK_CUR)
 
-                                    # Update tx2d_data
-                                    update_tx2d_data(output_file_spr, i)
+                                # Update tx2d_data
+                                update_tx2d_data(output_file_spr, i)
 
                                 # Increment the difference only if the difference is not 0 and reset the
                                 # offset differency array
@@ -365,7 +360,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         output_file_spr.write(vram_new_size.to_bytes(4, byteorder='big'))
 
                         # --- Update the data_info offsets when we remove a texture (this won't be used for now) ---
-                        if VEV.textures_index_removed:
+                        '''if VEV.textures_index_removed:
 
                             # Update each data_info
                             output_file_spr.seek(VEV.sprp_file.data_info_base)
@@ -582,7 +577,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the new spr rewritted
                             output_file_spr.close()
                             os.remove(spr_export_path)
-                            os.rename(spr_export_path_rewrited, spr_export_path)
+                            os.rename(spr_export_path_rewrited, spr_export_path)'''
 
                     basename_spr = os.path.basename(spr_export_path).replace("_m.", ".")
                     basename_vram = os.path.basename(vram_export_path).replace("_m.", ".")
