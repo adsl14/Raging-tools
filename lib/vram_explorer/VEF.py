@@ -1174,12 +1174,12 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
                 main_window.encodingImageText.setText("Encoding: %s" %
                                                       (get_encoding_name(0)))
 
-            # It's png swizzled texture file
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.extension != "png":
                 # Importing the texture
                 # Change texture in the array
                 VEV.sprp_file.type_entry[b'TX2D'].data_entry[texture_index_list].data_info.data \
                     .tx2d_vram.data = data
+            # It's png swizzled texture file
             else:
                 # Importing the texture
                 # Change texture in the array
@@ -1296,16 +1296,17 @@ def action_remove_logic(main_window):
 
                         # Change texture in the array
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                            VEV.current_selected_texture].data_info.data.tx2d_vram.data = b''
+                            VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = b''
 
                         data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
                             .data_info.data.data_size
                         for _ in range(0, data_size):
                             data_texture += b'\xFF'
 
-                            # Change texture in the array
-                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                                VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
+                        # Change texture in the array
+                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                            VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = header + \
+                            data_texture
 
                     # It's not a swizzle image
                     else:
@@ -1335,9 +1336,9 @@ def action_remove_logic(main_window):
                         for _ in range(0, data_size):
                             data_texture += b'\xFF'
 
-                            # Change texture in the array
-                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                                VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
+                        # Change texture in the array
+                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                            VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
 
                 # It's a DDS image
                 else:
@@ -1369,9 +1370,9 @@ def action_remove_logic(main_window):
                     for _ in range(0, data_size):
                         data_texture += b'\xFF'
 
-                        # Change texture in the array
-                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                            VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
+                    # Change texture in the array
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                        VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
 
                 # Add the texture index to the array of textures edited and removed
                 if VEV.current_selected_texture not in VEV.textures_index_edited:
