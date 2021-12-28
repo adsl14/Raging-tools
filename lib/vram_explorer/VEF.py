@@ -27,11 +27,13 @@ def initialize_ve(main_window):
     main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
     main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
     main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
+    main_window.addButton.clicked.connect(lambda: action_add_logic(main_window))
     main_window.exportAllButton.setEnabled(False)
     main_window.importAllButton.setEnabled(False)
     main_window.exportButton.setEnabled(False)
     main_window.importButton.setEnabled(False)
     main_window.removeButton.setEnabled(False)
+    main_window.addButton.setEnabled(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -89,6 +91,7 @@ def load_data_to_ve(main_window):
     main_window.importButton.setEnabled(True)
     main_window.exportButton.setEnabled(True)
     main_window.removeButton.setEnabled(True)
+    main_window.addButton.setEnabled(True)
 
     # Show the text labels
     main_window.fileNameText.setText(basename)
@@ -1067,7 +1070,9 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             # (if it was added before, we won't added twice)
             # Also, if the texture was removed before, we drop the index from the array of textures removed
             if texture_index_list not in VEV.textures_index_edited:
-                VEV.textures_index_edited.append(texture_index_list)
+                # Only add to the textures array the ones that are actually in the spr/vram file
+                if VEV.current_selected_texture < VEV.sprp_file.type_entry[b'TX2D'].data_count:
+                    VEV.textures_index_edited.append(texture_index_list)
             elif texture_index_list in VEV.textures_index_removed:
                 VEV.textures_index_removed.remove(texture_index_list)
 
@@ -1190,7 +1195,9 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             # (if it was added before, we won't added twice)
             # Also, if the texture was removed before, we drop the index from the array of textures removed
             if texture_index_list not in VEV.textures_index_edited:
-                VEV.textures_index_edited.append(texture_index_list)
+                # Only add to the textures array the ones that are actually in the spr/vram file
+                if VEV.current_selected_texture < VEV.sprp_file.type_entry[b'TX2D'].data_count:
+                    VEV.textures_index_edited.append(texture_index_list)
             elif texture_index_list in VEV.textures_index_removed:
                 VEV.textures_index_removed.remove(texture_index_list)
 
@@ -1211,6 +1218,119 @@ def import_texture(main_window, import_file_path, texture_index_list, ask_user):
             return
 
     return ""
+
+
+# This method will prepare a new sprp_data_entry (the comun values between dds and bmp image)
+def prepare_data_entry(main_window, import_file_path, sprp_data_entry):
+
+    # Create a new spr_data_entry
+    sprp_data_entry.data_type = b'TX2D'
+    sprp_data_entry.index = VEV.sprp_file.type_entry[b'TX2D'].data_count + VEV.num_new_tx2d_entries_to_add
+
+    # Store the necessary data_info from the data_entry
+    sprp_data_entry.data_info.name = os.path.basename(import_file_path).split(".")[0]
+    sprp_data_entry.data_info.extension = "tga"
+    sprp_data_entry.data_info.name_size = 1 + len(sprp_data_entry.data_info.name) + 4
+    sprp_data_entry.data_info.data_size = 32
+
+    # Store the offset
+    sprp_data_entry.data_info.data.data_offset = VEV.sprp_file.sprp_header.vram_data_size + VEV.vram_quanty_size_to_add
+    sprp_data_entry.data_info.data.data_offset_old = sprp_data_entry.data_info.data.data_offset
+
+    # Add the number of tx2d entries we have to add in the spr file header
+    VEV.num_new_tx2d_entries_to_add += 1
+
+    # Add the quanty of size we need to add to the total of vram
+    VEV.vram_quanty_size_to_add += sprp_data_entry.data_info.data.data_size
+
+    # Append to the array of data_entries
+    VEV.sprp_file.type_entry[b'TX2D'].data_entry.append(sprp_data_entry)
+    # Append to the array of quanty difference in vram offset (this won't be used when saving, but to avoid to
+    # reestructure the code when importing a new texture in the added ones)
+    VEV.vram_offset_quanty_difference = np.append(VEV.vram_offset_quanty_difference, 0)
+
+    # Append to the array of textures in the window list
+    item = QStandardItem(sprp_data_entry.data_info.name)
+    item.setEditable(False)
+    main_window.listView.model().appendRow(item)
+
+
+# Will add a new texture to the list view, creating a new sprp_data_entry
+def add_texture(main_window, import_file_path):
+
+    with open(import_file_path, mode="rb") as file:
+
+        # Read the type of file
+        header = file.read(4)
+
+        # It's a DDS modded image
+        if header == b'DDS ':
+
+            # Create a new spr_data_entry
+            sprp_data_entry = SprpDataEntry()
+            # Create a new tx2d_info instance
+            sprp_data_entry.data_info.data = Tx2dInfo()
+            # Create a new tx2d_vram instance
+            sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
+
+            # Get the height and width of the modified image
+            file.seek(12)
+            sprp_data_entry.data_info.data.height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            sprp_data_entry.data_info.data.width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # Get the mipmaps
+            file.seek(28)
+            sprp_data_entry.data_info.data.mip_maps = int.from_bytes(file.read(1), 'big')
+            # Get the dxtencoding
+            file.seek(84)
+            sprp_data_entry.data_info.data.dxt_encoding = get_dxt_value(file.read(VEV.bytes2Read).decode())
+
+            # Get all the data
+            file.seek(0)
+            data = file.read()
+
+            # Store the data and size
+            sprp_data_entry.data_info.data.tx2d_vram.data = data
+            sprp_data_entry.data_info.data.data_size = len(data[128:])
+            sprp_data_entry.data_info.data.data_size_old = sprp_data_entry.data_info.data.data_size
+
+            prepare_data_entry(main_window, import_file_path, sprp_data_entry)
+
+        # it's a BMP modded image
+        elif header[:2] == b'BM':
+
+            # Create a new spr_data_entry
+            sprp_data_entry = SprpDataEntry()
+            # Create a new tx2d_info instance
+            sprp_data_entry.data_info.data = Tx2dInfo()
+            # Create a new tx2d_vram instance
+            sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
+
+            # Get the height and width of the modified image
+            file.seek(18)
+            sprp_data_entry.data_info.data.width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            sprp_data_entry.data_info.data.height = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # Get the mipmaps
+            sprp_data_entry.data_info.data.mip_maps = 1
+            # Get the dxtencoding
+            sprp_data_entry.data_info.data.dxt_encoding = 0
+
+            # Get all the data
+            file.seek(0)
+            data = file.read()
+
+            # Store the data and size
+            sprp_data_entry.data_info.data.tx2d_vram.data = data
+            sprp_data_entry.data_info.data.data_size = len(data[54:])
+            sprp_data_entry.data_info.data.data_size_old = sprp_data_entry.data_info.data.data_size
+
+            prepare_data_entry(main_window, import_file_path, sprp_data_entry)
+        else:
+            # Wrong texture file
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Invalid texture file.")
+            msg.exec()
+            return
 
 
 def action_import_all_logic(main_window):
@@ -1280,43 +1400,81 @@ def action_remove_logic(main_window):
             # The user wants to remove the selected texture
             if answer == msg.Yes:
 
-                data = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].\
-                    data_info.data.tx2d_vram.data
+                # The texture that we will remove is from the spr file
+                if VEV.current_selected_texture < VEV.sprp_file.type_entry[b'TX2D'].data_count:
 
-                # The encoding is RGBA
-                if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].\
-                        data_info.data.dxt_encoding == 0:
+                    data = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].\
+                        data_info.data.tx2d_vram.data
 
-                    header = data[:54]
-                    data_texture = b''
-
-                    # The extension is png. It's a swizzle image. We only replace the data with 'FF'
+                    # The encoding is RGBA
                     if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].\
-                       data_info.extension == "png":
+                            data_info.data.dxt_encoding == 0:
 
-                        # Change texture in the array
-                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                            VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = b''
+                        header = data[:54]
+                        data_texture = b''
 
-                        data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
-                            .data_info.data.data_size
-                        for _ in range(0, data_size):
-                            data_texture += b'\xFF'
+                        # The extension is png. It's a swizzle image. We only replace the data with 'FF'
+                        if VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture].\
+                           data_info.extension == "png":
 
-                        # Change texture in the array
-                        VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                            VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = header + \
-                            data_texture
+                            # Change texture in the array
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = b''
 
-                    # It's not a swizzle image
+                            data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
+                                .data_info.data.data_size
+                            for _ in range(0, data_size):
+                                data_texture += b'\xFF'
+
+                            # Change texture in the array
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.tx2d_vram.data_unswizzle = header + \
+                                data_texture
+
+                        # It's not a swizzle image
+                        else:
+
+                            # The texture size will be 1024
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.data_size = 1024
+
+                            # Get the difference in size between original and modified in order to change the offsets
+                            data_size_old = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
+                                .data_info.data.data_size_old
+                            VEV.vram_offset_quanty_difference[VEV.current_selected_texture] = 1024 - data_size_old
+
+                            # Change width and height
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.width = 256
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.height = 1
+                            main_window.sizeImageText.setText("Resolution: %dx%d" % (256, 1))
+
+                            # Change texture in the array
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.tx2d_vram.data = b''
+
+                            data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
+                                .data_info.data.data_size
+                            for _ in range(0, data_size):
+                                data_texture += b'\xFF'
+
+                            # Change texture in the array
+                            VEV.sprp_file.type_entry[b'TX2D'].data_entry[
+                                VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
+
+                    # It's a DDS image
                     else:
+
+                        header = data[:128]
+                        data_texture = b''
 
                         # The texture size will be 1024
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[
                             VEV.current_selected_texture].data_info.data.data_size = 1024
 
                         # Get the difference in size between original and modified in order to change the offsets
-                        data_size_old = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
+                        data_size_old = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture] \
                             .data_info.data.data_size_old
                         VEV.vram_offset_quanty_difference[VEV.current_selected_texture] = 1024 - data_size_old
 
@@ -1330,7 +1488,6 @@ def action_remove_logic(main_window):
                         # Change texture in the array
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[
                             VEV.current_selected_texture].data_info.data.tx2d_vram.data = b''
-
                         data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
                             .data_info.data.data_size
                         for _ in range(0, data_size):
@@ -1340,49 +1497,49 @@ def action_remove_logic(main_window):
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[
                             VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
 
-                # It's a DDS image
+                    # Add the texture index to the array of textures edited (but only the ones that are actually in the
+                    # file
+                    # and not the new that are added by the user)
+                    # Also add the removed texture to the array of removed textures
+                    if VEV.current_selected_texture not in VEV.textures_index_edited:
+                        VEV.textures_index_edited.append(VEV.current_selected_texture)
+                    VEV.textures_index_removed.append(VEV.current_selected_texture)
+
+                    # Remove image in the tool view
+                    main_window.imageTexture.clear()
+
+                # Remove entirely the texture (added for the user)
                 else:
 
-                    header = data[:128]
-                    data_texture = b''
+                    # Remove the number of tx2d entries
+                    VEV.num_new_tx2d_entries_to_add -= 1
 
-                    # The texture size will be 1024
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                        VEV.current_selected_texture].data_info.data.data_size = 1024
+                    # Remove the quanty of size we need to add to the total of vram
+                    VEV.vram_quanty_size_to_add -= VEV.sprp_file.type_entry[b'TX2D']\
+                        .data_entry[VEV.current_selected_texture].data_info.data.data_size
 
-                    # Get the difference in size between original and modified in order to change the offsets
-                    data_size_old = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture] \
-                        .data_info.data.data_size_old
-                    VEV.vram_offset_quanty_difference[VEV.current_selected_texture] = 1024 - data_size_old
+                    # Remove from the array of differences
+                    VEV.vram_offset_quanty_difference = np.delete(VEV.vram_offset_quanty_difference,
+                                                                  VEV.current_selected_texture)
 
-                    # Change width and height
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                        VEV.current_selected_texture].data_info.data.width = 256
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                        VEV.current_selected_texture].data_info.data.height = 1
-                    main_window.sizeImageText.setText("Resolution: %dx%d" % (256, 1))
-
-                    # Change texture in the array
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                        VEV.current_selected_texture].data_info.data.tx2d_vram.data = b''
-                    data_size = VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]\
-                        .data_info.data.data_size
-                    for _ in range(0, data_size):
-                        data_texture += b'\xFF'
-
-                    # Change texture in the array
-                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[
-                        VEV.current_selected_texture].data_info.data.tx2d_vram.data = header + data_texture
-
-                # Add the texture index to the array of textures edited and removed
-                if VEV.current_selected_texture not in VEV.textures_index_edited:
-                    VEV.textures_index_edited.append(VEV.current_selected_texture)
-                VEV.textures_index_removed.append(VEV.current_selected_texture)
-
-                # Remove image in the tool view
-                main_window.imageTexture.clear()
+                    # Remove from the array of data_entries
+                    del VEV.sprp_file.type_entry[b'TX2D'].data_entry[VEV.current_selected_texture]
+                    # Remove from the array of textures in the window list
+                    main_window.listView.model().removeRow(VEV.current_selected_texture)
     else:
         msg.setWindowTitle("Error")
         message = "There is no texture to remove"
         msg.setText(message)
         msg.exec()
+
+
+def action_add_logic(main_window):
+
+    # Open texture file
+    import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(VEV.spr_file_path, ""),
+                                              "Supported files (*.dds *.bmp) "
+                                              ";; DDS file (*.dds) "
+                                              ";; BMP file (*.bmp)")[0]
+    # The user didn't cancel the file to import
+    if os.path.exists(import_path):
+        add_texture(main_window, import_path)

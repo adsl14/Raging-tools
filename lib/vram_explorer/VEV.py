@@ -33,6 +33,8 @@ class VEV:
 	textures_index_edited = []
 	# Indexes of textures removed
 	textures_index_removed = []
+	# Indexes of textures added
+	textures_index_added = []
 
 	# Relative acumulated offset for name_offset and data_offset
 	relative_name_offset_quanty = []
@@ -40,3 +42,8 @@ class VEV:
 	relative_data_offset_quanty = []
 	# offset quanty difference in each texture data
 	vram_offset_quanty_difference = []
+
+	# quanty of size to add to the total of vram size
+	vram_quanty_size_to_add = 0
+	# quanty of total number of tx2d entries that will be added
+	num_new_tx2d_entries_to_add = 0
