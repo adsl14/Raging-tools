@@ -43,6 +43,12 @@ class VEV:
 	# offset quanty difference in each texture data
 	vram_offset_quanty_difference = []
 
+	# quanty of size to add to the total of size in the data_info_size
+	data_info_size_quanty_to_add = 0
+	# quanty of size to add to the total of size in the data_block_size
+	data_block_size_quanty_to_add = 0
+	# quanty of size to store to the total of spr size
+	spr_quanty_size_to_add = 0
 	# quanty of size to add to the total of vram size
 	vram_quanty_size_to_add = 0
 	# quanty of total number of tx2d entries that will be added
