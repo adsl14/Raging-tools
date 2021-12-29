@@ -942,7 +942,7 @@ def action_export_all_logic(main_window):
         if not os.path.exists(folder_export_path):
             os.mkdir(folder_export_path)
 
-        for i in range(0, VEV.sprp_file.type_entry[b'TX2D'].data_count):
+        for i in range(0, len(VEV.sprp_file.type_entry[b'TX2D'].data_entry)):
             # The image is dds
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding != 0:
 
@@ -1341,7 +1341,7 @@ def action_import_all_logic(main_window):
 
     if folder_import_path:
         # Get all the textures name from memory
-        for i in range(0, VEV.sprp_file.type_entry[b'TX2D'].data_count):
+        for i in range(0, len(VEV.sprp_file.type_entry[b'TX2D'].data_entry)):
 
             # Get the output extension
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding != 0:
