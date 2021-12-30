@@ -23,33 +23,7 @@ class VEV:
 	# Path where the spr file is located
 	spr_file_path = ""
 	# SPRP file class
-	sprp_file = SprpFile()
+	sprp_file = None
 	# --- VRAM vars ---
 	# Path where the vram file is located
 	vram_file_path = ""
-	# Current selected texture in the list view
-	current_selected_texture = 0
-	# Indexes of textures edited
-	textures_index_edited = []
-	# Indexes of textures removed
-	textures_index_removed = []
-	# Indexes of textures added
-	textures_index_added = []
-
-	# Relative acumulated offset for name_offset and data_offset
-	relative_name_offset_quanty = []
-	relative_data_info_offset_quanty = 0
-	relative_data_offset_quanty = []
-	# offset quanty difference in each texture data
-	vram_offset_quanty_difference = []
-
-	# quanty of size to add to the total of size in the data_info_size
-	data_info_size_quanty_to_add = 0
-	# quanty of size to add to the total of size in the data_block_size
-	data_block_size_quanty_to_add = 0
-	# quanty of size to store to the total of spr size
-	spr_quanty_size_to_add = 0
-	# quanty of size to add to the total of vram size
-	vram_quanty_size_to_add = 0
-	# quanty of total number of tx2d entries that will be added
-	num_new_tx2d_entries_to_add = 0
