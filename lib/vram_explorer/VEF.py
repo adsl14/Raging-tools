@@ -1387,7 +1387,7 @@ def action_remove_logic(main_window):
             VEV.enable_combo_box = True
 
             # Disable some the buttons if there won't be any more texture
-            if main_window.listView.model().rowCount() == 0:
+            if main_window.listView.model().rowCount() == 0 and main_window.removeButton.isEnabled():
                 # Disable the buttons
                 main_window.exportAllButton.setEnabled(False)
                 main_window.importAllButton.setEnabled(False)
@@ -1406,6 +1406,15 @@ def action_add_logic(main_window):
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
         add_texture(main_window, import_path)
+
+        # Enable some the buttons if there won't be any more texture
+        if not main_window.removeButton.isEnabled():
+            # Enable the buttons
+            main_window.exportAllButton.setEnabled(True)
+            main_window.importAllButton.setEnabled(True)
+            main_window.importButton.setEnabled(True)
+            main_window.exportButton.setEnabled(True)
+            main_window.removeButton.setEnabled(True)
 
 
 def action_material_val_changed(main_window):
