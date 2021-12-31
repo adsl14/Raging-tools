@@ -51,41 +51,41 @@ def initialize_ve(main_window):
     main_window.sizeImageText.setVisible(False)
     main_window.fileNameText.setVisible(False)
 
-
-def load_data_to_ve(main_window):
-
-    # Reset combo box values
-    main_window.materialVal.clear()
-    main_window.typeVal.clear()
-    main_window.textureVal.clear()
-
-    basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
-
-    # Open spr and vram
-    open_spr_file(main_window, VEV.spr_file_path)
-    open_vram_file(VEV.vram_file_path)
-
-    # Add the names to the list view
+    # Create a model for the list view of textures
     model = QStandardItemModel()
     main_window.listView.setModel(model)
-    data_entry_0 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[0]
-    item = QStandardItem(data_entry_0.data_info.name)
-    item.setData(data_entry_0)
-    item.setEditable(False)
-    model.appendRow(item)
-    for data_entry in VEV.sprp_file.type_entry[b'TX2D'].data_entry[1:]:
-        item = QStandardItem(data_entry.data_info.name)
-        item.setData(data_entry)
-        item.setEditable(False)
-        model.appendRow(item)
-    main_window.listView.setCurrentIndex(model.index(0, 0))
     main_window.listView.selectionModel().currentChanged.connect(lambda: action_item(main_window.listView,
                                                                  main_window.imageTexture,
                                                                  main_window.encodingImageText,
                                                                  main_window.mipMapsImageText,
                                                                  main_window.sizeImageText))
 
+
+def load_data_to_ve(main_window):
+
+    # Reset boolean values
+    VEV.enable_combo_box = False
+    # Reset combo box values
+    main_window.materialVal.clear()
+    main_window.typeVal.clear()
+    main_window.typeVal.addItem("EMPTY", 0)
+    main_window.textureVal.clear()
+    main_window.textureVal.addItem("EMPTY", SprpDataEntry())
+    # Reset model list view
+    main_window.listView.model().clear()
+
+    # Get basename from spr_file_path
+    basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
+
+    # Open spr and vram
+    open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
+    open_vram_file(VEV.vram_file_path)
+
+    # Set the index of the list view to be always the first row when loading a new spr/vram file
+    main_window.listView.setCurrentIndex(main_window.listView.model().index(0, 0))
+
     # If the texture encoded is DXT1 or DXT5, we call the show dds function
+    data_entry_0 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[0]
     if data_entry_0.data_info.data.dxt_encoding != 0:
         # Create the dds in disk and open it
         show_dds_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
@@ -112,6 +112,11 @@ def load_data_to_ve(main_window):
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
+
+        # Enable combo box and set the values for the first layer of the first material
+        VEV.enable_combo_box = True
+        action_material_val_changed(main_window)
+
     else:
         main_window.materialVal.setEnabled(False)
         main_window.layerVal.setEnabled(False)
@@ -594,7 +599,7 @@ def update_tx2d_data(file, index):
                data_info.data.dxt_encoding.to_bytes(1, byteorder="big"))
 
 
-def open_spr_file(main_window, spr_path):
+def open_spr_file(main_window, model, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
@@ -691,9 +696,14 @@ def open_spr_file(main_window, spr_path):
 
                     sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
 
-                    # Add the texture to the combo box (material section)
-                    main_window.textureVal.addItem(sprp_data_entry.data_info.name,
-                                                   sprp_data_entry.data_info.name_offset)
+                    # Add the tx2d_data_entry to the combo box (material section)
+                    main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+
+                    # Add the texture to the listView
+                    item = QStandardItem(sprp_data_entry.data_info.name)
+                    item.setData(sprp_data_entry)
+                    item.setEditable(False)
+                    model.appendRow(item)
 
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
@@ -711,7 +721,11 @@ def open_spr_file(main_window, spr_path):
                     for k in range(0, 10):
                         mtrlLayer = MtrlLayer()
                         mtrlLayer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                        mtrlLayer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        # Instead storing only the name offset of the texture, we store the tx2d_entry, that
+                        # has in there also the name offset of the texture
+                        source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        mtrlLayer.tx2d_data_entry = search_tx2d_entry_by_offset(main_window.textureVal,
+                                                                                source_name_offset)
 
                         # Get the names for each mtrlLayer
                         aux_mtrl_pointer = file.tell()
@@ -860,124 +874,6 @@ def get_dxt_value(encoding_name):
         return 8
     elif encoding_name == "DXT5":
         return 24
-
-
-def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
-
-    current_selected_index = list_view.selectionModel().currentIndex().row()
-
-    # There is no texture to show if the index is negative
-    if current_selected_index >= 0:
-
-        data_entry = list_view.model().item(current_selected_index, 0).data()
-
-        # Only shows the texture when the size is different from 0
-        if data_entry.data_info.data.data_size != 0:
-
-            # If the encoding is DXT5 or DXT1, we show the dds image
-            if data_entry.data_info.data.dxt_encoding \
-               != 0:
-                # Create the dds in disk and open it
-                show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
-                               data_entry.data_info.data.width,
-                               data_entry.data_info.data.height)
-            else:
-                if data_entry.data_info.extension \
-                   != "png":
-                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
-                                   data_entry.data_info.data.width,
-                                   data_entry.data_info.data.height)
-                else:
-                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle,
-                                   data_entry.data_info.data.width,
-                                   data_entry.data_info.data.height)
-        else:
-            # Remove image in the tool view
-            image_texture.clear()
-
-        encoding_image_text.setText("Encoding: %s" % (get_encoding_name(data_entry.data_info.data.dxt_encoding)))
-        mip_maps_image_text.setText("Mipmaps: %s" % data_entry.data_info.data.mip_maps)
-        size_image_text.setText("Resolution: %dx%d" % (data_entry.data_info.data.width,
-                                                       data_entry.data_info.data.height))
-    else:
-        encoding_image_text.setText("")
-        mip_maps_image_text.setText("")
-        size_image_text.setText("")
-        image_texture.clear()
-
-
-def action_export_logic(main_window):
-
-    current_selected_index = main_window.listView.selectionModel().currentIndex().row()
-    data_entry = main_window.listView.model().item(current_selected_index, 0).data()
-
-    # If the encoding is DXT5 or DXT1, we show the dds image
-    if data_entry.data_info.data.dxt_encoding != 0:
-        # Save dds file
-        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
-            VEV.spr_file_path, data_entry.data_info.name
-            + ".dds"), "DDS file (*.dds)")[0]
-
-        data = data_entry.data_info.data.tx2d_vram.data
-
-    else:
-        # Save bmp file
-        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
-            VEV.spr_file_path, data_entry.data_info.name
-            + ".bmp"), "BMP file (*.bmp)")[0]
-
-        if data_entry.data_info.extension != "png":
-            data = data_entry.data_info.data.tx2d_vram.data
-        else:
-            data = data_entry.data_info.data.tx2d_vram.data_unswizzle
-
-    if export_path:
-        file = open(export_path, mode="wb")
-        file.write(data)
-        file.close()
-
-
-def action_export_all_logic(main_window):
-
-    # Ask to the user where to save the files
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.splitext(
-        VEV.spr_file_path)[0])[0]
-
-    # Check if the user selected the folder
-    if folder_export_path:
-
-        # Create the folder
-        if not os.path.exists(folder_export_path):
-            os.mkdir(folder_export_path)
-
-        for i in range(0, main_window.listView.model().rowCount()):
-            data_entry = main_window.listView.model().item(i, 0).data()
-            # The image is dds
-            if data_entry.data_info.data.dxt_encoding != 0:
-
-                file = open(os.path.join(folder_export_path, data_entry.data_info.name + ".dds"), mode="wb")
-
-                file.write(data_entry.data_info.data.tx2d_vram.data)
-                file.close()
-
-            else:
-                file = open(os.path.join(folder_export_path, data_entry.data_info.name + ".bmp"), mode="wb")
-                if data_entry.data_info.extension != "png":
-                    file.write(data_entry.data_info.data.tx2d_vram.data)
-                else:
-                    file.write(data_entry.data_info.data.tx2d_vram.data_unswizzle)
-                file.close()
-
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        message = "All the textures were exported in: <b>" + folder_export_path \
-                  + "</b><br><br> Do you wish to open the folder?"
-        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-        # If the users click on 'Yes', it will open the path where the files were saved
-        if message_open_exported_files == msg.Yes:
-            # Show the path folder to the user
-            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
 
 
 def replace_texture_properties(main_window, data_entry, len_data, width, height, mip_maps, dxt_encoding):
@@ -1194,6 +1090,11 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     item.setEditable(False)
     main_window.listView.model().appendRow(item)
 
+    # Append to the array of textures in the material section
+    VEV.enable_combo_box = False
+    main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+    VEV.enable_combo_box = True
+
 
 # Will add a new texture to the list view, creating a new sprp_data_entry
 def add_texture(main_window, import_file_path):
@@ -1263,6 +1164,144 @@ def add_texture(main_window, import_file_path):
             msg.setText("Invalid texture file.")
             msg.exec()
             return
+
+
+def search_tx2d_entry_by_offset(texture_val_combo_box, offset_to_search):
+
+    # Get the tx2d_data_entry
+    tx2d_data_entry = texture_val_combo_box.itemData(0)
+
+    # If the first texture entry in the combo box is not the same we're searching, we search the following textures
+    if tx2d_data_entry.data_info.name_offset != offset_to_search:
+        # We will search the tx2d_data_entry by using the name offset
+        for i in range(1, texture_val_combo_box.count()):
+
+            # Get the tx2d_data_entry
+            tx2d_data_entry = texture_val_combo_box.itemData(i)
+
+            # return the index when we found it
+            if tx2d_data_entry.data_info.name_offset == offset_to_search:
+                break
+
+    return tx2d_data_entry
+
+
+def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
+
+    current_selected_index = list_view.selectionModel().currentIndex().row()
+
+    # There is no texture to show if the index is negative
+    if current_selected_index >= 0:
+
+        data_entry = list_view.model().item(current_selected_index, 0).data()
+
+        # Only shows the texture when the size is different from 0
+        if data_entry.data_info.data.data_size != 0:
+
+            # If the encoding is DXT5 or DXT1, we show the dds image
+            if data_entry.data_info.data.dxt_encoding \
+               != 0:
+                # Create the dds in disk and open it
+                show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
+                               data_entry.data_info.data.width,
+                               data_entry.data_info.data.height)
+            else:
+                if data_entry.data_info.extension \
+                   != "png":
+                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
+                                   data_entry.data_info.data.width,
+                                   data_entry.data_info.data.height)
+                else:
+                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle,
+                                   data_entry.data_info.data.width,
+                                   data_entry.data_info.data.height)
+        else:
+            # Remove image in the tool view
+            image_texture.clear()
+
+        encoding_image_text.setText("Encoding: %s" % (get_encoding_name(data_entry.data_info.data.dxt_encoding)))
+        mip_maps_image_text.setText("Mipmaps: %s" % data_entry.data_info.data.mip_maps)
+        size_image_text.setText("Resolution: %dx%d" % (data_entry.data_info.data.width,
+                                                       data_entry.data_info.data.height))
+    else:
+        encoding_image_text.setText("")
+        mip_maps_image_text.setText("")
+        size_image_text.setText("")
+        image_texture.clear()
+
+
+def action_export_logic(main_window):
+
+    current_selected_index = main_window.listView.selectionModel().currentIndex().row()
+    data_entry = main_window.listView.model().item(current_selected_index, 0).data()
+
+    # If the encoding is DXT5 or DXT1, we show the dds image
+    if data_entry.data_info.data.dxt_encoding != 0:
+        # Save dds file
+        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
+            VEV.spr_file_path, data_entry.data_info.name
+            + ".dds"), "DDS file (*.dds)")[0]
+
+        data = data_entry.data_info.data.tx2d_vram.data
+
+    else:
+        # Save bmp file
+        export_path = QFileDialog.getSaveFileName(main_window, "Export texture", os.path.join(
+            VEV.spr_file_path, data_entry.data_info.name
+            + ".bmp"), "BMP file (*.bmp)")[0]
+
+        if data_entry.data_info.extension != "png":
+            data = data_entry.data_info.data.tx2d_vram.data
+        else:
+            data = data_entry.data_info.data.tx2d_vram.data_unswizzle
+
+    if export_path:
+        file = open(export_path, mode="wb")
+        file.write(data)
+        file.close()
+
+
+def action_export_all_logic(main_window):
+
+    # Ask to the user where to save the files
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.splitext(
+        VEV.spr_file_path)[0])[0]
+
+    # Check if the user selected the folder
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        for i in range(0, main_window.listView.model().rowCount()):
+            data_entry = main_window.listView.model().item(i, 0).data()
+            # The image is dds
+            if data_entry.data_info.data.dxt_encoding != 0:
+
+                file = open(os.path.join(folder_export_path, data_entry.data_info.name + ".dds"), mode="wb")
+
+                file.write(data_entry.data_info.data.tx2d_vram.data)
+                file.close()
+
+            else:
+                file = open(os.path.join(folder_export_path, data_entry.data_info.name + ".bmp"), mode="wb")
+                if data_entry.data_info.extension != "png":
+                    file.write(data_entry.data_info.data.tx2d_vram.data)
+                else:
+                    file.write(data_entry.data_info.data.tx2d_vram.data_unswizzle)
+                file.close()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "All the textures were exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the folder?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
 
 
 def action_import_all_logic(main_window):
@@ -1341,11 +1380,31 @@ def action_remove_logic(main_window):
                 data_entry.index -= 1
 
             # Remove from the array of textures in the window list
-            main_window.listView.model().removeRow(main_window.listView.selectionModel().currentIndex().row())
+            main_window.listView.model().removeRow(current_index_list_view)
 
-            # Disable some the buttons if we're removing the last texture
-            current_index_list_view = main_window.listView.selectionModel().currentIndex().row()
-            if current_index_list_view < 0:
+            # Remove from the array of textures in the material section
+            VEV.enable_combo_box = False
+            current_index_material_texture_index = current_index_list_view + 1
+
+            # Search the material layer that is using the texture to assing the empty tx2d_entry one
+            # in the material layer
+            tx2d_entry_data_removed = main_window.textureVal.itemData(current_index_material_texture_index)
+            for i in range(0, main_window.materialVal.count()):
+                mtrl_entry_data = main_window.materialVal.itemData(i)
+                for j in range(0, main_window.layerVal.count()):
+                    layer = mtrl_entry_data.data_info.data.layers[j]
+                    if layer.tx2d_data_entry == tx2d_entry_data_removed:
+                        layer.tx2d_data_entry = main_window.textureVal.itemData(0)
+            # Remove the tx2d_entry_data from the texture material section
+            # If the current texture selected in the combo box is the same index as the texture we're removing
+            # we leave the combo box to be in the index 0
+            if main_window.textureVal.currentIndex() == current_index_material_texture_index:
+                main_window.textureVal.setCurrentIndex(0)
+            main_window.textureVal.removeItem(current_index_material_texture_index)
+            VEV.enable_combo_box = True
+
+            # Disable some the buttons if there won't be any more texture
+            if main_window.listView.model().rowCount() == 0:
                 # Disable the buttons
                 main_window.exportAllButton.setEnabled(False)
                 main_window.importAllButton.setEnabled(False)
@@ -1368,47 +1427,53 @@ def action_add_logic(main_window):
 
 def action_material_val_changed(main_window):
 
-    # Get the mtrl entry
-    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    if data_entry is not None:
-        mtrl_info = data_entry.data_info.data
+    if VEV.enable_combo_box:
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        mtrl_data = mtrl_data_entry.data_info.data
 
-        # Set the index to 0
-        main_window.layerVal.setCurrentIndex(0)
+        # Get the layer index
+        layer = mtrl_data.layers[0]
 
-        # Set the type of layer (index 0)
-        main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(mtrl_info.layers[0].layer_name_offset))
+        # Get the index to 0. This will call the other methods
+        if main_window.layerVal.currentIndex() != 0:
+            main_window.layerVal.setCurrentIndex(0)
+        # If the index is 0, we call by ourselfs the methods of the type and texture material
+        else:
+            # Get the type of layer (index 0)
+            main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
 
-        # Set the texture for the layer (index 0)
-        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(mtrl_info.layers[0].source_name_offset))
+            # Get the texture for the layer (index 0)
+            main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.tx2d_data_entry))
 
 
 def action_layer_val_changed(main_window):
 
-    # Get the mtrl entry
-    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    if data_entry is not None:
-        mtrl_info = data_entry.data_info.data
+    if VEV.enable_combo_box:
+
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        mtrl_data = mtrl_data_entry.data_info.data
 
         # Get the layer index
-        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Get the type of layer
         main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
 
         # Get the texture for the layer
-        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
+        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.tx2d_data_entry))
 
 
 def action_type_val_changed(main_window):
 
-    # Get the mtrl entry
-    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    if data_entry is not None:
-        mtrl_info = data_entry.data_info.data
+    if VEV.enable_combo_box:
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        mtrl_data = mtrl_data_entry.data_info.data
 
         # Get the layer index
-        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Store the selected type of layer
         layer.layer_name_offset = main_window.typeVal.itemData(main_window.typeVal.currentIndex())
@@ -1416,13 +1481,13 @@ def action_type_val_changed(main_window):
 
 def action_texture_val_changed(main_window):
 
-    # Get the mtrl entry
-    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    if data_entry is not None:
-        mtrl_info = data_entry.data_info.data
+    if VEV.enable_combo_box:
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        mtrl_data = mtrl_data_entry.data_info.data
 
         # Get the layer index
-        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Store the texture for the layer
-        layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
+        layer.tx2d_data_entry = main_window.textureVal.itemData(main_window.textureVal.currentIndex())

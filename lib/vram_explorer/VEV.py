@@ -1,5 +1,4 @@
 from lib.packages import os, datetime
-from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
 
 
 class VEV:
@@ -27,3 +26,5 @@ class VEV:
 	# --- VRAM vars ---
 	# Path where the vram file is located
 	vram_file_path = ""
+
+	enable_combo_box = False
