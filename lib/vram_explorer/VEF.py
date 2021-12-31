@@ -70,7 +70,7 @@ def load_data_to_ve(main_window):
     main_window.typeVal.clear()
     main_window.typeVal.addItem("EMPTY", 0)
     main_window.textureVal.clear()
-    main_window.textureVal.addItem("EMPTY", SprpDataEntry())
+    main_window.textureVal.addItem("EMPTY", 0)
     # Reset model list view
     main_window.listView.model().clear()
 
@@ -697,7 +697,8 @@ def open_spr_file(main_window, model, spr_path):
                     sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
 
                     # Add the tx2d_data_entry to the combo box (material section)
-                    main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+                    main_window.textureVal.addItem(sprp_data_entry.data_info.name,
+                                                   sprp_data_entry.data_info.name_offset)
 
                     # Add the texture to the listView
                     item = QStandardItem(sprp_data_entry.data_info.name)
@@ -721,11 +722,7 @@ def open_spr_file(main_window, model, spr_path):
                     for k in range(0, 10):
                         mtrlLayer = MtrlLayer()
                         mtrlLayer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                        # Instead storing only the name offset of the texture, we store the tx2d_entry, that
-                        # has in there also the name offset of the texture
-                        source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                        mtrlLayer.tx2d_data_entry = search_tx2d_entry_by_offset(main_window.textureVal,
-                                                                                source_name_offset)
+                        mtrlLayer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                         # Get the names for each mtrlLayer
                         aux_mtrl_pointer = file.tell()
@@ -1078,6 +1075,8 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     sprp_data_entry.new_entry = True
 
     # Store the data_info from the data_entry
+    # The name offset value will be temporal. It will unique to the added texture
+    sprp_data_entry.data_info.name_offset = -sprp_data_entry.index
     sprp_data_entry.data_info.name = os.path.basename(import_file_path).split(".")[0]
     sprp_data_entry.data_info.extension = "tga"
     sprp_data_entry.data_info.name_size = len(sprp_data_entry.data_info.name) + 1 + \
@@ -1092,7 +1091,7 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
 
     # Append to the array of textures in the material section
     VEV.enable_combo_box = False
-    main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+    main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
     VEV.enable_combo_box = True
 
 
@@ -1164,26 +1163,6 @@ def add_texture(main_window, import_file_path):
             msg.setText("Invalid texture file.")
             msg.exec()
             return
-
-
-def search_tx2d_entry_by_offset(texture_val_combo_box, offset_to_search):
-
-    # Get the tx2d_data_entry
-    tx2d_data_entry = texture_val_combo_box.itemData(0)
-
-    # If the first texture entry in the combo box is not the same we're searching, we search the following textures
-    if tx2d_data_entry.data_info.name_offset != offset_to_search:
-        # We will search the tx2d_data_entry by using the name offset
-        for i in range(1, texture_val_combo_box.count()):
-
-            # Get the tx2d_data_entry
-            tx2d_data_entry = texture_val_combo_box.itemData(i)
-
-            # return the index when we found it
-            if tx2d_data_entry.data_info.name_offset == offset_to_search:
-                break
-
-    return tx2d_data_entry
 
 
 def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
@@ -1379,6 +1358,10 @@ def action_remove_logic(main_window):
                 # Reduce their index
                 data_entry.index -= 1
 
+                # Recalculate the unique temporal name_offset for the material texture section
+                if data_entry.new_entry:
+                    data_entry.data_info.name_offset = -data_entry.index
+
             # Remove from the array of textures in the window list
             main_window.listView.model().removeRow(current_index_list_view)
 
@@ -1386,16 +1369,16 @@ def action_remove_logic(main_window):
             VEV.enable_combo_box = False
             current_index_material_texture_index = current_index_list_view + 1
 
-            # Search the material layer that is using the texture to assing the empty tx2d_entry one
+            # Search the material layer that is using the texture to assing the empty offset one
             # in the material layer
-            tx2d_entry_data_removed = main_window.textureVal.itemData(current_index_material_texture_index)
+            name_offset_removed = main_window.textureVal.itemData(current_index_material_texture_index)
             for i in range(0, main_window.materialVal.count()):
                 mtrl_entry_data = main_window.materialVal.itemData(i)
                 for j in range(0, main_window.layerVal.count()):
                     layer = mtrl_entry_data.data_info.data.layers[j]
-                    if layer.tx2d_data_entry == tx2d_entry_data_removed:
-                        layer.tx2d_data_entry = main_window.textureVal.itemData(0)
-            # Remove the tx2d_entry_data from the texture material section
+                    if layer.source_name_offset == name_offset_removed:
+                        layer.source_name_offset = 0
+            # Remove the offset texture name from the texture material section
             # If the current texture selected in the combo box is the same index as the texture we're removing
             # we leave the combo box to be in the index 0
             if main_window.textureVal.currentIndex() == current_index_material_texture_index:
@@ -1444,7 +1427,7 @@ def action_material_val_changed(main_window):
             main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
 
             # Get the texture for the layer (index 0)
-            main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.tx2d_data_entry))
+            main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
 
 def action_layer_val_changed(main_window):
@@ -1462,7 +1445,7 @@ def action_layer_val_changed(main_window):
         main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
 
         # Get the texture for the layer
-        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.tx2d_data_entry))
+        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
 
 def action_type_val_changed(main_window):
@@ -1490,4 +1473,4 @@ def action_texture_val_changed(main_window):
         layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Store the texture for the layer
-        layer.tx2d_data_entry = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
+        layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())

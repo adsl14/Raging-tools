@@ -244,10 +244,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Where the names are located
                         string_table = input_sprp_file.read(VEV.sprp_file.sprp_header.string_table_size)
 
-                        # Get each data entry divided in tx2d and the rest of data entries
+                        # Get each data entry divided in tx2d, mtrl and the rest of data entries
                         tx2d_data_info_size = VEV.sprp_file.type_entry[b'TX2D'].data_count * 32
-                        input_sprp_file.seek(tx2d_data_info_size, os.SEEK_CUR)
-                        rest_data_info_size = VEV.sprp_file.sprp_header.data_info_size - tx2d_data_info_size
+                        num_textures = self.listView.model().rowCount()
+                        if b'MTRL' in VEV.sprp_file.type_entry:
+                            mtrl_data_info_size = VEV.sprp_file.type_entry[b'MTRL'].data_count * 32
+                            num_material = self.materialVal.count()
+                        else:
+                            mtrl_data_info_size = 0
+                            num_material = 0
+                        input_sprp_file.seek(tx2d_data_info_size + mtrl_data_info_size, os.SEEK_CUR)
+                        rest_data_info_size = VEV.sprp_file.sprp_header.data_info_size - (tx2d_data_info_size +
+                                                                                          mtrl_data_info_size)
                         rest_data_info = input_sprp_file.read(rest_data_info_size)
 
                         # Get all the data
@@ -257,13 +265,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # Create the new vram
                     tx2d_data_entry = b''
-                    num_textures = self.listView.model().rowCount()
-                    data_info_size = (num_textures * 32) + rest_data_info_size
+                    mtrl_data_entry = b''
+                    data_info_size = ((num_textures + num_material) * 32) + rest_data_info_size
                     data_block_base = VEV.sprp_file.data_info_base + data_info_size
                     spr_new_size = data_block_base + data_block_size
                     with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
 
-                        # Get each data_entry and store the texture properties
+                        # Get each data_entry (TX2D) and store the texture properties
                         for i in range(0, num_textures):
 
                             # Get the texture from the tool
@@ -276,13 +284,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Calculate the name_offset and data_offset only when is a brand new texture
                             # Also calculate the new size of the spr
                             if data_entry.new_entry:
+
+                                aux_name_offset = data_entry.data_info.name_offset
                                 data_entry.data_info.name_offset = spr_new_size + 1 - \
-                                                                   VEV.sprp_file.string_table_base
+                                    VEV.sprp_file.string_table_base
                                 data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
                                     data_entry.data_info.name_offset + \
                                     data_entry.data_info.name_size + 1 - data_block_base
                                 data_block_size += 1 + data_entry.data_info.name_size + 1 + 48
                                 spr_new_size += 1 + data_entry.data_info.name_size + 1 + 48
+
+                                # Search the material layer that is using this brand new texture (if exists)
+                                for j in range(0, num_material):
+                                    temp_mtrl_data_info = self.materialVal.itemData(j)
+                                    for k in range(0, 10):
+                                        # Get the layer from one material and check if the texture is aiming is the
+                                        # same as the brand new texture
+                                       layer = temp_mtrl_data_info.layers[k]
+                                       if layer.source_name_offset != aux_name_offset:
+                                           continue
+                                       if self.textureVal.findData(layer.source_name_offset) >= 0:
+                                        layer.source_name_offset = data_entry.data_info.name_offset
 
                             tx2d_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
                             tx2d_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
@@ -362,6 +384,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                     output_vram_file.write(data_entry.data_info.data.tx2d_vram.data)
 
+                        # Get each data_entry (MTRL) and store the material properties
+                        for i in range(0, num_material):
+
+                            # Get the material from the tool
+                            data_entry = self.materialVal.itemData(i)
+
+                            # Create the mtrl_data_entry for each material
+                            mtrl_data_entry += data_entry.data_type
+                            mtrl_data_entry += data_entry.index.to_bytes(4, 'big')
+
+                            mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
+                            mtrl_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
+                            mtrl_data_entry += data_entry.data_info.data_size.to_bytes(4, 'big')
+                            mtrl_data_entry += data_entry.data_info.child_count.to_bytes(4, 'big')
+                            mtrl_data_entry += data_entry.data_info.child_offset.to_bytes(4, 'big')
+                            for _ in range(4):
+                                mtrl_data_entry += b'\x00'
+
+                            # Create the tx2d_data for each texture
+                            mtrl_data = b''
+                            mtrl_data += data_entry.data_info.data.unk_00
+                            # Write each layer from one material
+                            for j in range(0, 10):
+                                layer = data_entry.data_info.data.layers[j]
+                                mtrl_data += layer.layer_name_offset.to_bytes(4, 'big')
+                                mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
+
+                            data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
+                                data_block[data_entry.data_info.data_offset + 192:]
+
                         # Get the new vram size by getting the position of the pointer in the output file
                         # since it's in the end of the file
                         vram_new_size = output_vram_file.tell()
@@ -373,7 +425,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Update the entry_info_base
                     entry_info = entry_info[:8] + num_textures.to_bytes(4, 'big') + entry_info[12:]
                     with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
-                        output_spr_file.write(header + entry_info + string_table + tx2d_data_entry +
+                        output_spr_file.write(header + entry_info + string_table + tx2d_data_entry + mtrl_data_entry +
                                               rest_data_info + data_block)
 
                     message = "The files were saved in: <b>" + path_output_file \
