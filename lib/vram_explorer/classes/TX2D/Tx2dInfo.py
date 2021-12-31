@@ -13,8 +13,5 @@ class Tx2dInfo:
     self.unk0x1c = 0
     self.dxt_encoding = 0
 
-    # Extra info
-    self.data_offset_old = 0
-    self.data_size_old = 0
     # TX2D_VRAM
     self.tx2d_vram = None

@@ -35,6 +35,16 @@ def initialize_ve(main_window):
     main_window.removeButton.setEnabled(False)
     main_window.addButton.setEnabled(False)
 
+    # Material
+    main_window.materialVal.currentIndexChanged.connect(lambda: action_material_val_changed(main_window))
+    main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
+    main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
+    main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
+    main_window.materialVal.setEnabled(False)
+    main_window.layerVal.setEnabled(False)
+    main_window.typeVal.setEnabled(False)
+    main_window.textureVal.setEnabled(False)
+
     # Labels
     main_window.encodingImageText.setVisible(False)
     main_window.mipMapsImageText.setVisible(False)
@@ -44,10 +54,15 @@ def initialize_ve(main_window):
 
 def load_data_to_ve(main_window):
 
+    # Reset combo box values
+    main_window.materialVal.clear()
+    main_window.typeVal.clear()
+    main_window.textureVal.clear()
+
     basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
     # Open spr and vram
-    open_spr_file(VEV.spr_file_path)
+    open_spr_file(main_window, VEV.spr_file_path)
     open_vram_file(VEV.vram_file_path)
 
     # Add the names to the list view
@@ -90,6 +105,18 @@ def load_data_to_ve(main_window):
     main_window.exportButton.setEnabled(True)
     main_window.removeButton.setEnabled(True)
     main_window.addButton.setEnabled(True)
+
+    # Enable the buttons of material only if the spr holds mtrl section
+    if b'MTRL' in VEV.sprp_file.type_entry:
+        main_window.materialVal.setEnabled(True)
+        main_window.layerVal.setEnabled(True)
+        main_window.typeVal.setEnabled(True)
+        main_window.textureVal.setEnabled(True)
+    else:
+        main_window.materialVal.setEnabled(False)
+        main_window.layerVal.setEnabled(False)
+        main_window.typeVal.setEnabled(False)
+        main_window.textureVal.setEnabled(False)
 
     # Show the text labels
     main_window.fileNameText.setText(basename)
@@ -261,7 +288,10 @@ def read_dds_file(file_path):
         raise OSError
 
 
-def get_name_from_spr(file, sprp_data_info):
+def get_name_from_spr(file, offset):
+
+    file.seek(offset)
+    name = ""
 
     # Read the file until we find the '00' byte value
     while True:
@@ -280,31 +310,33 @@ def get_name_from_spr(file, sprp_data_info):
             else:
                 data_decoded = data.decode('utf-8')
 
-            sprp_data_info.name += data_decoded
+            name += data_decoded
 
         # The texture name is already stored. We clean it
         else:
             # Get the name splitted by '.'
-            name_splitted = sprp_data_info.name.split(".")
+            name_splitted = name.split(".")
             tam_name_splitted = len(name_splitted)
-            sprp_data_info.name = ""
+            name = ""
 
             # Get the name and extension separatelly
             if tam_name_splitted > 1:
                 for i in range(0, tam_name_splitted - 1):
-                    sprp_data_info.name += name_splitted[i] + ("." if i < tam_name_splitted - 2 else "")
-                sprp_data_info.extension = name_splitted[-1]
+                    name += name_splitted[i] + ("." if i < tam_name_splitted - 2 else "")
+                extension = name_splitted[-1]
             else:
-                sprp_data_info.name = name_splitted[0]
-                sprp_data_info.extension = ""
+                name = name_splitted[0]
+                extension = ""
 
             # The max number of char for the name is 250
-            name_size = len(sprp_data_info.name)
+            name_size = len(name)
             if name_size > 250:
-                sprp_data_info.name = sprp_data_info.name[name_size - 250:]
+                name = name[name_size - 250:]
 
             # Finish the reading of the file
             break
+
+    return name, extension
 
 
 def read_children(file, sprp_data_info, type_section):
@@ -322,8 +354,8 @@ def read_children(file, sprp_data_info, type_section):
 
         # Get the name for the data_info
         aux_pointer_file = file.tell()
-        file.seek(VEV.sprp_file.string_table_base + sprp_data_info_child.name_offset)
-        get_name_from_spr(file, sprp_data_info_child)
+        sprp_data_info_child.name, sprp_data_info_child.extension = \
+            get_name_from_spr(file, VEV.sprp_file.string_table_base + sprp_data_info_child.name_offset)
         base_name_size = len(sprp_data_info_child.name)
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
@@ -562,7 +594,7 @@ def update_tx2d_data(file, index):
                data_info.data.dxt_encoding.to_bytes(1, byteorder="big"))
 
 
-def open_spr_file(spr_path):
+def open_spr_file(main_window, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
@@ -620,10 +652,10 @@ def open_spr_file(spr_path):
                 aux_pointer_data_entry = file.tell()
 
                 # Store the name of the sprp_data_info
-                file.seek(VEV.sprp_file.string_table_base + sprp_data_entry.data_info.name_offset)
                 # Everything that is not SPR in the header, has names for each data
                 if VEV.sprp_file.sprp_header.data_tag != b"SPR\x00":
-                    get_name_from_spr(file, sprp_data_entry.data_info)
+                    sprp_data_entry.data_info.name,  sprp_data_entry.data_info.extension = \
+                        get_name_from_spr(file, VEV.sprp_file.string_table_base + sprp_data_entry.data_info.name_offset)
                     base_name_size = len(sprp_data_entry.data_info.name)
                     extension_size = len(sprp_data_entry.data_info.extension)
                     sprp_data_entry.data_info.name_size = base_name_size + (1 + extension_size
@@ -647,10 +679,8 @@ def open_spr_file(spr_path):
 
                     sprp_data_entry.data_info.data.unk0x00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     sprp_data_entry.data_info.data.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.data_offset_old = sprp_data_entry.data_info.data.data_offset
                     sprp_data_entry.data_info.data.unk0x08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     sprp_data_entry.data_info.data.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.data_size_old = sprp_data_entry.data_info.data.data_size
                     sprp_data_entry.data_info.data.width = int.from_bytes(file.read(2), "big")
                     sprp_data_entry.data_info.data.height = int.from_bytes(file.read(2), "big")
                     sprp_data_entry.data_info.data.unk0x14 = int.from_bytes(file.read(2), "big")
@@ -660,6 +690,10 @@ def open_spr_file(spr_path):
                     sprp_data_entry.data_info.data.dxt_encoding = int.from_bytes(file.read(1), "big")
 
                     sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
+
+                    # Add the texture to the combo box (material section)
+                    main_window.textureVal.addItem(sprp_data_entry.data_info.name,
+                                                   sprp_data_entry.data_info.name_offset)
 
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
@@ -674,13 +708,26 @@ def open_spr_file(spr_path):
                     sprp_data_entry.data_info.data.unk_00 = file.read(112)
 
                     # Read each layer (the max number is 10)
-                    for _ in range(0, 10):
+                    for k in range(0, 10):
                         mtrlLayer = MtrlLayer()
                         mtrlLayer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                         mtrlLayer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+                        # Get the names for each mtrlLayer
+                        aux_mtrl_pointer = file.tell()
+                        mtrlLayer.layer_name, extension = \
+                            get_name_from_spr(file, mtrlLayer.layer_name_offset + VEV.sprp_file.string_table_base)
+                        file.seek(aux_mtrl_pointer)
+
                         # Store the layer in the actual material
                         sprp_data_entry.data_info.data.layers.append(mtrlLayer)
+
+                        # Add the type of material to the combo box (only unique values)
+                        if main_window.typeVal.findData(mtrlLayer.layer_name_offset) < 0:
+                            main_window.typeVal.addItem(mtrlLayer.layer_name, mtrlLayer.layer_name_offset)
+
+                    # Add the material to the combo box
+                    main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -1317,3 +1364,65 @@ def action_add_logic(main_window):
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
         add_texture(main_window, import_path)
+
+
+def action_material_val_changed(main_window):
+
+    # Get the mtrl entry
+    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    if data_entry is not None:
+        mtrl_info = data_entry.data_info.data
+
+        # Set the index to 0
+        main_window.layerVal.setCurrentIndex(0)
+
+        # Set the type of layer (index 0)
+        main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(mtrl_info.layers[0].layer_name_offset))
+
+        # Set the texture for the layer (index 0)
+        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(mtrl_info.layers[0].source_name_offset))
+
+
+def action_layer_val_changed(main_window):
+
+    # Get the mtrl entry
+    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    if data_entry is not None:
+        mtrl_info = data_entry.data_info.data
+
+        # Get the layer index
+        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+
+        # Get the type of layer
+        main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
+
+        # Get the texture for the layer
+        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
+
+
+def action_type_val_changed(main_window):
+
+    # Get the mtrl entry
+    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    if data_entry is not None:
+        mtrl_info = data_entry.data_info.data
+
+        # Get the layer index
+        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+
+        # Store the selected type of layer
+        layer.layer_name_offset = main_window.typeVal.itemData(main_window.typeVal.currentIndex())
+
+
+def action_texture_val_changed(main_window):
+
+    # Get the mtrl entry
+    data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    if data_entry is not None:
+        mtrl_info = data_entry.data_info.data
+
+        # Get the layer index
+        layer = mtrl_info.layers[main_window.layerVal.currentIndex()]
+
+        # Store the texture for the layer
+        layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
