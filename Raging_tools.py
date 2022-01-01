@@ -247,9 +247,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get each data entry divided in tx2d, mtrl and the rest of data entries
                         tx2d_data_info_size = VEV.sprp_file.type_entry[b'TX2D'].data_count * 32
                         num_textures = self.listView.model().rowCount()
+                        # Update the entry_info_base for tx2d
+                        entry_info = entry_info[:8] + num_textures.to_bytes(4, 'big') + entry_info[12:]
                         if b'MTRL' in VEV.sprp_file.type_entry:
                             mtrl_data_info_size = VEV.sprp_file.type_entry[b'MTRL'].data_count * 32
                             num_material = self.materialVal.count()
+                            # Update the entry_info_base for mtrl
+                            entry_info = entry_info[:20] + num_material.to_bytes(4, 'big') + entry_info[24:]
                         else:
                             mtrl_data_info_size = 0
                             num_material = 0
@@ -296,15 +300,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # Search the material layer that is using this brand new texture (if exists)
                                 for j in range(0, num_material):
-                                    temp_mtrl_data_info = self.materialVal.itemData(j)
+                                    temp_mtrl_data_entry = self.materialVal.itemData(j)
                                     for k in range(0, 10):
                                         # Get the layer from one material and check if the texture is aiming is the
                                         # same as the brand new texture
-                                       layer = temp_mtrl_data_info.layers[k]
-                                       if layer.source_name_offset != aux_name_offset:
-                                           continue
-                                       if self.textureVal.findData(layer.source_name_offset) >= 0:
-                                        layer.source_name_offset = data_entry.data_info.name_offset
+                                       layer = temp_mtrl_data_entry.data_info.data.layers[k]
+                                       if layer.source_name_offset == aux_name_offset:
+                                           layer.source_name_offset = data_entry.data_info.name_offset
 
                             tx2d_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
                             tx2d_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
@@ -384,46 +386,73 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                     output_vram_file.write(data_entry.data_info.data.tx2d_vram.data)
 
-                        # Get each data_entry (MTRL) and store the material properties
-                        for i in range(0, num_material):
-
-                            # Get the material from the tool
-                            data_entry = self.materialVal.itemData(i)
-
-                            # Create the mtrl_data_entry for each material
-                            mtrl_data_entry += data_entry.data_type
-                            mtrl_data_entry += data_entry.index.to_bytes(4, 'big')
-
-                            mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
-                            mtrl_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
-                            mtrl_data_entry += data_entry.data_info.data_size.to_bytes(4, 'big')
-                            mtrl_data_entry += data_entry.data_info.child_count.to_bytes(4, 'big')
-                            mtrl_data_entry += data_entry.data_info.child_offset.to_bytes(4, 'big')
-                            for _ in range(4):
-                                mtrl_data_entry += b'\x00'
-
-                            # Create the tx2d_data for each texture
-                            mtrl_data = b''
-                            mtrl_data += data_entry.data_info.data.unk_00
-                            # Write each layer from one material
-                            for j in range(0, 10):
-                                layer = data_entry.data_info.data.layers[j]
-                                mtrl_data += layer.layer_name_offset.to_bytes(4, 'big')
-                                mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
-
-                            data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
-                                data_block[data_entry.data_info.data_offset + 192:]
-
                         # Get the new vram size by getting the position of the pointer in the output file
                         # since it's in the end of the file
                         vram_new_size = output_vram_file.tell()
+
+                    # Get each data_entry (MTRL) and store the material properties
+                    for i in range(0, num_material):
+
+                        # Get the material from the tool
+                        data_entry = self.materialVal.itemData(i)
+
+                        # Create the mtrl_data_entry for each material
+                        mtrl_data_entry += data_entry.data_type
+                        mtrl_data_entry += data_entry.index.to_bytes(4, 'big')
+
+                        # Calculate the name_offset and data_offset only when is a brand new material
+                        # Also calculate the new size of the spr
+                        if data_entry.new_entry:
+
+                            aux_name_offset = data_entry.data_info.name_offset
+                            data_entry.data_info.name_offset = spr_new_size + 1 - \
+                                VEV.sprp_file.string_table_base
+                            data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
+                                data_entry.data_info.name_offset + data_entry.data_info.name_size + 1 - data_block_base
+
+                            data_block_size += 1 + data_entry.data_info.name_size + 1 + 192
+                            spr_new_size += 1 + data_entry.data_info.name_size + 1 + 192
+
+                            # Search the model part that is using this brand new material (if exists)
+                            for j in range(0, self.modelPartVal.count()):
+                                scene_data_info_children = self.modelPartVal.itemData(j)
+                                if scene_data_info_children.data.name_offset == aux_name_offset:
+                                    scene_data_info_children.data.name_offset = data_entry.data_info.name_offset
+
+                        mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
+                        mtrl_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
+                        mtrl_data_entry += data_entry.data_info.data_size.to_bytes(4, 'big')
+                        mtrl_data_entry += data_entry.data_info.child_count.to_bytes(4, 'big')
+                        mtrl_data_entry += data_entry.data_info.child_offset.to_bytes(4, 'big')
+                        for _ in range(4):
+                            mtrl_data_entry += b'\x00'
+
+                        # Create the mtrl_data for each material layer
+                        mtrl_data = b''
+                        mtrl_data += data_entry.data_info.data.unk_00
+                        # Write each layer from one material
+                        for j in range(0, 10):
+                            layer = data_entry.data_info.data.layers[j]
+                            mtrl_data += layer.layer_name_offset.to_bytes(4, 'big')
+                            mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
+
+                        if not data_entry.new_entry:
+                            data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
+                                data_block[data_entry.data_info.data_offset + 192:]
+                        else:
+                            data_block += b'\x00' + data_entry.data_info.name.encode('utf-8') + b'\x00' + mtrl_data
+
+                    # Write the scne material data info name offset to the file
+                    for i in range(0, self.modelPartVal.count()):
+                        data_info_children = self.modelPartVal.itemData(i)
+                        data_offset = data_info_children.data_offset
+                        data_block = data_block[:data_offset] + \
+                            data_info_children.data.name_offset.to_bytes(4, 'big') + data_block[data_offset+4:]
 
                     # Create the new spr file
                     # Update the header
                     header = header[:28] + data_info_size.to_bytes(4, 'big') + data_block_size.to_bytes(4, 'big') + \
                         header[36:48] + vram_new_size.to_bytes(4, 'big') + header[52:]
-                    # Update the entry_info_base
-                    entry_info = entry_info[:8] + num_textures.to_bytes(4, 'big') + entry_info[12:]
                     with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
                         output_spr_file.write(header + entry_info + string_table + tx2d_data_entry + mtrl_data_entry +
                                               rest_data_info + data_block)

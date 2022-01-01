@@ -27,4 +27,8 @@ class VEV:
 	# Path where the vram file is located
 	vram_file_path = ""
 
+	# --- GENERAL vars ---
+	# Enable or disable combo box onchange
 	enable_combo_box = False
+	# Unique offset that will be used when adding a new material/texture
+	unique_temp_name_offset = -1

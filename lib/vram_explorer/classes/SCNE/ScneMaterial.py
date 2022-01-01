@@ -6,3 +6,5 @@ class ScneMaterial:
     self.unk04 = 0
     self.material_info_count = 0
     self.material_info = []
+    # Extra info
+    self.name = ""

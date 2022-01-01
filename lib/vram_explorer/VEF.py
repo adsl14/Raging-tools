@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QInputDialog, QLineEdit
 from pyglet.gl import GLException
 
 from lib.packages import os, image, QImage, QPixmap
@@ -40,10 +40,21 @@ def initialize_ve(main_window):
     main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
     main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
+    main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
+    main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
+    main_window.addMaterialButton.setEnabled(False)
+    main_window.removeMaterialButton.setEnabled(False)
+
+    # Model part
+    main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
+    main_window.materialModelPartVal.currentIndexChanged.connect(lambda:
+                                                                 action_material_model_part_val_changed(main_window))
+    main_window.modelPartVal.setEnabled(False)
+    main_window.materialModelPartVal.setEnabled(False)
 
     # Labels
     main_window.encodingImageText.setVisible(False)
@@ -65,12 +76,17 @@ def load_data_to_ve(main_window):
 
     # Reset boolean values
     VEV.enable_combo_box = False
+    # Reset integer values
+    VEV.unique_temp_name_offset = -1
     # Reset combo box values
     main_window.materialVal.clear()
     main_window.typeVal.clear()
     main_window.typeVal.addItem("EMPTY", 0)
     main_window.textureVal.clear()
     main_window.textureVal.addItem("EMPTY", 0)
+    main_window.modelPartVal.clear()
+    main_window.materialModelPartVal.clear()
+    main_window.materialModelPartVal.addItem("EMPTY", 0)
     # Reset model list view
     main_window.listView.model().clear()
 
@@ -112,16 +128,27 @@ def load_data_to_ve(main_window):
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
+        main_window.addMaterialButton.setEnabled(True)
+        main_window.removeMaterialButton.setEnabled(True)
+
+        main_window.modelPartVal.setEnabled(True)
+        main_window.materialModelPartVal.setEnabled(True)
 
         # Enable combo box and set the values for the first layer of the first material
         VEV.enable_combo_box = True
         action_material_val_changed(main_window)
+        action_model_part_val_changed(main_window)
 
     else:
         main_window.materialVal.setEnabled(False)
         main_window.layerVal.setEnabled(False)
         main_window.typeVal.setEnabled(False)
         main_window.textureVal.setEnabled(False)
+        main_window.addMaterialButton.setEnabled(False)
+        main_window.removeMaterialButton.setEnabled(False)
+
+        main_window.modelPartVal.setEnabled(False)
+        main_window.materialModelPartVal.setEnabled(False)
 
     # Show the text labels
     main_window.fileNameText.setText(basename)
@@ -344,7 +371,7 @@ def get_name_from_spr(file, offset):
     return name, extension
 
 
-def read_children(file, sprp_data_info, type_section):
+def read_children(main_window, file, sprp_data_info, type_section):
 
     file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_block_base)
 
@@ -402,6 +429,9 @@ def read_children(file, sprp_data_info, type_section):
 
                 sprp_data_info_child.data = scne_material
 
+                # Store in the combo box, the sprp_data_info children using as a key, the father's name
+                main_window.modelPartVal.addItem(sprp_data_info.name, sprp_data_info_child)
+
             # If the children name is DbzEyeInfo, we store the scene eye info in the child data
             elif sprp_data_info_child.name == "DbzEyeInfo":
                 file.seek(VEV.sprp_file.data_block_base + sprp_data_info_child.data_offset)
@@ -423,7 +453,7 @@ def read_children(file, sprp_data_info, type_section):
 
         # Get all the children sprp_data_info for the actual children in the loop section
         if sprp_data_info_child.child_count > 0:
-            read_children(file, sprp_data_info_child, type_section)
+            read_children(main_window, file, sprp_data_info_child, type_section)
             file.seek(aux_pointer_file)
 
         # Store each children to the array
@@ -671,7 +701,7 @@ def open_spr_file(main_window, model, spr_path):
 
                 # Get all the children sprp_data_info
                 if sprp_data_entry.data_info.child_count > 0:
-                    read_children(file, sprp_data_entry.data_info, sprp_data_entry.data_type)
+                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
@@ -739,6 +769,8 @@ def open_spr_file(main_window, model, spr_path):
 
                     # Add the material to the combo box
                     main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+                    main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name,
+                                                             sprp_data_entry.data_info.name_offset)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -1075,8 +1107,9 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     sprp_data_entry.new_entry = True
 
     # Store the data_info from the data_entry
-    # The name offset value will be temporal. It will unique to the added texture
-    sprp_data_entry.data_info.name_offset = -sprp_data_entry.index
+    # The name offset value will be unique and temporal for now
+    sprp_data_entry.data_info.name_offset = VEV.unique_temp_name_offset
+    VEV.unique_temp_name_offset -= 1
     sprp_data_entry.data_info.name = os.path.basename(import_file_path).split(".")[0]
     sprp_data_entry.data_info.extension = "tga"
     sprp_data_entry.data_info.name_size = len(sprp_data_entry.data_info.name) + 1 + \
@@ -1358,10 +1391,6 @@ def action_remove_logic(main_window):
                 # Reduce their index
                 data_entry.index -= 1
 
-                # Recalculate the unique temporal name_offset for the material texture section
-                if data_entry.new_entry:
-                    data_entry.data_info.name_offset = -data_entry.index
-
             # Remove from the array of textures in the window list
             main_window.listView.model().removeRow(current_index_list_view)
 
@@ -1369,7 +1398,7 @@ def action_remove_logic(main_window):
             VEV.enable_combo_box = False
             current_index_material_texture_index = current_index_list_view + 1
 
-            # Search the material layer that is using the texture to assing the empty offset one
+            # Search the material layer that is using the texture removed to assing the empty offset one
             # in the material layer
             name_offset_removed = main_window.textureVal.itemData(current_index_material_texture_index)
             for i in range(0, main_window.materialVal.count()):
@@ -1378,6 +1407,7 @@ def action_remove_logic(main_window):
                     layer = mtrl_entry_data.data_info.data.layers[j]
                     if layer.source_name_offset == name_offset_removed:
                         layer.source_name_offset = 0
+
             # Remove the offset texture name from the texture material section
             # If the current texture selected in the combo box is the same index as the texture we're removing
             # we leave the combo box to be in the index 0
@@ -1483,3 +1513,118 @@ def action_texture_val_changed(main_window):
 
         # Store the texture for the layer
         layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
+
+
+def action_add_material_logic(main_window):
+
+    # Ask to the user the name of the material
+    text, okPressed = QInputDialog.getText(main_window, "Material", "Insert a material name:", QLineEdit.Normal, "")
+
+    # If the user write the name and is not empty, we create a new material
+    if okPressed and text != '':
+
+        # Create the data_entry for the material
+        sprp_data_entry = SprpDataEntry()
+        sprp_data_entry.data_type = b'MTRL'
+        sprp_data_entry.index = main_window.materialVal.count()
+        sprp_data_entry.new_entry = True
+
+        # Store the data_info properties
+        # The name offset value will be unique and temporal for now
+        sprp_data_entry.data_info.name_offset = VEV.unique_temp_name_offset
+        VEV.unique_temp_name_offset -= 1
+        sprp_data_entry.data_info.data_size = 192
+        sprp_data_entry.data_info.name = text
+        sprp_data_entry.data_info.name_size = len(text)
+
+        # Create the mtrl_info
+        sprp_data_entry.data_info.data = MtrlInfo()
+        # We don't know for now what kind of values are these for the material. When adding, this will be the default
+        sprp_data_entry.data_info.data.unk_00 = b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3F\x80\x00\x00' \
+                                                b'\x3F\x24\xDD\x2F\x3E\xD1\x7A\x54\x3E\xC2\x8A\x1E\x3F\x80\x00\x00' \
+                                                b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x3F\x80\x00\x00' \
+                                                b'\x3F\x36\xC8\xB4\x3E\x6C\x28\x2D\x3E\x6C\x28\x2D\x3F\x80\x00\x00' \
+                                                b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                                                b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
+                                                b'\x3E\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+        # Create the layers
+        for i in range(0, 10):
+            mtrl_layer = MtrlLayer()
+            mtrl_layer.layer_name_offset = 0
+            mtrl_layer.source_name_offset = 0
+            sprp_data_entry.data_info.data.layers.append(mtrl_layer)
+
+        # Add the material to the combo box
+        VEV.enable_combo_box = False
+        main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
+        main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
+        VEV.enable_combo_box = True
+
+
+def action_remove_material_logic(main_window):
+
+    # Ask to the user if is sure to remove the texture
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    message = "The material will be removed. Are you sure to continue?"
+    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+    # Check if the user has selected something
+    if answer:
+
+        # The user wants to remove the selected texture
+        if answer == msg.Yes:
+
+            # Update the index for the data_entry. If we're dealing with new added material, we recalculate their
+            # offsets
+            current_index_list_view = main_window.materialVal.currentIndex()
+            for i in range(current_index_list_view + 1,  main_window.materialVal.count()):
+
+                # Get the mtrl data_entry
+                data_entry = main_window.materialVal.itemData(i)
+
+                # Reduce their index
+                data_entry.index -= 1
+
+            # Search the model part that is using the material removed to assing the empty offset one
+            VEV.enable_combo_box = False
+            current_index_material_model = main_window.materialVal.currentIndex()
+            material_name_offset = main_window.materialVal.itemData(current_index_material_model).data_info.name_offset
+            for i in range(0, main_window.modelPartVal.count()):
+                data_info_children = main_window.modelPartVal.itemData(i)
+                if data_info_children.data.name_offset == material_name_offset:
+                    data_info_children.data.name_offset = 0
+
+            # Remove the offset material name from the model part material section
+            # If the current material is selected in the combo box is the same index as the material we're removing
+            # we leave the combo box to be in the index 0
+            if main_window.materialModelPartVal.currentIndex() == current_index_material_model+1:
+                main_window.materialModelPartVal.setCurrentIndex(0)
+            main_window.materialVal.removeItem(current_index_material_model)
+            main_window.materialModelPartVal.removeItem(current_index_material_model + 1)
+
+            VEV.enable_combo_box = True
+
+
+def action_model_part_val_changed(main_window):
+
+    if VEV.enable_combo_box:
+
+        # Get the scene data info
+        scene_data_info = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
+
+        # Get the material that the model is using by searching the name offset
+        main_window.materialModelPartVal.setCurrentIndex(main_window.materialModelPartVal.
+                                                         findData(scene_data_info.data.name_offset))
+
+
+def action_material_model_part_val_changed(main_window):
+
+    if VEV.enable_combo_box:
+
+        # Get the scene data info children
+        data_info_children = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
+
+        # Change the material that is using the model
+        data_info_children.data.name_offset = main_window.materialModelPartVal.\
+            itemData(main_window.materialModelPartVal.currentIndex())
