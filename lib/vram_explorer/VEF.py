@@ -384,8 +384,16 @@ def read_children(main_window, file, sprp_data_info, type_section):
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
 
+        if type_section == b'MTRL':
+
+            # Save the data of the children from a material
+            if sprp_data_info_child.name == "DbzCharMtrl":
+
+                file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+                sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+
         # Get the scene data
-        if type_section == b'SCNE':
+        elif type_section == b'SCNE':
 
             # If the parent name is NODES, we store the scene model in the child data
             if sprp_data_info.name == "[NODES]":

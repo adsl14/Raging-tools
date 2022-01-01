@@ -458,11 +458,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             mtrl_data += layer.layer_name_offset.to_bytes(4, 'big')
                             mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
 
+                        # Write the children material (if any)
+                        if data_entry.data_info.child_count > 1:
+                            data_info_children = data_entry.data_info.child_info[0]
+                            mtrl_data += data_info_children.data
+                            mtrl_data += data_info_children.name_offset.to_bytes(4, 'big')
+                            mtrl_data += (data_entry.data_info.data_offset + 192).to_bytes(4, 'big')
+                            mtrl_data += data_info_children.data_size
+                            mtrl_data += data_info_children.child_count
+                            mtrl_data += data_info_children.child_offset
+                            for _ in range(12):
+                                mtrl_data += b'\x00'
+                            material_total_size = 320
+                        else:
+                            material_total_size = 192
+
                         if not data_entry.new_entry:
                             data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
-                                data_block[data_entry.data_info.data_offset + 192:]
+                                         data_block[data_entry.data_info.data_offset + material_total_size:]
                         else:
-                            data_block += b'\x00' + data_entry.data_info.name.encode('utf-8') + b'\x00' + mtrl_data
+                            data_block += b'\x00' + data_entry.data_info.name.encode(
+                                'utf-8') + b'\x00' + mtrl_data
 
                     # Write the scne material data info name offset to the file
                     for i in range(0, self.modelPartVal.count()):
