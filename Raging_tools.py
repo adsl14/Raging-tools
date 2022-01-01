@@ -290,23 +290,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if data_entry.new_entry:
 
                                 aux_name_offset = data_entry.data_info.name_offset
-                                data_entry.data_info.name_offset = spr_new_size + 1 - \
-                                    VEV.sprp_file.string_table_base
+                                # If the name offset is negative, we calculate the offset for the file, and updating
+                                # all the combo boxes that is using this name offset
+                                if aux_name_offset < 0:
+
+                                    # Calculate the name offset for the file
+                                    data_entry.data_info.name_offset = spr_new_size + 1 - \
+                                        VEV.sprp_file.string_table_base
+
+                                    # Change the offset also in the combo box
+                                    self.textureVal.setItemData(self.textureVal.findData(aux_name_offset),
+                                                                data_entry.data_info.name_offset)
+
+                                    # Search the material layer that is using this brand new texture (if exists)
+                                    for j in range(0, num_material):
+                                        temp_mtrl_data_entry = self.materialVal.itemData(j)
+                                        for k in range(0, 10):
+                                            # Get the layer from one material and check if the texture is aiming is the
+                                            # same as the brand new texture
+                                            layer = temp_mtrl_data_entry.data_info.data.layers[k]
+                                            if layer.source_name_offset == aux_name_offset:
+                                                layer.source_name_offset = data_entry.data_info.name_offset
+
+                                # Calculate the data offset
                                 data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
                                     data_entry.data_info.name_offset + \
                                     data_entry.data_info.name_size + 1 - data_block_base
                                 data_block_size += 1 + data_entry.data_info.name_size + 1 + 48
                                 spr_new_size += 1 + data_entry.data_info.name_size + 1 + 48
-
-                                # Search the material layer that is using this brand new texture (if exists)
-                                for j in range(0, num_material):
-                                    temp_mtrl_data_entry = self.materialVal.itemData(j)
-                                    for k in range(0, 10):
-                                        # Get the layer from one material and check if the texture is aiming is the
-                                        # same as the brand new texture
-                                       layer = temp_mtrl_data_entry.data_info.data.layers[k]
-                                       if layer.source_name_offset == aux_name_offset:
-                                           layer.source_name_offset = data_entry.data_info.name_offset
 
                             tx2d_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
                             tx2d_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
@@ -405,19 +416,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if data_entry.new_entry:
 
                             aux_name_offset = data_entry.data_info.name_offset
-                            data_entry.data_info.name_offset = spr_new_size + 1 - \
-                                VEV.sprp_file.string_table_base
+                            # If the name offset is negative, we calculate the offset for the file, and updating
+                            # all the combo boxes that is using this name offset
+                            if aux_name_offset < 0:
+
+                                # Calculate the name offset for the file
+                                data_entry.data_info.name_offset = spr_new_size + 1 - \
+                                    VEV.sprp_file.string_table_base
+
+                                # Change the offset also in the combo box
+                                self.materialModelPartVal.setItemData(
+                                    self.materialModelPartVal.findData(aux_name_offset),
+                                    data_entry.data_info.name_offset)
+
+                                # Search the model part that is using this brand new material (if exists)
+                                for j in range(0, self.modelPartVal.count()):
+                                    scene_data_info_children = self.modelPartVal.itemData(j)
+                                    if scene_data_info_children.data.name_offset == aux_name_offset:
+                                        scene_data_info_children.data.name_offset = data_entry.data_info.name_offset
+
                             data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
                                 data_entry.data_info.name_offset + data_entry.data_info.name_size + 1 - data_block_base
 
                             data_block_size += 1 + data_entry.data_info.name_size + 1 + 192
                             spr_new_size += 1 + data_entry.data_info.name_size + 1 + 192
-
-                            # Search the model part that is using this brand new material (if exists)
-                            for j in range(0, self.modelPartVal.count()):
-                                scene_data_info_children = self.modelPartVal.itemData(j)
-                                if scene_data_info_children.data.name_offset == aux_name_offset:
-                                    scene_data_info_children.data.name_offset = data_entry.data_info.name_offset
 
                         mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
                         mtrl_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')

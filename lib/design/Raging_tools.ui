@@ -216,8 +216,8 @@
                   </property>
                   <property name="maximumSize">
                    <size>
-                    <width>624</width>
-                    <height>610</height>
+                    <width>300</width>
+                    <height>300</height>
                    </size>
                   </property>
                   <property name="palette">

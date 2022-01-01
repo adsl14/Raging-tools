@@ -246,18 +246,14 @@ def show_dds_image(image_texture, texture_data, width, height, texture_path="tem
 
         # If the image is higher in width or height from the imageTexture,
         # we will reduce the size maintaing the aspect ratio
-        if width == height:
+        if width > height:
             if width > image_texture.width():
-                mpixmap = mpixmap.scaled(image_texture.width(), image_texture.width())
+                new_height = int((height / width) * image_texture.width())
+                mpixmap = mpixmap.scaled(image_texture.width(), new_height)
         else:
-            if width > height:
-                if width > image_texture.width():
-                    new_height = int((height / width) * image_texture.width())
-                    mpixmap = mpixmap.scaled(image_texture.width(), new_height)
-            else:
-                if height > image_texture.height():
-                    new_width = int((width / height) * image_texture.height())
-                    mpixmap = mpixmap.scaled(new_width, image_texture.height())
+            if height > image_texture.height():
+                new_width = int((width / height) * image_texture.height())
+                mpixmap = mpixmap.scaled(new_width, image_texture.height())
 
         # Show the image
         image_texture.setPixmap(mpixmap)
@@ -276,21 +272,17 @@ def show_bmp_image(image_texture, texture_data, width, height):
 
         # If the image is higher in width or height from the imageTexture,
         # we will reduce the size maintaing the aspect ratio
-        if width == height:
+        # Since a shader has height of 1, in order to show it more clearly, we ignore the scaling
+        if height == 1:
+            mpixmap = mpixmap.scaled(image_texture.width(), width)
+        elif width > height:
             if width > image_texture.width():
-                mpixmap = mpixmap.scaled(image_texture.width(), image_texture.width())
+                new_height = int((height / width) * image_texture.width())
+                mpixmap = mpixmap.scaled(image_texture.width(), new_height)
         else:
-            # Since a shader has height of 1, in order to show it more clearly, we ignore the scaling
-            if height == 1:
-                mpixmap = mpixmap.scaled(image_texture.width(), width)
-            if width > height:
-                if width > image_texture.width():
-                    new_height = int((height / width) * image_texture.width())
-                    mpixmap = mpixmap.scaled(image_texture.width(), new_height)
-            else:
-                if height > image_texture.height():
-                    new_width = int((width / height) * image_texture.height())
-                    mpixmap = mpixmap.scaled(new_width, image_texture.height())
+            if height > image_texture.height():
+                new_width = int((width / height) * image_texture.height())
+                mpixmap = mpixmap.scaled(new_width, image_texture.height())
 
         image_texture.setPixmap(mpixmap)
     except OSError:
