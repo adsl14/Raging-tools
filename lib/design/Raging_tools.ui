@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Raging tools 1.5* - by adsl14</string>
+   <string>Raging tools 1.5 - by adsl14</string>
   </property>
   <property name="tabShape">
    <enum>QTabWidget::Rounded</enum>
