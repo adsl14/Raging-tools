@@ -9,7 +9,7 @@ from lib.functions import del_rw
 
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import change_endian, load_data_to_ve
+from lib.vram_explorer.VEF import change_endian, load_data_to_ve, write_separator_vram
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
@@ -354,6 +354,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # It's a DDS image
                             if data_entry.data_info.data.dxt_encoding != 0:
                                 output_vram_file.write(data_entry.data_info.data.tx2d_vram.data[128:])
+                                # Write the vram separator
+                                if i < num_textures - 1:
+                                    write_separator_vram(output_vram_file, data_entry)
                             # It's a BMP image
                             else:
 

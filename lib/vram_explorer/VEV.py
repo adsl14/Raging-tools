@@ -9,11 +9,21 @@ class VEV:
 
 	# Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
 	message_base_import_texture_start = "The new texture has the following differences from the original:"
-	message_base_import_texture_end = "Do you want to continue?"
+	message_base_import_texture_end = "It could crash in a real hardware. Do you want to continue?"
 	message_base_import_BMP_start = "There are some errors while importing the texture:"
 
 	# number of bytes that usually reads the program
 	bytes2Read = 4
+	# vram separator that will differ depending of the width, height and encoding of the texture. Only for dds images
+	vram_separator_32 = b''
+	vram_separator_48 = b''
+	vram_separator_80 = b''
+	for i in range(0, 80):
+		if i < 48:
+			vram_separator_48 += b'\x00'
+			if i < 32:
+				vram_separator_32 += b'\x00'
+		vram_separator_80 += b'\x00'
 	# Temp folder name
 	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
 

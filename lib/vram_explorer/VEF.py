@@ -901,6 +901,25 @@ def open_vram_file(vram_path):
                         .data.tx2d_vram.data_unswizzle
 
 
+def write_separator_vram(output_vram_file, data_entry):
+
+    extra = output_vram_file.tell() % 16
+    if extra > 0:
+        for _ in range(0, extra):
+            output_vram_file.write(b'\x00')
+    if data_entry.data_info.data.width == data_entry.data_info.data.height:
+        if data_entry.data_info.data.dxt_encoding == 8:
+            output_vram_file.write(VEV.vram_separator_80)
+        else:
+            output_vram_file.write(VEV.vram_separator_48)
+    else:
+        # If the encoding is dxt1, we write a separator of 32 bytes
+        if data_entry.data_info.data.dxt_encoding == 8:
+            output_vram_file.write(VEV.vram_separator_32)
+        else:
+            output_vram_file.write(VEV.vram_separator_80)
+
+
 def create_header(value):
     if value == 8:
         return bytes.fromhex("04000000"), "DXT1".encode(), bytes.fromhex(
