@@ -467,14 +467,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         if data_entry.data_info.child_count > 0:
                             data_info_children = data_entry.data_info.child_info[0]
                             mtrl_data += data_info_children.data
-
-                            # We check if the user selected for this material
-                            # to activate or disable the children material
-                            if data_info_children.enableChildrenMtrl:
-                                mtrl_data += VEV.DbzCharMtrl_offset.to_bytes(4, 'big')
-                            else:
-                                mtrl_data += b'\x00\x00\x00\x00'
-
+                            mtrl_data += VEV.DbzCharMtrl_offset.to_bytes(4, 'big')
                             mtrl_data += (data_entry.data_info.data_offset + 192).to_bytes(4, 'big')
                             mtrl_data += data_info_children.data_size.to_bytes(4, 'big')
                             mtrl_data += data_info_children.child_count.to_bytes(4, 'big')

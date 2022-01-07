@@ -10,7 +10,6 @@ class SprpDataInfo:
         self.name = ""
         self.extension = ""
         self.name_size = 0
-        self.enableChildrenMtrl = False
         # SprpDataInfo
         self.child_info = []
         # Could be Tx2dInfo, MtrlInfo

@@ -26,6 +26,9 @@ class VEV:
 		vram_separator_80 += b'\x00'
 	# Temp folder name
 	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+	# Layer material effects
+	layer_type_effects = ["COLORMAP", "COLORMAP0", "COLORMAP1", "NORMALMAP", "REFLECTMAP", "TOONMAP",
+																							"INCANDESCENCEMAP_RAMP"]
 
 	# *** vars that need to be reseted when loading a new spr/vram file ***
 	# --- SPR vars ---

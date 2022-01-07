@@ -42,14 +42,12 @@ def initialize_ve(main_window):
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
-    main_window.materialChildren.stateChanged.connect(lambda: action_material_children_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
-    main_window.materialChildren.setEnabled(False)
 
     # Model part
     main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -133,7 +131,6 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
-        main_window.materialChildren.setEnabled(True)
 
         main_window.modelPartVal.setEnabled(True)
         main_window.materialModelPartVal.setEnabled(True)
@@ -150,7 +147,6 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
-        main_window.materialChildren.setEnabled(False)
 
         main_window.modelPartVal.setEnabled(False)
         main_window.materialModelPartVal.setEnabled(False)
@@ -392,16 +388,10 @@ def read_children(main_window, file, sprp_data_info, type_section):
         if type_section == b'MTRL':
 
             # Save the data of the children from a material
-            if sprp_data_info_child.data_offset > 0:
+            if sprp_data_info_child.name == "DbzCharMtrl":
 
                 file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
                 sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
-                # If the children material, has the name offset 'DbzCharMtrl',
-                # we enable or disable the material children
-                if sprp_data_info_child.name == "DbzCharMtrl":
-                    sprp_data_info_child.enableChildrenMtrl = True
-                else:
-                    sprp_data_info_child.enableChildrenMtrl = False
 
         # Get the scene data
         elif type_section == b'SCNE':
@@ -774,10 +764,6 @@ def open_spr_file(main_window, model, spr_path):
                         # Store the layer in the actual material
                         sprp_data_entry.data_info.data.layers.append(mtrlLayer)
 
-                        # Add the type of material to the combo box (only unique values)
-                        if main_window.typeVal.findData(mtrlLayer.layer_name_offset) < 0:
-                            main_window.typeVal.addItem(mtrlLayer.layer_name, mtrlLayer.layer_name_offset)
-
                     # Add the material to the combo box
                     main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
                     main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name,
@@ -803,15 +789,24 @@ def open_spr_file(main_window, model, spr_path):
             # Update the type_entry offset
             type_entry_offset += sprp_type_entry.data_count * 32
 
-        # If there is material in the spr file, we try to find the offset of 'DbzCharMtrl'
+        # If there is material in the spr file, we try to find specific names
         if b'MTRL' in VEV.sprp_file.type_entry:
-            DbzCharMtrl_offset = VEV.sprp_file.string_table_base + \
-                                 VEV.sprp_file.type_entry[b'MTRL'].data_entry[0].data_info.name_offset - 12
-            name, extension = get_name_from_spr(file, DbzCharMtrl_offset)
+            offset = 161
+            stop_offset = VEV.sprp_file.sprp_header.string_table_size + 160
+            while True:
+                name, extension = get_name_from_spr(file, offset)
 
-            # We found the offset of DbzCharMtrl
-            if name == "DbzCharMtrl":
-                VEV.DbzCharMtrl_offset = DbzCharMtrl_offset - VEV.sprp_file.string_table_base
+                # We found the offset of DbzCharMtrl
+                if name == "DbzCharMtrl":
+                    VEV.DbzCharMtrl_offset = offset - VEV.sprp_file.string_table_base
+                # Find the type effects
+                elif name in VEV.layer_type_effects:
+                    main_window.typeVal.addItem(name, offset - VEV.sprp_file.string_table_base)
+                # We reached the end of the string base section
+                if file.tell() > stop_offset:
+                    break
+
+                offset = file.tell()
 
 
 def open_vram_file(vram_path):
@@ -1514,13 +1509,6 @@ def action_material_val_changed(main_window):
             # Get the texture for the layer (index 0)
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
-        # Change the check of the children material
-        if mtrl_data_entry.data_info.child_count > 0:
-            main_window.materialChildren.setEnabled(True)
-            main_window.materialChildren.setChecked(mtrl_data_entry.data_info.child_info[0].enableChildrenMtrl)
-        else:
-            main_window.materialChildren.setEnabled(False)
-
 
 def action_layer_val_changed(main_window):
 
@@ -1566,21 +1554,6 @@ def action_texture_val_changed(main_window):
 
         # Store the texture for the layer
         layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
-
-
-def action_material_children_logic(main_window):
-
-    if VEV.enable_combo_box:
-
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-
-        # Change the boolean for the material
-        if mtrl_data_entry.data_info.child_count > 0:
-            main_window.materialChildren.setEnabled(True)
-            mtrl_data_entry.data_info.child_info[0].enableChildrenMtrl = main_window.materialChildren.isChecked()
-        else:
-            main_window.materialChildren.setEnabled(False)
 
 
 def action_add_material_logic(main_window):
