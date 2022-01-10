@@ -3851,6 +3851,48 @@
               <zorder>fusiSlotPanel3</zorder>
               <zorder>fusiPanelText</zorder>
              </widget>
+             <widget class="QFrame" name="aura_type">
+              <property name="geometry">
+               <rect>
+                <x>570</x>
+                <y>370</y>
+                <width>231</width>
+                <height>51</height>
+               </rect>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <widget class="QComboBox" name="aura_type_value">
+               <property name="geometry">
+                <rect>
+                 <x>70</x>
+                 <y>20</y>
+                 <width>161</width>
+                 <height>22</height>
+                </rect>
+               </property>
+              </widget>
+              <widget class="QLabel" name="aura_type_text">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>20</y>
+                 <width>51</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change the default aura of the character.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Aura type:</string>
+               </property>
+              </widget>
+             </widget>
              <zorder>portrait</zorder>
              <zorder>transPartner</zorder>
              <zorder>transEffect</zorder>
@@ -3869,6 +3911,7 @@
              <zorder>aura_size</zorder>
              <zorder>fusionPartnerVisual</zorder>
              <zorder>fusionPanel</zorder>
+             <zorder>aura_type</zorder>
             </widget>
             <widget class="QWidget" name="operate_character_xyz_m_frame">
              <attribute name="title">

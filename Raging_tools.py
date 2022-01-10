@@ -1,5 +1,5 @@
 from lib.character_parameters_editor.IPF import write_single_character_parameters
-from lib.character_parameters_editor.GPF import write_character_parameters
+from lib.character_parameters_editor.GPF import write_operate_resident_param, write_db_font_pad_ps3
 from lib.character_parameters_editor.REF import write_cs_chip_file
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
@@ -546,24 +546,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 print("Packing the file...")
                                 pack_and_save_file(self, path_output_file)
 
-                            # --- operate_resident_param ---
                             # If the user has edited one character, we will save the file
                             elif GPV.character_list_edited:
 
-                                # Open the files
-                                subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
-                                subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
+                                # --- operate_resident_param ---
+                                if GPV.operate_resident_param_file:
+                                    # Open the files
+                                    subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
+                                    subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
 
-                                print("Writing values in the file...")
-                                # Change the transformations in the file
-                                for character in GPV.character_list_edited:
-                                    # Save all the info for each character
-                                    write_character_parameters(character, subpak_file_character_inf,
-                                                               subpak_file_transformer_i)
+                                    print("Writing values in the file...")
+                                    # Change the transformations in the file
+                                    for character in GPV.character_list_edited:
+                                        # Save all the info for each character
+                                        write_operate_resident_param(character, subpak_file_character_inf,
+                                                                     subpak_file_transformer_i)
 
-                                # Close the files
-                                subpak_file_character_inf.close()
-                                subpak_file_transformer_i.close()
+                                    # Close the files
+                                    subpak_file_character_inf.close()
+                                    subpak_file_transformer_i.close()
+
+                                # --- db_font_pad_ps3 ---
+                                else:
+
+                                    # Open the files
+                                    subpak_file_resident_character_param = open(GPV.game_resident_character_param,
+                                                                                mode="rb+")
+
+                                    print("Writing values in the file...")
+                                    # Change the values in the file
+                                    for character in GPV.character_list_edited:
+                                        # Save all the info for each character
+                                        write_db_font_pad_ps3(character, subpak_file_resident_character_param)
+
+                                    # Close the files
+                                    subpak_file_resident_character_param.close()
 
                                 # Pack the files
                                 print("Packing the file...")

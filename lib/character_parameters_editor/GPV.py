@@ -2,12 +2,16 @@
 
 class GPV:
 
-    # path for character info and transformer
+    # Flag that will tell us if the user has loaded the operate_character_parameters file
+    operate_resident_param_file = False
+    # path for character info, transformer and game_resident_character_param.da
     resident_character_inf_path = ""
     resident_transformer_i_path = ""
+    game_resident_character_param = ""
     # number of bytes between each character
     sizeVisualParameters = 148
     sizeTrans = 33
+    sizeCharacterParam = 56
     # Values for the combo box
     trans_effect_values = dict({"Super Saiyan": 0, "Metamoru": 1, "Potara": 2, "Cell": 3, "Super Buu": 4,
                                "Broly": 5, "Freezer": 6, "Super Saiyan 3": 7, "Cooler": 8, "Bojack": 9, "C-13": 10,
@@ -17,6 +21,12 @@ class GPV:
     color_lightning_values = dict({"Blue": 0, "Cyan": 1, "Rose": 2, "Rose and white": 3})
     glow_lightning_values = dict({"Disabled": 0, "Glow": 1, "Unknown (Androids)": 2, "Lightnings": 4,
                                   "Glow + lightnings": 5})
+    aura_type_values = dict({'Plasma Aura ': 0, 'Earth Warriors ': 1, 'Wicked Saiyan': 2, 'Super Saiyan': 3,
+                             'Super Saiyan 2': 4, 'Super Saiyan 3': 5, 'Bojack': 6, 'Evil Warrior': 7, 'Dabura': 8,
+                             'Gohan': 9, 'Majin Buu ': 10, 'Broly': 11, 'Hatchiyack': 12, 'Android': 13,
+                             'Android #13': 14, 'Nappa': 15, 'Jeice': 16, 'Ginyu': 17, 'Zarbon': 18,
+                             'Burter': 19, 'Frieza': 20, 'Super Janemba': 21, 'Majin Vegeta': 22, 'Videl': 23,
+                             'Red Flame ': 24, 'Blue Flame': 25})
 
     # panelPortraistlist
     mini_portraits_image = []

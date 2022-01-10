@@ -7,6 +7,7 @@ class CPEV:
     operate_resident_param = 'operate_resident_param'
     operate_character_XXX_m_regex = "operate_character_0[0-9][0-9]_m"
     cs_chip = "cs_chip"
+    db_font_pad_PS3_s_d = "game_resident_param_m"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")

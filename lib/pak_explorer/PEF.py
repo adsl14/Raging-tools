@@ -5,8 +5,9 @@ from PyQt5.QtWidgets import QFileDialog, QLabel
 
 from lib.character_parameters_editor.REF import read_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters
-from lib.character_parameters_editor.GPF import read_character_parameters, action_change_character, \
-    open_select_chara_window
+from lib.character_parameters_editor.GPF import read_operate_resident_param, \
+    open_select_chara_window, read_db_font_pad_ps3, enable_disable_operate_resident_param_values, \
+    enable_disable_db_font_pad_ps3_values, initialize_roster
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
@@ -58,6 +59,8 @@ def load_data_to_pe_cpe(main_window):
     # Read the header (STPK)
     pak_file.seek(32)
     data = pak_file.read(32).decode('utf-8').split(".")[0]
+    pak_file.seek(128)
+    data_2 = pak_file.read(32).decode('utf-8').split(".")[0]
     pak_file.close()
 
     # Check if the file is the operate_resident_param.pak
@@ -67,6 +70,7 @@ def load_data_to_pe_cpe(main_window):
         GPV.character_list_edited.clear()
         GPV.character_list.clear()
         GPV.chara_selected = 0  # Index of the char selected in the program
+        GPV.operate_resident_param_file = True
     
         # Read all the data from the files
         # character_info and transformer_i
@@ -85,7 +89,7 @@ def load_data_to_pe_cpe(main_window):
             character.position_trans = i * GPV.sizeTrans
     
             # Store the information in the object and append to a list
-            read_character_parameters(character, subpak_file_character_inf, subpak_file_transformer_i)
+            read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i)
             GPV.character_list.append(character)
     
         # Close the files
@@ -94,24 +98,9 @@ def load_data_to_pe_cpe(main_window):
     
         # We're changing the character in the main panel (avoid combo box code)
         CPEV.change_character = True
-    
-        # Load the large portrait
-        main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
-    
-        # Show the transformations in the main panel
-        main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_001.bmp")))
-        main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                      index=1, modify_slot_transform=False)
-        main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_002.bmp")))
-        main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                      index=2, modify_slot_transform=False)
-        main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_003.bmp")))
-        main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                      index=3, modify_slot_transform=False)
-        main_window.label_trans_0.setVisible(True)
-        main_window.label_trans_1.setVisible(True)
-        main_window.label_trans_2.setVisible(True)
-        main_window.label_trans_3.setVisible(False)
+
+        # Initialize main roster
+        initialize_roster(main_window)
     
         # Get the values for the fist character of the list
         character_zero = GPV.character_list[0]
@@ -278,14 +267,85 @@ def load_data_to_pe_cpe(main_window):
             main_window.character_parameters_editor.setEnabled(True)
     
         # Enable all the buttons (character parameters editor -> operate_resident_param)
+        if not main_window.health.isEnabled():
+            enable_disable_operate_resident_param_values(main_window, True)
+            enable_disable_db_font_pad_ps3_values(main_window, False)
         if not main_window.operate_resident_param_frame.isEnabled():
             main_window.operate_resident_param_frame.setEnabled(True)
+
         # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
         if main_window.operate_character_xyz_m_frame.isEnabled():
             main_window.operate_character_xyz_m_frame.setEnabled(False)
         # Disable all the buttons (character parameters editor -> cs_chip)
         if main_window.cs_chip.isEnabled():
             main_window.cs_chip.setEnabled(False)
+
+    # Check if the file is the db_font_pad_PS3_s.zpak
+    elif data_2 == CPEV.db_font_pad_PS3_s_d:
+
+        # reset the values
+        GPV.character_list_edited.clear()
+        GPV.character_list.clear()
+        GPV.chara_selected = 0  # Index of the char selected in the program
+        GPV.operate_resident_param_file = False
+
+        # Read all the data from the files
+        GPV.game_resident_character_param = main_window.listView_2.model().item(2, 0).text()
+        subpak_file_resident_character_param = open(GPV.game_resident_character_param, mode="rb")
+
+        # Read the data from the files and store the parameters
+        for i in range(0, 100):
+            # Create a Character object
+            character = Character()
+
+            # Store the positions where the information is located
+            character.position_resident_character_param = i * GPV.sizeCharacterParam
+
+            # Store the information in the object and append to a list
+            read_db_font_pad_ps3(character, subpak_file_resident_character_param)
+            GPV.character_list.append(character)
+
+        # Close the files
+        subpak_file_resident_character_param.close()
+
+        # We're changing the character in the main panel (avoid combo box code)
+        CPEV.change_character = True
+
+        # Initialize main roster
+        initialize_roster(main_window)
+
+        # Show the aura_type parameter
+        main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData(
+            GPV.character_list[0].aura_type))
+
+        # Open the tab (character parameters editor)
+        if main_window.tabWidget.currentIndex() != 2:
+            main_window.tabWidget.setCurrentIndex(2)
+
+        # Open the tab operate_resident_param
+        if main_window.tabWidget_2.currentIndex() != 0:
+            main_window.tabWidget_2.setCurrentIndex(0)
+
+        # Enable completely the tab character parameters editor
+        if not main_window.character_parameters_editor.isEnabled():
+            main_window.character_parameters_editor.setEnabled(True)
+
+        # Enable all the buttons (db_font_pad_PS3_s -> game_resident_param)
+        if not main_window.aura_type.isEnabled():
+            enable_disable_operate_resident_param_values(main_window, False)
+            enable_disable_db_font_pad_ps3_values(main_window, True)
+        if not main_window.operate_resident_param_frame.isEnabled():
+            main_window.operate_resident_param_frame.setEnabled(True)
+
+        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+        if main_window.operate_character_xyz_m_frame.isEnabled():
+            main_window.operate_character_xyz_m_frame.setEnabled(False)
+        # Disable all the buttons (character parameters editor -> cs_chip)
+        if main_window.cs_chip.isEnabled():
+            main_window.cs_chip.setEnabled(False)
+
+        # We're not changing the character in the main panel (play combo box code)
+        CPEV.change_character = False
 
     # Check if the file is an operate_character_XXX_m type
     elif re.search(CPEV.operate_character_XXX_m_regex, data):
