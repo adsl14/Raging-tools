@@ -1025,7 +1025,7 @@ def on_health_changed(main_window):
     if not CPEV.change_character:
 
         # Change the slot of health
-        GPV.character_list[GPV.chara_selected].health = main_window.health_value.value()
+        GPV.character_list[GPV.chara_selected].health = int(main_window.health_value.value())
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
