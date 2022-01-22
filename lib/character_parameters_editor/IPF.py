@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox
 
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
+from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.Animation import Animation
 from lib.packages import os, struct, natsorted
@@ -93,6 +94,18 @@ def initialize_operate_character(main_window):
     main_window.importAllAnimationPropertiesButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
 
+    # Set the blast type
+    for i in range(1, 15):
+        main_window.blast_key.addItem("Attack " + str(i))
+    # Export blast button
+    main_window.exportBlastButton.clicked.connect(lambda: action_export_blast_button_logic(main_window))
+    # Import blast button
+    main_window.importBlastButton.clicked.connect(lambda: action_import_blast_button_logic(main_window))
+    # Export all blast button
+    main_window.exportAllBlastButton.clicked.connect(lambda: action_export_all_blast_button_logic(main_window))
+    # Import all blast button
+    main_window.importAllBlastButton.clicked.connect(lambda: action_import_all_blast_button_logic(main_window))
+
 
 def read_single_character_parameters(main_window):
 
@@ -106,6 +119,8 @@ def read_single_character_parameters(main_window):
     IPV.character_i_path = main_window.listView_2.model().item(726, 0).text()
     # camera info
     IPV.camera_i_path = main_window.listView_2.model().item(727, 0).text()
+    # blast info
+    IPV.blast_i_path = main_window.listView_2.model().item(728, 0).text()
 
     # Read character info file
     with open(IPV.character_i_path, mode="rb") as file:
@@ -222,6 +237,22 @@ def read_single_character_parameters(main_window):
         main_window.camera_type_key.setCurrentIndex(0)
         change_camera_cutscene_values(main_window, main_window.camera_type_key.itemData(0))
 
+    # Read blast info file
+    with open(IPV.blast_i_path, mode="rb") as file:
+
+        for i in range(0, 14):
+            # Create an instance of Blast
+            blast = Blast()
+
+            # Read data
+            blast.data = file.read(IPV.size_between_blast)
+
+            # Set blast combo box
+            main_window.blast_key.setItemData(i, blast)
+
+        # Show the first item in the combo box and his values
+        main_window.blast_key.setCurrentIndex(0)
+
 
 def write_single_character_parameters(main_window):
 
@@ -286,6 +317,22 @@ def write_single_character_parameters(main_window):
             # Ignore this camera
             else:
                 file.seek(IPV.size_each_camera_cutscene, 1)
+
+    # Save all blast info
+    with open(IPV.blast_i_path, mode="rb+") as file:
+
+        for i in range(0, 14):
+
+            blast = main_window.blast_key.itemData(i)
+
+            # Blast has been modified
+            if blast.modified:
+                # Write all the data
+                file.write(blast.data)
+
+            # Ignore this blast
+            else:
+                file.seek(IPV.size_between_blast, 1)
 
     # Save all the info
     with open(IPV.character_i_path, mode="rb+") as file:
@@ -922,6 +969,166 @@ def import_animation(file_export_path, animation_array, name_file=None, animatio
                     animation_array[i].size = sizes_number_of_files[i]
                     animation_array[i].modified = True
                     data_index_start = data_index_end
+
+
+def export_blast(file_export_path, blast):
+
+    with open(file_export_path, mode="wb") as file:
+
+        # Write all the data
+        file.write(blast.data)
+
+
+def action_export_blast_button_logic(main_window):
+    # Ask to the user the file output
+    name_file = CPEV.file_character_id + "_" + main_window.blast_key.currentText().replace(" ", "_") + "." + \
+                IPV.blast_extension
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export blast",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    if file_export_path:
+
+        blast = main_window.blast_key.currentData()
+
+        export_blast(file_export_path, blast)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The blast file was exported in: <b>" + file_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def import_blast(blast, file):
+
+    # Get the data
+    blast.data = file.read()
+
+    # Set blast as modified
+    blast.modified = True
+
+
+def action_import_blast_button_logic(main_window):
+    # Ask to the user from what file wants to open the camera files
+    name_file = CPEV.file_character_id + "_" + main_window.blast_key.currentText().replace(" ", "_") + "." + \
+                IPV.blast_extension
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import blast",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    if os.path.exists(file_export_path):
+
+        with open(file_export_path, mode="rb") as file:
+
+            size_file = len(file.read())
+
+            # The file of the camera has to be 100 bytes length
+            if size_file == IPV.size_between_blast:
+                file.seek(0)
+            else:
+                # Wrong camera file
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setText("Invalid blast file.")
+                msg.exec()
+                return
+
+            # Get the instance of the combo box
+            blast = main_window.blast_key.currentData()
+
+            # Import camera to memory
+            import_blast(blast, file)
+
+        # Change old path
+        main_window.old_path_file = file_export_path
+
+
+def action_export_all_blast_button_logic(main_window):
+    # Ask to the user the folder output
+    name_folder = CPEV.file_character_id + "_blasts"
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export blasts",
+                                                     os.path.join(main_window.old_path_file, name_folder), "")[0]
+
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        # Export all the files to the folder
+        for i in range(0, main_window.blast_key.count()):
+            name_file = CPEV.file_character_id + "_" + main_window.blast_key.itemText(i).replace(" ", "_") + "." + \
+                IPV.blast_extension
+            file_export_path = os.path.join(folder_export_path, name_file)
+
+            blast = main_window.blast_key.itemData(i)
+
+            export_blast(file_export_path, blast)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        message = "The blast files were exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def action_import_all_blast_button_logic(main_window):
+    # Ask to the user from what file wants to open the camera files
+    folder_import = QFileDialog.getExistingDirectory(main_window, "Import blasts", main_window.old_path_file)
+
+    blasts_files_error = []
+
+    if folder_import:
+
+        blasts_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
+        # Get the filename of each camera
+        for i in range(0, len(blasts_files)):
+
+            # Read all the data
+            file_export_path = os.path.join(folder_import, blasts_files[i])
+            with open(file_export_path, mode="rb") as file:
+
+                size_file = len(file.read())
+                file.seek(0)
+
+                # Check if camera has the correct size
+                if size_file == IPV.size_between_blast:
+
+                    # Create an instance of Blast
+                    blast = main_window.blast_key.itemData(i)
+
+                    # Import camera to memory
+                    import_blast(blast, file)
+
+                    # Change the values in the tool only for the current selected item
+                    if main_window.blast_key.currentIndex() == i:
+                        change_camera_cutscene_values(main_window, blast)
+
+                else:
+                    blasts_files_error.append(blasts_files[i])
+
+        # We show a message with the cameras files that couldn't get imported
+        if blasts_files_error:
+
+            message = ""
+
+            for blasts_file_error in blasts_files_error:
+                message = message + "<li>" + blasts_file_error + "</li>"
+            message = "The following blasts couldn't get imported <ul>" + message + "</ul>"
+
+            msg = QMessageBox()
+            msg.setWindowTitle("Warning")
+            msg.setText(message)
+            msg.exec()
 
 
 def on_camera_type_key_changed(main_window):

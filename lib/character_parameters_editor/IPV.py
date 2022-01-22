@@ -5,6 +5,7 @@ class IPV:
     # path and positions of files and data
     character_i_path = ""
     camera_i_path = ""
+    blast_i_path = ""
     # Values for the combo box
     type_of_fighting_values = dict({"Type 1": 0, "Type 2": 1, "Type 3": 2, "Type 4": 3, "Type 5": 10, "Type 6": 11,
                                     "Type 7": 12})
@@ -42,3 +43,6 @@ class IPV:
     animations_extension = "spas"
     # Distance between the 'buffer' folders
     size_between_animation_and_effects = 363
+    # Blast properties
+    size_between_blast = 100
+    blast_extension = "bla"

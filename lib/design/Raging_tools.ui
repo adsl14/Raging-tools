@@ -4530,7 +4530,7 @@
               <widget class="QComboBox" name="camera_type_key">
                <property name="geometry">
                 <rect>
-                 <x>100</x>
+                 <x>90</x>
                  <y>10</y>
                  <width>131</width>
                  <height>21</height>
@@ -5127,7 +5127,7 @@
               <widget class="QPushButton" name="exportCameraButton">
                <property name="geometry">
                 <rect>
-                 <x>240</x>
+                 <x>230</x>
                  <y>10</y>
                  <width>81</width>
                  <height>23</height>
@@ -5140,7 +5140,7 @@
               <widget class="QPushButton" name="importCameraButton">
                <property name="geometry">
                 <rect>
-                 <x>330</x>
+                 <x>320</x>
                  <y>10</y>
                  <width>81</width>
                  <height>23</height>
@@ -5153,7 +5153,7 @@
               <widget class="QPushButton" name="exportAllCameraButton">
                <property name="geometry">
                 <rect>
-                 <x>420</x>
+                 <x>410</x>
                  <y>10</y>
                  <width>81</width>
                  <height>23</height>
@@ -5166,7 +5166,7 @@
               <widget class="QPushButton" name="importAllCameraButton">
                <property name="geometry">
                 <rect>
-                 <x>510</x>
+                 <x>500</x>
                  <y>10</y>
                  <width>81</width>
                  <height>23</height>
@@ -5789,6 +5789,103 @@
                </property>
                <property name="value">
                 <double>0.000000000000000</double>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QFrame" name="blast_values">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>490</y>
+                <width>601</width>
+                <height>31</height>
+               </rect>
+              </property>
+              <property name="toolTip">
+               <string/>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::StyledPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <widget class="QLabel" name="blast_values_text">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>71</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Blast values. It holds how the attacks will be executed (chargeable blast attack, cinematic attack, support attack, etc)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Blast values:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="blast_key">
+               <property name="geometry">
+                <rect>
+                 <x>80</x>
+                 <y>0</y>
+                 <width>131</width>
+                 <height>21</height>
+                </rect>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="exportBlastButton">
+               <property name="geometry">
+                <rect>
+                 <x>220</x>
+                 <y>0</y>
+                 <width>81</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Export...</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="importBlastButton">
+               <property name="geometry">
+                <rect>
+                 <x>310</x>
+                 <y>0</y>
+                 <width>81</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Import...</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="exportAllBlastButton">
+               <property name="geometry">
+                <rect>
+                 <x>400</x>
+                 <y>0</y>
+                 <width>81</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Export all...</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="importAllBlastButton">
+               <property name="geometry">
+                <rect>
+                 <x>490</x>
+                 <y>0</y>
+                 <width>81</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Import all...</string>
                </property>
               </widget>
              </widget>
