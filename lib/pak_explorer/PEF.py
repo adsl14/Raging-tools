@@ -58,9 +58,17 @@ def load_data_to_pe_cpe(main_window):
     
     # Read the header (STPK)
     pak_file.seek(32)
-    data = pak_file.read(32).decode('utf-8').split(".")[0]
+    try:
+        data = pak_file.read(32).decode('utf-8').split(".")[0]
+    except UnicodeError:
+        print("UnicodeError exception when decoding from byte in position 32")
+        data = ""
     pak_file.seek(128)
-    data_2 = pak_file.read(32).decode('utf-8').split(".")[0]
+    try:
+        data_2 = pak_file.read(32).decode('utf-8').split(".")[0]
+    except UnicodeError:
+        print("UnicodeError exception when decoding from byte in position 128")
+        data_2 = ""
     pak_file.close()
 
     # Check if the file is the operate_resident_param.pak

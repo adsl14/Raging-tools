@@ -1606,7 +1606,6 @@ def action_add_material_logic(main_window):
                                        b'\xCC\xCC\xCD\x3E\xCC\xCC\xCD\x3F\x4C\xCC\xCD\x3E\x4C\xCC\xCD\x3E\x4C\xCC\xCD' \
                                        b'\x3E\x4C\xCC\xCD\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
                                        b'\x00'
-        sprp_data_info_children.enableChildrenMtrl = True
         sprp_data_entry.data_info.child_info.append(sprp_data_info_children)
 
         # Add the material to the combo box
