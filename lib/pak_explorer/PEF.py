@@ -654,6 +654,7 @@ def action_export_all_2_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "All the files were exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the folder?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -729,6 +730,7 @@ def pack_and_save_file(main_window, path_output_file):
 
     msg = QMessageBox()
     msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
     message = "The file were saved and compressed in: <b>" + path_output_file \
               + "</b><br><br> Do you wish to open the folder?"
     message_open_saved_files = msg.question(main_window, '', message, msg.Yes | msg.No)

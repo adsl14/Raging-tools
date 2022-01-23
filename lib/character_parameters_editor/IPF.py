@@ -590,6 +590,7 @@ def action_export_camera_button_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The camera file was exported in: <b>" + file_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -662,6 +663,7 @@ def action_import_camera_button_logic(main_window):
                 # Wrong camera file
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
+                msg.setWindowIcon(main_window.ico_image)
                 msg.setText("Invalid camera file.")
                 msg.exec()
                 return
@@ -703,6 +705,7 @@ def action_export_all_camera_button_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The camera files weres exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -759,6 +762,7 @@ def action_import_all_camera_button_logic(main_window):
 
             msg = QMessageBox()
             msg.setWindowTitle("Warning")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText(message)
             msg.exec()
 
@@ -780,6 +784,7 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The animation file was exported in: <b>" + file_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -815,6 +820,7 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The animation files weres exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -892,6 +898,7 @@ def action_import_all_animation_button_logic(main_window, animation_combo_box):
 
             msg = QMessageBox()
             msg.setWindowTitle("Warning")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText(message)
             msg.exec()
 
@@ -912,6 +919,7 @@ def import_animation(file_export_path, animation_array, name_file=None, animatio
                     # Wrong animation file
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
+                    msg.setWindowIcon(main_window.ico_image)
                     msg.setText("Invalid animation file.")
                     msg.exec()
                     return
@@ -944,6 +952,7 @@ def import_animation(file_export_path, animation_array, name_file=None, animatio
                         # Wrong animation file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
+                        msg.setWindowIcon(main_window.ico_image)
                         msg.setText("Invalid animation file.")
                         msg.exec()
                         return
@@ -957,6 +966,7 @@ def import_animation(file_export_path, animation_array, name_file=None, animatio
                         # Wrong animation file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
+                        msg.setWindowIcon(main_window.ico_image)
                         msg.setText("Incompatible animation file.")
                         msg.exec()
                         return
@@ -994,6 +1004,7 @@ def action_export_blast_button_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The blast file was exported in: <b>" + file_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -1033,6 +1044,7 @@ def action_import_blast_button_logic(main_window):
                 # Wrong camera file
                 msg = QMessageBox()
                 msg.setWindowTitle("Error")
+                msg.setWindowIcon(main_window.ico_image)
                 msg.setText("Invalid blast file.")
                 msg.exec()
                 return
@@ -1071,6 +1083,7 @@ def action_export_all_blast_button_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "The blast files were exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -1127,6 +1140,7 @@ def action_import_all_blast_button_logic(main_window):
 
             msg = QMessageBox()
             msg.setWindowTitle("Warning")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText(message)
             msg.exec()
 

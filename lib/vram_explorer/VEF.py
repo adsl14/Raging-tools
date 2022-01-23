@@ -1014,6 +1014,7 @@ def import_texture(main_window, import_file_path, ask_user):
 
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
+                    msg.setWindowIcon(main_window.ico_image)
                     msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
                     msg.exec()
                     return
@@ -1029,6 +1030,7 @@ def import_texture(main_window, import_file_path, ask_user):
 
                     # Ask to the user if he/she is sure that wants to replace the texture
                     msg.setWindowTitle("Warning")
+                    msg.setWindowIcon(main_window.ico_image)
                     message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
 
                     # If the users click on 'No', the modified texture won't be imported
@@ -1078,6 +1080,7 @@ def import_texture(main_window, import_file_path, ask_user):
 
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
+                    msg.setWindowIcon(main_window.ico_image)
                     msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
                     msg.exec()
                     return
@@ -1093,6 +1096,7 @@ def import_texture(main_window, import_file_path, ask_user):
 
                     # Ask to the user if he/she is sure that wants to replace the texture
                     msg.setWindowTitle("Warning")
+                    msg.setWindowIcon(main_window.ico_image)
                     message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
 
                     # If the users click on 'No', the modified texture won't be imported
@@ -1132,6 +1136,7 @@ def import_texture(main_window, import_file_path, ask_user):
             # Wrong texture file
             msg = QMessageBox()
             msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText("Invalid texture file.")
             msg.exec()
             return
@@ -1234,6 +1239,7 @@ def add_texture(main_window, import_file_path):
             # Wrong texture file
             msg = QMessageBox()
             msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText("Invalid texture file.")
             msg.exec()
             return
@@ -1347,6 +1353,7 @@ def action_export_all_logic(main_window):
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
         message = "All the textures were exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the folder?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
@@ -1390,6 +1397,7 @@ def action_import_all_logic(main_window):
         if message:
             msg = QMessageBox()
             msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
             msg.setText("Found the following errors while importing:" + "<ul>" + message + "</ul>")
             msg.exec()
             return
@@ -1412,6 +1420,7 @@ def action_remove_logic(main_window):
     # Ask to the user if is sure to remove the texture
     msg = QMessageBox()
     msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
     message = "The texture will be removed. Are you sure to continue?"
     answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
 
@@ -1620,6 +1629,7 @@ def action_remove_material_logic(main_window):
     # Ask to the user if is sure to remove the texture
     msg = QMessageBox()
     msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
     message = "The material will be removed. Are you sure to continue?"
     answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
 

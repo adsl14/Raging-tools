@@ -25,6 +25,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     # old path where the user loaded the previous file
     old_path_file = ""
+    # QIcon instance
+    ico_image = None
 
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
@@ -143,6 +145,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Wrong vram file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
+                        msg.setWindowIcon(self.ico_image)
                         msg.setText("Invalid vram file.")
                         msg.exec()
                         return
@@ -155,6 +158,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Wrong vram file
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
+                    msg.setWindowIcon(self.ico_image)
                     msg.setText("A vram file is needed.")
                     msg.exec()
                     return
@@ -180,6 +184,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Wrong spr file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
+                        msg.setWindowIcon(self.ico_image)
                         msg.setText("Invalid spr file.")
                         msg.exec()
                         return
@@ -192,6 +197,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Wrong spr file
                     msg = QMessageBox()
                     msg.setWindowTitle("Error")
+                    msg.setWindowIcon(self.ico_image)
                     msg.setText("A spr file is needed.")
                     msg.exec()
                     return
@@ -219,6 +225,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if not VEV.sprp_file.type_entry:
                     msg = QMessageBox()
                     msg.setWindowTitle("Warning")
+                    msg.setWindowIcon(self.ico_image)
                     msg.setText("There is no file loaded.")
                     msg.exec()
                 else:
@@ -505,6 +512,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     msg = QMessageBox()
                     msg.setWindowTitle("Message")
+                    msg.setWindowIcon(self.ico_image)
                     message_open_saved_files = msg.question(self, '', message, msg.Yes | msg.No)
 
                     # If the users click on 'Yes', it will open the path where the files were saved
@@ -524,6 +532,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Ask to the user if the tool saves also the modified values from character parameters editor
                     msg = QMessageBox()
                     msg.setWindowTitle("Message")
+                    msg.setWindowIcon(self.ico_image)
                     message = "Do you wish to save also the modified values from 'character parameters editor' " \
                               "into the unpacked files?"
                     answer = msg.question(self, '', message, msg.Yes | msg.No | msg.Cancel)
@@ -601,6 +610,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             else:
                                 msg = QMessageBox()
                                 msg.setWindowTitle("Warning")
+                                msg.setWindowIcon(self.ico_image)
                                 msg.setText("The file hasn't been modified.")
                                 msg.exec()
 
@@ -616,6 +626,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 else:
                     msg = QMessageBox()
                     msg.setWindowTitle("Warning")
+                    msg.setWindowIcon(self.ico_image)
                     msg.setText("No pak file has been loaded.")
                     msg.exec()
 
@@ -626,11 +637,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             rmtree(PEV.temp_folder, onerror=del_rw)
         event.accept()
 
-    @staticmethod
-    def action_author_logic():
+    def action_author_logic(self):
         msg = QMessageBox()
         msg.setTextFormat(1)
         msg.setWindowTitle("Author")
+        msg.setWindowIcon(self.ico_image)
         msg.setText(
             "<ul>"
             "<li><b>Raging tools 1.5</b> by "
@@ -640,11 +651,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "</ul>")
         msg.exec()
 
-    @staticmethod
-    def action_credits_logic():
+    def action_credits_logic(self):
         msg = QMessageBox()
         msg.setTextFormat(1)
         msg.setWindowTitle("Credits")
+        msg.setWindowIcon(self.ico_image)
         msg.setText('<ul>'
                     '<li>To <b>revelation (revel8n) </b> from <a href=https://forum.xentax.com>XeNTaX</a> '
                     'forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i>.</li>'
@@ -658,5 +669,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     window = MainWindow()
+    window.ico_image = QtGui.QIcon("lib/design/Raging_Tools.ico")
+    window.setWindowIcon(window.ico_image)
+    window.selectCharaWindow.setWindowIcon(window.ico_image)
+    window.selectCharaRosterWindow.setWindowIcon(window.ico_image)
     window.show()
     app.exec_()
