@@ -58,17 +58,7 @@ def load_data_to_pe_cpe(main_window):
     
     # Read the header (STPK)
     pak_file.seek(32)
-    try:
-        data = pak_file.read(32).decode('utf-8').split(".")[0]
-    except UnicodeError:
-        print("UnicodeError exception when decoding from byte in position 32")
-        data = ""
-    pak_file.seek(128)
-    try:
-        data_2 = pak_file.read(32).decode('utf-8').split(".")[0]
-    except UnicodeError:
-        print("UnicodeError exception when decoding from byte in position 128")
-        data_2 = ""
+    data = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
     pak_file.close()
 
     # Check if the file is the operate_resident_param.pak
@@ -289,7 +279,7 @@ def load_data_to_pe_cpe(main_window):
             main_window.cs_chip.setEnabled(False)
 
     # Check if the file is the db_font_pad_PS3_s.zpak
-    elif data_2 == CPEV.db_font_pad_PS3_s_d:
+    elif data == CPEV.db_font_pad_PS3_s_d:
 
         # reset the values
         GPV.character_list_edited.clear()
