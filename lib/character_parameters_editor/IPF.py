@@ -865,7 +865,7 @@ def action_import_animation_button_logic(main_window, animation_combo_box):
     if os.path.exists(file_export_path):
         # Import a single animation
         animation_array = animation_combo_box.currentData()
-        import_animation(file_export_path, animation_array)
+        import_animation(main_window, file_export_path, animation_array)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -903,7 +903,7 @@ def action_import_all_animation_button_logic(main_window, animation_combo_box):
             msg.exec()
 
 
-def import_animation(file_export_path, animation_array, name_file=None, animations_files_error=None):
+def import_animation(main_window, file_export_path, animation_array, name_file=None, animations_files_error=None):
     if file_export_path:
 
         with open(file_export_path, mode="rb") as file:
