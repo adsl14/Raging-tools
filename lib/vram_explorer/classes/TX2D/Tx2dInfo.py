@@ -7,7 +7,7 @@ class Tx2dInfo:
     self.data_size = 0
     self.width = 0
     self.height = 0
-    self.unk0x14 = 0
+    self.unk0x14 = 1
     self.mip_maps = 0
     self.unk0x18 = 0
     self.unk0x1c = 0

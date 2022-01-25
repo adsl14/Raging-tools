@@ -1207,6 +1207,15 @@ def add_texture(main_window, import_file_path):
             file.seek(84)
             sprp_data_entry.data_info.data.dxt_encoding = get_dxt_value(file.read(VEV.bytes2Read).decode())
 
+            # We don't know about this value, but if the encoding is DXT5, has to be 34. However, if the encoding
+            # is DXT1, the value has to be 2
+            if sprp_data_entry.data_info.data.dxt_encoding == 24:
+                sprp_data_entry.data_info.data.unk0x00 = 34
+            else:
+                sprp_data_entry.data_info.data.unk0x00 = 2
+            # When is DXT encoding, this unk value has to be that value
+            sprp_data_entry.data_info.data.unk0x1c = 2804419200
+
             # Get all the data
             file.seek(0)
             data = file.read()
@@ -1228,6 +1237,11 @@ def add_texture(main_window, import_file_path):
             sprp_data_entry.data_info.data.mip_maps = 1
             # Get the dxtencoding
             sprp_data_entry.data_info.data.dxt_encoding = 0
+
+            # We don't know about this value, but for RGBA encoding, has to be 2
+            sprp_data_entry.data_info.data.unk0x00 = 2
+            # We don't know about this value, but for RGBA encoding, has to be that value
+            sprp_data_entry.data_info.data.unk0x1c = 2804746880
 
             # Get all the data
             file.seek(0)
