@@ -27,6 +27,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     old_path_file = ""
     # QIcon instance
     ico_image = None
+    # Extensions
+    extension_zpak = "Zpack files ()"
+    extension_spr_vram = "Info/Texture files ()"
 
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
@@ -207,20 +210,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_logic(self):
 
-        extension_pak = "Pack files ()"
-        extension_spr_vram = "Info/Texture files ()"
-
         # Ask to the user where to save the file
         path_output_file = os.path.splitext(MainWindow.old_path_file)[0]
         path_output_file, extension = QFileDialog.getSaveFileName(self,
                                                                   "Save file", path_output_file,
-                                                                  extension_pak + ";;" + extension_spr_vram)
+                                                                  self.extension_zpak + ";;" + self.extension_spr_vram)
 
         # The user has selected a path
         if path_output_file:
 
             # Save spr_vram in a folder
-            if extension == extension_spr_vram:
+            if extension == self.extension_spr_vram:
 
                 if not VEV.sprp_file.type_entry:
                     msg = QMessageBox()
@@ -248,8 +248,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Where the entries are located
                         entry_info = input_sprp_file.read(VEV.sprp_file.sprp_header.entry_info_size)
 
-                        # Where the names are located
+                        # Where the names are located.
                         string_table = input_sprp_file.read(VEV.sprp_file.sprp_header.string_table_size)
+                        string_table_size = VEV.sprp_file.sprp_header.string_table_size
 
                         # Get each data entry divided in tx2d, mtrl and the rest of data entries
                         tx2d_data_info_size = VEV.sprp_file.type_entry[b'TX2D'].data_count * 32
@@ -278,7 +279,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     tx2d_data_entry = b''
                     mtrl_data_entry = b''
                     data_info_size = ((num_textures + num_material) * 32) + rest_data_info_size
-                    data_block_base = VEV.sprp_file.data_info_base + data_info_size
+                    data_block_base = VEV.string_table_size_increment + VEV.sprp_file.data_info_base + data_info_size
                     spr_new_size = data_block_base + data_block_size
                     with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
 
@@ -299,8 +300,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 aux_name_offset = data_entry.data_info.name_offset
 
                                 # Calculate the name offset for the file
-                                data_entry.data_info.name_offset = spr_new_size + 1 - \
-                                    VEV.sprp_file.string_table_base
+                                data_entry.data_info.name_offset = 1 + string_table_size
 
                                 # Change the offset also in the combo box
                                 self.textureVal.setItemData(self.textureVal.findData(aux_name_offset),
@@ -317,13 +317,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                             layer.source_name_offset = data_entry.data_info.name_offset
 
                                 # Calculate the data offset
-                                data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
-                                    data_entry.data_info.name_offset + \
-                                    data_entry.data_info.name_size + 1 - data_block_base
-                                data_block_size += 1 + data_entry.data_info.name_size + 1 + \
-                                    data_entry.data_info.data_size + 12
-                                spr_new_size += 1 + data_entry.data_info.name_size + 1 + \
-                                    data_entry.data_info.data_size + 12
+                                data_entry.data_info.data_offset = data_block_size
+                                string_table_size += 1 + data_entry.data_info.name_size
+                                data_block_size += data_entry.data_info.data_size + 12
+                                spr_new_size += data_entry.data_info.data_size + 12
 
                             tx2d_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
                             tx2d_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
@@ -355,7 +352,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # The texture is a new one for the spr, we append it to the end of the file
                             else:
                                 name = data_entry.data_info.name + "." + data_entry.data_info.extension
-                                data_block += b'\x00' + name.encode('utf-8') + b'\x00' + tx2d_data
+                                string_table += b'\x00' + name.encode('utf-8')
+                                data_block += tx2d_data
 
                             # Write the textures in the vram file
                             # It's a DDS image
@@ -427,8 +425,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             aux_name_offset = data_entry.data_info.name_offset
 
                             # Calculate the name offset for the file
-                            data_entry.data_info.name_offset = spr_new_size + 1 - \
-                                VEV.sprp_file.string_table_base
+                            data_entry.data_info.name_offset = 1 + string_table_size
 
                             # Change the offset also in the combo box
                             self.materialModelPartVal.setItemData(
@@ -442,15 +439,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     scene_data_info_children.data.name_offset = data_entry.data_info.name_offset
 
                             # Calculate the offsets for the new material
-                            data_entry.data_info.data_offset = VEV.sprp_file.string_table_base + \
-                                data_entry.data_info.name_offset + data_entry.data_info.name_size + 1 - data_block_base
+                            data_entry.data_info.data_offset = data_block_size
                             data_entry.data_info.child_offset = data_entry.data_info.data_offset + \
-                                data_entry.data_info.data_size + \
-                                data_entry.data_info.child_info[0].data_size
+                                data_entry.data_info.data_size + data_entry.data_info.child_info[0].data_size
 
-                            data_block_size += 1 + data_entry.data_info.name_size + 1 + data_entry.data_info.data_size \
-                                + data_entry.data_info.child_info[0].data_size + 32
-                            spr_new_size += 1 + data_entry.data_info.name_size + 1 + data_entry.data_info.data_size + \
+                            string_table_size += 1 + data_entry.data_info.name_size
+                            data_block_size += data_entry.data_info.data_size + \
+                                data_entry.data_info.child_info[0].data_size + 32
+                            spr_new_size += data_entry.data_info.data_size + \
                                 data_entry.data_info.child_info[0].data_size + 32
 
                         mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
@@ -489,8 +485,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
                                          data_block[data_entry.data_info.data_offset + material_total_size:]
                         else:
-                            data_block += b'\x00' + data_entry.data_info.name.encode(
-                                'utf-8') + b'\x00' + mtrl_data
+                            string_table += b'\x00' + data_entry.data_info.name.encode('utf-8')
+                            data_block += mtrl_data
 
                     # Write the scne material data info name offset to the file
                     for i in range(0, self.modelPartVal.count()):
@@ -500,9 +496,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_info_children.data.name_offset.to_bytes(4, 'big') + data_block[data_offset+4:]
 
                     # Create the new spr file
+                    # Check if the string_table_size, the module of 16 is 0
+                    rest = 16 - (string_table_size % 16)
+                    if rest != 0:
+                        for i in range(rest):
+                            string_table += b'\00'
+                            string_table_size += 1
                     # Update the header
-                    header = header[:28] + data_info_size.to_bytes(4, 'big') + data_block_size.to_bytes(4, 'big') + \
-                        header[36:48] + vram_new_size.to_bytes(4, 'big') + header[52:]
+                    header = header[:24] + string_table_size.to_bytes(4, 'big') + data_info_size.to_bytes(4, 'big') + \
+                        data_block_size.to_bytes(4, 'big') + header[36:48] + vram_new_size.to_bytes(4, 'big') + \
+                        header[52:]
                     with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
                         output_spr_file.write(header + entry_info + string_table + tx2d_data_entry + mtrl_data_entry +
                                               rest_data_info + data_block)
