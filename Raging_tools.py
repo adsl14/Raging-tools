@@ -212,9 +212,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Ask to the user where to save the file
         path_output_file = os.path.splitext(MainWindow.old_path_file)[0]
-        path_output_file, extension = QFileDialog.getSaveFileName(self,
-                                                                  "Save file", path_output_file,
-                                                                  self.extension_zpak + ";;" + self.extension_spr_vram)
+
+        # If the current tab that the user is seeing is the vram explorer, when saving the default extension will be
+        # the extension for spr/vram
+        if self.tabWidget.currentIndex() == 0:
+            path_output_file, extension = QFileDialog.getSaveFileName(self,
+                                                                      "Save file", path_output_file,
+                                                                      self.extension_spr_vram + ";;" +
+                                                                      self.extension_zpak)
+        # The current tab is pak explorer or character parameters editor
+        else:
+            path_output_file, extension = QFileDialog.getSaveFileName(self,
+                                                                      "Save file", path_output_file,
+                                                                      self.extension_zpak + ";;" +
+                                                                      self.extension_spr_vram)
 
         # The user has selected a path
         if path_output_file:
@@ -498,7 +509,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Create the new spr file
                     # Check if the string_table_size, the module of 16 is 0
                     rest = 16 - (string_table_size % 16)
-                    if rest != 0:
+                    if rest != 16:
                         for i in range(rest):
                             string_table += b'\00'
                             string_table_size += 1
@@ -527,7 +538,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
 
                 # Add the extension .zpak
-                path_output_file = path_output_file + ".zpak"
+                path_output_file = path_output_file.split(".")[0] + ".zpak"
 
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():
