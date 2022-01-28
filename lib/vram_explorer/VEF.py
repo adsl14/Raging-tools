@@ -947,10 +947,15 @@ def get_dxt_value(encoding_name):
         return 24
 
 
-def replace_texture_properties(main_window, data_entry, len_data, width, height, mip_maps, dxt_encoding):
+def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width, height, mip_maps, unk0x1c,
+                               dxt_encoding):
 
     # Get the difference in size between actual and modified texture to check if is necessary to update offsets
     difference = len_data - data_entry.data_info.data.data_size
+
+    # Change unk0x00 (related to the encoding)
+    if data_entry.data_info.data.unk0x00 != unk0x00:
+        data_entry.data_info.data.unk0x00 = unk0x00
 
     # Change size
     if difference != 0:
@@ -969,6 +974,10 @@ def replace_texture_properties(main_window, data_entry, len_data, width, height,
     if data_entry.data_info.data.mip_maps != mip_maps:
         data_entry.data_info.data.mip_maps = mip_maps
         main_window.mipMapsImageText.setText("Mipmaps: %s" % mip_maps)
+
+    # Change unk0x1c (related to the encoding)
+    if data_entry.data_info.data.unk0x1c != unk0x1c:
+        data_entry.data_info.data.unk0x1c = unk0x1c
 
     # Change dxt encoding
     if data_entry.data_info.data.dxt_encoding != dxt_encoding:
@@ -1047,8 +1056,16 @@ def import_texture(main_window, import_file_path, ask_user):
             # Change texture in the array
             data_entry.data_info.data.tx2d_vram.data = data
 
+            # We don't know about this value, but if the encoding is DXT5, has to be 34. However, if the encoding
+            # is DXT1, the value has to be 2
+            if dxt_encoding == 24:
+                unk0x00 = 34
+            else:
+                unk0x00 = 2
+
             # Replace the texture properties in memory
-            replace_texture_properties(main_window, data_entry, len_data, width, height, mip_maps, dxt_encoding)
+            replace_texture_properties(main_window, data_entry, unk0x00, len_data, width, height, mip_maps, 2804419200,
+                                       dxt_encoding)
 
             try:
                 # Show texture in the program
@@ -1124,7 +1141,7 @@ def import_texture(main_window, import_file_path, ask_user):
                 data_entry.data_info.data.tx2d_vram.data_unswizzle = data
 
             # Replace the texture properties in memory
-            replace_texture_properties(main_window, data_entry, len_data, width, height, 1, 0)
+            replace_texture_properties(main_window, data_entry, 2, len_data, width, height, 1, 2804746880, 0)
 
             try:
                 # Show texture in the program
