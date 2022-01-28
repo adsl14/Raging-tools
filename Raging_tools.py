@@ -28,8 +28,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # QIcon instance
     ico_image = None
     # Extensions
-    extension_zpak = "Zpack files ()"
-    extension_spr_vram = "Info/Texture files ()"
+    extension_zpak = "Zpack files (*.zpak)"
+    extension_spr_vram = "Spr/Vram files (*._)"
 
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
@@ -211,21 +211,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def action_save_logic(self):
 
         # Ask to the user where to save the file
-        path_output_file = os.path.splitext(MainWindow.old_path_file)[0]
+        path_output_file = os.path.splitext(MainWindow.old_path_file)[0].split(".")[0]
 
         # If the current tab that the user is seeing is the vram explorer, when saving the default extension will be
         # the extension for spr/vram
         if self.tabWidget.currentIndex() == 0:
-            path_output_file, extension = QFileDialog.getSaveFileName(self,
-                                                                      "Save file", path_output_file,
-                                                                      self.extension_spr_vram + ";;" +
-                                                                      self.extension_zpak)
+            initial_extension = self.extension_spr_vram
         # The current tab is pak explorer or character parameters editor
         else:
-            path_output_file, extension = QFileDialog.getSaveFileName(self,
-                                                                      "Save file", path_output_file,
-                                                                      self.extension_zpak + ";;" +
-                                                                      self.extension_spr_vram)
+            initial_extension = self.extension_zpak
+        path_output_file, extension = QFileDialog.getSaveFileName(self,
+                                                                  "Save file", path_output_file,
+                                                                  self.extension_zpak + ";;" +
+                                                                  self.extension_spr_vram, initial_extension)
 
         # The user has selected a path
         if path_output_file:
@@ -536,9 +534,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Save pak file
             else:
-
-                # Add the extension .zpak
-                path_output_file = path_output_file.split(".")[0] + ".zpak"
 
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():
