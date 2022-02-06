@@ -316,6 +316,13 @@ def load_data_to_pe_cpe(main_window):
         main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData(
             GPV.character_list[0].aura_type))
 
+        # Show the blast attacks
+        main_window.ico_boost_stick_r_up_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Up"])
+        main_window.ico_boost_stick_r_r_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Right"])
+        main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Down"])
+        main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Left"])
+        main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Push"])
+
         # Open the tab (character parameters editor)
         if main_window.tabWidget.currentIndex() != 2:
             main_window.tabWidget.setCurrentIndex(2)

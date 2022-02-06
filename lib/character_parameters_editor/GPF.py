@@ -5,6 +5,7 @@ from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
 def initialize_operate_resident_param(main_window, qt_widgets):
+
     # Load all the mini portraits (main panel)
     GPV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
@@ -162,6 +163,23 @@ def initialize_operate_resident_param(main_window, qt_widgets):
     for aura_type in GPV.aura_type_values:
         main_window.aura_type_value.addItem(aura_type, GPV.aura_type_values[aura_type])
 
+    # Set the blast attacks
+    main_window.ico_boost_stick_r_up_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
+                                                                          "ico_boost_stick_r_up.png")))
+    main_window.ico_boost_stick_r_up_value.currentIndexChanged.connect(lambda: on_up_blast_attack_logic(main_window))
+    main_window.ico_boost_stick_r_r_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
+                                                                         "ico_boost_stick_r_r.png")))
+    main_window.ico_boost_stick_r_r_value.currentIndexChanged.connect(lambda: on_r_blast_attack_logic(main_window))
+    main_window.ico_boost_stick_r_d_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
+                                                                         "ico_boost_stick_r_d.png")))
+    main_window.ico_boost_stick_r_d_value.currentIndexChanged.connect(lambda: on_d_blast_attack_logic(main_window))
+    main_window.ico_boost_stick_r_l_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
+                                                                         "ico_boost_stick_r_l.png")))
+    main_window.ico_boost_stick_r_l_value.currentIndexChanged.connect(lambda: on_l_blast_attack_logic(main_window))
+    main_window.ico_boost_stick_r_push_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
+                                                                            "ico_boost_stick_r_push_00.png")))
+    main_window.ico_boost_stick_r_push_value.currentIndexChanged.connect(lambda: on_p_blast_attack_logic(main_window))
+
 
 def enable_disable_operate_resident_param_values(main_window, flag):
 
@@ -214,6 +232,18 @@ def enable_disable_db_font_pad_ps3_values(main_window, flag):
 
     # Aura section
     main_window.aura_type.setEnabled(flag)
+
+    # Blast attacks
+    main_window.ico_boost_stick_r_up_image.setEnabled(flag)
+    main_window.ico_boost_stick_r_up_value.setEnabled(flag)
+    main_window.ico_boost_stick_r_r_image.setEnabled(flag)
+    main_window.ico_boost_stick_r_r_value.setEnabled(flag)
+    main_window.ico_boost_stick_r_d_image.setEnabled(flag)
+    main_window.ico_boost_stick_r_d_value.setEnabled(flag)
+    main_window.ico_boost_stick_r_l_image.setEnabled(flag)
+    main_window.ico_boost_stick_r_l_value.setEnabled(flag)
+    main_window.ico_boost_stick_r_push_image.setEnabled(flag)
+    main_window.ico_boost_stick_r_push_value.setEnabled(flag)
 
 
 def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i):
@@ -329,7 +359,19 @@ def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
     subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
     character.aura_type = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
 
-    subpak_file_resident_character_param.seek(52, os.SEEK_CUR)
+    # Blast attacks
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    character.blast_attacks["Up"] = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    character.blast_attacks["Right"] = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    character.blast_attacks["Down"] = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    character.blast_attacks["Left"] = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    character.blast_attacks["Push"] = int.from_bytes(subpak_file_resident_character_param.read(1), byteorder='big')
+
+    subpak_file_resident_character_param.seek(32, os.SEEK_CUR)
 
 
 def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i):
@@ -402,6 +444,18 @@ def write_db_font_pad_ps3(character, subpak_file_resident_character_param):
     # Aura type
     subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
     subpak_file_resident_character_param.write(character.aura_type.to_bytes(1, byteorder="big"))
+
+    # Blast attacks
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    subpak_file_resident_character_param.write(character.blast_attacks["Up"].to_bytes(1, byteorder="big"))
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    subpak_file_resident_character_param.write(character.blast_attacks["Right"].to_bytes(1, byteorder="big"))
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    subpak_file_resident_character_param.write(character.blast_attacks["Down"].to_bytes(1, byteorder="big"))
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    subpak_file_resident_character_param.write(character.blast_attacks["Left"].to_bytes(1, byteorder="big"))
+    subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
+    subpak_file_resident_character_param.write(character.blast_attacks["Push"].to_bytes(1, byteorder="big"))
 
 
 def action_change_character(event, main_window, index=None, modify_slot_transform=False):
@@ -633,6 +687,13 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
             # Aura type
             main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData
                                                         (GPV.character_list[index].aura_type))
+
+            # Blast attacks
+            main_window.ico_boost_stick_r_up_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Up"])
+            main_window.ico_boost_stick_r_r_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Right"])
+            main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Down"])
+            main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Left"])
+            main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Push"])
 
         # Load the portrait
         main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -1066,6 +1127,66 @@ def on_aura_type_changed(main_window):
     # Avoid trigger the combo box at starting
     if not CPEV.change_character:
         GPV.character_list[GPV.chara_selected].aura_type = main_window.aura_type_value.currentData()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_up_blast_attack_logic(main_window):
+
+    # Avoid trigger the combo box at starting
+    if not CPEV.change_character:
+        GPV.character_list[GPV.chara_selected].blast_attacks["Up"] = main_window.\
+            ico_boost_stick_r_up_value.currentIndex()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_r_blast_attack_logic(main_window):
+
+    # Avoid trigger the combo box at starting
+    if not CPEV.change_character:
+        GPV.character_list[GPV.chara_selected].blast_attacks["Right"] = main_window.\
+            ico_boost_stick_r_r_value.currentIndex()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_d_blast_attack_logic(main_window):
+
+    # Avoid trigger the combo box at starting
+    if not CPEV.change_character:
+        GPV.character_list[GPV.chara_selected].blast_attacks["Down"] = main_window.\
+            ico_boost_stick_r_d_value.currentIndex()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_l_blast_attack_logic(main_window):
+
+    # Avoid trigger the combo box at starting
+    if not CPEV.change_character:
+        GPV.character_list[GPV.chara_selected].blast_attacks["Left"] = main_window.\
+            ico_boost_stick_r_l_value.currentIndex()
+
+        # If the character was edited before, we won't append the index to our array of characters edited once
+        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_p_blast_attack_logic(main_window):
+
+    # Avoid trigger the combo box at starting
+    if not CPEV.change_character:
+        GPV.character_list[GPV.chara_selected].blast_attacks["Push"] = main_window.\
+            ico_boost_stick_r_push_value.currentIndex()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
         if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:

@@ -13,6 +13,7 @@ class CPEV:
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
     path_large_images = os.path.join("lib", "character_parameters_editor", "images", "large")
     path_fourSlot_images = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
+    path_controller_images = os.path.join("lib", "character_parameters_editor", "images", "controller")
     path_small_four_slot_images = os.path.join(path_fourSlot_images, "small")
 
     # Color for the borders

@@ -27,3 +27,4 @@ class Character:
 		# Values for the file db_font_pad_PS3_s.zpak
 		self.position_resident_character_param = 0
 		self.aura_type = 0
+		self.blast_attacks = dict({"Up": 0, "Right": 0, "Down": 0, "Left": 0, "Push": 0})
