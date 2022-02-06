@@ -51,6 +51,10 @@ def initialize_operate_character(main_window):
     # Set unk13
     main_window.unk13_value.valueChanged.connect(lambda: on_unk13_value_changed(main_window))
 
+    # Set the cancel set
+    for element in IPV.cancel_set_values:
+        main_window.cancel_set_value.addItem(element, IPV.cancel_set_values[element])
+
     # Set the fighting style
     for element in IPV.type_of_fighting_values:
         main_window.type_fighting_value.addItem(element, IPV.type_of_fighting_values[element])
@@ -168,8 +172,10 @@ def read_single_character_parameters(main_window):
         # Size of ki blast
         main_window.size_of_blast_value.setValue(struct.unpack('>f', file.read(4))[0])
 
-        # Type fighting
-        file.seek(9, 1)
+        # Cancel set and Type fighting
+        file.seek(8, 1)
+        main_window.cancel_set_value.setCurrentIndex(main_window.cancel_set_value.findData
+                                                     (int.from_bytes(file.read(1), "big")))
         main_window.type_fighting_value.setCurrentIndex(main_window.type_fighting_value.findData
                                                         (int.from_bytes(file.read(1), "big")))
 
@@ -379,8 +385,9 @@ def write_single_character_parameters(main_window):
         # Size of ki blast
         file.write(struct.pack('>f', main_window.size_of_blast_value.value()))
 
-        # Type fighting
-        file.seek(9, 1)
+        # Cancel set and Type fighting
+        file.seek(8, 1)
+        file.write(main_window.cancel_set_value.currentData().to_bytes(1, byteorder="big"))
         file.write(main_window.type_fighting_value.currentData().to_bytes(1, byteorder="big"))
 
         # Direction last hit fast combo

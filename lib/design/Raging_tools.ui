@@ -5883,7 +5883,7 @@
                <rect>
                 <x>650</x>
                 <y>200</y>
-                <width>231</width>
+                <width>251</width>
                 <height>181</height>
                </rect>
               </property>
@@ -6001,7 +6001,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type 1 -&amp;gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.&lt;/p&gt;&lt;p&gt;Type 2 -&amp;gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.&lt;/p&gt;&lt;p&gt;Type 3 -&amp;gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.&lt;/p&gt;&lt;p&gt;Type 4 -&amp;gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.&lt;/p&gt;&lt;p&gt;Type 5 -&amp;gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.&lt;/p&gt;&lt;p&gt;Type 6 -&amp;gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).&lt;/p&gt;&lt;p&gt;Type 7 -&amp;gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This change the inputs of the character in order to make combos&lt;/p&gt;&lt;p&gt;Type 1 -&amp;gt; Goku(Base, SS), Krillin, Yamcha, Trunks Sword(Base, SS), Gotenks(Base), Bardock, Captain Ginyu, #18, Cell(1st, 2nd Forms), Cell Jr, Turles, Cooler(Base), Salza.&lt;/p&gt;&lt;p&gt;Type 2 -&amp;gt; Kid Gohan, Teen Gohan(Base, SS), Gohan(Base, SS), Chiaotzu, Trunks Fighting(Base, SS), Goten(Base, SS), Burter, #19, Saibamen, #13(Base), Future Gohan(Base), Neizu.&lt;/p&gt;&lt;p&gt;Type 3 -&amp;gt; Vegeta(Scouter), Vegeta (Base, SS), Kid Trunks(Base, SS), Radditz, Nappa, Zarbon(all forms), Recoome, Guldo, Frieza(1st, 2nd, 3rd Forms), Bojack(Base), Tarble.&lt;/p&gt;&lt;p&gt;Type 4 -&amp;gt; Piccolo, Tien, Videl, Dodoria, Jeice, #16, #17, Dr Gero, Broly(Base, SS), Zangya, Nail, Cui, #14, #15, Dore.&lt;/p&gt;&lt;p&gt;Type 5 -&amp;gt; Goku(SS2, SS3), Gotenks(SS, SS3), Cell(Perfect Form, Perfect), Kid Buu, Gogeta, Dabura, Bojack(Full Power), Janemba, Pikkon.&lt;/p&gt;&lt;p&gt;Type 6 -&amp;gt; Teen Gohan(SS2), Gohan(SS2), Frieza(Final Form, Full Power), Super Buu(all Forms), Ultimate Gohan, Mecha Frieza, Cooler(Final Form), Meta-Cooler, Future Gohan(SS).&lt;/p&gt;&lt;p&gt;Type 7 -&amp;gt; Vegeta(Super, SS2), Majin Vegeta, Trunks Fighting(Super), Vegito(Base, Super), Majin Buu, Broly(LSS), SS3 Vegeta, SS3 Broly, #13(Fusion), Hatchiyack.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Type of fighting</string>
@@ -6036,7 +6036,7 @@
               <widget class="QComboBox" name="background_color_combo_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>130</x>
                  <y>153</y>
                  <width>121</width>
                  <height>22</height>
@@ -6046,7 +6046,7 @@
               <widget class="QLabel" name="background_color_combo_text">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>130</x>
                  <y>130</y>
                  <width>101</width>
                  <height>16</height>
@@ -6066,6 +6066,32 @@
                  <y>100</y>
                  <width>81</width>
                  <height>21</height>
+                </rect>
+               </property>
+              </widget>
+              <widget class="QLabel" name="cancel_set_text">
+               <property name="geometry">
+                <rect>
+                 <x>20</x>
+                 <y>130</y>
+                 <width>81</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This change the cancel set of the character&lt;/p&gt;&lt;p&gt;Cancel 1 - Goku, Goku Super Saiyan, Goku Super Saiyan 2, Goku Super Saiyan 3, Dabura, Cooler, Final Form Cooler, Meta Cooler, Janemba, Tarble&lt;/p&gt;&lt;p&gt;Cancel 2 - Piccolo, Trunks Base, Trunks Super Saiyan, Zarbon, Zarban post Transformation, Cell Jr&lt;/p&gt;&lt;p&gt;Cancel 3 - Vegeta Base, Vegeta Super Saiyan, Super Vegeta, Vegeta SSJ2, Majin Vegeta, Dr. Gero, Vegeta SSJ3&lt;/p&gt;&lt;p&gt;Cancel 4 - Kid Gohan, Teen Gohan, Teen Gohan Super Saiyan, Teen Gohan Super Saiyan 2, Adult Gohan Base, Adult Gohan Super Saiyan, Adult Gohan Super Saiyan 2, Krillen, Chiaotzu, Vegeta(Scouter), Goten base, Goten Super Saiyan, Ultimate Gohan, Future Gohan Base, Future Gohan Super Saiyan, Android 15&lt;/p&gt;&lt;p&gt;Cancel 5 - Frieza 1st Form, Frieza 2nd Form, Frieza 3rd Form, Final Form Frieza, 100% Frieza, Mecha Frieza&lt;/p&gt;&lt;p&gt;Cancel 6 - Vegito Base, Super Saiyan Vegito, Raditz, Captain Ginyu, Guldo, Android 19&lt;/p&gt;&lt;p&gt;Cancel 7 - Cell 1st Form, Cell 2nd Form, Perfect Cell, Super Perfect Cell&lt;/p&gt;&lt;p&gt;Cancel 8 - Gotenks, Gotenks Super Saiyan, Gotenks Super Saiyan 3, Android 17, Nail, Pikkon, Salza&lt;/p&gt;&lt;p&gt;Cancel 9 - Kid Buu, Broly Base, Broly Super Saiyan, Broly Legendary Super Saiyan, Gogeta, Broly Super Saiyan 3&lt;/p&gt;&lt;p&gt;Cancel 10 - Yamcha, Dodoria, Android 16, Majin Buu, Andoid 13, Super Android 13, Zangya, Hatchiyack&lt;/p&gt;&lt;p&gt;Cancel 11 - Kid Trunks Base, Kid Trunks Super Saiyan, Burter, Jeice, Android 18, Cui&lt;/p&gt;&lt;p&gt;Cancel 12 - Videl, Saibaman&lt;/p&gt;&lt;p&gt;Cancel 13 - Trunks Base, Trunks Super Saiyan, Super Trunks, Nappa, Recoome, Super Buu, Super Buu(Gotenks Absorbed), Super Buu(Gohan Absorbed), Neizu, Dore&lt;/p&gt;&lt;p&gt;Cancel 14 - Tien, Bardock, Turles, Bojack, Bojack 2, Android 14&lt;/p&gt;&lt;p&gt;List made by: King Dan&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Cancel set</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="cancel_set_value">
+               <property name="geometry">
+                <rect>
+                 <x>20</x>
+                 <y>150</y>
+                 <width>91</width>
+                 <height>22</height>
                 </rect>
                </property>
               </widget>
@@ -6442,6 +6468,9 @@
               <string>roster editor</string>
              </attribute>
              <widget class="QLabel" name="portrait_2">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
               <property name="geometry">
                <rect>
                 <x>90</x>
@@ -6452,9 +6481,6 @@
               </property>
               <property name="text">
                <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap>../character_parameters_editor/images/large/chara_up_chips_l_000.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -7950,7 +7976,7 @@
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">

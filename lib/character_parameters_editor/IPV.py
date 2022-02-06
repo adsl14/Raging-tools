@@ -9,6 +9,9 @@ class IPV:
     # Values for the combo box
     type_of_fighting_values = dict({"Type 1": 0, "Type 2": 1, "Type 3": 2, "Type 4": 3, "Type 5": 10, "Type 6": 11,
                                     "Type 7": 12})
+    cancel_set_values = dict({"Cancel 1": 0, "Cancel 2": 1, "Cancel 3": 2, "Cancel 4": 3, "Cancel 5": 4,
+                              "Cancel 6": 5, "Cancel 7": 6, "Cancel 8": 7, "Cancel 9": 8, "Cancel 10": 9,
+                              "Cancel 11": 10, "Cancel 12": 11, "Cancel 13": 13, "Cancel 14": 14})
     direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
     color_background_combo_values = dict({"Red": 76, "Pink": 84, "Blue": 88, "Lighter Blue": 86, "Purple": 80,
                                           "Yellow": 94, "Darkner Yellow": 74, "Lighter Yellow": 92, "Black": 78,
