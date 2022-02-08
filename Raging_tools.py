@@ -476,7 +476,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
 
                         # Write the children material (if any)
-                        if data_entry.data_info.child_count > 0:
+                        if data_entry.data_info.child_offset > 0:
                             data_info_children = data_entry.data_info.child_info[0]
                             mtrl_data += data_info_children.data
                             mtrl_data += VEV.DbzCharMtrl_offset.to_bytes(4, 'big')

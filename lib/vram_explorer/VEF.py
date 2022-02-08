@@ -42,12 +42,14 @@ def initialize_ve(main_window):
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
+    main_window.materialChildren.stateChanged.connect(lambda: action_material_children_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
+    main_window.materialChildren.setEnabled(False)
 
     # Model part
     main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -132,6 +134,7 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
+        main_window.materialChildren.setEnabled(True)
 
         main_window.modelPartVal.setEnabled(True)
         main_window.materialModelPartVal.setEnabled(True)
@@ -148,6 +151,7 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
+        main_window.materialChildren.setEnabled(False)
 
         main_window.modelPartVal.setEnabled(False)
         main_window.materialModelPartVal.setEnabled(False)
@@ -365,11 +369,11 @@ def get_name_from_spr(file, offset):
     return name, extension
 
 
-def read_children(main_window, file, sprp_data_info, type_section):
+def read_children(main_window, file, sprp_data_info, type_section, child_count):
 
     file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_block_base)
 
-    for _ in range(sprp_data_info.child_count):
+    for _ in range(child_count):
         sprp_data_info_child = SprpDataInfo()
 
         sprp_data_info_child.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
@@ -455,7 +459,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
         # Get all the children sprp_data_info for the actual children in the loop section
         if sprp_data_info_child.child_count > 0:
-            read_children(main_window, file, sprp_data_info_child, type_section)
+            read_children(main_window, file, sprp_data_info_child, type_section, sprp_data_info_child.child_count)
             file.seek(aux_pointer_file)
 
         # Store each children to the array
@@ -701,9 +705,9 @@ def open_spr_file(main_window, model, spr_path):
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
 
-                # Get all the children sprp_data_info
-                if sprp_data_entry.data_info.child_count > 0:
-                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
+                # We will store the child_count in a var so we can change it in the 'MTRL' in order to read
+                # the child if the mtrl entry has child_offset greater than 0
+                child_count = sprp_data_entry.data_info.child_count
 
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
@@ -741,6 +745,12 @@ def open_spr_file(main_window, model, spr_path):
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
 
+                    # If the child count in the 'MTRL' entry is 0, but the child_offset is greater than 0
+                    # it means the 'MTRL' entry has actually children. We change the var to '1' in order to read
+                    # the children in the 'read_children' method
+                    if child_count == 0 and sprp_data_entry.data_info.child_offset > 0:
+                        child_count = 1
+
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
 
@@ -775,6 +785,10 @@ def open_spr_file(main_window, model, spr_path):
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
+
+                # Get all the children sprp_data_info
+                if child_count > 0:
+                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type, child_count)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -1579,6 +1593,17 @@ def action_material_val_changed(main_window):
             # Get the texture for the layer (index 0)
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
+        # Change the material children
+        if mtrl_data_entry.data_info.child_offset > 0:
+            if not main_window.materialChildren.isEnabled():
+                main_window.materialChildren.setEnabled(True)
+            VEV.enable_combo_box = False
+            main_window.materialChildren.setChecked(bool(mtrl_data_entry.data_info.child_count))
+            VEV.enable_combo_box = True
+        else:
+            if main_window.materialChildren.isEnabled():
+                main_window.materialChildren.setEnabled(False)
+
 
 def action_layer_val_changed(main_window):
 
@@ -1624,6 +1649,23 @@ def action_texture_val_changed(main_window):
 
         # Store the texture for the layer
         layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
+
+
+def action_material_children_logic(main_window):
+
+    if VEV.enable_combo_box:
+
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+
+        # Change the check of the children material
+        if mtrl_data_entry.data_info.child_offset > 0:
+            if not main_window.materialChildren.isEnabled():
+                main_window.materialChildren.setEnabled(True)
+            mtrl_data_entry.data_info.child_count = int(main_window.materialChildren.isChecked())
+        else:
+            if main_window.materialChildren.isEnabled():
+                main_window.materialChildren.setEnabled(False)
 
 
 def action_add_material_logic(main_window):
