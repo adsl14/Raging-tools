@@ -896,21 +896,21 @@ def open_vram_file(vram_path):
                         .tx2d_vram.data_unswizzle = header + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info\
                         .data.tx2d_vram.data_unswizzle
 
-            print("--------------------------------------------")
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x00)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x08)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x14)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x18)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x1c)
-            print(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding)
+            '''print("--------------------------------------------")
+            print("UNK0x00 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x00))
+            print("dataOffset " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset))
+            print("UNK0x08 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x08))
+            print("DataSize " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size))
+            print("Width " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width))
+            print("Height " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height))
+            print("UNK0x14 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x14))
+            print("Mipmaps " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps))
+            print("UNK0x18 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x18))
+            print("UNK0x1C " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x1c))
+            print("DXT_ENCODING " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding))
             if i < VEV.sprp_file.type_entry[b'TX2D'].data_count - 1:
                 print("Separator: " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i+1].data_info.data.data_offset -
-                      file.tell()))
+                      file.tell()))'''
 
 
 def write_separator_vram(output_vram_file, data_entry):
@@ -919,20 +919,23 @@ def write_separator_vram(output_vram_file, data_entry):
     if extra > 0:
         for _ in range(0, extra):
             output_vram_file.write(b'\x00')
-    if data_entry.data_info.data.width == data_entry.data_info.data.height:
-        if data_entry.data_info.data.dxt_encoding == 8:
-            output_vram_file.write(VEV.vram_separator_80)
+
+    # If the Mipmaps are greater than 6, we write the separator
+    if data_entry.data_info.data.mip_maps >= 6:
+        if data_entry.data_info.data.width == data_entry.data_info.data.height:
+            if data_entry.data_info.data.dxt_encoding == 8:
+                output_vram_file.write(VEV.vram_separator_80)
+            else:
+                output_vram_file.write(VEV.vram_separator_48)
         else:
-            output_vram_file.write(VEV.vram_separator_48)
-    else:
-        # If the encoding is dxt1, we write a separator of 32 bytes
-        if data_entry.data_info.data.dxt_encoding == 8:
-            output_vram_file.write(VEV.vram_separator_32)
-        elif data_entry.data_info.data.mip_maps != 9:
-            output_vram_file.write(VEV.vram_separator_80)
-        # If the mipmaps are 9, we write a separator of 16 bytes
-        else:
-            output_vram_file.write(VEV.vram_separator_16)
+            # If the encoding is dxt1, we write a separator of 32 bytes
+            if data_entry.data_info.data.dxt_encoding == 8:
+                output_vram_file.write(VEV.vram_separator_32)
+            # If the mipmaps are not 9 or height is not 256, we write a separator of 80 bytes
+            elif data_entry.data_info.data.mip_maps != 9 or data_entry.data_info.data.height != 256:
+                output_vram_file.write(VEV.vram_separator_80)
+            else:
+                output_vram_file.write(VEV.vram_separator_16)
 
 
 def create_header(value):
