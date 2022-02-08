@@ -928,11 +928,11 @@ def write_separator_vram(output_vram_file, data_entry):
         # If the encoding is dxt1, we write a separator of 32 bytes
         if data_entry.data_info.data.dxt_encoding == 8:
             output_vram_file.write(VEV.vram_separator_32)
-        # If the mipmaps are 9, we write a separator of 16 bytes
-        elif data_entry.data_info.data.mip_maps == 9:
-            output_vram_file.write(VEV.vram_separator_16)
-        else:
+        elif data_entry.data_info.data.mip_maps != 9:
             output_vram_file.write(VEV.vram_separator_80)
+        # If the mipmaps are 9, we write a separator of 16 bytes
+        else:
+            output_vram_file.write(VEV.vram_separator_16)
 
 
 def create_header(value):
