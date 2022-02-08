@@ -912,6 +912,7 @@ def open_vram_file(vram_path):
                 print("Separator: " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i+1].data_info.data.data_offset -
                       file.tell()))
 
+
 def write_separator_vram(output_vram_file, data_entry):
 
     extra = output_vram_file.tell() % 16
