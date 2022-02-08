@@ -15,6 +15,7 @@ class VEV:
 	# number of bytes that usually reads the program
 	bytes2Read = 4
 	# vram separator that will differ depending of the width, height and encoding of the texture. Only for dds images
+	vram_separator_16 = b''
 	vram_separator_32 = b''
 	vram_separator_48 = b''
 	vram_separator_80 = b''
@@ -23,6 +24,8 @@ class VEV:
 			vram_separator_48 += b'\x00'
 			if i < 32:
 				vram_separator_32 += b'\x00'
+				if i < 16:
+					vram_separator_16 += b'\x00'
 		vram_separator_80 += b'\x00'
 	# Temp folder name
 	temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
