@@ -234,16 +234,7 @@ def enable_disable_db_font_pad_ps3_values(main_window, flag):
     main_window.aura_type.setEnabled(flag)
 
     # Blast attacks
-    main_window.ico_boost_stick_r_up_image.setEnabled(flag)
-    main_window.ico_boost_stick_r_up_value.setEnabled(flag)
-    main_window.ico_boost_stick_r_r_image.setEnabled(flag)
-    main_window.ico_boost_stick_r_r_value.setEnabled(flag)
-    main_window.ico_boost_stick_r_d_image.setEnabled(flag)
-    main_window.ico_boost_stick_r_d_value.setEnabled(flag)
-    main_window.ico_boost_stick_r_l_image.setEnabled(flag)
-    main_window.ico_boost_stick_r_l_value.setEnabled(flag)
-    main_window.ico_boost_stick_r_push_image.setEnabled(flag)
-    main_window.ico_boost_stick_r_push_value.setEnabled(flag)
+    main_window.ico_boost_stick_r.setEnabled(flag)
 
 
 def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i):
