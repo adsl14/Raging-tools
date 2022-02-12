@@ -762,18 +762,18 @@ def open_spr_file(main_window, model, spr_path):
 
                     # Read each layer (the max number is 10)
                     for k in range(0, 10):
-                        mtrlLayer = MtrlLayer()
-                        mtrlLayer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                        mtrlLayer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        mtrl_layer = MtrlLayer()
+                        mtrl_layer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        mtrl_layer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                         # Get the names for each mtrlLayer
                         aux_mtrl_pointer = file.tell()
-                        mtrlLayer.layer_name, extension = \
-                            get_name_from_spr(file, mtrlLayer.layer_name_offset + VEV.sprp_file.string_table_base)
+                        mtrl_layer.layer_name, extension = \
+                            get_name_from_spr(file, mtrl_layer.layer_name_offset + VEV.sprp_file.string_table_base)
                         file.seek(aux_mtrl_pointer)
 
                         # Store the layer in the actual material
-                        sprp_data_entry.data_info.data.layers.append(mtrlLayer)
+                        sprp_data_entry.data_info.data.layers.append(mtrl_layer)
 
                     # Add the material to the combo box
                     main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
@@ -934,22 +934,24 @@ def write_separator_vram(output_vram_file, data_entry):
         for _ in range(0, extra):
             output_vram_file.write(b'\x00')
 
-    # If the Mipmaps are greater than 6, we write the separator
-    if data_entry.data_info.data.mip_maps >= 6:
-        if data_entry.data_info.data.width == data_entry.data_info.data.height:
-            if data_entry.data_info.data.dxt_encoding == 8:
-                output_vram_file.write(VEV.vram_separator_80)
-            else:
-                output_vram_file.write(VEV.vram_separator_48)
+    # The texture is a square
+    if data_entry.data_info.data.width == data_entry.data_info.data.height:
+        if data_entry.data_info.data.dxt_encoding == 8:
+            output_vram_file.write(VEV.vram_separator_80)
+        # We check if the Mipmaps are greater than 6. If that's so, we write a separator
+        elif data_entry.data_info.data.mip_maps >= 6:
+            output_vram_file.write(VEV.vram_separator_48)
+    # The texture is not a square.
+    # We check if the Mipmaps are greater than 6. If that's so, we write a separator
+    elif data_entry.data_info.data.mip_maps >= 6:
+        # If the encoding is dxt1, we write a separator of 32 bytes
+        if data_entry.data_info.data.dxt_encoding == 8:
+            output_vram_file.write(VEV.vram_separator_32)
+        # If the mipmaps are not 9 or height is not 256, we write a separator of 80 bytes
+        elif data_entry.data_info.data.mip_maps != 9 or data_entry.data_info.data.height != 256:
+            output_vram_file.write(VEV.vram_separator_80)
         else:
-            # If the encoding is dxt1, we write a separator of 32 bytes
-            if data_entry.data_info.data.dxt_encoding == 8:
-                output_vram_file.write(VEV.vram_separator_32)
-            # If the mipmaps are not 9 or height is not 256, we write a separator of 80 bytes
-            elif data_entry.data_info.data.mip_maps != 9 or data_entry.data_info.data.height != 256:
-                output_vram_file.write(VEV.vram_separator_80)
-            else:
-                output_vram_file.write(VEV.vram_separator_16)
+            output_vram_file.write(VEV.vram_separator_16)
 
 
 def create_header(value):
@@ -1671,10 +1673,10 @@ def action_material_children_logic(main_window):
 def action_add_material_logic(main_window):
 
     # Ask to the user the name of the material
-    text, okPressed = QInputDialog.getText(main_window, "Material", "Insert a material name:", QLineEdit.Normal, "")
+    text, ok_pressed = QInputDialog.getText(main_window, "Material", "Insert a material name:", QLineEdit.Normal, "")
 
     # If the user write the name and is not empty, we create a new material
-    if okPressed and text != '':
+    if ok_pressed and text != '':
 
         # Create the data_entry for the material
         sprp_data_entry = SprpDataEntry()
