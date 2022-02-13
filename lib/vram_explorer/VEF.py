@@ -1662,14 +1662,22 @@ def action_material_val_changed(main_window):
             # Get the texture for the layer (index 0)
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
-        # Change the material children
+        # Change the material children (if any)
         if mtrl_data_entry.data_info.child_count > 0:
-            if not main_window.editMaterialChildrenButton.isEnabled():
-                main_window.editMaterialChildrenButton.setEnabled(True)
+
             # Get the material children
-            mtrl_child_data = mtrl_data_entry.data_info.child_info[0].data
-            # Load the material children to the window
-            load_material_children_to_window(main_window, mtrl_child_data)
+            mtrl_child = mtrl_data_entry.data_info.child_info[0]
+
+            # Raging Blast 2 material children
+            if mtrl_child.data_size == 96:
+                if not main_window.editMaterialChildrenButton.isEnabled():
+                    main_window.editMaterialChildrenButton.setEnabled(True)
+                # Load the material children to the window
+                load_material_children_to_window(main_window, mtrl_child.data)
+            else:
+                if main_window.editMaterialChildrenButton.isEnabled():
+                    main_window.editMaterialChildrenButton.setEnabled(False)
+
         else:
             if main_window.editMaterialChildrenButton.isEnabled():
                 main_window.editMaterialChildrenButton.setEnabled(False)
