@@ -482,7 +482,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the data_info from the parent data_info
                             data_info_children = data_entry.data_info.child_info[0]
 
-                            # Raging Blast 2 children material
+                            # Raging Blast 2 material children
                             if data_info_children.data_size == 96:
                                 mtrl_prop = data_info_children.data
                                 mtrl_data += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
