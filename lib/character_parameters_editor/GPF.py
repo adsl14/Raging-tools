@@ -143,7 +143,7 @@ def initialize_operate_resident_param(main_window, qt_widgets):
     main_window.fusiPanelText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_fusion_US.png")))
 
     # Load the Select Chara window
-    main_window.selectCharaWindow = qt_widgets.QMainWindow()
+    main_window.selectCharaWindow = qt_widgets.QDialog()
     main_window.selectCharaUI = Select_Chara()
     main_window.selectCharaUI.setupUi(main_window.selectCharaWindow)
     GPV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)

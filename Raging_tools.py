@@ -1,3 +1,5 @@
+import struct
+
 from lib.character_parameters_editor.IPF import write_single_character_parameters
 from lib.character_parameters_editor.GPF import write_operate_resident_param, write_db_font_pad_ps3
 from lib.character_parameters_editor.REF import write_cs_chip_file
@@ -45,7 +47,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionCredits.triggered.connect(self.action_credits_logic)
 
         # --- vram explorer ---
-        initialize_ve(self)
+        initialize_ve(self, QtWidgets)
 
         # --- pak explorer ---
         initialize_pe(self)
@@ -476,9 +478,39 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
 
                         # Write the children material (if any)
-                        if data_entry.data_info.child_offset > 0:
+                        if data_entry.data_info.child_count > 0:
+                            # Get the data_info from the parent data_info
                             data_info_children = data_entry.data_info.child_info[0]
-                            mtrl_data += data_info_children.data
+
+                            # Raging Blast 2 children material
+                            if data_info_children.data_size == 96:
+                                mtrl_prop = data_info_children.data
+                                mtrl_data += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+                                mtrl_data += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+                                for k in range(len(mtrl_prop.unk0x04)):
+                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x04[k])
+                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+                                mtrl_data += struct.pack('>f', mtrl_prop.Saturation_glow)
+                                mtrl_data += struct.pack('>f', mtrl_prop.Saturation_base)
+                                mtrl_data += \
+                                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+                                mtrl_data += \
+                                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+                                mtrl_data += \
+                                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+                                mtrl_data += \
+                                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+                                for k in range(len(mtrl_prop.Border_RGBA)):
+                                    mtrl_data += struct.pack('>f', mtrl_prop.Border_RGBA[k])
+                                for k in range(len(mtrl_prop.unk0x44)):
+                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x44[k])
+                                for k in range(len(mtrl_prop.unk0x50)):
+                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x50[k])
+                            else:
+                                mtrl_data += data_info_children.data
+
                             mtrl_data += VEV.DbzCharMtrl_offset.to_bytes(4, 'big')
                             mtrl_data += (data_entry.data_info.data_offset + 192).to_bytes(4, 'big')
                             mtrl_data += data_info_children.data_size.to_bytes(4, 'big')
@@ -682,5 +714,6 @@ if __name__ == "__main__":
     window.setWindowIcon(window.ico_image)
     window.selectCharaWindow.setWindowIcon(window.ico_image)
     window.selectCharaRosterWindow.setWindowIcon(window.ico_image)
+    window.MaterialChildEditorWindow.setWindowIcon(window.ico_image)
     window.show()
     app.exec_()

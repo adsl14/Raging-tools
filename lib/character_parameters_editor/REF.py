@@ -45,7 +45,7 @@ def initialize_cs_chip(main_window, qt_widgets):
         REV.slots_characters.append(slot)
 
     # Load the Select Chara roster window
-    main_window.selectCharaRosterWindow = qt_widgets.QMainWindow()
+    main_window.selectCharaRosterWindow = qt_widgets.QDialog()
     main_window.selectCharaRosterUI = Select_Chara_Roster()
     main_window.selectCharaRosterUI.setupUi(main_window.selectCharaRosterWindow)
     mini_portraits_image_select_chara_roster_window = main_window.selectCharaRosterUI.frame.findChildren(QLabel)

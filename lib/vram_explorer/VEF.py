@@ -1,11 +1,15 @@
+import struct
+
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QInputDialog, QLineEdit
 from pyglet.gl import GLException
 
+from lib.design.material_children import Material_Child_Editor
 from lib.packages import os, image, QImage, QPixmap
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
 from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
+from lib.vram_explorer.classes.MTRL.MtrlProp import MtrlProp
 from lib.vram_explorer.classes.SCNE.EyeData import EyeData
 from lib.vram_explorer.classes.SCNE.ScneEyeInfo import ScneEyeInfo
 from lib.vram_explorer.classes.SCNE.ScneMaterial import ScneMaterial
@@ -19,7 +23,7 @@ from lib.vram_explorer.classes.TX2D.Tx2dInfo import Tx2dInfo
 from lib.vram_explorer.classes.TX2D.Tx2dVram import Tx2dVram
 
 
-def initialize_ve(main_window):
+def initialize_ve(main_window, qt_widgets):
 
     # Buttons
     main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
@@ -42,14 +46,14 @@ def initialize_ve(main_window):
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
-    main_window.materialChildren.stateChanged.connect(lambda: action_material_children_logic(main_window))
+    main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
-    main_window.materialChildren.setEnabled(False)
+    main_window.editMaterialChildrenButton.setEnabled(False)
 
     # Model part
     main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -72,6 +76,23 @@ def initialize_ve(main_window):
                                                                  main_window.encodingImageText,
                                                                  main_window.mipMapsImageText,
                                                                  main_window.sizeImageText))
+
+    # Load the Material children editor window
+    main_window.MaterialChildEditorWindow = qt_widgets.QDialog()
+    main_window.MaterialChildEditorUI = Material_Child_Editor()
+    main_window.MaterialChildEditorUI.setupUi(main_window.MaterialChildEditorWindow)
+    main_window.MaterialChildEditorUI.border_color_R_value.valueChanged\
+        .connect(lambda: action_rgb_changed_logic(main_window))
+    main_window.MaterialChildEditorUI.border_color_G_value.valueChanged\
+        .connect(lambda: action_rgb_changed_logic(main_window))
+    main_window.MaterialChildEditorUI.border_color_B_value.valueChanged\
+        .connect(lambda: action_rgb_changed_logic(main_window))
+    main_window.MaterialChildEditorUI.border_color_A_value.valueChanged\
+        .connect(lambda: action_rgb_changed_logic(main_window))
+    main_window.MaterialChildEditorUI.save_material_button.clicked\
+        .connect(lambda: action_save_material_logic(main_window))
+    main_window.MaterialChildEditorUI.cancel_material_button.clicked.\
+        connect(lambda: action_cancel_material_logic(main_window))
 
 
 def load_data_to_ve(main_window):
@@ -134,7 +155,7 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
-        main_window.materialChildren.setEnabled(True)
+        main_window.editMaterialChildrenButton.setEnabled(True)
 
         main_window.modelPartVal.setEnabled(True)
         main_window.materialModelPartVal.setEnabled(True)
@@ -151,7 +172,7 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
-        main_window.materialChildren.setEnabled(False)
+        main_window.editMaterialChildrenButton.setEnabled(False)
 
         main_window.modelPartVal.setEnabled(False)
         main_window.materialModelPartVal.setEnabled(False)
@@ -369,11 +390,11 @@ def get_name_from_spr(file, offset):
     return name, extension
 
 
-def read_children(main_window, file, sprp_data_info, type_section, child_count):
+def read_children(main_window, file, sprp_data_info, type_section):
 
     file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_block_base)
 
-    for _ in range(child_count):
+    for _ in range(sprp_data_info.child_count):
         sprp_data_info_child = SprpDataInfo()
 
         sprp_data_info_child.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
@@ -396,7 +417,36 @@ def read_children(main_window, file, sprp_data_info, type_section, child_count):
             if sprp_data_info_child.name == "DbzCharMtrl":
 
                 file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
-                sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+                # Material children RB2
+                if sprp_data_info_child.data_size == 96:
+
+                    # Save the info of the material children in the mtrl_prop var
+                    mtrl_prop = MtrlProp()
+                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x04)):
+                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.Border_RGBA)):
+                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x44)):
+                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x50)):
+                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+
+                    sprp_data_info_child.data = mtrl_prop
+
+                # Generic material children
+                else:
+                    sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
 
         # Get the scene data
         elif type_section == b'SCNE':
@@ -459,7 +509,7 @@ def read_children(main_window, file, sprp_data_info, type_section, child_count):
 
         # Get all the children sprp_data_info for the actual children in the loop section
         if sprp_data_info_child.child_count > 0:
-            read_children(main_window, file, sprp_data_info_child, type_section, sprp_data_info_child.child_count)
+            read_children(main_window, file, sprp_data_info_child, type_section)
             file.seek(aux_pointer_file)
 
         # Store each children to the array
@@ -705,9 +755,9 @@ def open_spr_file(main_window, model, spr_path):
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
 
-                # We will store the child_count in a var so we can change it in the 'MTRL' in order to read
-                # the child if the mtrl entry has child_offset greater than 0
-                child_count = sprp_data_entry.data_info.child_count
+                # Get all the children sprp_data_info
+                if sprp_data_entry.data_info.child_count > 0:
+                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
@@ -745,12 +795,6 @@ def open_spr_file(main_window, model, spr_path):
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
 
-                    # If the child count in the 'MTRL' entry is 0, but the child_offset is greater than 0
-                    # it means the 'MTRL' entry has actually children. We change the var to '1' in order to read
-                    # the children in the 'read_children' method
-                    if child_count == 0 and sprp_data_entry.data_info.child_offset > 0:
-                        child_count = 1
-
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
 
@@ -785,10 +829,6 @@ def open_spr_file(main_window, model, spr_path):
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
-
-                # Get all the children sprp_data_info
-                if child_count > 0:
-                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type, child_count)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -1325,6 +1365,26 @@ def add_texture(main_window, import_file_path):
             return
 
 
+# Will add the material children data to the material children editor window
+def load_material_children_to_window(main_window, mtrl_child_data):
+
+    main_window.MaterialChildEditorUI.shadow_orienation_value \
+        .setValue(int(mtrl_child_data.Ilumination_Shadow_orientation)*100)
+    main_window.MaterialChildEditorUI.light_orientation_glow_value \
+        .setValue(int(mtrl_child_data.Ilumination_Light_orientation_glow*100))
+    main_window.MaterialChildEditorUI.saturation_base_value.setValue(int(mtrl_child_data.Saturation_base*100))
+    main_window.MaterialChildEditorUI.saturation_glow_value.setValue(int(mtrl_child_data.Saturation_glow*100))
+    main_window.MaterialChildEditorUI.brightness_base_value.setValue(int(mtrl_child_data.Brightness_toonmap*100))
+    main_window.MaterialChildEditorUI.brightness_glow_value.setValue(int(mtrl_child_data.Brightness_incandescence*100))
+    border_rgba = str(mtrl_child_data.Border_RGBA).replace("[", "").replace("]", "")
+    main_window.MaterialChildEditorUI.border_color_color \
+        .setStyleSheet("background-color: rgba(" + border_rgba + ");")
+    main_window.MaterialChildEditorUI.border_color_R_value.setValue(int(mtrl_child_data.Border_RGBA[0]*255))
+    main_window.MaterialChildEditorUI.border_color_G_value.setValue(int(mtrl_child_data.Border_RGBA[1]*255))
+    main_window.MaterialChildEditorUI.border_color_B_value.setValue(int(mtrl_child_data.Border_RGBA[2]*255))
+    main_window.MaterialChildEditorUI.border_color_A_value.setValue(int(mtrl_child_data.Border_RGBA[3]*255))
+
+
 def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
 
     current_selected_index = list_view.selectionModel().currentIndex().row()
@@ -1603,15 +1663,16 @@ def action_material_val_changed(main_window):
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
         # Change the material children
-        if mtrl_data_entry.data_info.child_offset > 0:
-            if not main_window.materialChildren.isEnabled():
-                main_window.materialChildren.setEnabled(True)
-            VEV.enable_combo_box = False
-            main_window.materialChildren.setChecked(bool(mtrl_data_entry.data_info.child_count))
-            VEV.enable_combo_box = True
+        if mtrl_data_entry.data_info.child_count > 0:
+            if not main_window.editMaterialChildrenButton.isEnabled():
+                main_window.editMaterialChildrenButton.setEnabled(True)
+            # Get the material children
+            mtrl_child_data = mtrl_data_entry.data_info.child_info[0].data
+            # Load the material children to the window
+            load_material_children_to_window(main_window, mtrl_child_data)
         else:
-            if main_window.materialChildren.isEnabled():
-                main_window.materialChildren.setEnabled(False)
+            if main_window.editMaterialChildrenButton.isEnabled():
+                main_window.editMaterialChildrenButton.setEnabled(False)
 
 
 def action_layer_val_changed(main_window):
@@ -1660,23 +1721,6 @@ def action_texture_val_changed(main_window):
         layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
 
 
-def action_material_children_logic(main_window):
-
-    if VEV.enable_combo_box:
-
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-
-        # Change the check of the children material
-        if mtrl_data_entry.data_info.child_offset > 0:
-            if not main_window.materialChildren.isEnabled():
-                main_window.materialChildren.setEnabled(True)
-            mtrl_data_entry.data_info.child_count = int(main_window.materialChildren.isChecked())
-        else:
-            if main_window.materialChildren.isEnabled():
-                main_window.materialChildren.setEnabled(False)
-
-
 def action_add_material_logic(main_window):
 
     # Ask to the user the name of the material
@@ -1721,12 +1765,34 @@ def action_add_material_logic(main_window):
         sprp_data_info_children = SprpDataInfo()
         sprp_data_info_children.name_offset = VEV.DbzCharMtrl_offset
         sprp_data_info_children.data_size = 96
-        sprp_data_info_children.data = b'\x3D\xCC\xCC\xCD\x3E\x2E\x14\x7B\x3F\x80\x00\x00\x3F\x33\x33\x33\x3F\x33\x33' \
-                                       b'\x33\x3E\x4C\xCC\xCD\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
-                                       b'\x00\x00\x3E\xCC\xCC\xCD\x3F\x80\x00\x00\x00\x00\x00\x00\x3E\xCC\xCC\xCD\x3E' \
-                                       b'\xCC\xCC\xCD\x3E\xCC\xCC\xCD\x3F\x4C\xCC\xCD\x3E\x4C\xCC\xCD\x3E\x4C\xCC\xCD' \
-                                       b'\x3E\x4C\xCC\xCD\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00' \
-                                       b'\x00'
+
+        # Create a default material properties for the new material
+        mtrl_prop = MtrlProp()
+        mtrl_prop.Ilumination_Shadow_orientation = 0.1
+        mtrl_prop.Ilumination_Light_orientation_glow = 0.17
+        mtrl_prop.unk0x04[0] = 1.0
+        mtrl_prop.unk0x04[1] = 0.7
+        mtrl_prop.Brightness_purple_light_glow = 0.7
+        mtrl_prop.Saturation_glow = 0.8
+        mtrl_prop.Saturation_base = 0.0
+        mtrl_prop.Brightness_toonmap_active_some_positions = 0.0
+        mtrl_prop.Brightness_toonmap = 0.0
+        mtrl_prop.Brightness_toonmap_active_other_positions = 0.0
+        mtrl_prop.Brightness_incandescence_active_some_positions = 0.4
+        mtrl_prop.Brightness_incandescence = 1.0
+        mtrl_prop.Brightness_incandescence_active_other_positions = 0.0
+        mtrl_prop.Border_RGBA[0] = 0.4
+        mtrl_prop.Border_RGBA[1] = 0.4
+        mtrl_prop.Border_RGBA[2] = 0.4
+        mtrl_prop.Border_RGBA[3] = 0.8
+        mtrl_prop.unk0x44[0] = 0.2
+        mtrl_prop.unk0x44[1] = 0.2
+        mtrl_prop.unk0x44[2] = 0.2
+        mtrl_prop.unk0x50[0] = 0.0
+        mtrl_prop.unk0x50[1] = 0.0
+        mtrl_prop.unk0x50[2] = 0.0
+        mtrl_prop.unk0x50[3] = 0.0
+        sprp_data_info_children.data = mtrl_prop
         sprp_data_entry.data_info.child_info.append(sprp_data_info_children)
 
         # Add the material to the combo box
@@ -1789,6 +1855,12 @@ def action_remove_material_logic(main_window):
             VEV.enable_combo_box = True
 
 
+def action_material_children_logic(main_window):
+
+    # Show the material editor window
+    main_window.MaterialChildEditorWindow.show()
+
+
 def action_model_part_val_changed(main_window):
 
     if VEV.enable_combo_box:
@@ -1811,3 +1883,49 @@ def action_material_model_part_val_changed(main_window):
         # Change the material that is using the model
         data_info_children.data.name_offset = main_window.materialModelPartVal.\
             itemData(main_window.materialModelPartVal.currentIndex())
+
+
+def action_rgb_changed_logic(main_window):
+
+    if VEV.enable_combo_box:
+        # Get each value RGBA
+        border_rgba = ""
+        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_R_value.value()) + ","
+        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_G_value.value()) + ","
+        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_B_value.value()) + ","
+        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_A_value.value())
+
+        # Change the color
+        main_window.MaterialChildEditorUI.border_color_color\
+            .setStyleSheet("background-color: rgba(" + border_rgba + ");")
+
+
+def action_save_material_logic(main_window):
+
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    # Get the mtrl child data
+    mtrl_child_data = mtrl_data_entry.data_info.child_info[0].data
+
+    mtrl_child_data.Ilumination_Shadow_orientation = \
+        float(main_window.MaterialChildEditorUI.shadow_orienation_value.value()/100)
+    mtrl_child_data.Ilumination_Light_orientation_glow = \
+        float(main_window.MaterialChildEditorUI.light_orientation_glow_value.value()/100)
+    mtrl_child_data.Saturation_base = float(main_window.MaterialChildEditorUI.saturation_base_value.value()/100)
+    mtrl_child_data.Saturation_glow = float(main_window.MaterialChildEditorUI.saturation_glow_value.value()/100)
+    mtrl_child_data.Brightness_toonmap = float(main_window.MaterialChildEditorUI.brightness_base_value.value()/100)
+    mtrl_child_data.Brightness_incandescence = \
+        float(main_window.MaterialChildEditorUI.brightness_glow_value.value()/100)
+    mtrl_child_data.Border_RGBA[0] = float(main_window.MaterialChildEditorUI.border_color_R_value.value()/255)
+    mtrl_child_data.Border_RGBA[1] = float(main_window.MaterialChildEditorUI.border_color_G_value.value()/255)
+    mtrl_child_data.Border_RGBA[2] = float(main_window.MaterialChildEditorUI.border_color_B_value.value()/255)
+    mtrl_child_data.Border_RGBA[3] = float(main_window.MaterialChildEditorUI.border_color_A_value.value()/255)
+
+    # Close the Material children editor window
+    main_window.MaterialChildEditorWindow.close()
+
+
+def action_cancel_material_logic(main_window):
+
+    # Close the Material children editor window
+    main_window.MaterialChildEditorWindow.close()
