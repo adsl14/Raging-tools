@@ -1168,7 +1168,7 @@ def import_texture(main_window, import_file_path, ask_user):
             mod_4 = len_data % 4
             if mod_4 != 0:
                 len_data = len_data - mod_4
-            data = data[:len_data + 54]
+                data = data[:-mod_4]
 
             # --- Importing the texture ---
             # Change texture in the array
@@ -1301,10 +1301,17 @@ def add_texture(main_window, import_file_path):
             # Get all the data
             file.seek(0)
             data = file.read()
+            # We gather the data modified but only a number of bytes that the mod of 4 is 0, so always will have
+            # blocks of four bytes. Doing this, we avoid to corrupt the file
+            len_data = len(data[54:])
+            mod_4 = len_data % 4
+            if mod_4 != 0:
+                len_data = len_data - mod_4
+                data = data[:-mod_4]
 
             # Store the data and size
             sprp_data_entry.data_info.data.tx2d_vram.data = data
-            sprp_data_entry.data_info.data.data_size = len(data[54:])
+            sprp_data_entry.data_info.data.data_size = len_data
 
             prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry)
 
