@@ -1922,8 +1922,12 @@ def action_save_material_logic(main_window):
     mtrl_child_data.Saturation_base = float(main_window.MaterialChildEditorUI.saturation_base_value.value()/100)
     mtrl_child_data.Saturation_glow = float(main_window.MaterialChildEditorUI.saturation_glow_value.value()/100)
     mtrl_child_data.Brightness_toonmap = float(main_window.MaterialChildEditorUI.brightness_base_value.value()/100)
+    mtrl_child_data.Brightness_toonmap_active_some_positions = mtrl_child_data.Brightness_toonmap
+    mtrl_child_data.Brightness_toonmap_active_other_positions = mtrl_child_data.Brightness_toonmap
     mtrl_child_data.Brightness_incandescence = \
         float(main_window.MaterialChildEditorUI.brightness_glow_value.value()/100)
+    mtrl_child_data.Brightness_incandescence_active_some_positions = mtrl_child_data.Brightness_incandescence
+    mtrl_child_data.Brightness_incandescence_active_other_positions = mtrl_child_data.Brightness_incandescence
     mtrl_child_data.Border_RGBA[0] = float(main_window.MaterialChildEditorUI.border_color_R_value.value()/255)
     mtrl_child_data.Border_RGBA[1] = float(main_window.MaterialChildEditorUI.border_color_G_value.value()/255)
     mtrl_child_data.Border_RGBA[2] = float(main_window.MaterialChildEditorUI.border_color_B_value.value()/255)
