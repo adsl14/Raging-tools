@@ -33,9 +33,14 @@ Windows has a limit for the path name, so run the tool in a place where the path
 
 <i>vram explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and <i>.vram</i> file, the textures will be loaded.
 
-It will show you for each texture, the <b>Resolution</b>, <b>Mipmaps</b> and <b>Encoding</b>. You can export the textures, import over the original, export all the textures, import all the textures from a folder (for this feature, the folder should have the exact filenames of the original textures), remove textures or add a brand new texture. Moreover, you can assign to the material section in the bottom, what texture will be used for that material, and also assign to the 3D model part, what material should use (if there is a 3D model part that doesn't have any material assigned, the game will crash so be aware of removing materials!)
+It will show you for each texture, the <b>Resolution</b>, <b>Mipmaps</b> and <b>Encoding</b>. You can export the textures, import over the original, export all the textures, import all the textures from a folder (for this feature, the folder should have the exact filenames of the original textures), remove textures or add a brand new texture.
 
-When a texture is imported over a original one, the program will check the new texture file and compare it with the original one. If they have differences in resolution, mipmaps or/and encoding, it will tell you those differences and ask you if you want to import the new texture. However, for images that are originally swizzled, the program won't let you import a texture that has those differences because the swizzle algorithm needs the width and height from the original texture.
+When a texture is imported over a original one, the tool will check the new texture file and compare it with the original one. If they have differences in resolution, mipmaps or/and encoding, it will tell you those differences and ask you if you want to import the new texture. However, for images that are originally swizzled, the tool won't let you import a texture that has those differences because the swizzle algorithm needs the width and height from the original texture.
+
+At the bottom of the tool, there is a material section where you can edit the properties of the material. You can select the material and change the layers, type, the texture to being used, and the values of the material children. Moreover, you can add a new material to the spr, or remove the current one.
+
+At the bottom of the material section, there is another section where you can assing to a 3D model part, what material will be used. <b>WARNING: if there is a 3D model part that doesn't have any material assigned, the game will crash so be aware of removing materials!</b>
+
 
 ## pak explorer
 
@@ -63,11 +68,19 @@ This tool is divided in three tabs:
 
 ### general parameters
 
-<img src="images/character_parameters_editor_general_parameters.jpg" alt="character_parameters_editor_general_parameters" width="50%">
-
 This tab holds the general parameters of the characters, like transformations, glow, lightnings, health, aura size, etc.
 
-In order to use this tab, you have open the <i>operate_resident_param.zpak</i> located in <i>st_pack_battle_others_pt_ps3.afs</i>.
+In order to use this tab, and deppeding on what you need to edit, you have to open one of the following files:
+<ul>
+  <li>
+    <i>operate_resident_param.zpak</i> located in <i>st_pack_battle_others_pt_ps3.afs</i>.
+    <img src="images/character_parameters_editor_general_parameters_1.jpg" alt="character_parameters_editor_general_parameters_1" width="50%">
+  </li>
+  <li>
+    <i>db_font_pad_PS3_s.zpak.zpak</i> located in <i>st_pack_boot_pt_ps3.afs</i>.
+    <img src="images/character_parameters_editor_general_parameters_2.jpg" alt="character_parameters_editor_general_parameters_1" width="50%">
+  </li>
+</ul>   
 
 ### individual parameters
 
