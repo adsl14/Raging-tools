@@ -73,11 +73,11 @@ This tab holds the general parameters of the characters, like transformations, g
 In order to use this tab, and deppeding on what you need to edit, you have to open one of the following files:
 <ul>
   <li>
-    <i>operate_resident_param.zpak</i> located in <i>st_pack_battle_others_pt_ps3.afs (Raging Blast 2 - PS3)</i>.
+    <i>operate_resident_param.zpak</i> located in <i>st_pack_battle_others_pt_ps3.afs (Raging Blast 2)</i>.
     <img src="images/character_parameters_editor_general_parameters_1.jpg" alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
   <li>
-    <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs (Raging Blast 2 - PS3)</i>.
+    <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs (Raging Blast 2)</i>.
     <img src="images/character_parameters_editor_general_parameters_2.jpg" alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
 </ul>   
@@ -88,7 +88,7 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
 
 This tab holds the individual parameters of one character. This parameters are the camera values, movement speed, animations, melee values, etc.
 
-In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> (Where XYZ are generic numbers) located in <i>st_pack_battle_character_pt_ps3.afs (Raging Blast 2 - PS3)</i>.
+In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> (Where XYZ are generic numbers) located in <i>st_pack_battle_character_pt_ps3.afs (Raging Blast 2)</i>.
 
 ### roster editor
 
@@ -96,4 +96,4 @@ In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> 
 
 In this tab you can edit the roster, by adding, removing or swapping characters or transformations.
 
-In order to use this tab, you have open the <i>cs_chip.zpak</i> located in <i>st_pack_progress_pt_ps3.afs (Raging Blast 2 - PS3)</i>.
+In order to use this tab, you have open the <i>cs_chip.zpak</i> located in <i>st_pack_progress_pt_ps3.afs (Raging Blast 2)</i>.
