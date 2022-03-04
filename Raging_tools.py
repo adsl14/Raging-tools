@@ -687,8 +687,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "<ul>"
             "<li><b>Raging tools 1.6</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
-            "<li>If you want to support the tool, you can get the source code in the "
-            "<a href=https://github.com/adsl14/Raging-tools>GitHub</a> page <li>"
+            "<li>The tutorial of how to work with the tool or get the source code, can be found here: "
+            "<a href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
             "</ul>")
         msg.exec()
 

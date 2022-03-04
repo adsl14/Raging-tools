@@ -941,7 +941,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The effect of the transformation during &lt;span style=&quot; font-weight:600;&quot;&gt;and&lt;/span&gt; finishing the animation&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The effect of the transformation during &lt;span style=&quot; font-weight:600;&quot;&gt;and&lt;/span&gt; finishing the animation.&lt;/p&gt;&lt;p&gt;It applies to the base character. In order to edit it, you need to edit the character that the base one is transforming to.&lt;/p&gt;&lt;p&gt;For example, if you want to change the transformation effect when Goku turns into Goku Super Saiyan, you need to change the &lt;span style=&quot; font-style:italic;&quot;&gt;Transformation effect/K&lt;/span&gt;i in Goku Super Saiyan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Transformation effect/Ki:</string>
@@ -2970,7 +2970,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of transformation for the transform slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XXX_m.pak' (where XXX is the ID of the character) if the character you're editing doesn't have a transformation animation or wants to change their animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of transformation for the transform slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XYZ_m.pak' (where XYZ is the ID of the character) if the character you're editing doesn't have a transformation animation or wants to change their animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Animation per transformation:</string>
@@ -3390,7 +3390,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of animation for the fusion slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XXX_m.pak' (where XXX is the ID of the character) if the character you're editing doesn't have a fusion animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Type of animation for the fusion slot. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT&lt;/span&gt;: You need to edit also the 'operate_character_XYZ_m.pak' (where XYZ is the ID of the character) if the character you're editing doesn't have a fusion animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Animation per fusion:</string>
@@ -7983,7 +7983,7 @@
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>26</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">
