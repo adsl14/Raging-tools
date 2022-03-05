@@ -99,7 +99,7 @@ def initialize_operate_character(main_window):
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
 
     # Set the blast type
-    for i in range(1, 15):
+    for i in range(0, 14):
         main_window.blast_key.addItem("Attack " + str(i))
     # Export blast button
     main_window.exportBlastButton.clicked.connect(lambda: action_export_blast_button_logic(main_window))
