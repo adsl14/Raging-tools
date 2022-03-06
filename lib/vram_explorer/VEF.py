@@ -1025,6 +1025,25 @@ def get_dxt_value(encoding_name):
         return 24
 
 
+def fix_bmp_header_data(header, data_extra, data_texture):
+
+    # Check if the number of bytes of the data, the mod of 4 is 0, so always will have
+    # blocks of four bytes. Doing this, we avoid to corrupt the file
+    len_data = len(data_texture)
+    mod_4 = len_data % 4
+    if mod_4 != 0:
+        len_data = len_data - mod_4
+        data_texture = data_texture[:-mod_4]
+
+    # Check if we have to modify the header due to some tools export some extra data
+    if data_extra:
+        header = header[:2] + (len_data + 54).to_bytes(4, byteorder="little") + header[6:10] + \
+                 (54).to_bytes(4, byteorder="little") + (40).to_bytes(4, byteorder="little") + header[18:30] + \
+                 (0).to_bytes(4, byteorder="little") + header[34:54]
+
+    return len_data, header, data_texture
+
+
 def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width, height, mip_maps, unk0x1c,
                                dxt_encoding):
 
@@ -1155,6 +1174,13 @@ def import_texture(main_window, import_file_path, ask_user):
         # it's a BMP modded image
         elif header[:2] == b'BM':
 
+            # Get offset where the data starts
+            file.seek(10)
+            offset_start_data = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # If the offset of the texture data is in position 70, the actual data starts in the next byte
+            if offset_start_data == 70:
+                offset_start_data += 1
+
             # Get the height and width of the modified image
             file.seek(18)
             width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
@@ -1202,13 +1228,16 @@ def import_texture(main_window, import_file_path, ask_user):
             # Get all the data
             file.seek(0)
             data = file.read()
-            # We gather the data modified but only a number of bytes that the mod of 4 is 0, so always will have
-            # blocks of four bytes. Doing this, we avoid to corrupt the file
-            len_data = len(data[54:])
-            mod_4 = len_data % 4
-            if mod_4 != 0:
-                len_data = len_data - mod_4
-                data = data[:-mod_4]
+
+            # We get the header, the extra data (some tools export extra info before the
+            # data of the texture) and the data itself
+            header = data[:54]
+            data_extra = data[54:offset_start_data]
+            data_texture = data[offset_start_data:]
+
+            # Check if we have to fix the bmp in order to avoid the corrupted texture
+            len_data, header, data_texture = fix_bmp_header_data(header, data_extra, data_texture)
+            data = header + data_texture
 
             # --- Importing the texture ---
             # Change texture in the array
@@ -1324,6 +1353,13 @@ def add_texture(main_window, import_file_path):
         # it's a BMP modded image
         elif header[:2] == b'BM':
 
+            # Get offset where the data starts
+            file.seek(10)
+            offset_start_data = int.from_bytes(file.read(VEV.bytes2Read), 'little')
+            # If the offset of the texture data is in position 70, the actual data starts in the next byte
+            if offset_start_data == 70:
+                offset_start_data += 1
+
             # Get the height and width of the modified image
             file.seek(18)
             sprp_data_entry.data_info.data.width = int.from_bytes(file.read(VEV.bytes2Read), 'little')
@@ -1341,13 +1377,16 @@ def add_texture(main_window, import_file_path):
             # Get all the data
             file.seek(0)
             data = file.read()
-            # We gather the data modified but only a number of bytes that the mod of 4 is 0, so always will have
-            # blocks of four bytes. Doing this, we avoid to corrupt the file
-            len_data = len(data[54:])
-            mod_4 = len_data % 4
-            if mod_4 != 0:
-                len_data = len_data - mod_4
-                data = data[:-mod_4]
+
+            # We get the header, the extra data (some tools export extra info before the
+            # data of the texture) and the data itself
+            header = data[:54]
+            data_extra = data[54:offset_start_data]
+            data_texture = data[offset_start_data:]
+
+            # Check if we have to fix the bmp in order to avoid the corrupted texture
+            len_data, header, data_texture = fix_bmp_header_data(header, data_extra, data_texture)
+            data = header + data_texture
 
             # Store the data and size
             sprp_data_entry.data_info.data.tx2d_vram.data = data
