@@ -5,7 +5,7 @@ from lib.character_parameters_editor.GPF import write_operate_resident_param, wr
 from lib.character_parameters_editor.REF import write_cs_chip_file
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
-from lib.design.Raging_tools import *
+from lib.design.Raging_Tools.Raging_Tools import *
 from lib.packages import os, rmtree, QFileDialog, QMessageBox
 from lib.functions import del_rw
 
