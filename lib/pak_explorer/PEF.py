@@ -1,8 +1,3 @@
-import shutil
-
-from PyQt5.QtGui import QStandardItem, QColor, QStandardItemModel, QPixmap
-from PyQt5.QtWidgets import QFileDialog, QLabel
-
 from lib.character_parameters_editor.REF import read_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters
 from lib.character_parameters_editor.GPF import read_operate_resident_param, \
@@ -10,12 +5,14 @@ from lib.character_parameters_editor.GPF import read_operate_resident_param, \
     enable_disable_db_font_pad_ps3_values, initialize_roster
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
-from lib.packages import os, rmtree, re, copyfile, natsorted, move, QMessageBox
+from lib.packages import rmtree, re, natsorted, move
 from lib.functions import del_rw
-from lib.pak_explorer.PEV import PEV
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
-from lib.packages import functools
+from lib.packages import os, functools, QPixmap, QLabel, QStandardItem, QStandardItemModel, QMessageBox
+from lib.pak_explorer.PEV import PEV
+from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, \
+    action_export_2_logic, action_import_2_logic, action_item_pak_explorer
 
 
 def initialize_pe(main_window):
@@ -623,74 +620,6 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
     # Write the new pak file in the folder
     with open(path_folder + ".pak", mode="wb") as output_file:
         output_file.write(pak_file)
-
-
-def action_item_pak_explorer(q_model_index):
-    if PEV.current_selected_subpak_file != q_model_index.row():
-        PEV.current_selected_subpak_file = q_model_index.row()
-
-
-def action_open_temp_folder_button_logic():
-
-    # Show the path folder to the user
-    os.system('explorer.exe ' + PEV.temp_folder.replace("/", "\\"))
-
-
-def action_export_all_2_logic(main_window):
-
-    # Ask to the user in what folder wants to save the files
-    name_folder = os.path.basename(os.path.splitext(PEV.pak_file_path_original)[0])
-    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export files",
-                                                     os.path.join(main_window.old_path_file, name_folder), "")[0]
-
-    # Check if the user has selected the path
-    if folder_export_path:
-
-        # Copy all the files to the folder
-        shutil.copytree(PEV.temp_folder, folder_export_path)
-
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        msg.setWindowIcon(main_window.ico_image)
-        message = "All the files were exported in: <b>" + folder_export_path \
-                  + "</b><br><br> Do you wish to open the folder?"
-        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-        # If the users click on 'Yes', it will open the path where the files were saved
-        if message_open_exported_files == msg.Yes:
-            # Show the path folder to the user
-            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
-
-
-def action_export_2_logic(main_window):
-
-    # Ask to the user where to save the file
-    item = main_window.listView_2.model().item(PEV.current_selected_subpak_file, 0)
-    path_original_file = item.text()
-    path_copy_file = QFileDialog.getSaveFileName(main_window, "Export file",
-                                                 os.path.join(main_window.old_path_file, item.data()), "")[0]
-
-    if path_copy_file:
-        copyfile(path_original_file, path_copy_file)
-
-
-def action_import_2_logic(main_window):
-
-    # Ask to the user what file wants to import
-    item = main_window.listView_2.model().item(PEV.current_selected_subpak_file, 0)
-    path_original_file = item.text()
-    path_new_file = QFileDialog.getOpenFileName(main_window, "Import file",
-                                                os.path.join(main_window.old_path_file, item.data()))[0]
-
-    if os.path.exists(path_new_file):
-        # Copy the new file
-        copyfile(path_new_file, path_original_file)
-
-        # Changed background color in order to show that file has been changed
-        item.setBackground(QColor('#7fc97f'))
-
-        # Change old path
-        main_window.old_path_file = path_new_file
 
 
 def pack_and_save_file(main_window, path_output_file):

@@ -11,7 +11,8 @@ from lib.functions import del_rw
 
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import change_endian, load_data_to_ve, write_separator_vram
+from lib.vram_explorer.VEF import change_endian, load_data_to_ve
+from lib.vram_explorer.functions.auxiliary import write_separator_vram
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
