@@ -711,7 +711,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     window = MainWindow()
-    window.ico_image = QtGui.QIcon("lib/design/Raging_Tools.ico")
+    window.ico_image = QtGui.QIcon("lib/design/Raging_Tools/Raging_Tools.ico")
     window.setWindowIcon(window.ico_image)
     window.selectCharaWindow.setWindowIcon(window.ico_image)
     window.selectCharaRosterWindow.setWindowIcon(window.ico_image)
