@@ -6,7 +6,7 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_animation_per_transformation_changed, on_amount_ki_fusion_changed, on_animation_per_fusion_changed, \
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
     on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic
-from lib.design.select_chara import Select_Chara
+from lib.design.select_chara.select_chara import Select_Chara
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
 

@@ -4,4 +4,4 @@ from pyglet import image
 from datetime import datetime
 from natsort import natsorted
 from PyQt5.QtGui import QImage, QPixmap, QStandardItem, QColor, QStandardItemModel
-from PyQt5.QtWidgets import QLabel, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QLabel, QFileDialog, QMessageBox, QInputDialog, QLineEdit

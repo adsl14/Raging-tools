@@ -1,6 +1,6 @@
 from pyglet.gl import GLException
 
-from lib.design.material_children import Material_Child_Editor
+from lib.design.material_children.material_children import Material_Child_Editor
 from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo

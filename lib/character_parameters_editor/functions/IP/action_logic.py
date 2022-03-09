@@ -1,8 +1,7 @@
-from lib.character_parameters_editor.IPF import export_camera, import_animation, import_camera, \
-    change_camera_cutscene_values, export_animation, export_blast, import_blast
-from lib.character_parameters_editor.IPV import IPV
-from lib.packages import os, QFileDialog, QMessageBox, natsorted
+from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
+from lib.character_parameters_editor import IPF
+from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.CPEV import CPEV
 
 
@@ -17,7 +16,7 @@ def action_export_camera_button_logic(main_window):
 
         camera_cutscene = main_window.camera_type_key.currentData()
 
-        export_camera(file_export_path, camera_cutscene)
+        IPF.export_camera(file_export_path, camera_cutscene)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -61,10 +60,10 @@ def action_import_camera_button_logic(main_window):
             camera_cutscene = main_window.camera_type_key.currentData()
 
             # Import camera to memory
-            import_camera(camera_cutscene, file)
+            IPF.import_camera(camera_cutscene, file)
 
         # Set camera values to current combo box and show them in the tool
-        change_camera_cutscene_values(main_window, camera_cutscene)
+        IPF.change_camera_cutscene_values(main_window, camera_cutscene)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -90,7 +89,7 @@ def action_export_all_camera_button_logic(main_window):
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
 
-            export_camera(file_export_path, camera_cutscene)
+            IPF.export_camera(file_export_path, camera_cutscene)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -131,11 +130,11 @@ def action_import_all_camera_button_logic(main_window):
                     camera_cutscene = main_window.camera_type_key.itemData(i)
 
                     # Import camera to memory
-                    import_camera(camera_cutscene, file)
+                    IPF.import_camera(camera_cutscene, file)
 
                     # Change the values in the tool only for the current selected item
                     if main_window.camera_type_key.currentIndex() == i:
-                        change_camera_cutscene_values(main_window, camera_cutscene)
+                        IPF.change_camera_cutscene_values(main_window, camera_cutscene)
 
                 else:
                     cameras_files_error.append(cameras_files[i])
@@ -169,7 +168,7 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
         # Get from the combo box, the array of animations ([[keyframes + effect], [keyframes + effects]])
         animation_array = animation_combo_box.currentData()
 
-        export_animation(animation_array, file_export_path)
+        IPF.export_animation(animation_array, file_export_path)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -205,7 +204,7 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
 
             animation = animation_combo_box.itemData(i)
 
-            export_animation(animation, file_export_path)
+            IPF.export_animation(animation, file_export_path)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -230,7 +229,7 @@ def action_import_animation_button_logic(main_window, animation_combo_box):
     if os.path.exists(file_export_path):
         # Import a single animation
         animation_array = animation_combo_box.currentData()
-        import_animation(main_window, file_export_path, animation_array)
+        IPF.import_animation(main_window, file_export_path, animation_array)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -249,8 +248,8 @@ def action_import_all_animation_button_logic(main_window, animation_combo_box):
         for i in range(0, len(animation_files)):
             # Import every single animation
             animation_array = animation_combo_box.itemData(i)
-            import_animation(os.path.join(folder_import, animation_files[i]), animation_array,
-                             animation_files[i], animations_files_error)
+            IPF.import_animation(os.path.join(folder_import, animation_files[i]), animation_array,
+                                 animation_files[i], animations_files_error)
 
         # We show a message with the animations files that couldn't get imported
         if animations_files_error:
@@ -279,7 +278,7 @@ def action_export_blast_button_logic(main_window):
 
         blast = main_window.blast_key.currentData()
 
-        export_blast(file_export_path, blast)
+        IPF.export_blast(file_export_path, blast)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -323,7 +322,7 @@ def action_import_blast_button_logic(main_window):
             blast = main_window.blast_key.currentData()
 
             # Import camera to memory
-            import_blast(blast, file)
+            IPF.import_blast(blast, file)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -349,7 +348,7 @@ def action_export_all_blast_button_logic(main_window):
 
             blast = main_window.blast_key.itemData(i)
 
-            export_blast(file_export_path, blast)
+            IPF.export_blast(file_export_path, blast)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -390,11 +389,11 @@ def action_import_all_blast_button_logic(main_window):
                     blast = main_window.blast_key.itemData(i)
 
                     # Import camera to memory
-                    import_blast(blast, file)
+                    IPF.import_blast(blast, file)
 
                     # Change the values in the tool only for the current selected item
                     if main_window.blast_key.currentIndex() == i:
-                        change_camera_cutscene_values(main_window, blast)
+                        IPF.change_camera_cutscene_values(main_window, blast)
 
                 else:
                     blasts_files_error.append(blasts_files[i])
@@ -419,7 +418,7 @@ def on_camera_type_key_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
-        change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
+        IPF.change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
 
 
 def on_pivot_value_changed(main_window, pivot_index):

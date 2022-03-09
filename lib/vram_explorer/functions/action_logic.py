@@ -1,9 +1,5 @@
-from lib.packages import os
-
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QInputDialog, QLineEdit
-
-from lib.vram_explorer.VEF import show_dds_image, show_bmp_image, import_texture, add_texture, \
-    load_material_children_to_window
+from lib.packages import os, QFileDialog, QInputDialog, QLineEdit, QMessageBox
+from lib.vram_explorer import VEF
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
 from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
@@ -29,19 +25,19 @@ def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_te
             if data_entry.data_info.data.dxt_encoding \
                != 0:
                 # Create the dds in disk and open it
-                show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
-                               data_entry.data_info.data.width,
-                               data_entry.data_info.data.height)
+                VEF.show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
+                                   data_entry.data_info.data.width,
+                                   data_entry.data_info.data.height)
             else:
                 if data_entry.data_info.extension \
                    != "png":
-                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
-                                   data_entry.data_info.data.width,
-                                   data_entry.data_info.data.height)
+                    VEF.show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
+                                       data_entry.data_info.data.width,
+                                       data_entry.data_info.data.height)
                 else:
-                    show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle,
-                                   data_entry.data_info.data.width,
-                                   data_entry.data_info.data.height)
+                    VEF.show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle,
+                                       data_entry.data_info.data.width,
+                                       data_entry.data_info.data.height)
         else:
             # Remove image in the tool view
             image_texture.clear()
@@ -157,7 +153,7 @@ def action_import_all_logic(main_window):
             # If the tool finds errors, it won't import the texture and will add a message at the end with the errors
             path_file = os.path.join(folder_import_path, texture_name_extension)
             if os.path.exists(path_file):
-                message = message + import_texture(main_window, path_file, False)
+                message = message + VEF.import_texture(main_window, path_file, False)
             else:
                 message = message + "<li>" + texture_name_extension + " not found!" + "</li>"
 
@@ -180,7 +176,7 @@ def action_import_logic(main_window):
                                               ";; BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
-        import_texture(main_window, import_path, True)
+        VEF.import_texture(main_window, import_path, True)
 
 
 def action_remove_logic(main_window):
@@ -257,7 +253,7 @@ def action_add_logic(main_window):
                                               ";; BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
-        add_texture(main_window, import_path)
+        VEF.add_texture(main_window, import_path)
 
         # Enable some the buttons if there won't be any more texture
         if not main_window.removeButton.isEnabled():
@@ -301,7 +297,7 @@ def action_material_val_changed(main_window):
                 if not main_window.editMaterialChildrenButton.isEnabled():
                     main_window.editMaterialChildrenButton.setEnabled(True)
                 # Load the material children to the window
-                load_material_children_to_window(main_window, mtrl_child.data)
+                VEF.load_material_children_to_window(main_window, mtrl_child.data)
             else:
                 if main_window.editMaterialChildrenButton.isEnabled():
                     main_window.editMaterialChildrenButton.setEnabled(False)

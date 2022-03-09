@@ -1,7 +1,6 @@
-from lib.packages import os, functools, QPixmap
-
+from lib.packages import functools, os, QPixmap
+from lib.character_parameters_editor import GPF
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.GPF import open_select_chara_window
 from lib.character_parameters_editor.GPV import GPV
 
 
@@ -45,56 +44,56 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                 main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                            "sc_chara_s_" +
                                                                            str(transformations[0]).zfill(3) + ".png")))
-                main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=transformations[0],
                                                                                 trans_slot_panel_index=0)
                 main_window.transSlotPanel0.setVisible(True)
             else:
                 main_window.transSlotPanel0.setPixmap(QPixmap())
-                main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=100, trans_slot_panel_index=0)
             if transformations[1] != 100:
                 main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                            "sc_chara_s_" +
                                                                            str(transformations[1]).zfill(3) + ".png")))
-                main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=transformations[1],
                                                                                 trans_slot_panel_index=1)
                 main_window.transSlotPanel1.setVisible(True)
             else:
                 main_window.transSlotPanel1.setPixmap(QPixmap())
-                main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=100, trans_slot_panel_index=1)
             if transformations[2] != 100:
                 main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                            "sc_chara_s_" +
                                                                            str(transformations[2]).zfill(3) + ".png")))
-                main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=transformations[2],
                                                                                 trans_slot_panel_index=2)
                 main_window.transSlotPanel2.setVisible(True)
             else:
                 main_window.transSlotPanel2.setPixmap(QPixmap())
-                main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=100, trans_slot_panel_index=2)
             if transformations[3] != 100:
                 main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                            "sc_chara_s_" +
                                                                            str(transformations[3]).zfill(3) + ".png")))
-                main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=transformations[3],
                                                                                 trans_slot_panel_index=3)
                 main_window.transSlotPanel3.setVisible(True)
             else:
                 main_window.transSlotPanel3.setPixmap(QPixmap())
-                main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.transSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                 main_window=main_window,
                                                                                 index=100, trans_slot_panel_index=3)
 
@@ -108,7 +107,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                          str(GPV.character_list[
                                                                                  index].transformation_partner).zfill(3)
                                                                          + ".png")))
-            main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.transPartnerValue.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                               main_window=main_window,
                                                                               index=GPV.character_list[
                                                                                   index].transformation_partner,
@@ -137,14 +136,14 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                 main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                           "sc_chara_s_" +
                                                                           str(fusions[0]).zfill(3) + ".png")))
-                main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=fusions[0],
                                                                                fusion_slot_panel_index=0)
                 main_window.fusiSlotPanel0.setVisible(True)
             else:
                 main_window.fusiSlotPanel0.setPixmap(QPixmap())
-                main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=100,
                                                                                fusion_slot_panel_index=0)
@@ -152,42 +151,42 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                 main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                           "sc_chara_s_" +
                                                                           str(fusions[1]).zfill(3) + ".png")))
-                main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=fusions[1],
                                                                                fusion_slot_panel_index=1)
                 main_window.fusiSlotPanel1.setVisible(True)
             else:
                 main_window.fusiSlotPanel1.setPixmap(QPixmap())
-                main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=100, fusion_slot_panel_index=1)
             if fusions[2] != 100:
                 main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                           "sc_chara_s_" +
                                                                           str(fusions[2]).zfill(3) + ".png")))
-                main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=fusions[2],
                                                                                fusion_slot_panel_index=2)
                 main_window.fusiSlotPanel2.setVisible(True)
             else:
                 main_window.fusiSlotPanel2.setPixmap(QPixmap())
-                main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=100, fusion_slot_panel_index=2)
             if fusions[3] != 100:
                 main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images,
                                                                           "sc_chara_s_" +
                                                                           str(fusions[3]).zfill(3) + ".png")))
-                main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=fusions[3],
                                                                                fusion_slot_panel_index=3)
                 main_window.fusiSlotPanel3.setVisible(True)
             else:
                 main_window.fusiSlotPanel3.setPixmap(QPixmap())
-                main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                main_window.fusiSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                main_window=main_window,
                                                                                index=100, fusion_slot_panel_index=3)
 
@@ -197,7 +196,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                                   str(GPV.character_list[index].
                                                                                       fusion_partner[0]).zfill(3)
                                                                                   + ".png")))
-            main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                        main_window=main_window,
                                                                                        index=GPV.character_list[index]
                                                                                        .fusion_partner[0],
@@ -208,7 +207,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                 QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                      str(GPV.character_list[index].fusion_partner[1]).zfill(3)
                                      + ".png")))
-            main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                       main_window=main_window,
                                                                                       index=GPV.character_list[index].
                                                                                       fusion_partner[1],
@@ -320,28 +319,28 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
         if GPV.trans_slot_panel_selected == 0:
             main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                        str(char_selected_new).zfill(3) + ".png")))
-            main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.transSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                             main_window=main_window,
                                                                             index=char_selected_new,
                                                                             trans_slot_panel_index=0)
         elif GPV.trans_slot_panel_selected == 1:
             main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                        str(char_selected_new).zfill(3) + ".png")))
-            main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.transSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                             main_window=main_window,
                                                                             index=char_selected_new,
                                                                             trans_slot_panel_index=1)
         elif GPV.trans_slot_panel_selected == 2:
             main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                        str(char_selected_new).zfill(3) + ".png")))
-            main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.transSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                             main_window=main_window,
                                                                             index=char_selected_new,
                                                                             trans_slot_panel_index=2)
         elif GPV.trans_slot_panel_selected == 3:
             main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                        str(char_selected_new).zfill(3) + ".png")))
-            main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.transSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                             main_window=main_window,
                                                                             index=char_selected_new,
                                                                             trans_slot_panel_index=3)
@@ -358,7 +357,7 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
 
         main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                      str(char_selected_new).zfill(3) + ".png")))
-        main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
+        main_window.transPartnerValue.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                           main_window=main_window,
                                                                           index=char_selected_new,
                                                                           transformation_partner_flag=True)
@@ -377,28 +376,28 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
         if GPV.fusion_slot_panel_selected == 0:
             main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                       str(char_selected_new).zfill(3) + ".png")))
-            main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusiSlotPanel0.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                            main_window=main_window,
                                                                            index=char_selected_new,
                                                                            fusion_slot_panel_index=0)
         elif GPV.fusion_slot_panel_selected == 1:
             main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                       str(char_selected_new).zfill(3) + ".png")))
-            main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusiSlotPanel1.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                            main_window=main_window,
                                                                            index=char_selected_new,
                                                                            fusion_slot_panel_index=1)
         elif GPV.fusion_slot_panel_selected == 2:
             main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                       str(char_selected_new).zfill(3) + ".png")))
-            main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusiSlotPanel2.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                            main_window=main_window,
                                                                            index=char_selected_new,
                                                                            fusion_slot_panel_index=2)
         elif GPV.fusion_slot_panel_selected == 3:
             main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                       str(char_selected_new).zfill(3) + ".png")))
-            main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+            main_window.fusiSlotPanel3.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                            main_window=main_window,
                                                                            index=char_selected_new,
                                                                            fusion_slot_panel_index=3)
@@ -417,7 +416,7 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
                                                                               "sc_chara_s_" +
                                                                               str(char_selected_new).zfill(3) +
                                                                               ".png")))
-        main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+        main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                    main_window=main_window,
                                                                                    index=char_selected_new,
                                                                                    fusion_partner_trigger_flag=True)
@@ -435,7 +434,7 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
         main_window.fusionPartnerVisual_value.setPixmap(
             QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                  str(char_selected_new).zfill(3) + ".png")))
-        main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+        main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(GPF.open_select_chara_window,
                                                                                   main_window=main_window,
                                                                                   index=char_selected_new,
                                                                                   fusion_partner_visual_flag=True)

@@ -5,7 +5,7 @@ from lib.character_parameters_editor.functions.RE.action_logic import action_cha
     action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.RE.auxiliary import search_id
 
-from lib.design.select_chara_roster import Select_Chara_Roster
+from lib.design.select_chara_roster.select_chara_roster import Select_Chara_Roster
 from lib.packages import QLabel, QPixmap, functools, os
 
 

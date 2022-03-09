@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Raging tools 1.6.1 - by adsl14</string>
+   <string>Raging Tools 1.6.1 - by adsl14</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -35,7 +35,7 @@
       </property>
       <widget class="QWidget" name="vram_explorer">
        <attribute name="title">
-        <string>vram explorer</string>
+        <string>Vram Explorer</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="9" column="0">
@@ -690,7 +690,7 @@
       </widget>
       <widget class="QWidget" name="pak_explorer">
        <attribute name="title">
-        <string>pak explorer</string>
+        <string>Pak Explorer</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="6" column="5">
@@ -785,7 +785,7 @@
       </widget>
       <widget class="QWidget" name="character_parameters_editor">
        <attribute name="title">
-        <string>character parameters editor</string>
+        <string>Character Parameters Editor</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_6">
         <item row="0" column="0">
@@ -828,7 +828,7 @@
               <bool>true</bool>
              </property>
              <attribute name="title">
-              <string>general parameters</string>
+              <string>General Parameters</string>
              </attribute>
              <widget class="QFrame" name="transPartner">
               <property name="geometry">
@@ -4469,7 +4469,7 @@
             </widget>
             <widget class="QWidget" name="operate_character_xyz_m_frame">
              <attribute name="title">
-              <string>individual parameters</string>
+              <string>Individual Parameters</string>
              </attribute>
              <widget class="QFrame" name="ki_values">
               <property name="geometry">
@@ -6472,7 +6472,7 @@
             </widget>
             <widget class="QWidget" name="cs_chip">
              <attribute name="title">
-              <string>roster editor</string>
+              <string>Roster Editor</string>
              </attribute>
              <widget class="QLabel" name="portrait_2">
               <property name="enabled">
