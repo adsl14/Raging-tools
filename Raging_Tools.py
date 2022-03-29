@@ -250,6 +250,166 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     VEV.spr_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.spr_file_path))
                     VEV.vram_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.vram_file_path))
 
+                    # Vars used in order to create the spr from scratch
+                    name_offset = 1
+                    string_table_size = 0
+                    string_table = b''
+                    data_entry = b''
+                    data_offset = 0
+                    data_size = 0
+                    data = b''
+
+                    # Write TX2D
+                    with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
+
+                        # Get the number of textures
+                        num_textures = self.listView.model().rowCount()
+
+                        # Get each data_entry (TX2D) and store the texture properties
+                        for i in range(0, num_textures):
+
+                            # Get the texture from the tool
+                            tx2d_data_entry = self.listView.model().item(i, 0).data()
+
+                            # Write the name for each texture
+                            name = tx2d_data_entry.data_info.name + "." + tx2d_data_entry.data_info.extension
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + tx2d_data_entry.data_info.name_size
+
+                            # Write the data_entry for each texture
+                            data_entry += tx2d_data_entry.data_type
+                            data_entry += tx2d_data_entry.index.to_bytes(4, 'big')
+
+                            data_entry += name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.child_offset.to_bytes(4, 'big')
+                            for _ in range(4):
+                                data_entry += b'\x00'
+
+                            # Write the data for each texture
+                            data += tx2d_data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
+                            data += output_vram_file.tell().to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x08.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.data_size.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.width.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.height.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x14.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.mip_maps.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x18.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x1c.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.dxt_encoding.to_bytes(1, 'big')
+                            for _ in range(15):
+                                data += b'\x00'
+                            data_size += 48
+
+                            # Update offsets for the next entry
+                            name_offset = 1 + string_table_size
+                            data_offset = data_size
+
+                            # Write the textures in the vram file
+                            # It's a DDS image
+                            if tx2d_data_entry.data_info.data.dxt_encoding != 0:
+                                output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data[128:])
+                                # Write the vram separator
+                                if i < num_textures - 1:
+                                    write_separator_vram(output_vram_file, tx2d_data_entry)
+                            # It's a BMP image
+                            else:
+
+                                if tx2d_data_entry.data_info.extension != "png":
+                                    # We're dealing with a shader. We have to change the endian
+                                    if tx2d_data_entry.data_info.data.height == 1:
+                                        output_vram_file.write(change_endian(tx2d_data_entry.data_info.data.
+                                                                             tx2d_vram.data[54:]))
+                                    else:
+                                        output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data[54:])
+                                else:
+                                    # Write in disk the data swizzled
+                                    with open("tempSwizzledImage", mode="wb") as file:
+                                        file.write(tx2d_data_entry.data_info.data.tx2d_vram.data)
+
+                                    # Write in disk the data unswizzled
+                                    with open("tempUnSwizzledImage", mode="wb") as file:
+                                        file.write(tx2d_data_entry.data_info.data.tx2d_vram.data_unswizzle[54:])
+
+                                    # Write in disk the indexes
+                                    with open("Indexes.txt", mode="w") as file:
+                                        for index in tx2d_data_entry.data_info.data.tx2d_vram.\
+                                                indexes_unswizzle_algorithm:
+                                            file.write(index + ";")
+
+                                    # Run the exe file of 'swizzle.exe' with the option '-s' to swizzle the image
+                                    args = os.path.join(VEV.swizzle_path) + " \"" + \
+                                        "tempSwizzledImage" + "\" \"" + \
+                                        "tempUnSwizzledImage" + "\" \"" + "Indexes.txt" + "\" \"" + "-s" + "\""
+                                    os.system('cmd /c ' + args)
+
+                                    # Get the data from the .exe
+                                    with open("tempSwizzledImageModified", mode="rb") as file:
+                                        tx2d_data_entry.data_info.data.tx2d_vram.data = file.read()
+
+                                    # Remove the temp files
+                                    os.remove("tempSwizzledImage")
+                                    os.remove("tempUnSwizzledImage")
+                                    os.remove("Indexes.txt")
+                                    os.remove("tempSwizzledImageModified")
+
+                                    output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data)
+
+                        # Get the new vram size by getting the position of the pointer in the output file
+                        # since it's in the end of the file
+                        vram_size = output_vram_file.tell()
+
+                    # Write MTRL (if any)
+                    if b'MTRL' in VEV.sprp_file.type_entry:
+                        num_material = self.materialVal.count()
+                        num_layer_effect = self.typeVal.count()
+
+                        # Write each layer
+                        for i in range(1, num_layer_effect):
+                            # Get the layer from the tool
+                            layer_effect_name = self.typeVal.itemText(i)
+
+                            # Write the name for each layer effect
+                            self.typeVal.setItemData(i, 1 + string_table_size)
+                            string_table += b'\x00' + layer_effect_name.encode('utf-8')
+                            string_table_size += 1 + len(layer_effect_name)
+
+                        # Write the 'DbzCharMtrl'
+                        DbzCharMtrl_offset = 1 + string_table_size
+                        string_table += b'\x00' + "DbzCharMtrl".encode('utf-8')
+                        string_table_size += 1 + len("DbzCharMtrl")
+
+                        # Write each material
+                        # Update offsets for the next material
+                        name_offset = 1 + string_table_size
+                        for i in range(0, num_material):
+                            # Get the material from the tool
+                            mtrl_data_entry = self.materialVal.itemData(i)
+
+                            # Write the name for each material
+                            string_table += b'\x00' + mtrl_data_entry.data_info.name.encode('utf-8')
+                            string_table_size += 1 + mtrl_data_entry.data_info.name_size
+
+                            # Update offsets for the next entry
+                            name_offset = 1 + string_table_size
+                            data_offset = data_size
+
+
+                    # Write the spr with all the data calculated
+                    # Check if the string_table_size, the module of 16 is 0
+                    rest = 16 - (string_table_size % 16)
+                    if rest != 16:
+                        for i in range(rest):
+                            string_table += b'\00'
+                            string_table_size += 1
+                    with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
+                        output_spr_file.write(string_table + data_entry + data)
+
+
+                    '''
                     # Get all the necessary info from the original spr. The new info from spr and vram will be
                     # written from scratch (except the data itself stored in spr file)
                     with open(VEV.spr_file_path, mode="rb") as input_sprp_file:
@@ -552,6 +712,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         output_spr_file.write(header + entry_info + string_table + tx2d_data_entry + mtrl_data_entry +
                                               rest_data_info + data_block)
 
+                    '''
                     message = "The files were saved in: <b>" + path_output_file \
                               + "</b><br><br> Do you wish to open the folder?"
 
