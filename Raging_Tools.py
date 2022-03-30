@@ -1,5 +1,3 @@
-import struct
-
 from lib.character_parameters_editor.IPF import write_single_character_parameters
 from lib.character_parameters_editor.GPF import write_operate_resident_param, write_db_font_pad_ps3
 from lib.character_parameters_editor.REF import write_cs_chip_file
@@ -12,7 +10,7 @@ from lib.functions import del_rw
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import change_endian, load_data_to_ve
-from lib.vram_explorer.functions.auxiliary import write_separator_vram
+from lib.vram_explorer.functions.auxiliary import write_separator_vram, check_entry_module
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
@@ -251,13 +249,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     VEV.vram_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.vram_file_path))
 
                     # Vars used in order to create the spr from scratch
-                    name_offset = 1
-                    string_table_size = 0
-                    string_table = b''
-                    data_entry = b''
-                    data_offset = 0
-                    data_size = 0
-                    data = b''
+                    num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
+                        vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
+                        data_offset, data_size = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0
+                    entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
 
                     # Write TX2D
                     with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
@@ -274,19 +269,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Write the name for each texture
                             name = tx2d_data_entry.data_info.name + "." + tx2d_data_entry.data_info.extension
                             string_table += b'\x00' + name.encode('utf-8')
-                            string_table_size += 1 + tx2d_data_entry.data_info.name_size
+                            string_table_size += 1 + len(name)
 
                             # Write the data_entry for each texture
                             data_entry += tx2d_data_entry.data_type
                             data_entry += tx2d_data_entry.index.to_bytes(4, 'big')
 
-                            data_entry += name_offset.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
                             data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
                             data_entry += tx2d_data_entry.data_info.child_offset.to_bytes(4, 'big')
                             for _ in range(4):
                                 data_entry += b'\x00'
+                            data_entry_size += 32
 
                             # Write the data for each texture
                             data += tx2d_data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
@@ -305,7 +301,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_size += 48
 
                             # Update offsets for the next entry
-                            name_offset = 1 + string_table_size
+                            string_name_offset = 1 + string_table_size
                             data_offset = data_size
 
                             # Write the textures in the vram file
@@ -360,9 +356,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # Get the new vram size by getting the position of the pointer in the output file
                         # since it's in the end of the file
-                        vram_size = output_vram_file.tell()
+                        vram_data_size = output_vram_file.tell()
+
+                        # Update the entry info
+                        entry_info += "TX2D".encode('utf-8') + b'\00\01\00\00' + num_textures.to_bytes(4, 'big')
+
+                        # Update the sizes
+                        entry_count += 1
+                        entry_info_size += 12
 
                     # Write MTRL (if any)
+                    '''
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
                         num_layer_effect = self.typeVal.count()
@@ -384,7 +388,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # Write each material
                         # Update offsets for the next material
-                        name_offset = 1 + string_table_size
+                        string_name_offset = 1 + string_table_size
                         for i in range(0, num_material):
                             # Get the material from the tool
                             mtrl_data_entry = self.materialVal.itemData(i)
@@ -394,20 +398,54 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_table_size += 1 + mtrl_data_entry.data_info.name_size
 
                             # Update offsets for the next entry
-                            name_offset = 1 + string_table_size
+                            string_name_offset = 1 + string_table_size
                             data_offset = data_size
 
+                        # Update the entry info
+                        entry_info += "MTRL".encode('utf-8') + b'\00\01\00\00' + num_material.to_bytes(4, 'big')
 
-                    # Write the spr with all the data calculated
+                        # Update the sizes
+                        entry_count += 1
+                        entry_info_size += 12
+'''
+
+                    # Write the basename, ioram and vram offsets names
+                    name_offset = 1 + string_table_size
+                    name = self.fileNameText.text() + ".spr"
+                    string_table += b'\x00' + name.encode('utf-8')
+                    string_table_size += 1 + len(name)
+                    # If the spr doesn't have an ioram file, we won't write the name on it
+                    if VEV.sprp_file.sprp_header.ioram_data_size > 0:
+                        ioram_name_offset = 1 + string_table_size
+                        ioram_data_size = VEV.sprp_file.sprp_header.ioram_data_size
+                        name = self.fileNameText.text() + ".ioram"
+                        string_table += b'\x00' + name.encode('utf-8')
+                        string_table_size += 1 + len(name)
+                    else:
+                        ioram_name_offset = 0
+                        ioram_data_size = 0
+                    vram_name_offset = 1 + string_table_size
+                    name = self.fileNameText.text() + ".vram"
+                    string_table += b'\x00' + name.encode('utf-8')
+                    string_table_size += 1 + len(name)
+
+                    # Check if the entry_info, the module of 16 is 0
+                    entry_info, entry_info_size = check_entry_module(entry_info, entry_info_size, 16)
+
                     # Check if the string_table_size, the module of 16 is 0
-                    rest = 16 - (string_table_size % 16)
-                    if rest != 16:
-                        for i in range(rest):
-                            string_table += b'\00'
-                            string_table_size += 1
-                    with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
-                        output_spr_file.write(string_table + data_entry + data)
+                    string_table, string_table_size = check_entry_module(string_table, string_table_size, 16)
 
+                    # Create the header
+                    header = VEV.sprp_file.sprp_header.data_tag + b'\00\01\00\01' + entry_count.to_bytes(4, 'big') + \
+                        b'\00\00\00\00' + name_offset.to_bytes(4, 'big') + entry_info_size.to_bytes(4, 'big') + \
+                        string_table_size.to_bytes(4, 'big') + data_entry_size.to_bytes(4, 'big') + \
+                        data_size.to_bytes(4, 'big') + ioram_name_offset.to_bytes(4, 'big') + \
+                        ioram_data_size.to_bytes(4, 'big') + vram_name_offset.to_bytes(4, 'big') + \
+                        vram_data_size.to_bytes(4, 'big') + b'\00\00\00\00\00\00\00\00\00\00\00\00'
+
+                    # Write the spr
+                    with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
+                        output_spr_file.write(header + entry_info + string_table + data_entry + data)
 
                     '''
                     # Get all the necessary info from the original spr. The new info from spr and vram will be

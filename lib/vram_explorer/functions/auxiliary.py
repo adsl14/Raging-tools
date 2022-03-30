@@ -137,3 +137,14 @@ def fix_bmp_header_data(header, data_extra, data_texture):
                  (0).to_bytes(4, byteorder="little") + header[34:54]
 
     return len_data, header, data_texture
+
+
+def check_entry_module(entry, entry_size, module):
+
+    rest = module - (entry_size % module)
+    if rest != module:
+        for i in range(rest):
+            entry += b'\00'
+            entry_size += 1
+
+    return entry, entry_size
