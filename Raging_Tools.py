@@ -1,3 +1,5 @@
+import struct
+
 from lib.character_parameters_editor.IPF import write_single_character_parameters
 from lib.character_parameters_editor.GPF import write_operate_resident_param, write_db_font_pad_ps3
 from lib.character_parameters_editor.REF import write_cs_chip_file
@@ -256,7 +258,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
                     txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
                     txan_name_offset_assigned = []
-                    for _ in range(0,txan_entry.data_count):
+                    for _ in range(0, txan_entry.data_count):
                         txan_name_offset_assigned.append(False)
 
                     # Write TX2D
@@ -375,16 +377,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         num_material = self.materialVal.count()
                         num_layer_effect = self.typeVal.count()
 
-                        # Write each layer
+                        # Write each type layer effect
                         for i in range(1, num_layer_effect):
                             # Get the layer from the tool
                             layer_effect_name = self.typeVal.itemText(i)
-                            layer_effect_offset = self.typeVal.itemData(i)
 
                             # Write the name for each layer effect
                             type_layer_new_offsets[i] = string_name_offset
                             string_table += b'\x00' + layer_effect_name.encode('utf-8')
                             string_table_size += 1 + len(layer_effect_name)
+
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
@@ -411,12 +413,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_entry += string_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += mtrl_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            #data_entry += mtrl_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            #data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += b'\00\00\00\00'
-                            data_entry += b'\00\00\00\00'
-                            data_entry += b'\00\00\00\00'
-                            data_entry_size += 32
+                            data_entry += mtrl_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            # The child offset will be calculated later
 
                             # Write the data for each material
                             data += mtrl_data_entry.data_info.data.unk_00
@@ -435,8 +433,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if tx2d_data_entry.data_info.name_offset == layer.source_name_offset:
                                             data += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
                                             break
-                                    # Search in the txan entries
-                                    if(not found):
+                                    # Search in the TXAN entries
+                                    if not found:
                                         txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
                                         for j in range(0, txan_entry.data_count):
                                             txan_data_entry = txan_entry.data_entry[j]
@@ -456,6 +454,60 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_size += mtrl_data_entry.data_info.data_size
 
                             # Write the children material (if any)
+                            if mtrl_data_entry.data_info.child_count > 0:
+                                data_offset = data_size
+
+                                # Get the first children (for mtrl there is only one)
+                                data_info_children = mtrl_data_entry.data_info.child_info[0]
+                                mtrl_prop = data_info_children.data
+
+                                # Raging Blast 2 material children
+                                if data_info_children.data_size == 96:
+                                    data += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+                                    data += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+                                    for j in range(len(mtrl_prop.unk0x04)):
+                                        data += struct.pack('>f', mtrl_prop.unk0x04[j])
+                                    data += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+                                    data += struct.pack('>f', mtrl_prop.Saturation_glow)
+                                    data += struct.pack('>f', mtrl_prop.Saturation_base)
+                                    data += \
+                                        struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+                                    data += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+                                    data += \
+                                        struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+                                    data += \
+                                        struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+                                    data += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+                                    data += \
+                                        struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+                                    for j in range(len(mtrl_prop.Border_RGBA)):
+                                        data += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+                                    for j in range(len(mtrl_prop.unk0x44)):
+                                        data += struct.pack('>f', mtrl_prop.unk0x44[j])
+                                    for j in range(len(mtrl_prop.unk0x50)):
+                                        data += struct.pack('>f', mtrl_prop.unk0x50[j])
+                                else:
+                                    data += mtrl_prop
+                                data_size += data_info_children.data_size
+
+                                # Write the children offset section
+                                data += DbzCharMtrl_offset.to_bytes(4, 'big')
+                                data += data_offset.to_bytes(4, 'big')
+                                data += data_info_children.data_size.to_bytes(4, 'big')
+                                data += data_info_children.child_count.to_bytes(4, 'big')
+                                data += data_info_children.child_offset.to_bytes(4, 'big')
+
+                                # Write in the data entry, the children offset
+                                data_offset = data_size
+                                data_entry += data_offset.to_bytes(4, 'big')
+
+                                # Update the data size because we have added the offset section of the children
+                                data_size += 20
+
+                            else:
+                                data_entry += b'\00\00\00\00'
+                            data_entry += b'\00\00\00\00'
+                            data_entry_size += 32
 
                             # Check if the data, the module of 16 is 0
                             data, data_size = check_entry_module(data, data_size, 16)
