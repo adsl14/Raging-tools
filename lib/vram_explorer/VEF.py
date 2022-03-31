@@ -104,7 +104,7 @@ def load_data_to_ve(main_window):
     # Reset boolean values
     VEV.enable_combo_box = False
     # Reset integer values
-    VEV.unique_temp_name_offset = -1
+    VEV.unique_temp_name_offset = 0
     VEV.DbzCharMtrl_offset = 0
     VEV.string_table_size_increment = 0
     # Reset combo box values
@@ -323,12 +323,6 @@ def open_spr_file(main_window, model, spr_path):
                         mtrl_layer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                         mtrl_layer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
-                        # Get the names for each mtrlLayer
-                        aux_mtrl_pointer = file.tell()
-                        mtrl_layer.layer_name, extension = \
-                            get_name_from_spr(file, mtrl_layer.layer_name_offset + VEV.sprp_file.string_table_base)
-                        file.seek(aux_mtrl_pointer)
-
                         # Store the layer in the actual material
                         sprp_data_entry.data_info.data.layers.append(mtrl_layer)
 
@@ -357,10 +351,19 @@ def open_spr_file(main_window, model, spr_path):
             # Update the type_entry offset
             type_entry_offset += sprp_type_entry.data_count * 32
 
+        # Set the unique temp offset value by using the last position of the string table size
+        VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
+
         # If there is material in the spr file, we try to find specific names
         if b'MTRL' in VEV.sprp_file.type_entry:
             offset = 161
             stop_offset = VEV.sprp_file.sprp_header.string_table_size + 160
+
+            # Add the layers effects
+            for layer_effect in VEV.layer_type_effects:
+                main_window.typeVal.addItem(layer_effect, VEV.unique_temp_name_offset)
+                VEV.unique_temp_name_offset += 1
+
             while True:
                 name, extension = get_name_from_spr(file, offset)
 
@@ -369,7 +372,8 @@ def open_spr_file(main_window, model, spr_path):
                     VEV.DbzCharMtrl_offset = offset - VEV.sprp_file.string_table_base
                 # Find the type effects
                 elif name in VEV.layer_type_effects:
-                    main_window.typeVal.addItem(name, offset - VEV.sprp_file.string_table_base)
+                    main_window.typeVal.setItemData(main_window.typeVal.findText(name),
+                                                    offset - VEV.sprp_file.string_table_base)
                 # We reached the end of the string base section
                 if file.tell() > stop_offset:
                     break
@@ -1146,7 +1150,7 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     # Store the data_info from the data_entry
     # The name offset value will be unique and temporal for now
     sprp_data_entry.data_info.name_offset = VEV.unique_temp_name_offset
-    VEV.unique_temp_name_offset -= 1
+    VEV.unique_temp_name_offset += 1
     sprp_data_entry.data_info.name = os.path.basename(import_file_path).split(".")[0]
     sprp_data_entry.data_info.extension = "tga"
     sprp_data_entry.data_info.name_size = len(sprp_data_entry.data_info.name) + 1 + \

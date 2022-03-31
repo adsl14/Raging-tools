@@ -370,7 +370,7 @@ def action_add_material_logic(main_window):
         # Store the data_info properties
         # The name offset value will be unique and temporal for now
         sprp_data_entry.data_info.name_offset = VEV.unique_temp_name_offset
-        VEV.unique_temp_name_offset -= 1
+        VEV.unique_temp_name_offset += 1
         sprp_data_entry.data_info.data_size = 192
         sprp_data_entry.data_info.child_count = 1
         sprp_data_entry.data_info.name = text

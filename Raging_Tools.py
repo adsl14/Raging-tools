@@ -251,8 +251,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Vars used in order to create the spr from scratch
                     num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
                         vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
-                        data_offset, data_size = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0
+                        data_offset, data_size, DbzCharMtrl_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
                     entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
+                    type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
+                    txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
+                    txan_name_offset_assigned = []
+                    for _ in range(0,txan_entry.data_count):
+                        txan_name_offset_assigned.append(False)
 
                     # Write TX2D
                     with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
@@ -265,44 +270,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Get the texture from the tool
                             tx2d_data_entry = self.listView.model().item(i, 0).data()
-
-                            # Write the name for each texture
-                            name = tx2d_data_entry.data_info.name + "." + tx2d_data_entry.data_info.extension
-                            string_table += b'\x00' + name.encode('utf-8')
-                            string_table_size += 1 + len(name)
-
-                            # Write the data_entry for each texture
-                            data_entry += tx2d_data_entry.data_type
-                            data_entry += tx2d_data_entry.index.to_bytes(4, 'big')
-
-                            data_entry += string_name_offset.to_bytes(4, 'big')
-                            data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            data_entry += tx2d_data_entry.data_info.child_offset.to_bytes(4, 'big')
-                            for _ in range(4):
-                                data_entry += b'\x00'
-                            data_entry_size += 32
-
-                            # Write the data for each texture
-                            data += tx2d_data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
-                            data += output_vram_file.tell().to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x08.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.data_size.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.width.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.height.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x14.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.mip_maps.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x18.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x1c.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.dxt_encoding.to_bytes(1, 'big')
-                            for _ in range(15):
-                                data += b'\x00'
-                            data_size += 48
-
-                            # Update offsets for the next entry
-                            string_name_offset = 1 + string_table_size
-                            data_offset = data_size
 
                             # Write the textures in the vram file
                             # It's a DDS image
@@ -354,19 +321,56 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                     output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data)
 
+                            # Write the name for each texture
+                            name = tx2d_data_entry.data_info.name + "." + tx2d_data_entry.data_info.extension
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + len(name)
+
+                            # Write the data_entry for each texture
+                            data_entry += tx2d_data_entry.data_type
+                            data_entry += tx2d_data_entry.index.to_bytes(4, 'big')
+                            tx2d_data_entry.data_info.new_name_offset = string_name_offset
+                            data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            data_entry += tx2d_data_entry.data_info.child_offset.to_bytes(4, 'big')
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
+
+                            # Write the data for each texture
+                            data += tx2d_data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
+                            data += output_vram_file.tell().to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x08.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.data_size.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.width.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.height.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x14.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.mip_maps.to_bytes(2, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x18.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.unk0x1c.to_bytes(4, 'big')
+                            data += tx2d_data_entry.data_info.data.dxt_encoding.to_bytes(1, 'big')
+                            data += b'\00\00\00'
+                            data_size += tx2d_data_entry.data_info.data_size
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
+
+                            # Update offsets for the next entry
+                            string_name_offset = 1 + string_table_size
+                            data_offset = data_size
+
                         # Get the new vram size by getting the position of the pointer in the output file
                         # since it's in the end of the file
                         vram_data_size = output_vram_file.tell()
 
                         # Update the entry info
                         entry_info += "TX2D".encode('utf-8') + b'\00\01\00\00' + num_textures.to_bytes(4, 'big')
-
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12
 
                     # Write MTRL (if any)
-                    '''
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
                         num_layer_effect = self.typeVal.count()
@@ -375,27 +379,86 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         for i in range(1, num_layer_effect):
                             # Get the layer from the tool
                             layer_effect_name = self.typeVal.itemText(i)
+                            layer_effect_offset = self.typeVal.itemData(i)
 
                             # Write the name for each layer effect
-                            self.typeVal.setItemData(i, 1 + string_table_size)
+                            type_layer_new_offsets[i] = string_name_offset
                             string_table += b'\x00' + layer_effect_name.encode('utf-8')
                             string_table_size += 1 + len(layer_effect_name)
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzCharMtrl'
-                        DbzCharMtrl_offset = 1 + string_table_size
+                        DbzCharMtrl_offset = string_name_offset
                         string_table += b'\x00' + "DbzCharMtrl".encode('utf-8')
                         string_table_size += 1 + len("DbzCharMtrl")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
 
                         # Write each material
                         # Update offsets for the next material
-                        string_name_offset = 1 + string_table_size
                         for i in range(0, num_material):
                             # Get the material from the tool
                             mtrl_data_entry = self.materialVal.itemData(i)
 
                             # Write the name for each material
                             string_table += b'\x00' + mtrl_data_entry.data_info.name.encode('utf-8')
-                            string_table_size += 1 + mtrl_data_entry.data_info.name_size
+                            string_table_size += 1 + len(mtrl_data_entry.data_info.name)
+
+                            # Write the data_entry for each material
+                            data_entry += mtrl_data_entry.data_type
+                            data_entry += mtrl_data_entry.index.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += mtrl_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            #data_entry += mtrl_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            #data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += b'\00\00\00\00'
+                            data_entry += b'\00\00\00\00'
+                            data_entry += b'\00\00\00\00'
+                            data_entry_size += 32
+
+                            # Write the data for each material
+                            data += mtrl_data_entry.data_info.data.unk_00
+                            for layer in mtrl_data_entry.data_info.data.layers:
+                                # Search for the layer type assigned to the material
+                                data += type_layer_new_offsets[self.typeVal.findData(layer.layer_name_offset)]\
+                                    .to_bytes(4, 'big')
+                                # Search for the texture assigned to the material
+                                if layer.source_name_offset == 0:
+                                    data += b'\00\00\00\00'
+                                else:
+                                    found = False
+                                    # Search the texture
+                                    for j in range(0, num_textures):
+                                        tx2d_data_entry = self.listView.model().item(j, 0).data()
+                                        if tx2d_data_entry.data_info.name_offset == layer.source_name_offset:
+                                            data += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                                            break
+                                    # Search in the txan entries
+                                    if(not found):
+                                        txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
+                                        for j in range(0, txan_entry.data_count):
+                                            txan_data_entry = txan_entry.data_entry[j]
+                                            if txan_data_entry.data_info.name_offset == layer.source_name_offset:
+                                                # The TXAN wasn't added to the string name, so the name offset
+                                                # will be calculated
+                                                if not txan_name_offset_assigned[j]:
+                                                    name = txan_data_entry.data_info.name + "." + \
+                                                           txan_data_entry.data_info.extension
+                                                    string_name_offset = 1 + string_table_size
+                                                    txan_data_entry.data_info.new_name_offset = string_name_offset
+                                                    string_table += b'\x00' + name.encode('utf-8')
+                                                    string_table_size += 1 + len(name)
+                                                    txan_name_offset_assigned[j] = True
+                                                data += txan_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                                                break
+                            data_size += mtrl_data_entry.data_info.data_size
+
+                            # Write the children material (if any)
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
 
                             # Update offsets for the next entry
                             string_name_offset = 1 + string_table_size
@@ -403,11 +466,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # Update the entry info
                         entry_info += "MTRL".encode('utf-8') + b'\00\01\00\00' + num_material.to_bytes(4, 'big')
-
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12
-'''
 
                     # Write the basename, ioram and vram offsets names
                     name_offset = 1 + string_table_size
