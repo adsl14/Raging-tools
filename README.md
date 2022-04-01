@@ -6,11 +6,11 @@ It gather all the tools that were made by adsl14, like [vram explorer](https://g
 
 Credits to the Raging Blast Modding community and specially to revelation from [XeNTaX](https://forum.xentax.com) forum who made the compress/uncompress tool.
 
-You can get access to the Raging Blast Modding community in the [Discord](https://discord.gg/tBmcwkGUE6) server.
+You can get access to the Raging Blast Modding community in the [Discord](https://discord.gg/JpCvDCgpnb) server.
 
 ## Requisites
 
-If you want to run the source code, the required packages are the following:
+If you want to run the <b>source code</b>, the required packages are the following:
 
 <ul>
   <li>natsort 7.1.1</li>

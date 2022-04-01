@@ -1015,7 +1015,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     'forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i>.</li>'
                     '<li>To <b>316austin316</b> for contributing to the tool.</li>'
                     '<li>To <b>SSJLVegeta</b> for contributing to the tool.</li>'
-                    '<li>To the <a ''href=https://discord.gg/tBmcwkGUE6>Raging Blast Modding community</a>.</li>'
+                    '<li>To the <a ''href=https://discord.gg/JpCvDCgpnb>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()
 
