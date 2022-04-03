@@ -251,16 +251,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Vars used in order to create the spr from scratch
                     num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
                         vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
-                        data_offset, data_size, DbzCharMtrl_offset, map1_offset, DbzEdgeInfo_offset, \
-                        DbzShapeInfo_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
+                        data_offset, data_size, dbz_char_mtrl_offset, map1_offset, dbz_edge_info_offset, \
+                        dbz_shape_info_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
                     entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
+                    # MTRL layer values
                     type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
+                    # TXAN values
                     txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
                     txan_name_offset_assigned = []
                     for _ in range(0, txan_entry.data_count):
                         txan_name_offset_assigned.append(False)
 
-                    # Write TX2D
+                    # ------------------
+                    # --- Write TX2D ---
+                    # ------------------
                     with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
 
                         # Get the number of textures
@@ -279,13 +283,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write the data_entry for each texture
                             data_entry += tx2d_data_entry.data_type
-                            data_entry += tx2d_data_entry.index.to_bytes(4, 'big')
+                            data_entry += i.to_bytes(4, 'big')
                             tx2d_data_entry.data_info.new_name_offset = string_name_offset
                             data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            data_entry += tx2d_data_entry.data_info.child_offset.to_bytes(4, 'big')
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
                             data_entry += b'\x00\x00\x00\x00'
                             data_entry_size += 32
 
@@ -368,12 +372,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         vram_data_size = output_vram_file.tell()
 
                         # Update the entry info
-                        entry_info += b'TX2D' + b'\00\01\00\00' + num_textures.to_bytes(4, 'big')
+                        entry_info += b'TX2D' + b'\x00\x01\x00\x00' + num_textures.to_bytes(4, 'big')
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12
 
-                    # Write MTRL (if any)
+                    # ------------------
+                    # --- Write MTRL ---
+                    # ------------------
+                    # If there is MTRL, we write SHAP, VBUF, SCNE, BONE, DRVN and TXAN
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
                         num_layer_effect = self.typeVal.count()
@@ -392,7 +399,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzCharMtrl'
-                        DbzCharMtrl_offset = string_name_offset
+                        dbz_char_mtrl_offset = string_name_offset
                         string_table += b'\x00' + "DbzCharMtrl".encode('utf-8')
                         string_table_size += 1 + len("DbzCharMtrl")
                         # Update the offset
@@ -409,7 +416,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write the data_entry for each material
                             data_entry += mtrl_data_entry.data_type
-                            data_entry += mtrl_data_entry.index.to_bytes(4, 'big')
+                            data_entry += i.to_bytes(4, 'big')
                             data_entry += string_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += mtrl_data_entry.data_info.data_size.to_bytes(4, 'big')
@@ -459,9 +466,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 data_child, data_child_size, data_offset = write_children(mtrl_data_entry.data_info,
                                                                                           b'MTRL', data_size,
                                                                                           map1_offset,
-                                                                                          DbzCharMtrl_offset,
-                                                                                          DbzEdgeInfo_offset,
-                                                                                          DbzShapeInfo_offset)
+                                                                                          dbz_char_mtrl_offset,
+                                                                                          dbz_edge_info_offset,
+                                                                                          dbz_shape_info_offset)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -483,13 +490,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_offset = data_size
 
                         # Update the entry info
-                        entry_info += b'MTRL' + b'\00\01\00\00' + num_material.to_bytes(4, 'big')
+                        entry_info += b'MTRL' + b'\x00\x00\x00\x08' + num_material.to_bytes(4, 'big')
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12
 
-                    # Write SHAP (if any)
-                    if b'SHAP' in VEV.sprp_file.type_entry:
+                        # ------------------
+                        # --- Write SHAP ---
+                        # ------------------
                         # Get the type entry shap
                         shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
@@ -501,14 +509,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzEdgeInfo'
-                        DbzEdgeInfo_offset = string_name_offset
+                        dbz_edge_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
                         string_table_size += 1 + len("DbzEdgeInfo")
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzShapeInfo'
-                        DbzShapeInfo_offset = string_name_offset
+                        dbz_shape_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
                         string_table_size += 1 + len("DbzShapeInfo")
                         # Update the offset
@@ -525,7 +533,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write the data_entry for each shape
                             data_entry += shap_data_entry.data_type
-                            data_entry += shap_data_entry.index.to_bytes(4, 'big')
+                            data_entry += i.to_bytes(4, 'big')
                             data_entry += string_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += shap_data_entry.data_info.data_size.to_bytes(4, 'big')
@@ -542,9 +550,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 data_child, data_child_size, data_offset = write_children(shap_data_entry.data_info,
                                                                                           b'SHAP', data_size,
                                                                                           map1_offset,
-                                                                                          DbzCharMtrl_offset,
-                                                                                          DbzEdgeInfo_offset,
-                                                                                          DbzShapeInfo_offset)
+                                                                                          dbz_char_mtrl_offset,
+                                                                                          dbz_edge_info_offset,
+                                                                                          dbz_shape_info_offset)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -554,8 +562,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 data_entry += data_offset.to_bytes(4, 'big')
                             else:
                                 # Child offset
-                                data_entry += b'\00\00\00\00'
-                            data_entry += b'\00\00\00\00'
+                                data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
                             data_entry_size += 32
 
                             # Check if the data, the module of 16 is 0
@@ -566,7 +574,80 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_offset = data_size
 
                         # Update the entry info
-                        entry_info += b'SHAP' + b'\00\01\00\00' + shap_type_entry.data_count.to_bytes(4, 'big')
+                        entry_info += b'SHAP' + b'\x00\x00\x00\x05' + shap_type_entry.data_count.to_bytes(4, 'big')
+                        # Update the sizes
+                        entry_count += 1
+                        entry_info_size += 12
+
+                        # ------------------
+                        # --- Write VBUF ---
+                        # ------------------
+                        # Get the type entry shap
+                        vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
+
+                        # Get each vbuf data entry
+                        for i in range(0, vbuf_type_entry.data_count):
+                            # Get the data entry for the VBUF
+                            vbuf_data_entry = vbuf_type_entry.data_entry[i]
+
+                            # Write the name for each vbuf
+                            string_table += b'\x00' + vbuf_data_entry.data_info.name.encode('utf-8')
+                            string_table_size += 1 + len(vbuf_data_entry.data_info.name)
+
+                            # Write each vertexDecl first
+                            vbuf_info = vbuf_data_entry.data_info.data
+                            data_offset_vertex_decl = data_size
+                            for j in range(0, vbuf_info.decl_count_0):
+
+                                vertex_decl = vbuf_info.vertex_decl[j]
+
+                                # Read all the data
+                                data += vertex_decl.unk0x00
+                                data += vertex_decl.resource_name_offset.to_bytes(4, 'big')
+                                data += vertex_decl.vertex_usage
+                                data += vertex_decl.index.to_bytes(2, 'big')
+                                data += vertex_decl.vertex_format
+                                data += vertex_decl.stride.to_bytes(2, 'big')
+                                data += vertex_decl.offset.to_bytes(4, 'big')
+                                data_size += 20
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
+
+                            # Write the data_entry for each vbuf
+                            data_offset = data_size
+                            data_entry += vbuf_data_entry.data_type
+                            data_entry += i.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += vbuf_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
+
+                            # Write the data for each vbuf
+                            data += vbuf_info.unk0x00
+                            data += vbuf_info.unk0x04
+                            data += vbuf_info.data_offset.to_bytes(4, 'big')
+                            data += vbuf_info.data_size.to_bytes(4, 'big')
+                            data += vbuf_info.vertex_count.to_bytes(4, 'big')
+                            data += vbuf_info.unk0x14
+                            data += vbuf_info.unk0x16
+                            data += vbuf_info.decl_count_0.to_bytes(2, 'big')
+                            data += vbuf_info.decl_count_1.to_bytes(2, 'big')
+                            data += data_offset_vertex_decl.to_bytes(4, 'big')
+                            data_size += vbuf_data_entry.data_info.data_size
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
+
+                            # Update offsets for the next entry
+                            string_name_offset = 1 + string_table_size
+                            data_offset = data_size
+
+                        # Update the entry info
+                        entry_info += b'VBUF' + b'\x00\x00\x00\x0A' + vbuf_type_entry.data_count.to_bytes(4, 'big')
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12

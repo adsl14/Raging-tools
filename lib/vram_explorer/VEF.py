@@ -18,6 +18,8 @@ from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
 from lib.vram_explorer.classes.SPRP.SprpTypeEntry import SprpTypeEntry
 from lib.vram_explorer.classes.TX2D.Tx2dInfo import Tx2dInfo
 from lib.vram_explorer.classes.TX2D.Tx2dVram import Tx2dVram
+from lib.vram_explorer.classes.VBUF.VBufInfo import VBufInfo
+from lib.vram_explorer.classes.VBUF.VertexDecl import VertexDecl
 from lib.vram_explorer.functions.action_logic import action_export_all_logic, action_import_all_logic, \
     action_import_logic, action_remove_logic, action_export_logic, action_add_logic, action_material_val_changed, \
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
@@ -334,6 +336,11 @@ def open_spr_file(main_window, model, spr_path):
                     main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name,
                                                              sprp_data_entry.data_info.name_offset)
 
+                    # Get all the children sprp_data_info
+                    if sprp_data_entry.data_info.child_count > 0:
+                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
+
+                # Save the data when is the type SHAP
                 elif sprp_type_entry.data_type == b"SHAP":
 
                     # Move where the actual information starts
@@ -348,15 +355,67 @@ def open_spr_file(main_window, model, spr_path):
                     # Save the shap_info class in the data of the spr_data_entry
                     sprp_data_entry.data_info.data = shap_info
 
+                    # Get all the children sprp_data_info
+                    if sprp_data_entry.data_info.child_count > 0:
+                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
+
+                # Save the data when is the type VBUF
+                elif sprp_type_entry.data_type == b"VBUF":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Create the VBUF info
+                    vbuf_info = VBufInfo()
+
+                    # Read all the data
+                    vbuf_info.unk0x00 = file.read(VEV.bytes2Read)
+                    vbuf_info.unk0x04 = file.read(VEV.bytes2Read)
+                    vbuf_info.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    vbuf_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    vbuf_info.vertex_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    vbuf_info.unk0x14 = file.read(2)
+                    vbuf_info.unk0x16 = file.read(2)
+                    vbuf_info.decl_count_0 = int.from_bytes(file.read(2), "big")
+                    vbuf_info.decl_count_1 = int.from_bytes(file.read(2), "big")
+                    vbuf_info.decl_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                    # Read the vertexDecl
+                    file.seek(VEV.sprp_file.data_block_base + vbuf_info.decl_offset)
+
+                    # Read each vertexDecl
+                    for _ in range(0, vbuf_info.decl_count_0):
+                        # Create the VertexDecl class
+                        vertex_decl = VertexDecl()
+
+                        # Read all the data
+                        vertex_decl.unk0x00 = file.read(VEV.bytes2Read)
+                        vertex_decl.resource_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                        vertex_decl.vertex_usage = file.read(2)
+                        vertex_decl.index = int.from_bytes(file.read(2), "big")
+                        vertex_decl.vertex_format = file.read(2)
+                        vertex_decl.stride = int.from_bytes(file.read(2), "big")
+                        vertex_decl.offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                        # Store the vertex_decl in the array
+                        vbuf_info.vertex_decl.append(vertex_decl)
+
+                    # Save the vbuf_info class in the data of the spr_data_entry
+                    sprp_data_entry.data_info.data = vbuf_info
+
+                # Save the data when is the type SCNE
+                elif sprp_type_entry.data_type == b'SCNE':
+
+                    # Get all the children sprp_data_info
+                    if sprp_data_entry.data_info.child_count > 0:
+                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
+
+                # Save the data when is the type TXAN
                 elif sprp_type_entry.data_type == b'TXAN':
 
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
-
-                # Get all the children sprp_data_info
-                if sprp_data_entry.data_info.child_count > 0:
-                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -558,6 +617,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 sprp_data_info_child.data = mtrl_prop
 
+        # Get the shape data
         elif type_section == b'SHAP':
 
             # Move where the info starts
@@ -638,15 +698,6 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_eye_info.eyes_data.append(eye_data)
 
                 sprp_data_info_child.data = scne_eye_info
-
-        # For any type, get only the data
-        else:
-
-            # Get where the info starts
-            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
-
-            # Get the data
-            sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
 
         # Restore the pointer of the file in order to read the following children
         file.seek(aux_pointer_file)
