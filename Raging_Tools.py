@@ -1,5 +1,3 @@
-import struct
-
 from lib.character_parameters_editor.IPF import write_single_character_parameters
 from lib.character_parameters_editor.GPF import write_operate_resident_param, write_db_font_pad_ps3
 from lib.character_parameters_editor.REF import write_cs_chip_file
@@ -11,7 +9,7 @@ from lib.functions import del_rw
 
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import change_endian, load_data_to_ve
+from lib.vram_explorer.VEF import change_endian, load_data_to_ve, write_children
 from lib.vram_explorer.functions.auxiliary import write_separator_vram, check_entry_module
 from lib.vram_explorer.VEF import initialize_ve
 
@@ -253,7 +251,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # Vars used in order to create the spr from scratch
                     num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
                         vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
-                        data_offset, data_size, DbzCharMtrl_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0
+                        data_offset, data_size, DbzCharMtrl_offset, map1_offset, DbzEdgeInfo_offset, \
+                        DbzShapeInfo_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
                     entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
                     type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
                     txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
@@ -273,56 +272,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the texture from the tool
                             tx2d_data_entry = self.listView.model().item(i, 0).data()
 
-                            # Write the textures in the vram file
-                            # It's a DDS image
-                            if tx2d_data_entry.data_info.data.dxt_encoding != 0:
-                                output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data[128:])
-                                # Write the vram separator
-                                if i < num_textures - 1:
-                                    write_separator_vram(output_vram_file, tx2d_data_entry)
-                            # It's a BMP image
-                            else:
-
-                                if tx2d_data_entry.data_info.extension != "png":
-                                    # We're dealing with a shader. We have to change the endian
-                                    if tx2d_data_entry.data_info.data.height == 1:
-                                        output_vram_file.write(change_endian(tx2d_data_entry.data_info.data.
-                                                                             tx2d_vram.data[54:]))
-                                    else:
-                                        output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data[54:])
-                                else:
-                                    # Write in disk the data swizzled
-                                    with open("tempSwizzledImage", mode="wb") as file:
-                                        file.write(tx2d_data_entry.data_info.data.tx2d_vram.data)
-
-                                    # Write in disk the data unswizzled
-                                    with open("tempUnSwizzledImage", mode="wb") as file:
-                                        file.write(tx2d_data_entry.data_info.data.tx2d_vram.data_unswizzle[54:])
-
-                                    # Write in disk the indexes
-                                    with open("Indexes.txt", mode="w") as file:
-                                        for index in tx2d_data_entry.data_info.data.tx2d_vram.\
-                                                indexes_unswizzle_algorithm:
-                                            file.write(index + ";")
-
-                                    # Run the exe file of 'swizzle.exe' with the option '-s' to swizzle the image
-                                    args = os.path.join(VEV.swizzle_path) + " \"" + \
-                                        "tempSwizzledImage" + "\" \"" + \
-                                        "tempUnSwizzledImage" + "\" \"" + "Indexes.txt" + "\" \"" + "-s" + "\""
-                                    os.system('cmd /c ' + args)
-
-                                    # Get the data from the .exe
-                                    with open("tempSwizzledImageModified", mode="rb") as file:
-                                        tx2d_data_entry.data_info.data.tx2d_vram.data = file.read()
-
-                                    # Remove the temp files
-                                    os.remove("tempSwizzledImage")
-                                    os.remove("tempUnSwizzledImage")
-                                    os.remove("Indexes.txt")
-                                    os.remove("tempSwizzledImageModified")
-
-                                    output_vram_file.write(tx2d_data_entry.data_info.data.tx2d_vram.data)
-
                             # Write the name for each texture
                             name = tx2d_data_entry.data_info.name + "." + tx2d_data_entry.data_info.extension
                             string_table += b'\x00' + name.encode('utf-8')
@@ -341,17 +290,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_entry_size += 32
 
                             # Write the data for each texture
-                            data += tx2d_data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
+                            # Get the tx2d info
+                            tx2d_info = tx2d_data_entry.data_info.data
+                            data += tx2d_info.unk0x00.to_bytes(4, 'big')
                             data += output_vram_file.tell().to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x08.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.data_size.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.width.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.height.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x14.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.mip_maps.to_bytes(2, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x18.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.unk0x1c.to_bytes(4, 'big')
-                            data += tx2d_data_entry.data_info.data.dxt_encoding.to_bytes(1, 'big')
+                            data += tx2d_info.unk0x08.to_bytes(4, 'big')
+                            data += tx2d_info.data_size.to_bytes(4, 'big')
+                            data += tx2d_info.width.to_bytes(2, 'big')
+                            data += tx2d_info.height.to_bytes(2, 'big')
+                            data += tx2d_info.unk0x14.to_bytes(2, 'big')
+                            data += tx2d_info.mip_maps.to_bytes(2, 'big')
+                            data += tx2d_info.unk0x18.to_bytes(4, 'big')
+                            data += tx2d_info.unk0x1c.to_bytes(4, 'big')
+                            data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
                             data += b'\00\00\00'
                             data_size += tx2d_data_entry.data_info.data_size
 
@@ -362,12 +313,62 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_name_offset = 1 + string_table_size
                             data_offset = data_size
 
+                            # Write the textures in the vram file
+                            # It's a DDS image
+                            if tx2d_info.dxt_encoding != 0:
+                                output_vram_file.write(tx2d_info.tx2d_vram.data[128:])
+                                # Write the vram separator
+                                if i < num_textures - 1:
+                                    write_separator_vram(output_vram_file, tx2d_data_entry)
+                            # It's a BMP image
+                            else:
+
+                                if tx2d_data_entry.data_info.extension != "png":
+                                    # We're dealing with a shader. We have to change the endian
+                                    if tx2d_info.height == 1:
+                                        output_vram_file.write(change_endian(tx2d_info.
+                                                                             tx2d_vram.data[54:]))
+                                    else:
+                                        output_vram_file.write(tx2d_info.tx2d_vram.data[54:])
+                                else:
+                                    # Write in disk the data swizzled
+                                    with open("tempSwizzledImage", mode="wb") as file:
+                                        file.write(tx2d_info.tx2d_vram.data)
+
+                                    # Write in disk the data unswizzled
+                                    with open("tempUnSwizzledImage", mode="wb") as file:
+                                        file.write(tx2d_info.tx2d_vram.data_unswizzle[54:])
+
+                                    # Write in disk the indexes
+                                    with open("Indexes.txt", mode="w") as file:
+                                        for index in tx2d_info.tx2d_vram.\
+                                                indexes_unswizzle_algorithm:
+                                            file.write(index + ";")
+
+                                    # Run the exe file of 'swizzle.exe' with the option '-s' to swizzle the image
+                                    args = os.path.join(VEV.swizzle_path) + " \"" + \
+                                        "tempSwizzledImage" + "\" \"" + \
+                                        "tempUnSwizzledImage" + "\" \"" + "Indexes.txt" + "\" \"" + "-s" + "\""
+                                    os.system('cmd /c ' + args)
+
+                                    # Get the data from the .exe
+                                    with open("tempSwizzledImageModified", mode="rb") as file:
+                                        tx2d_info.tx2d_vram.data = file.read()
+
+                                    # Remove the temp files
+                                    os.remove("tempSwizzledImage")
+                                    os.remove("tempUnSwizzledImage")
+                                    os.remove("Indexes.txt")
+                                    os.remove("tempSwizzledImageModified")
+
+                                    output_vram_file.write(tx2d_info.tx2d_vram.data)
+
                         # Get the new vram size by getting the position of the pointer in the output file
                         # since it's in the end of the file
                         vram_data_size = output_vram_file.tell()
 
                         # Update the entry info
-                        entry_info += "TX2D".encode('utf-8') + b'\00\01\00\00' + num_textures.to_bytes(4, 'big')
+                        entry_info += b'TX2D' + b'\00\01\00\00' + num_textures.to_bytes(4, 'big')
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12
@@ -398,7 +399,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         string_name_offset = 1 + string_table_size
 
                         # Write each material
-                        # Update offsets for the next material
                         for i in range(0, num_material):
                             # Get the material from the tool
                             mtrl_data_entry = self.materialVal.itemData(i)
@@ -417,8 +417,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # The child offset will be calculated later
 
                             # Write the data for each material
-                            data += mtrl_data_entry.data_info.data.unk_00
-                            for layer in mtrl_data_entry.data_info.data.layers:
+                            mtrl_info = mtrl_data_entry.data_info.data
+                            data += mtrl_info.unk_00
+                            for layer in mtrl_info.layers:
                                 # Search for the layer type assigned to the material
                                 data += type_layer_new_offsets[self.typeVal.findData(layer.layer_name_offset)]\
                                     .to_bytes(4, 'big')
@@ -455,56 +456,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write the children material (if any)
                             if mtrl_data_entry.data_info.child_count > 0:
-                                data_offset = data_size
+                                data_child, data_child_size, data_offset = write_children(mtrl_data_entry.data_info,
+                                                                                          b'MTRL', data_size,
+                                                                                          map1_offset,
+                                                                                          DbzCharMtrl_offset,
+                                                                                          DbzEdgeInfo_offset,
+                                                                                          DbzShapeInfo_offset)
 
-                                # Get the first children (for mtrl there is only one)
-                                data_info_children = mtrl_data_entry.data_info.child_info[0]
-                                mtrl_prop = data_info_children.data
-
-                                # Raging Blast 2 material children
-                                if data_info_children.data_size == 96:
-                                    data += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
-                                    data += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
-                                    for j in range(len(mtrl_prop.unk0x04)):
-                                        data += struct.pack('>f', mtrl_prop.unk0x04[j])
-                                    data += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
-                                    data += struct.pack('>f', mtrl_prop.Saturation_glow)
-                                    data += struct.pack('>f', mtrl_prop.Saturation_base)
-                                    data += \
-                                        struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
-                                    data += struct.pack('>f', mtrl_prop.Brightness_toonmap)
-                                    data += \
-                                        struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
-                                    data += \
-                                        struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
-                                    data += struct.pack('>f', mtrl_prop.Brightness_incandescence)
-                                    data += \
-                                        struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
-                                    for j in range(len(mtrl_prop.Border_RGBA)):
-                                        data += struct.pack('>f', mtrl_prop.Border_RGBA[j])
-                                    for j in range(len(mtrl_prop.unk0x44)):
-                                        data += struct.pack('>f', mtrl_prop.unk0x44[j])
-                                    for j in range(len(mtrl_prop.unk0x50)):
-                                        data += struct.pack('>f', mtrl_prop.unk0x50[j])
-                                else:
-                                    data += mtrl_prop
-                                data_size += data_info_children.data_size
-
-                                # Write the children offset section
-                                data += DbzCharMtrl_offset.to_bytes(4, 'big')
-                                data += data_offset.to_bytes(4, 'big')
-                                data += data_info_children.data_size.to_bytes(4, 'big')
-                                data += data_info_children.child_count.to_bytes(4, 'big')
-                                data += data_info_children.child_offset.to_bytes(4, 'big')
+                                # Update the data and data_size
+                                data += data_child
+                                data_size += data_child_size
 
                                 # Write in the data entry, the children offset
-                                data_offset = data_size
                                 data_entry += data_offset.to_bytes(4, 'big')
-
-                                # Update the data size because we have added the offset section of the children
-                                data_size += 20
-
                             else:
+                                # Child offset
                                 data_entry += b'\00\00\00\00'
                             data_entry += b'\00\00\00\00'
                             data_entry_size += 32
@@ -517,7 +483,90 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_offset = data_size
 
                         # Update the entry info
-                        entry_info += "MTRL".encode('utf-8') + b'\00\01\00\00' + num_material.to_bytes(4, 'big')
+                        entry_info += b'MTRL' + b'\00\01\00\00' + num_material.to_bytes(4, 'big')
+                        # Update the sizes
+                        entry_count += 1
+                        entry_info_size += 12
+
+                    # Write SHAP (if any)
+                    if b'SHAP' in VEV.sprp_file.type_entry:
+                        # Get the type entry shap
+                        shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
+
+                        # Write the 'map1'
+                        map1_offset = string_name_offset
+                        string_table += b'\x00' + "map1".encode('utf-8')
+                        string_table_size += 1 + len("map1")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'DbzEdgeInfo'
+                        DbzEdgeInfo_offset = string_name_offset
+                        string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
+                        string_table_size += 1 + len("DbzEdgeInfo")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'DbzShapeInfo'
+                        DbzShapeInfo_offset = string_name_offset
+                        string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
+                        string_table_size += 1 + len("DbzShapeInfo")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Get each shape data entry
+                        for i in range(0, shap_type_entry.data_count):
+                            # Get the data entry for the SHAP
+                            shap_data_entry = shap_type_entry.data_entry[i]
+
+                            # Write the name for each shape
+                            string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
+                            string_table_size += 1 + len(shap_data_entry.data_info.name)
+
+                            # Write the data_entry for each shape
+                            data_entry += shap_data_entry.data_type
+                            data_entry += shap_data_entry.index.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += shap_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            data_entry += shap_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            # We write the child offset later
+
+                            # Write the data for each shape
+                            shap_info = shap_data_entry.data_info.data
+                            data += shap_info.data
+                            data_size += shap_data_entry.data_info.data_size
+
+                            # Write children (if any)
+                            if shap_data_entry.data_info.child_count > 0:
+                                data_child, data_child_size, data_offset = write_children(shap_data_entry.data_info,
+                                                                                          b'SHAP', data_size,
+                                                                                          map1_offset,
+                                                                                          DbzCharMtrl_offset,
+                                                                                          DbzEdgeInfo_offset,
+                                                                                          DbzShapeInfo_offset)
+
+                                # Update the data and data_size
+                                data += data_child
+                                data_size += data_child_size
+
+                                # Write in the data entry, the children offset
+                                data_entry += data_offset.to_bytes(4, 'big')
+                            else:
+                                # Child offset
+                                data_entry += b'\00\00\00\00'
+                            data_entry += b'\00\00\00\00'
+                            data_entry_size += 32
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
+
+                            # Update offsets for the next entry
+                            string_name_offset = 1 + string_table_size
+                            data_offset = data_size
+
+                        # Update the entry info
+                        entry_info += b'SHAP' + b'\00\01\00\00' + shap_type_entry.data_count.to_bytes(4, 'big')
                         # Update the sizes
                         entry_count += 1
                         entry_info_size += 12

@@ -11,6 +11,7 @@ from lib.vram_explorer.classes.SCNE.ScneEyeInfo import ScneEyeInfo
 from lib.vram_explorer.classes.SCNE.ScneMaterial import ScneMaterial
 from lib.vram_explorer.classes.SCNE.ScneMaterialInfo import ScneMaterialInfo
 from lib.vram_explorer.classes.SCNE.ScneModel import ScneModel
+from lib.vram_explorer.classes.SHAP.ShapInfo import ShapInfo
 from lib.vram_explorer.classes.SPRP.SprpDataEntry import SprpDataEntry
 from lib.vram_explorer.classes.SPRP.SprpDataInfo import SprpDataInfo
 from lib.vram_explorer.classes.SPRP.SprpFile import SprpFile
@@ -268,10 +269,6 @@ def open_spr_file(main_window, model, spr_path):
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
 
-                # Get all the children sprp_data_info
-                if sprp_data_entry.data_info.child_count > 0:
-                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
-
                 # Save the data when is the type TX2D
                 if sprp_type_entry.data_type == b"TX2D":
 
@@ -279,25 +276,28 @@ def open_spr_file(main_window, model, spr_path):
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
 
                     # Create the TX2D info
-                    sprp_data_entry.data_info.data = Tx2dInfo()
+                    tx2d_info = Tx2dInfo()
 
-                    sprp_data_entry.data_info.data.unk0x00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.unk0x08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.width = int.from_bytes(file.read(2), "big")
-                    sprp_data_entry.data_info.data.height = int.from_bytes(file.read(2), "big")
-                    sprp_data_entry.data_info.data.unk0x14 = int.from_bytes(file.read(2), "big")
-                    sprp_data_entry.data_info.data.mip_maps = int.from_bytes(file.read(2), "big")
-                    sprp_data_entry.data_info.data.unk0x18 = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.unk0x1c = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    sprp_data_entry.data_info.data.dxt_encoding = int.from_bytes(file.read(1), "big")
+                    tx2d_info.unk0x00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.unk0x08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.width = int.from_bytes(file.read(2), "big")
+                    tx2d_info.height = int.from_bytes(file.read(2), "big")
+                    tx2d_info.unk0x14 = int.from_bytes(file.read(2), "big")
+                    tx2d_info.mip_maps = int.from_bytes(file.read(2), "big")
+                    tx2d_info.unk0x18 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.unk0x1c = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.dxt_encoding = int.from_bytes(file.read(1), "big")
 
-                    sprp_data_entry.data_info.data.tx2d_vram = Tx2dVram()
+                    tx2d_info.tx2d_vram = Tx2dVram()
 
                     # Add the tx2d_data_entry to the combo box (material section)
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
+
+                    # Save the tx2d info into the data_entry data
+                    sprp_data_entry.data_info.data = tx2d_info
 
                     # Add the texture to the listView
                     item = QStandardItem(sprp_data_entry.data_info.name)
@@ -312,10 +312,10 @@ def open_spr_file(main_window, model, spr_path):
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
 
                     # Create the MTRL info
-                    sprp_data_entry.data_info.data = MtrlInfo()
+                    mtrl_info = MtrlInfo()
 
                     # Read unk data
-                    sprp_data_entry.data_info.data.unk_00 = file.read(112)
+                    mtrl_info.unk_00 = file.read(112)
 
                     # Read each layer (the max number is 10)
                     for k in range(0, 10):
@@ -324,18 +324,39 @@ def open_spr_file(main_window, model, spr_path):
                         mtrl_layer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                         # Store the layer in the actual material
-                        sprp_data_entry.data_info.data.layers.append(mtrl_layer)
+                        mtrl_info.layers.append(mtrl_layer)
+
+                    # Save the mtrlInfo class into the sprp_data_entry data
+                    sprp_data_entry.data_info.data = mtrl_info
 
                     # Add the material to the combo box
                     main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
                     main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name,
                                                              sprp_data_entry.data_info.name_offset)
 
+                elif sprp_type_entry.data_type == b"SHAP":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Create the SHAP info
+                    shap_info = ShapInfo()
+
+                    # Read unk data
+                    shap_info.data = file.read(sprp_data_entry.data_info.data_size)
+
+                    # Save the shap_info class in the data of the spr_data_entry
+                    sprp_data_entry.data_info.data = shap_info
+
                 elif sprp_type_entry.data_type == b'TXAN':
 
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
+
+                # Get all the children sprp_data_info
+                if sprp_data_entry.data_info.child_count > 0:
+                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
@@ -505,6 +526,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
 
+        # Get the material data
         if type_section == b'MTRL':
 
             # Save the data of the children from a material
@@ -541,6 +563,31 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 # Generic material children
                 else:
                     sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+
+        elif type_section == b'SHAP':
+
+            # Move where the info starts
+            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+
+            # Save the info of the material children in the shap_info var
+            shap_info = ShapInfo()
+
+            # Get the data when is DBZEdgeInfo
+            if sprp_data_info_child.name == "DbzEdgeInfo":
+
+                # Save the data
+                shap_info.data = file.read(64)
+                shap_info.source_name = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                shap_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                shap_info.unk0x48 = file.read(VEV.bytes2Read)
+
+            # Get all the data if is everything else
+            else:
+                # Save the data
+                shap_info.data = file.read(sprp_data_info_child.data_size)
+
+            # Save the shapInfo class in the data of the children
+            sprp_data_info_child.data = shap_info
 
         # Get the scene data
         elif type_section == b'SCNE':
@@ -598,6 +645,15 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 sprp_data_info_child.data = scne_eye_info
 
+        # For any type, get only the data
+        else:
+
+            # Get where the info starts
+            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+
+            # Get the data
+            sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+
         # Restore the pointer of the file in order to read the following children
         file.seek(aux_pointer_file)
 
@@ -610,125 +666,85 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(file, sprp_data_info, type_section, relative_name_offset_quanty_accumulated,
-                   relative_data_offset_quanty_accumulated):
+def write_children(data_info_parent, type_entry, data_size, map1_offset, dbz_char_mtrl_offset, dbz_edge_info_offset,
+                   dbz_shape_info_offset):
 
-    file.seek(sprp_data_info.child_offset + VEV.sprp_file.data_block_base)
+    data_child, data_child_offset_section = b'', b''
+    data_child_size, data_child_offset_section_size = 0, 0
+    data_offset = data_size
+    name_offset = ""
 
-    for i in range(sprp_data_info.child_count):
-        sprp_data_info_child = sprp_data_info.child_info[i]
+    for i in range(0, data_info_parent.child_count):
 
-        # Update name_offset
-        file.write(int(sprp_data_info_child.name_offset + relative_name_offset_quanty_accumulated)
-                   .to_bytes(4, byteorder="big"))
+        # Get the child
+        data_info_child = data_info_parent.child_info[i]
 
-        # Update data_offset (only when the data_offset of the data_entry is not 0)
-        if sprp_data_info_child.data_size > 0:
-            file.write(int(sprp_data_info_child.data_offset + relative_data_offset_quanty_accumulated)
-                       .to_bytes(4, byteorder="big"))
-        else:
-            file.seek(4, os.SEEK_CUR)
+        if type_entry == b'MTRL':
 
-        # Write the scene data
-        if type_section == b'SCNE':
+            # Get the material properties
+            mtrl_prop = data_info_child.data
 
-            # If the parent name is NODES, we write the scene model
-            if sprp_data_info.name == "[NODES]":
+            # Write the data
+            # Raging Blast 2 material children
+            if data_info_child.data_size == 96:
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+                for j in range(len(mtrl_prop.unk0x04)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
+                data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_base)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+                for j in range(len(mtrl_prop.Border_RGBA)):
+                    data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+                for j in range(len(mtrl_prop.unk0x44)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
+                for j in range(len(mtrl_prop.unk0x50)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
+            else:
+                data_child += mtrl_prop
 
-                aux_pointer_file = file.tell()
-                file.seek(VEV.sprp_file.data_block_base + sprp_data_info_child.data_offset)
+            # Get the name offset
+            name_offset = dbz_char_mtrl_offset
 
-                file.seek(4, os.SEEK_CUR)
-                if sprp_data_info_child.data.unk04_name_offset > 0:
-                    file.write(int(sprp_data_info_child.data.unk04_name_offset +
-                                   relative_name_offset_quanty_accumulated)
-                               .to_bytes(4, byteorder="big"))
-                else:
-                    file.seek(4, os.SEEK_CUR)
-                if sprp_data_info_child.data.unk08_name_offset > 0:
-                    file.write(int(sprp_data_info_child.data.unk08_name_offset +
-                                   relative_name_offset_quanty_accumulated)
-                               .to_bytes(4, byteorder="big"))
-                else:
-                    file.seek(4, os.SEEK_CUR)
-                if sprp_data_info_child.data.unk0c_name_offset > 0:
-                    file.write(int(sprp_data_info_child.data.unk0c_name_offset +
-                                   relative_name_offset_quanty_accumulated)
-                               .to_bytes(4, byteorder="big"))
-                else:
-                    file.seek(4, os.SEEK_CUR)
-                if sprp_data_info_child.data.unk10_name_offset > 0:
-                    file.write(int(sprp_data_info_child.data.unk10_name_offset +
-                                   relative_name_offset_quanty_accumulated)
-                               .to_bytes(4, byteorder="big"))
-                else:
-                    file.seek(4, os.SEEK_CUR)
+        # The type entry is shape
+        elif type_entry == b'SHAP':
 
-                file.seek(aux_pointer_file)
+            shap_info = data_info_child.data
 
-            # If the children name is MATERIAL, we write the scene model
-            elif sprp_data_info_child.name == "[MATERIAL]":
+            # Assign the name offset for each children and write the data
+            if i == 0:
+                name_offset = dbz_edge_info_offset
+                data_child += shap_info.data
+                data_child += shap_info.source_name.to_bytes(4, 'big')
+                data_child += map1_offset.to_bytes(4, 'big')
+                data_child += shap_info.unk0x48
+            else:
+                name_offset = dbz_shape_info_offset
+                data_child += shap_info.data
 
-                aux_pointer_file = file.tell()
-                file.seek(VEV.sprp_file.data_block_base + sprp_data_info_child.data_offset)
+        # Write children offset section
+        data_child_offset_section += name_offset.to_bytes(4, 'big')
+        data_child_offset_section += data_offset.to_bytes(4, 'big')
+        data_child_offset_section += data_info_child.data_size.to_bytes(4, 'big')
+        data_child_offset_section += data_info_child.child_count.to_bytes(4, 'big')
+        data_child_offset_section += data_info_child.child_offset.to_bytes(4, 'big')
 
-                # Write the name_offset of scne_material
-                if sprp_data_info_child.data.name_offset > 0:
-                    file.write(int(sprp_data_info_child.data.name_offset + relative_name_offset_quanty_accumulated)
-                               .to_bytes(4, byteorder="big"))
-                else:
-                    file.seek(4, os.SEEK_CUR)
-                file.seek(8, os.SEEK_CUR)
+        # Update the offsets
+        data_child_size += data_info_child.data_size
+        data_child_offset_section_size += 20
+        data_offset += data_info_child.data_size
 
-                for j in range(0, sprp_data_info_child.data.material_info_count):
-
-                    if sprp_data_info_child.data.material_info[j].unk00_name_offset > 0:
-                        file.write(int(sprp_data_info_child.data.material_info[j].unk00_name_offset +
-                                       relative_name_offset_quanty_accumulated)
-                                   .to_bytes(4, byteorder="big"))
-                    else:
-                        file.seek(4, os.SEEK_CUR)
-                    if sprp_data_info_child.data.material_info[j].unk04_name_offset > 0:
-                        file.write(
-                            int(sprp_data_info_child.data.material_info[j].unk04_name_offset +
-                                relative_name_offset_quanty_accumulated)
-                            .to_bytes(4, byteorder="big"))
-                    else:
-                        file.seek(4, os.SEEK_CUR)
-                    file.seek(4, os.SEEK_CUR)
-
-                file.seek(aux_pointer_file)
-
-            # If the children name is DbzEyeInfo, we write the scene model
-            elif sprp_data_info_child.name == "DbzEyeInfo":
-
-                aux_pointer_file = file.tell()
-                file.seek(VEV.sprp_file.data_block_base + sprp_data_info_child.data_offset)
-
-                # Write each eye_data
-                for j in range(0, 3):
-
-                    if sprp_data_info_child.data.eyes_data[j].unk00_name_offset > 0:
-                        file.write(int(sprp_data_info_child.data.eyes_data[j].unk00_name_offset +
-                                       relative_name_offset_quanty_accumulated)
-                                   .to_bytes(4, byteorder="big"))
-                    else:
-                        file.seek(4, os.SEEK_CUR)
-                    file.seek(108, os.SEEK_CUR)
-
-                file.seek(aux_pointer_file)
-
-        # Get all the children sprp_data_info
-        file.seek(8, os.SEEK_CUR)
-        if sprp_data_info_child.child_count > 0:
-            file.write(int(sprp_data_info_child.child_offset + relative_data_offset_quanty_accumulated)
-                       .to_bytes(4, byteorder="big"))
-            aux_pointer_file = file.tell()
-            write_children(file, sprp_data_info_child, type_section, relative_name_offset_quanty_accumulated,
-                           relative_data_offset_quanty_accumulated)
-            file.seek(aux_pointer_file)
-        else:
-            file.seek(4, os.SEEK_CUR)
+    return data_child + data_child_offset_section, data_child_size + data_child_offset_section_size, data_offset
 
 
 def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_encoding_text):
@@ -864,33 +880,6 @@ def show_bmp_image(image_texture, texture_data, width, height):
         image_texture.setPixmap(mpixmap)
     except OSError:
         image_texture.clear()
-
-
-def update_offset_data_info(file, data_entry, relative_name_offset_quanty_accumulated,
-                            relative_data_offset_quanty_accumulated):
-    # Update name_offset
-    file.write(int(data_entry.data_info.name_offset +
-                   relative_name_offset_quanty_accumulated)
-               .to_bytes(4, byteorder="big"))
-
-    # Update data_offset (only when the data_offset of the data_entry is not 0)
-    if data_entry.data_info.data_size > 0:
-        file.write(int(data_entry.data_info.data_offset +
-                       relative_data_offset_quanty_accumulated).to_bytes(4, byteorder="big"))
-    else:
-        file.seek(4, os.SEEK_CUR)
-
-    # Update child_offset
-    file.seek(8, os.SEEK_CUR)
-    if data_entry.data_info.child_count > 0:
-        file.write(int(data_entry.data_info.child_offset +
-                       relative_data_offset_quanty_accumulated).to_bytes(4, byteorder="big"))
-        aux_pointer_file = file.tell()
-        write_children(file, data_entry.data_info, data_entry.data_type,
-                       relative_name_offset_quanty_accumulated, relative_data_offset_quanty_accumulated)
-        file.seek(aux_pointer_file + 4)
-    else:
-        file.seek(8, os.SEEK_CUR)
 
 
 def update_tx2d_data(file, index):
