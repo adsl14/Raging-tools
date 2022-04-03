@@ -533,36 +533,30 @@ def read_children(main_window, file, sprp_data_info, type_section):
             if sprp_data_info_child.name == "DbzCharMtrl":
 
                 file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
-                # Material children RB2
-                if sprp_data_info_child.data_size == 96:
 
-                    # Save the info of the material children in the mtrl_prop var
-                    mtrl_prop = MtrlProp()
-                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x04)):
-                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.Border_RGBA)):
-                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x44)):
-                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x50)):
-                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+                # Save the info of the material children in the mtrl_prop var
+                mtrl_prop = MtrlProp()
+                mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x04)):
+                    mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.Border_RGBA)):
+                    mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x44)):
+                    mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x50)):
+                    mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
 
-                    sprp_data_info_child.data = mtrl_prop
-
-                # Generic material children
-                else:
-                    sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+                sprp_data_info_child.data = mtrl_prop
 
         elif type_section == b'SHAP':
 
