@@ -48,7 +48,5 @@ class VEV:
 	enable_combo_box = False
 	# Unique offset that will be used when adding a new material/texture
 	unique_temp_name_offset = 0
-	# Offset of DbzCharMtrl
-	DbzCharMtrl_offset = 0
 	# Table size increment. This is used when we write in the spr, the new names for the new textures/material
 	string_table_size_increment = 0

@@ -700,8 +700,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(data_info_parent, type_entry, data_size, map1_offset, dbz_char_mtrl_offset, dbz_edge_info_offset,
-                   dbz_shape_info_offset):
+def write_children(data_info_parent, type_entry, data_size, special_names):
 
     data_child, data_child_offset_section = b'', b''
     data_child_size, data_child_offset_section_size = 0, 0
@@ -719,36 +718,32 @@ def write_children(data_info_parent, type_entry, data_size, map1_offset, dbz_cha
             mtrl_prop = data_info_child.data
 
             # Write the data
-            # Raging Blast 2 material children
-            if data_info_child.data_size == 96:
-                data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
-                data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
-                for j in range(len(mtrl_prop.unk0x04)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
-                data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
-                data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
-                data_child += struct.pack('>f', mtrl_prop.Saturation_base)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
-                data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
-                data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
-                for j in range(len(mtrl_prop.Border_RGBA)):
-                    data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
-                for j in range(len(mtrl_prop.unk0x44)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
-                for j in range(len(mtrl_prop.unk0x50)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
-            else:
-                data_child += mtrl_prop
+            data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+            data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+            for j in range(len(mtrl_prop.unk0x04)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
+            data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+            data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
+            data_child += struct.pack('>f', mtrl_prop.Saturation_base)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+            data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+            data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+            for j in range(len(mtrl_prop.Border_RGBA)):
+                data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+            for j in range(len(mtrl_prop.unk0x44)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
+            for j in range(len(mtrl_prop.unk0x50)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
 
             # Get the name offset
-            name_offset = dbz_char_mtrl_offset
+            name_offset = special_names.dbz_char_mtrl_offset
 
         # The type entry is shape
         elif type_entry == b'SHAP':
@@ -757,13 +752,13 @@ def write_children(data_info_parent, type_entry, data_size, map1_offset, dbz_cha
 
             # Assign the name offset for each children and write the data
             if i == 0:
-                name_offset = dbz_edge_info_offset
+                name_offset = special_names.dbz_edge_info_offset
                 data_child += shap_info.data
                 data_child += shap_info.source_name.to_bytes(4, 'big')
-                data_child += map1_offset.to_bytes(4, 'big')
+                data_child += special_names.map1_offset.to_bytes(4, 'big')
                 data_child += shap_info.unk0x48
             else:
-                name_offset = dbz_shape_info_offset
+                name_offset = special_names.dbz_shape_info_offset
                 data_child += shap_info.data
 
         # Write children offset section

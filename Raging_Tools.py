@@ -10,6 +10,7 @@ from lib.functions import del_rw
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import change_endian, load_data_to_ve, write_children
+from lib.vram_explorer.classes.SpecialNames import SpecialNames
 from lib.vram_explorer.functions.auxiliary import write_separator_vram, check_entry_module
 from lib.vram_explorer.VEF import initialize_ve
 
@@ -250,11 +251,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # Vars used in order to create the spr from scratch
                     num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
-                        vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
-                        data_offset, data_size, dbz_char_mtrl_offset, map1_offset, dbz_edge_info_offset, \
-                        dbz_shape_info_offset, layers_offset, nodes_offset, dbz_eye_info_offset = \
-                        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+                        vram_name_offset, vram_data_size = 0, 0, 0, 0, 0, 0, 0, 0
+                    string_name_offset = 1
+                    string_table_size, data_entry_size, data_offset, data_size = 0, 0, 0, 0
                     entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
+                    # We will save in this class, some special name offsets
+                    special_names = SpecialNames()
 
                     # ------------------
                     # --- Write TX2D ---
@@ -306,10 +308,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if tx2d_data_entry.data_info.child_count > 0:
                                 data_child, data_child_size, data_offset = write_children(tx2d_data_entry.data_info,
                                                                                           b'TX2D', data_size,
-                                                                                          map1_offset,
-                                                                                          dbz_char_mtrl_offset,
-                                                                                          dbz_edge_info_offset,
-                                                                                          dbz_shape_info_offset)
+                                                                                          special_names)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -412,7 +411,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzCharMtrl'
-                        dbz_char_mtrl_offset = string_name_offset
+                        special_names.dbz_char_mtrl_offset = string_name_offset
                         string_table += b'\x00' + "DbzCharMtrl".encode('utf-8')
                         string_table_size += 1 + len("DbzCharMtrl")
                         # Update the offset
@@ -486,10 +485,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if mtrl_data_entry.data_info.child_count > 0:
                                 data_child, data_child_size, data_offset = write_children(mtrl_data_entry.data_info,
                                                                                           b'MTRL', data_size,
-                                                                                          map1_offset,
-                                                                                          dbz_char_mtrl_offset,
-                                                                                          dbz_edge_info_offset,
-                                                                                          dbz_shape_info_offset)
+                                                                                          special_names)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -524,21 +520,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
                         # Write the 'map1'
-                        map1_offset = string_name_offset
+                        special_names.map1_offset = string_name_offset
                         string_table += b'\x00' + "map1".encode('utf-8')
                         string_table_size += 1 + len("map1")
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzEdgeInfo'
-                        dbz_edge_info_offset = string_name_offset
+                        special_names.dbz_edge_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
                         string_table_size += 1 + len("DbzEdgeInfo")
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'DbzShapeInfo'
-                        dbz_shape_info_offset = string_name_offset
+                        special_names.dbz_shape_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
                         string_table_size += 1 + len("DbzShapeInfo")
                         # Update the offset
@@ -571,10 +567,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if shap_data_entry.data_info.child_count > 0:
                                 data_child, data_child_size, data_offset = write_children(shap_data_entry.data_info,
                                                                                           b'SHAP', data_size,
-                                                                                          map1_offset,
-                                                                                          dbz_char_mtrl_offset,
-                                                                                          dbz_edge_info_offset,
-                                                                                          dbz_shape_info_offset)
+                                                                                          special_names)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -664,10 +657,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if vbuf_data_entry.data_info.child_count > 0:
                                 data_child, data_child_size, data_offset = write_children(vbuf_data_entry.data_info,
                                                                                           b'VBUF', data_size,
-                                                                                          map1_offset,
-                                                                                          dbz_char_mtrl_offset,
-                                                                                          dbz_edge_info_offset,
-                                                                                          dbz_shape_info_offset)
+                                                                                          special_names)
 
                                 # Update the data and data_size
                                 data += data_child
@@ -702,21 +692,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
                         # Write the 'layers_offset'
-                        layers_offset = string_name_offset
+                        special_names.layers_offset = string_name_offset
                         string_table += b'\x00' + "[LAYERS]".encode('utf-8')
                         string_table_size += 1 + len("[LAYERS]")
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'nodes_offset'
-                        nodes_offset = string_name_offset
+                        special_names.nodes_offset = string_name_offset
                         string_table += b'\x00' + "[NODES]".encode('utf-8')
                         string_table_size += 1 + len("[NODES]")
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
                         # Write the 'dbz_eye_info_offset'
-                        dbz_eye_info_offset = string_name_offset
+                        special_names.dbz_eye_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
                         string_table_size += 1 + len("DbzEyeInfo")
                         # Update the offset
@@ -725,7 +715,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get each SCNE entry
                         for i in range(0, scne_type_entry.data_count):
                             scne_data_entry = scne_type_entry.data_entry[i]
+
+                            # Write children (if any)
                             scne_data_entry.data_info.child_count = 0
+                            if scne_data_entry.data_info.child_count > 0:
+                                data_child, data_child_size, data_offset = write_children(scne_data_entry.data_info,
+                                                                                          b'SCNE', data_size,
+                                                                                          special_names)
+
+                                # Update the data and data_size
+                                data += data_child
+                                data_size += data_child_size
 
                             # Write the name for the scne
                             name = "scene_" + self.fileNameText.text() + ".mb"
