@@ -701,8 +701,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get the type entry scne
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
-                        # It looks like it writes first the children and then all the following data
-
                         # Write the 'layers_offset'
                         layers_offset = string_name_offset
                         string_table += b'\x00' + "[LAYERS]".encode('utf-8')
@@ -724,31 +722,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
-                        # Get the only one data entry for the SCNE
-                        scne_data_entry = scne_type_entry.data_entry[0]
+                        # Get each SCNE entry
+                        for i in range(0, scne_type_entry.data_count):
+                            scne_data_entry = scne_type_entry.data_entry[i]
+                            scne_data_entry.data_info.child_count = 0
 
-                        # Write the name for the main scne
-                        name = "scene_" + self.fileNameText.text() + ".mb"
-                        string_table += b'\x00' + name.encode('utf-8')
-                        string_table_size += 1 + len(name)
+                            # Write the name for the scne
+                            name = "scene_" + self.fileNameText.text() + ".mb"
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + len(name)
 
-                        # Write the data_entry
-                        data_entry += scne_data_entry.data_type
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry += string_name_offset.to_bytes(4, 'big')
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry += b'\x00\x00\x00\x00'
-                        data_entry_size += 32
+                            # Write the data_entry
+                            data_entry += scne_data_entry.data_type
+                            data_entry += i.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += scne_data_entry.data_info.data_size.to_bytes(4, 'big')
+                            data_entry += scne_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            data_entry += data_offset.to_bytes(4, 'big')
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
 
-                        # Check if the data, the module of 16 is 0
-                        data, data_size = check_entry_module(data, data_size, 16)
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
 
-                        # Update offsets for the next entry
-                        string_name_offset = 1 + string_table_size
-                        data_offset = data_size
+                            # Update offsets for the next entry
+                            string_name_offset = 1 + string_table_size
+                            data_offset = data_size
 
                         # Update the entry info
                         entry_info += b'SCNE' + b'\x00\x00\x00\x07' + scne_type_entry.data_count.to_bytes(4, 'big')
