@@ -282,10 +282,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
+                            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            # We write the child offset later
 
                             # Write the data for each texture
                             # Get the tx2d info
@@ -303,6 +301,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
                             data += b'\00\00\00'
                             data_size += tx2d_data_entry.data_info.data_size
+
+                            # Write children (if any)
+                            if tx2d_data_entry.data_info.child_count > 0:
+                                data_child, data_child_size, data_offset = write_children(tx2d_data_entry.data_info,
+                                                                                          b'TX2D', data_size,
+                                                                                          map1_offset,
+                                                                                          dbz_char_mtrl_offset,
+                                                                                          dbz_edge_info_offset,
+                                                                                          dbz_shape_info_offset)
+
+                                # Update the data and data_size
+                                data += data_child
+                                data_size += data_child_size
+
+                                # Write in the data entry, the children offset
+                                data_entry += data_offset.to_bytes(4, 'big')
+                            else:
+                                # Child offset
+                                data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
 
                             # Check if the data, the module of 16 is 0
                             data, data_size = check_entry_module(data, data_size, 16)
@@ -374,7 +393,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # ------------------
                     # --- Write MTRL ---
                     # ------------------
-                    # If there is MTRL, we write SHAP, VBUF, SCNE, BONE, DRVN and TXAN
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
                         num_layer_effect = self.typeVal.count()
@@ -498,9 +516,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_count += 1
                         entry_info_size += 12
 
-                        # ------------------
-                        # --- Write SHAP ---
-                        # ------------------
+                    # ------------------
+                    # --- Write SHAP ---
+                    # ------------------
+                    if b'SHAP' in VEV.sprp_file.type_entry:
                         # Get the type entry shap
                         shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
@@ -582,9 +601,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_count += 1
                         entry_info_size += 12
 
-                        # ------------------
-                        # --- Write VBUF ---
-                        # ------------------
+                    # ------------------
+                    # --- Write VBUF ---
+                    # ------------------
+                    if b'VBUF' in VEV.sprp_file.type_entry:
                         # Get the type entry shap
                         vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
 
@@ -624,10 +644,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data_entry += string_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += vbuf_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
+                            data_entry += vbuf_data_entry.data_info.child_count.to_bytes(4, 'big')
+                            # We write the child offset later
 
                             # Write the data for each vbuf
                             data += vbuf_info.unk0x00
@@ -642,6 +660,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data += data_offset_vertex_decl.to_bytes(4, 'big')
                             data_size += vbuf_data_entry.data_info.data_size
 
+                            # Write children (if any)
+                            if vbuf_data_entry.data_info.child_count > 0:
+                                data_child, data_child_size, data_offset = write_children(vbuf_data_entry.data_info,
+                                                                                          b'VBUF', data_size,
+                                                                                          map1_offset,
+                                                                                          dbz_char_mtrl_offset,
+                                                                                          dbz_edge_info_offset,
+                                                                                          dbz_shape_info_offset)
+
+                                # Update the data and data_size
+                                data += data_child
+                                data_size += data_child_size
+
+                                # Write in the data entry, the children offset
+                                data_entry += data_offset.to_bytes(4, 'big')
+                            else:
+                                # Child offset
+                                data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
+
                             # Check if the data, the module of 16 is 0
                             data, data_size = check_entry_module(data, data_size, 16)
 
@@ -655,9 +694,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_count += 1
                         entry_info_size += 12
 
-                        # ------------------
-                        # --- Write SCNE ---
-                        # ------------------
+                    # ------------------
+                    # --- Write SCNE ---
+                    # ------------------
+                    if b'SCNE' in VEV.sprp_file.type_entry:
                         # Get the type entry scne
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
@@ -684,33 +724,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
-                        # Get each scene data entry
-                        for i in range(0, scne_type_entry.data_count):
-                            # Get the data entry for the SCNE
-                            scne_data_entry = scne_type_entry.data_entry[i]
+                        # Get the only one data entry for the SCNE
+                        scne_data_entry = scne_type_entry.data_entry[0]
 
-                            # Write the name for each scne
-                            name = "scene_" + self.fileNameText.text() + ".mb"
-                            string_table += b'\x00' + name.encode('utf-8')
-                            string_table_size += 1 + len(name)
+                        # Write the name for the main scne
+                        name = "scene_" + self.fileNameText.text() + ".mb"
+                        string_table += b'\x00' + name.encode('utf-8')
+                        string_table_size += 1 + len(name)
 
-                            # Write the data_entry for each shape
-                            data_entry += scne_data_entry.data_type
-                            data_entry += i.to_bytes(4, 'big')
-                            data_entry += string_name_offset.to_bytes(4, 'big')
-                            data_entry += b'\x00\x00\x00\x5C'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
+                        # Write the data_entry
+                        data_entry += scne_data_entry.data_type
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
 
-                            # Check if the data, the module of 16 is 0
-                            data, data_size = check_entry_module(data, data_size, 16)
+                        # Check if the data, the module of 16 is 0
+                        data, data_size = check_entry_module(data, data_size, 16)
 
-                            # Update offsets for the next entry
-                            string_name_offset = 1 + string_table_size
-                            data_offset = data_size
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
 
                         # Update the entry info
                         entry_info += b'SCNE' + b'\x00\x00\x00\x07' + scne_type_entry.data_count.to_bytes(4, 'big')

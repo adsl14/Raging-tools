@@ -336,10 +336,6 @@ def open_spr_file(main_window, model, spr_path):
                     main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name,
                                                              sprp_data_entry.data_info.name_offset)
 
-                    # Get all the children sprp_data_info
-                    if sprp_data_entry.data_info.child_count > 0:
-                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
-
                 # Save the data when is the type SHAP
                 elif sprp_type_entry.data_type == b"SHAP":
 
@@ -354,10 +350,6 @@ def open_spr_file(main_window, model, spr_path):
 
                     # Save the shap_info class in the data of the spr_data_entry
                     sprp_data_entry.data_info.data = shap_info
-
-                    # Get all the children sprp_data_info
-                    if sprp_data_entry.data_info.child_count > 0:
-                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Save the data when is the type VBUF
                 elif sprp_type_entry.data_type == b"VBUF":
@@ -403,19 +395,16 @@ def open_spr_file(main_window, model, spr_path):
                     # Save the vbuf_info class in the data of the spr_data_entry
                     sprp_data_entry.data_info.data = vbuf_info
 
-                # Save the data when is the type SCNE
-                elif sprp_type_entry.data_type == b'SCNE':
-
-                    # Get all the children sprp_data_info
-                    if sprp_data_entry.data_info.child_count > 0:
-                        read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
-
                 # Save the data when is the type TXAN
                 elif sprp_type_entry.data_type == b'TXAN':
 
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
+
+                # Get all the children sprp_data_info
+                if sprp_data_entry.data_info.child_count > 0:
+                    read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
 
                 # Store all the info in the data_entry array
                 sprp_type_entry.data_entry.append(sprp_data_entry)
