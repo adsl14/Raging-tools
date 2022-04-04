@@ -252,15 +252,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, \
                         vram_name_offset, vram_data_size, string_name_offset, string_table_size, data_entry_size, \
                         data_offset, data_size, dbz_char_mtrl_offset, map1_offset, dbz_edge_info_offset, \
-                        dbz_shape_info_offset = 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
+                        dbz_shape_info_offset, layers_offset, nodes_offset, dbz_eye_info_offset = \
+                        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
                     entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
-                    # MTRL layer values
-                    type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
-                    # TXAN values
-                    txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
-                    txan_name_offset_assigned = []
-                    for _ in range(0, txan_entry.data_count):
-                        txan_name_offset_assigned.append(False)
 
                     # ------------------
                     # --- Write TX2D ---
@@ -386,6 +380,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         num_layer_effect = self.typeVal.count()
 
                         # Write each type layer effect
+                        type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
                         for i in range(1, num_layer_effect):
                             # Get the layer from the tool
                             layer_effect_name = self.typeVal.itemText(i)
@@ -405,6 +400,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Update the offset
                         string_name_offset = 1 + string_table_size
 
+                        # TXAN values (will be used to know if the txan entries name offset are already added
+                        # to the spr
+                        txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
+                        txan_name_offset_assigned = []
+                        for _ in range(0, txan_entry.data_count):
+                            txan_name_offset_assigned.append(False)
+
                         # Write each material
                         for i in range(0, num_material):
                             # Get the material from the tool
@@ -417,7 +419,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Write the data_entry for each material
                             data_entry += mtrl_data_entry.data_type
                             data_entry += i.to_bytes(4, 'big')
-                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            mtrl_data_entry.data_info.new_name_offset = string_name_offset
+                            data_entry += mtrl_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
                             data_entry += data_offset.to_bytes(4, 'big')
                             data_entry += mtrl_data_entry.data_info.data_size.to_bytes(4, 'big')
                             data_entry += mtrl_data_entry.data_info.child_count.to_bytes(4, 'big')
@@ -440,10 +443,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         tx2d_data_entry = self.listView.model().item(j, 0).data()
                                         if tx2d_data_entry.data_info.name_offset == layer.source_name_offset:
                                             data += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                                            found = True
                                             break
                                     # Search in the TXAN entries
                                     if not found:
-                                        txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
                                         for j in range(0, txan_entry.data_count):
                                             txan_data_entry = txan_entry.data_entry[j]
                                             if txan_data_entry.data_info.name_offset == layer.source_name_offset:
@@ -652,6 +655,69 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_count += 1
                         entry_info_size += 12
 
+                        # ------------------
+                        # --- Write SCNE ---
+                        # ------------------
+                        # Get the type entry scne
+                        scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
+
+                        # It looks like it writes first the children and then all the following data
+
+                        # Write the 'layers_offset'
+                        layers_offset = string_name_offset
+                        string_table += b'\x00' + "[LAYERS]".encode('utf-8')
+                        string_table_size += 1 + len("[LAYERS]")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'nodes_offset'
+                        nodes_offset = string_name_offset
+                        string_table += b'\x00' + "[NODES]".encode('utf-8')
+                        string_table_size += 1 + len("[NODES]")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'dbz_eye_info_offset'
+                        dbz_eye_info_offset = string_name_offset
+                        string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
+                        string_table_size += 1 + len("DbzEyeInfo")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Get each scene data entry
+                        for i in range(0, scne_type_entry.data_count):
+                            # Get the data entry for the SCNE
+                            scne_data_entry = scne_type_entry.data_entry[i]
+
+                            # Write the name for each scne
+                            name = "scene_" + self.fileNameText.text() + ".mb"
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + len(name)
+
+                            # Write the data_entry for each shape
+                            data_entry += scne_data_entry.data_type
+                            data_entry += i.to_bytes(4, 'big')
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            data_entry += b'\x00\x00\x00\x5C'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry += b'\x00\x00\x00\x00'
+                            data_entry_size += 32
+
+                            # Check if the data, the module of 16 is 0
+                            data, data_size = check_entry_module(data, data_size, 16)
+
+                            # Update offsets for the next entry
+                            string_name_offset = 1 + string_table_size
+                            data_offset = data_size
+
+                        # Update the entry info
+                        entry_info += b'SCNE' + b'\x00\x00\x00\x07' + scne_type_entry.data_count.to_bytes(4, 'big')
+                        # Update the sizes
+                        entry_count += 1
+                        entry_info_size += 12
+
                     # Write the basename, ioram and vram offsets names
                     name_offset = 1 + string_table_size
                     name = self.fileNameText.text() + ".spr"
@@ -690,310 +756,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
                         output_spr_file.write(header + entry_info + string_table + data_entry + data)
 
-                    '''
-                    # Get all the necessary info from the original spr. The new info from spr and vram will be
-                    # written from scratch (except the data itself stored in spr file)
-                    with open(VEV.spr_file_path, mode="rb") as input_sprp_file:
-
-                        # Header of the spr file (64 first bytes)
-                        header = input_sprp_file.read(VEV.sprp_file.entry_info_base)
-
-                        # Where the entries are located
-                        entry_info = input_sprp_file.read(VEV.sprp_file.sprp_header.entry_info_size)
-
-                        # Where the names are located.
-                        string_table = input_sprp_file.read(VEV.sprp_file.sprp_header.string_table_size)
-                        string_table_size = VEV.sprp_file.sprp_header.string_table_size
-
-                        # Get each data entry divided in tx2d, mtrl and the rest of data entries
-                        tx2d_data_info_size = VEV.sprp_file.type_entry[b'TX2D'].data_count * 32
-                        num_textures = self.listView.model().rowCount()
-                        # Update the entry_info_base for tx2d
-                        entry_info = entry_info[:8] + num_textures.to_bytes(4, 'big') + entry_info[12:]
-                        if b'MTRL' in VEV.sprp_file.type_entry:
-                            mtrl_data_info_size = VEV.sprp_file.type_entry[b'MTRL'].data_count * 32
-                            num_material = self.materialVal.count()
-                            # Update the entry_info_base for mtrl
-                            entry_info = entry_info[:20] + num_material.to_bytes(4, 'big') + entry_info[24:]
-                        else:
-                            mtrl_data_info_size = 0
-                            num_material = 0
-                        input_sprp_file.seek(tx2d_data_info_size + mtrl_data_info_size, os.SEEK_CUR)
-                        rest_data_info_size = VEV.sprp_file.sprp_header.data_info_size - (tx2d_data_info_size +
-                                                                                          mtrl_data_info_size)
-                        rest_data_info = input_sprp_file.read(rest_data_info_size)
-
-                        # Get all the data
-                        input_sprp_file.seek(VEV.sprp_file.data_block_base)
-                        data_block = input_sprp_file.read()
-                        data_block_size = input_sprp_file.tell() - VEV.sprp_file.data_block_base
-
-                    # Create the new vram
-                    tx2d_data_entry = b''
-                    mtrl_data_entry = b''
-                    data_info_size = ((num_textures + num_material) * 32) + rest_data_info_size
-                    data_block_base = VEV.string_table_size_increment + VEV.sprp_file.data_info_base + data_info_size
-                    spr_new_size = data_block_base + data_block_size
-                    with open(VEV.vram_file_path_modified, mode="wb") as output_vram_file:
-
-                        # Get each data_entry (TX2D) and store the texture properties
-                        for i in range(0, num_textures):
-
-                            # Get the texture from the tool
-                            data_entry = self.listView.model().item(i, 0).data()
-
-                            # Create the tx2d_data_entry for each texture
-                            tx2d_data_entry += data_entry.data_type
-                            tx2d_data_entry += data_entry.index.to_bytes(4, 'big')
-
-                            # Calculate the name_offset and data_offset only when is a brand new texture
-                            # Also calculate the new size of the spr
-                            if data_entry.new_entry:
-
-                                aux_name_offset = data_entry.data_info.name_offset
-
-                                # Calculate the name offset for the file
-                                data_entry.data_info.name_offset = 1 + string_table_size
-
-                                # Change the offset also in the combo box
-                                self.textureVal.setItemData(self.textureVal.findData(aux_name_offset),
-                                                            data_entry.data_info.name_offset)
-
-                                # Search the material layer that is using this brand new texture (if exists)
-                                for j in range(0, num_material):
-                                    temp_mtrl_data_entry = self.materialVal.itemData(j)
-                                    for k in range(0, 10):
-                                        # Get the layer from one material and check if the texture is aiming is the
-                                        # same as the brand new texture
-                                        layer = temp_mtrl_data_entry.data_info.data.layers[k]
-                                        if layer.source_name_offset == aux_name_offset:
-                                            layer.source_name_offset = data_entry.data_info.name_offset
-
-                                # Calculate the data offset
-                                data_entry.data_info.data_offset = data_block_size
-                                string_table_size += 1 + data_entry.data_info.name_size
-                                data_block_size += data_entry.data_info.data_size + 12
-                                spr_new_size += data_entry.data_info.data_size + 12
-
-                            tx2d_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
-                            tx2d_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
-                            tx2d_data_entry += data_entry.data_info.data_size.to_bytes(4, 'big')
-                            tx2d_data_entry += data_entry.data_info.child_count.to_bytes(4, 'big')
-                            tx2d_data_entry += data_entry.data_info.child_offset.to_bytes(4, 'big')
-                            for _ in range(4):
-                                tx2d_data_entry += b'\x00'
-
-                            # Create the tx2d_data for each texture
-                            tx2d_data = b''
-                            tx2d_data += data_entry.data_info.data.unk0x00.to_bytes(4, 'big')
-                            tx2d_data += output_vram_file.tell().to_bytes(4, 'big')
-                            tx2d_data += data_entry.data_info.data.unk0x08.to_bytes(4, 'big')
-                            tx2d_data += data_entry.data_info.data.data_size.to_bytes(4, 'big')
-                            tx2d_data += data_entry.data_info.data.width.to_bytes(2, 'big')
-                            tx2d_data += data_entry.data_info.data.height.to_bytes(2, 'big')
-                            tx2d_data += data_entry.data_info.data.unk0x14.to_bytes(2, 'big')
-                            tx2d_data += data_entry.data_info.data.mip_maps.to_bytes(2, 'big')
-                            tx2d_data += data_entry.data_info.data.unk0x18.to_bytes(4, 'big')
-                            tx2d_data += data_entry.data_info.data.unk0x1c.to_bytes(4, 'big')
-                            tx2d_data += data_entry.data_info.data.dxt_encoding.to_bytes(1, 'big')
-                            for _ in range(15):
-                                tx2d_data += b'\x00'
-                            # Replace the tx2d_data in the original spr file
-                            if not data_entry.new_entry:
-                                data_block = data_block[:data_entry.data_info.data_offset] + tx2d_data + \
-                                    data_block[data_entry.data_info.data_offset + 48:]
-                            # The texture is a new one for the spr, we append it to the end of the file
-                            else:
-                                name = data_entry.data_info.name + "." + data_entry.data_info.extension
-                                string_table += b'\x00' + name.encode('utf-8')
-                                data_block += tx2d_data
-
-                            # Write the textures in the vram file
-                            # It's a DDS image
-                            if data_entry.data_info.data.dxt_encoding != 0:
-                                output_vram_file.write(data_entry.data_info.data.tx2d_vram.data[128:])
-                                # Write the vram separator
-                                if i < num_textures - 1:
-                                    write_separator_vram(output_vram_file, data_entry)
-                            # It's a BMP image
-                            else:
-
-                                if data_entry.data_info.extension != "png":
-                                    # We're dealing with a shader. We have to change the endian
-                                    if data_entry.data_info.data.height == 1:
-                                        output_vram_file.write(change_endian(data_entry.data_info.data.
-                                                                             tx2d_vram.data[54:]))
-                                    else:
-                                        output_vram_file.write(data_entry.data_info.data.tx2d_vram.data[54:])
-                                else:
-                                    # Write in disk the data swizzled
-                                    with open("tempSwizzledImage", mode="wb") as file:
-                                        file.write(data_entry.data_info.data.tx2d_vram.data)
-
-                                    # Write in disk the data unswizzled
-                                    with open("tempUnSwizzledImage", mode="wb") as file:
-                                        file.write(data_entry.data_info.data.tx2d_vram.data_unswizzle[54:])
-
-                                    # Write in disk the indexes
-                                    with open("Indexes.txt", mode="w") as file:
-                                        for index in data_entry.data_info.data.tx2d_vram.indexes_unswizzle_algorithm:
-                                            file.write(index + ";")
-
-                                    # Run the exe file of 'swizzle.exe' with the option '-s' to swizzle the image
-                                    args = os.path.join(VEV.swizzle_path) + " \"" + \
-                                        "tempSwizzledImage" + "\" \"" + \
-                                        "tempUnSwizzledImage" + "\" \"" + "Indexes.txt" + "\" \"" + "-s" + "\""
-                                    os.system('cmd /c ' + args)
-
-                                    # Get the data from the .exe
-                                    with open("tempSwizzledImageModified", mode="rb") as file:
-                                        data_entry.data_info.data.tx2d_vram.data = file.read()
-
-                                    # Remove the temp files
-                                    os.remove("tempSwizzledImage")
-                                    os.remove("tempUnSwizzledImage")
-                                    os.remove("Indexes.txt")
-                                    os.remove("tempSwizzledImageModified")
-
-                                    output_vram_file.write(data_entry.data_info.data.tx2d_vram.data)
-
-                        # Get the new vram size by getting the position of the pointer in the output file
-                        # since it's in the end of the file
-                        vram_new_size = output_vram_file.tell()
-
-                    # Get each data_entry (MTRL) and store the material properties
-                    for i in range(0, num_material):
-
-                        # Get the material from the tool
-                        data_entry = self.materialVal.itemData(i)
-
-                        # Create the mtrl_data_entry for each material
-                        mtrl_data_entry += data_entry.data_type
-                        mtrl_data_entry += data_entry.index.to_bytes(4, 'big')
-
-                        # Calculate the name_offset and data_offset only when is a brand new material
-                        # Also calculate the new size of the spr
-                        if data_entry.new_entry:
-
-                            aux_name_offset = data_entry.data_info.name_offset
-
-                            # Calculate the name offset for the file
-                            data_entry.data_info.name_offset = 1 + string_table_size
-
-                            # Change the offset also in the combo box
-                            self.materialModelPartVal.setItemData(
-                                self.materialModelPartVal.findData(aux_name_offset),
-                                data_entry.data_info.name_offset)
-
-                            # Search the model part that is using this brand new material (if exists)
-                            for j in range(0, self.modelPartVal.count()):
-                                scene_data_info_children = self.modelPartVal.itemData(j)
-                                if scene_data_info_children.data.name_offset == aux_name_offset:
-                                    scene_data_info_children.data.name_offset = data_entry.data_info.name_offset
-
-                            # Calculate the offsets for the new material
-                            data_entry.data_info.data_offset = data_block_size
-                            data_entry.data_info.child_offset = data_entry.data_info.data_offset + \
-                                data_entry.data_info.data_size + data_entry.data_info.child_info[0].data_size
-
-                            string_table_size += 1 + data_entry.data_info.name_size
-                            data_block_size += data_entry.data_info.data_size + \
-                                data_entry.data_info.child_info[0].data_size + 32
-                            spr_new_size += data_entry.data_info.data_size + \
-                                data_entry.data_info.child_info[0].data_size + 32
-
-                        mtrl_data_entry += data_entry.data_info.name_offset.to_bytes(4, 'big')
-                        mtrl_data_entry += data_entry.data_info.data_offset.to_bytes(4, 'big')
-                        mtrl_data_entry += data_entry.data_info.data_size.to_bytes(4, 'big')
-                        mtrl_data_entry += data_entry.data_info.child_count.to_bytes(4, 'big')
-                        mtrl_data_entry += data_entry.data_info.child_offset.to_bytes(4, 'big')
-                        for _ in range(4):
-                            mtrl_data_entry += b'\x00'
-
-                        # Create the mtrl_data for each material layer
-                        mtrl_data = b''
-                        mtrl_data += data_entry.data_info.data.unk_00
-                        # Write each layer from one material
-                        for j in range(0, 10):
-                            layer = data_entry.data_info.data.layers[j]
-                            mtrl_data += layer.layer_name_offset.to_bytes(4, 'big')
-                            mtrl_data += layer.source_name_offset.to_bytes(4, 'big')
-
-                        # Write the children material (if any)
-                        if data_entry.data_info.child_count > 0:
-                            # Get the data_info from the parent data_info
-                            data_info_children = data_entry.data_info.child_info[0]
-
-                            # Raging Blast 2 material children
-                            if data_info_children.data_size == 96:
-                                mtrl_prop = data_info_children.data
-                                mtrl_data += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
-                                mtrl_data += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
-                                for k in range(len(mtrl_prop.unk0x04)):
-                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x04[k])
-                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
-                                mtrl_data += struct.pack('>f', mtrl_prop.Saturation_glow)
-                                mtrl_data += struct.pack('>f', mtrl_prop.Saturation_base)
-                                mtrl_data += \
-                                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
-                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_toonmap)
-                                mtrl_data += \
-                                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
-                                mtrl_data += \
-                                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
-                                mtrl_data += struct.pack('>f', mtrl_prop.Brightness_incandescence)
-                                mtrl_data += \
-                                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
-                                for k in range(len(mtrl_prop.Border_RGBA)):
-                                    mtrl_data += struct.pack('>f', mtrl_prop.Border_RGBA[k])
-                                for k in range(len(mtrl_prop.unk0x44)):
-                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x44[k])
-                                for k in range(len(mtrl_prop.unk0x50)):
-                                    mtrl_data += struct.pack('>f', mtrl_prop.unk0x50[k])
-                            else:
-                                mtrl_data += data_info_children.data
-
-                            mtrl_data += VEV.DbzCharMtrl_offset.to_bytes(4, 'big')
-                            mtrl_data += (data_entry.data_info.data_offset + 192).to_bytes(4, 'big')
-                            mtrl_data += data_info_children.data_size.to_bytes(4, 'big')
-                            mtrl_data += data_info_children.child_count.to_bytes(4, 'big')
-                            mtrl_data += data_info_children.child_offset.to_bytes(4, 'big')
-                            for _ in range(12):
-                                mtrl_data += b'\x00'
-                            material_total_size = data_entry.data_info.data_size + data_info_children.data_size + 32
-                        else:
-                            material_total_size = data_entry.data_info.data_size
-
-                        if not data_entry.new_entry:
-                            data_block = data_block[:data_entry.data_info.data_offset] + mtrl_data + \
-                                         data_block[data_entry.data_info.data_offset + material_total_size:]
-                        else:
-                            string_table += b'\x00' + data_entry.data_info.name.encode('utf-8')
-                            data_block += mtrl_data
-
-                    # Write the scne material data info name offset to the file
-                    for i in range(0, self.modelPartVal.count()):
-                        data_info_children = self.modelPartVal.itemData(i)
-                        data_offset = data_info_children.data_offset
-                        data_block = data_block[:data_offset] + \
-                            data_info_children.data.name_offset.to_bytes(4, 'big') + data_block[data_offset+4:]
-
-                    # Create the new spr file
-                    # Check if the string_table_size, the module of 16 is 0
-                    rest = 16 - (string_table_size % 16)
-                    if rest != 16:
-                        for i in range(rest):
-                            string_table += b'\00'
-                            string_table_size += 1
-                    # Update the header
-                    header = header[:24] + string_table_size.to_bytes(4, 'big') + data_info_size.to_bytes(4, 'big') + \
-                        data_block_size.to_bytes(4, 'big') + header[36:48] + vram_new_size.to_bytes(4, 'big') + \
-                        header[52:]
-                    with open(VEV.spr_file_path_modified, mode="wb") as output_spr_file:
-                        output_spr_file.write(header + entry_info + string_table + tx2d_data_entry + mtrl_data_entry +
-                                              rest_data_info + data_block)
-
-                    '''
                     message = "The files were saved in: <b>" + path_output_file \
                               + "</b><br><br> Do you wish to open the folder?"
 
