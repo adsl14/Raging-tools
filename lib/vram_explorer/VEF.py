@@ -705,6 +705,7 @@ def write_children(data_info_parent, type_entry, data_size, special_names):
     data_child, data_child_offset_section = b'', b''
     data_child_size, data_child_offset_section_size = 0, 0
     data_offset = data_size
+    data_offset_children = 0
     name_offset = ""
 
     for i in range(0, data_info_parent.child_count):
@@ -712,6 +713,7 @@ def write_children(data_info_parent, type_entry, data_size, special_names):
         # Get the child
         data_info_child = data_info_parent.child_info[i]
 
+        # The type entry is material
         if type_entry == b'MTRL':
 
             # Get the material properties
@@ -761,12 +763,35 @@ def write_children(data_info_parent, type_entry, data_size, special_names):
                 name_offset = special_names.dbz_shape_info_offset
                 data_child += shap_info.data
 
+        # The type entry is scene
+        elif type_entry == b'SCNE':
+
+            # Assign the name offset for each children and write the data
+            if data_info_parent.name == "[LAYERS]":
+                if i == 0:
+                    name_offset = special_names.layer_equipment_offset
+                else:
+                    name_offset = special_names.face_anim_A_offset
+            else:
+                if i == 0:
+                    name_offset = special_names.layers_offset
+
+        # If the child has others child, we write them first
+        if data_info_child.child_count > 0:
+            data_sub_child, data_sub_child_size, data_offset_children = write_children(data_info_child, type_entry,
+                                                                                       data_offset, special_names)
+
+            # Update the data and data_size
+            data_child += data_sub_child
+            data_child_size += data_sub_child_size
+            data_offset += data_sub_child_size
+
         # Write children offset section
         data_child_offset_section += name_offset.to_bytes(4, 'big')
         data_child_offset_section += data_offset.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.data_size.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.child_count.to_bytes(4, 'big')
-        data_child_offset_section += data_info_child.child_offset.to_bytes(4, 'big')
+        data_child_offset_section += data_offset_children.to_bytes(4, 'big')
 
         # Update the offsets
         data_child_size += data_info_child.data_size

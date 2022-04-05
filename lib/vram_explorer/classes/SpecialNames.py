@@ -6,5 +6,7 @@ class SpecialNames:
         self.dbz_shape_info_offset = 0
         self.map1_offset = 0
         self.layers_offset = 0
+        self.layer_equipment_offset = 0
+        self.face_anim_A_offset = 0
         self.nodes_offset = 0
         self.dbz_eye_info_offset = 0

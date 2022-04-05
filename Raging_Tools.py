@@ -691,6 +691,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get the type entry scne
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
+                        # Write the 'layer_equipment_offset'
+                        special_names.layer_equipment_offset = string_name_offset
+                        string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
+                        string_table_size += 1 + len("Layer_EQUIPMENT")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'face_anim_A_offset'
+                        special_names.face_anim_A_offset = string_name_offset
+                        string_table += b'\x00' + "face_anim_A".encode('utf-8')
+                        string_table_size += 1 + len("face_anim_A")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
                         # Write the 'layers_offset'
                         special_names.layers_offset = string_name_offset
                         string_table += b'\x00' + "[LAYERS]".encode('utf-8')
@@ -717,7 +731,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             scne_data_entry = scne_type_entry.data_entry[i]
 
                             # Write children (if any)
-                            scne_data_entry.data_info.child_count = 0
+                            scne_data_entry.data_info.child_count = 1
                             if scne_data_entry.data_info.child_count > 0:
                                 data_child, data_child_size, data_offset = write_children(scne_data_entry.data_info,
                                                                                           b'SCNE', data_size,
