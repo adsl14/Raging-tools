@@ -646,6 +646,12 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 scne_model.layer_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 scne_model.parent_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+                # Store the names
+                aux_pointer_file_scne = file.tell()
+                scne_model.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                  scne_model.type_offset)
+                file.seek(aux_pointer_file_scne)
+
                 sprp_data_info_child.data = scne_model
 
             # If the children name is MATERIAL, we store the scene material in the child data
@@ -700,7 +706,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(data_info_parent, type_entry, string_name_offset, data_size, special_names):
+def write_children(main_window, num_material, data_info_parent, type_entry, string_name_offset, data_size, special_names):
 
     string_table_child = b''
     string_table_child_size = 0
@@ -781,23 +787,59 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
                 # TEMP
-                # data_info_child.data_size = 0
                 data_info_child.child_count = 0
+
+                # Write the data
+                scne_model = data_info_child.data
+                data_child += scne_model.unk00.to_bytes(4, 'big')
+                # The type scene is a mesh
+                if scne_model.type_name == 'mesh':
+                    # Write the type
+                    data_child += special_names.mesh_offset.to_bytes(4, 'big')
+
+                    # Search the VBUF that is related to this SCNE and write the new calculated offset
+                    vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
+                    for j in range(0, vbuf_type_entry.data_count):
+                        # Get the data entry for the VBUF
+                        vbuf_data_entry = vbuf_type_entry.data_entry[j]
+                        if vbuf_data_entry.data_info.name_offset == scne_model.name_offset:
+                            # Write the vbuf new name offset that we found
+                            data_child += vbuf_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                            break
+                        # If doesn't find anything, we append an empty offset
+                        data_child += b'\x00\x00\x00\x00'
+
+                    # Update the material offset that the current scne is using
+                    scne_material = data_info_child.child_info[0].data
+                    for j in range(0, num_material):
+                        # Get the material from the tool
+                        mtrl_data_entry = main_window.materialVal.itemData(i)
+                        if mtrl_data_entry.data_info.name_offset == scne_material.name_offset:
+                            # Write the material new name offset that we found
+                            scne_material.new_name_offset = mtrl_data_entry.data_info.new_name_offset
+                            break
+
+                    # Get the name without the material part (:)
+                    name_without_material = data_info_child.name.split(":")[0]
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + name_without_material.encode('utf-8')
+                    string_name_size = 1 + len(name_without_material)
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
+
+                    data_child += b'\x00\x00\x00\x00'
+                    data_child += name_offset.to_bytes(4, 'big')
+                else:
+                    data_child += b'\x00\x00\x00\x00'
+                    data_child += b'\x00\x00\x00\x00'
+                    data_child += b'\x00\x00\x00\x00'
+                    data_child += b'\x00\x00\x00\x00'
 
                 # Write the name offset
                 name_offset = string_name_offset
                 string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
                 string_name_size = 1 + len(data_info_child.name)
                 string_table_child_size += string_name_size
-
-                # Write the data
-                scne_model = data_info_child.data
-                data_child += scne_model.unk00.to_bytes(4, 'big')
-                data_child += special_names.mesh_offset.to_bytes(4, 'big')
-                data_child += b'\x00\x00\x00\x00'
-                data_child += b'\x00\x00\x00\x00'
-                data_child += b'\x00\x00\x00\x00'
-
             else:
                 # [LAYERS] section
                 if i == 0:
@@ -813,7 +855,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(data_info_child, type_entry,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child, type_entry,
                                                                            string_name_offset +
                                                                            string_name_size, data_offset,
                                                                            special_names)

@@ -7,3 +7,5 @@ class ScneModel:
     self.name_offset = 0
     self.layer_offset = 0
     self.parent_offset = 0
+    # Extra info
+    self.type_name = ""

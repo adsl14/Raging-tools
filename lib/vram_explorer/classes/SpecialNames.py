@@ -12,4 +12,5 @@ class SpecialNames:
         self.mesh_offset = 0
         self.shape_offset = 0
         self.transform_offset = 0
+        self.material_offset = 0
         self.dbz_eye_info_offset = 0
