@@ -473,7 +473,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if mtrl_data_entry.data_info.child_count > 0:
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
-                                    write_children(self, num_material, mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
+                                    write_children(self, num_material, type_layer_new_offsets, mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
                                                    special_names)
 
                                 # Update the string_name and string_table_size
@@ -560,7 +560,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if shap_data_entry.data_info.child_count > 0:
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
-                                    write_children(self, num_material, shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
+                                    write_children(self, num_material, type_layer_new_offsets, shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
                                                    special_names)
 
                                 # Update the string_name and string_table_size
@@ -749,7 +749,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if scne_data_entry.data_info.child_count > 0:
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
-                                    write_children(self, num_material, scne_data_entry.data_info, b'SCNE', string_name_offset, data_size,
+                                    write_children(self, num_material, type_layer_new_offsets, scne_data_entry.data_info, b'SCNE', string_name_offset, data_size,
                                                    special_names)
 
                                 # Update the string_name and string_table_size

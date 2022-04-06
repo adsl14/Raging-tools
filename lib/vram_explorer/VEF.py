@@ -706,7 +706,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(main_window, num_material, data_info_parent, type_entry, string_name_offset, data_size, special_names):
+def write_children(main_window, num_material, type_layer_new_offsets, data_info_parent, type_entry, string_name_offset, data_size, special_names):
 
     string_table_child = b''
     string_table_child_size = 0
@@ -815,9 +815,24 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         # Get the material from the tool
                         mtrl_data_entry = main_window.materialVal.itemData(i)
                         if mtrl_data_entry.data_info.name_offset == scne_material.name_offset:
+
                             # Update the scne material offsets
                             scne_material.new_name_offset = mtrl_data_entry.data_info.new_name_offset
                             scne_material.name = mtrl_data_entry.data_info.name
+
+                            # Update the scne material info
+                            scne_material.material_info = []
+                            material_info_count = 0
+                            for layer in mtrl_data_entry.data_info.data.layers:
+                                if layer.source_name_offset != 0:
+                                    scne_material_info = ScneMaterialInfo()
+                                    scne_material_info.name_offset = type_layer_new_offsets[main_window.typeVal.findData(layer.layer_name_offset)]
+                                    scne_material_info.type_offset = special_names.map1_offset
+                                    scne_material_info.unk08 = 0
+                                    scne_material.material_info.append(scne_material_info)
+                                    material_info_count += 1
+                            scne_material.material_info_count = material_info_count
+
                             break
 
                     # Get the name without the material part (:)
@@ -880,8 +895,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child,
-                                                                           type_entry,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material, type_layer_new_offsets,
+                                                                           data_info_child, type_entry,
                                                                            string_name_offset +
                                                                            string_name_size, data_offset +
                                                                            data_info_child.data_size, special_names)
