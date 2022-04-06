@@ -148,3 +148,25 @@ def check_entry_module(entry, entry_size, module):
             entry_size += 1
 
     return entry, entry_size
+
+
+def check_name_is_string_table(current_index, scne_model, data_info_parent):
+
+    found = False
+    name_offset = 0
+    data_info_child_2 = None
+    for j in range(0, data_info_parent.child_count):
+        # Avoid comparing the current child
+        if current_index != j:
+            # Get the child
+            data_info_child_2 = data_info_parent.child_info[j]
+
+            # Check if the parent name value of the current child, is already written
+            # in the main name from other child
+            if scne_model.parent_offset == data_info_child_2.name_offset:
+                if data_info_child_2.name_offset_calculated:
+                    found = True
+                    name_offset = data_info_child_2.new_name_offset
+                break
+
+    return found, name_offset, data_info_child_2

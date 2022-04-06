@@ -539,8 +539,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             shap_data_entry = shap_type_entry.data_entry[i]
 
                             # Write the name for each shape
+                            shap_data_entry.data_info.new_name_offset = string_name_offset
                             string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
                             string_table_size += 1 + len(shap_data_entry.data_info.name)
+
 
                             # Write the data_entry for each shape
                             data_entry += shap_data_entry.data_type

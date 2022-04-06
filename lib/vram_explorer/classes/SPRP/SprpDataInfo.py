@@ -11,6 +11,7 @@ class SprpDataInfo:
         self.extension = ""
         self.name_size = 0
         self.new_name_offset = 0
+        self.name_offset_calculated = False
         # SprpDataInfo
         self.child_info = []
         # Could be Tx2dInfo, MtrlInfo
