@@ -641,10 +641,10 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 scne_model = ScneModel()
                 scne_model.unk00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                scne_model.unk04_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                scne_model.unk08_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                scne_model.unk0c_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                scne_model.unk10_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.layer_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                scne_model.parent_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                 sprp_data_info_child.data = scne_model
 
@@ -781,7 +781,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
                 # TEMP
-                data_info_child.data_size = 0
+                # data_info_child.data_size = 0
                 data_info_child.child_count = 0
 
                 # Write the name offset
@@ -789,6 +789,15 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                 string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
                 string_name_size = 1 + len(data_info_child.name)
                 string_table_child_size += string_name_size
+
+                # Write the data
+                scne_model = data_info_child.data
+                data_child += scne_model.unk00.to_bytes(4, 'big')
+                data_child += special_names.mesh_offset.to_bytes(4, 'big')
+                data_child += b'\x00\x00\x00\x00'
+                data_child += b'\x00\x00\x00\x00'
+                data_child += b'\x00\x00\x00\x00'
+
             else:
                 # [LAYERS] section
                 if i == 0:
