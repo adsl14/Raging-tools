@@ -306,9 +306,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write children (if any)
                             if tx2d_data_entry.data_info.child_count > 0:
-                                data_child, data_child_size, data_offset = write_children(tx2d_data_entry.data_info,
-                                                                                          b'TX2D', data_size,
-                                                                                          special_names)
+                                string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                    data_child_size, data_offset = \
+                                    write_children(tx2d_data_entry.data_info, b'TX2D', string_table_size, data_size,
+                                                   special_names)
+
+                                # Update the string_name and string_table_size
+                                string_table += string_table_child
+                                string_table_size += string_table_child_size
 
                                 # Update the data and data_size
                                 data += data_child
@@ -483,9 +488,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write the children material (if any)
                             if mtrl_data_entry.data_info.child_count > 0:
-                                data_child, data_child_size, data_offset = write_children(mtrl_data_entry.data_info,
-                                                                                          b'MTRL', data_size,
-                                                                                          special_names)
+                                string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                    data_child_size, data_offset = \
+                                    write_children(mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
+                                                   special_names)
+
+                                # Update the string_name and string_table_size
+                                string_table += string_table_child
+                                string_table_size += string_table_child_size
 
                                 # Update the data and data_size
                                 data += data_child
@@ -565,9 +575,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write children (if any)
                             if shap_data_entry.data_info.child_count > 0:
-                                data_child, data_child_size, data_offset = write_children(shap_data_entry.data_info,
-                                                                                          b'SHAP', data_size,
-                                                                                          special_names)
+                                string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                    data_child_size, data_offset = \
+                                    write_children(shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
+                                                   special_names)
+
+                                # Update the string_name and string_table_size
+                                string_table += string_table_child
+                                string_table_size += string_table_child_size
 
                                 # Update the data and data_size
                                 data += data_child
@@ -655,9 +670,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # Write children (if any)
                             if vbuf_data_entry.data_info.child_count > 0:
-                                data_child, data_child_size, data_offset = write_children(vbuf_data_entry.data_info,
-                                                                                          b'VBUF', data_size,
-                                                                                          special_names)
+                                string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                    data_child_size, data_offset = \
+                                    write_children(vbuf_data_entry.data_info, b'VBUF', string_table_size, data_size,
+                                                   special_names)
+
+                                # Update the string_name and string_table_size
+                                string_table += string_table_child
+                                string_table_size += string_table_child_size
 
                                 # Update the data and data_size
                                 data += data_child
@@ -691,34 +711,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get the type entry scne
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
-                        # Write the 'layer_equipment_offset'
-                        special_names.layer_equipment_offset = string_name_offset
-                        string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                        string_table_size += 1 + len("Layer_EQUIPMENT")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'face_anim_A_offset'
-                        special_names.face_anim_A_offset = string_name_offset
-                        string_table += b'\x00' + "face_anim_A".encode('utf-8')
-                        string_table_size += 1 + len("face_anim_A")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'layers_offset'
-                        special_names.layers_offset = string_name_offset
-                        string_table += b'\x00' + "[LAYERS]".encode('utf-8')
-                        string_table_size += 1 + len("[LAYERS]")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'nodes_offset'
-                        special_names.nodes_offset = string_name_offset
-                        string_table += b'\x00' + "[NODES]".encode('utf-8')
-                        string_table_size += 1 + len("[NODES]")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
                         # Write the 'dbz_eye_info_offset'
                         special_names.dbz_eye_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
@@ -731,11 +723,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             scne_data_entry = scne_type_entry.data_entry[i]
 
                             # Write children (if any)
-                            scne_data_entry.data_info.child_count = 1
+                            scne_data_entry.data_info.child_count = 2
                             if scne_data_entry.data_info.child_count > 0:
-                                data_child, data_child_size, data_offset = write_children(scne_data_entry.data_info,
-                                                                                          b'SCNE', data_size,
-                                                                                          special_names)
+                                string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                    data_child_size, data_offset = \
+                                    write_children(scne_data_entry.data_info, b'SCNE', string_name_offset, data_size,
+                                                   special_names)
+
+                                # Update the string_name and string_table_size
+                                string_table += string_table_child
+                                string_table_size += string_table_child_size
 
                                 # Update the data and data_size
                                 data += data_child
