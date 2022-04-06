@@ -667,8 +667,8 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 for _ in range(0, scne_material.material_info_count):
                     scne_materia_info = ScneMaterialInfo()
 
-                    scne_materia_info.unk00_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    scne_materia_info.unk04_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    scne_materia_info.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    scne_materia_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                     scne_material.material_info.append(scne_materia_info)
@@ -787,7 +787,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
                 # TEMP
-                data_info_child.child_count = 0
+                data_info_child.child_count = 1
 
                 # Write the data
                 scne_model = data_info_child.data
@@ -815,8 +815,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         # Get the material from the tool
                         mtrl_data_entry = main_window.materialVal.itemData(i)
                         if mtrl_data_entry.data_info.name_offset == scne_material.name_offset:
-                            # Write the material new name offset that we found
+                            # Update the scne material offsets
                             scne_material.new_name_offset = mtrl_data_entry.data_info.new_name_offset
+                            scne_material.name = mtrl_data_entry.data_info.name
                             break
 
                     # Get the name without the material part (:)
@@ -829,17 +830,41 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
 
                     data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
+
+                    # Write the name offset with the new material
+                    new_name = name_without_material + ":" + scne_material.name
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + new_name.encode('utf-8')
+                    string_name_size = 1 + len(new_name)
+                    string_table_child_size += string_name_size
                 else:
                     data_child += b'\x00\x00\x00\x00'
                     data_child += b'\x00\x00\x00\x00'
                     data_child += b'\x00\x00\x00\x00'
                     data_child += b'\x00\x00\x00\x00'
 
-                # Write the name offset
-                name_offset = string_name_offset
-                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
-                string_name_size = 1 + len(data_info_child.name)
-                string_table_child_size += string_name_size
+                    # Write the name offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    string_table_child_size += string_name_size
+            # [MATERIAL] children
+            elif data_info_child.name == "[MATERIAL]":
+
+                # Write the data
+                scne_material = data_info_child.data
+                data_child += scne_material.new_name_offset.to_bytes(4, 'big')
+                data_child += scne_material.unk04.to_bytes(4, 'big')
+                data_child += scne_material.material_info_count.to_bytes(4, 'big')
+                for j in range(0, scne_material.material_info_count):
+                    scene_material_info = scne_material.material_info[j]
+
+                    data_child += scene_material_info.name_offset.to_bytes(4, 'big')
+                    data_child += scene_material_info.type_offset.to_bytes(4, 'big')
+                    data_child += scene_material_info.unk08.to_bytes(4, 'big')
+
+                # Write the 'material_offset'
+                name_offset = special_names.material_offset
             else:
                 # [LAYERS] section
                 if i == 0:
@@ -855,10 +880,15 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child, type_entry,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child,
+                                                                           type_entry,
                                                                            string_name_offset +
-                                                                           string_name_size, data_offset,
-                                                                           special_names)
+                                                                           string_name_size, data_offset +
+                                                                           data_info_child.data_size, special_names)
+
+            # Write children offset section first
+            data_child_offset_section += name_offset.to_bytes(4, 'big')
+            data_child_offset_section += data_offset.to_bytes(4, 'big')
 
             # Update the string_table and string_table_size
             string_table_child += string_table_sub_child
@@ -869,10 +899,11 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             data_child += data_sub_child
             data_child_size += data_sub_child_size
             data_offset += data_sub_child_size
+        else:
+            # Write children offset section
+            data_child_offset_section += name_offset.to_bytes(4, 'big')
+            data_child_offset_section += data_offset.to_bytes(4, 'big')
 
-        # Write children offset section
-        data_child_offset_section += name_offset.to_bytes(4, 'big')
-        data_child_offset_section += data_offset.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.data_size.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.child_count.to_bytes(4, 'big')
         data_child_offset_section += data_offset_children.to_bytes(4, 'big')
