@@ -788,6 +788,10 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                 # TEMP
                 data_info_child.data_size = 0
                 data_info_child.child_count = 0
+
+                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                string_name_size = 1 + len(data_info_child.name)
+                string_table_child_size += string_name_size
             else:
                 # [LAYERS] section
                 if i == 0:
@@ -799,7 +803,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                 # [NODES] section
                 elif i == 1:
                     # TEMP
-                    data_info_child.child_count = 0
+                    data_info_child.child_count = 1
                     # Write the 'layers_offset'
                     special_names.nodes_offset = string_name_offset
                     string_table_child += b'\x00' + "[NODES]".encode('utf-8')
@@ -811,7 +815,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
                 data_sub_child_size, data_offset_children = write_children(data_info_child, type_entry,
                                                                            string_name_offset +
-                                                                           string_table_child_size, data_offset,
+                                                                           string_name_size, data_offset,
                                                                            special_names)
 
             # Write the name offset first
@@ -838,7 +842,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
         data_child_size += data_info_child.data_size
         data_child_offset_section_size += 20
         data_offset += data_info_child.data_size
-        string_name_offset = string_name_offset + string_name_size
+        string_name_offset += string_name_size
 
     return string_table_child, string_table_child_size, string_name_offset, data_child + data_child_offset_section, \
         data_child_size + data_child_offset_section_size, data_offset
