@@ -705,6 +705,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
     string_table_child = b''
     string_table_child_size = 0
     string_name_size = 0
+    name_offset = 0
     data_child, data_child_offset_section = b'', b''
     data_child_size, data_child_offset_section_size = 0, 0
     data_offset = data_size
@@ -747,7 +748,7 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                 data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
 
             # Get the name offset
-            string_name_offset = special_names.dbz_char_mtrl_offset
+            name_offset = special_names.dbz_char_mtrl_offset
 
         # The type entry is shape
         elif type_entry == b'SHAP':
@@ -756,13 +757,13 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
 
             # Assign the name offset for each children and write the data
             if i == 0:
-                string_name_offset = special_names.dbz_edge_info_offset
+                name_offset = special_names.dbz_edge_info_offset
                 data_child += shap_info.data
                 data_child += shap_info.source_name.to_bytes(4, 'big')
                 data_child += special_names.map1_offset.to_bytes(4, 'big')
                 data_child += shap_info.unk0x48
             else:
-                string_name_offset = special_names.dbz_shape_info_offset
+                name_offset = special_names.dbz_shape_info_offset
                 data_child += shap_info.data
 
         # The type entry is scene
@@ -773,22 +774,18 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
             if data_info_parent.name == "[LAYERS]":
                 if i == 0:
                     # Write the 'layer_equipment_offset'
-                    special_names.layer_equipment_offset = string_name_offset
-                    string_table_child += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                    string_name_size = 1 + len("Layer_EQUIPMENT")
-                    string_table_child_size += string_name_size
+                    name_offset = special_names.layer_equipment_offset
                 else:
                     # Write the 'face_anim_A_offset'
-                    special_names.layer_equipment_offset = string_name_offset
-                    string_table_child += b'\x00' + "face_anim_A".encode('utf-8')
-                    string_name_size = 1 + len("face_anim_A")
-                    string_table_child_size += string_name_size
+                    name_offset = special_names.face_anim_A_offset
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
                 # TEMP
                 data_info_child.data_size = 0
                 data_info_child.child_count = 0
 
+                # Write the name offset
+                name_offset = string_name_offset
                 string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
                 string_name_size = 1 + len(data_info_child.name)
                 string_table_child_size += string_name_size
@@ -796,19 +793,13 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                 # [LAYERS] section
                 if i == 0:
                     # Write the 'layers_offset'
-                    special_names.layers_offset = string_name_offset
-                    string_table_child += b'\x00' + "[LAYERS]".encode('utf-8')
-                    string_name_size = 1 + len("[LAYERS]")
-                    string_table_child_size += string_name_size
+                    name_offset = special_names.layers_offset
                 # [NODES] section
                 elif i == 1:
                     # TEMP
                     data_info_child.child_count = 1
                     # Write the 'layers_offset'
-                    special_names.nodes_offset = string_name_offset
-                    string_table_child += b'\x00' + "[NODES]".encode('utf-8')
-                    string_name_size = 1 + len("[NODES]")
-                    string_table_child_size += string_name_size
+                    name_offset = special_names.nodes_offset
 
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
@@ -817,9 +808,6 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
                                                                            string_name_offset +
                                                                            string_name_size, data_offset,
                                                                            special_names)
-
-            # Write the name offset first
-            data_child_offset_section += string_name_offset.to_bytes(4, 'big')
 
             # Update the string_table and string_table_size
             string_table_child += string_table_sub_child
@@ -830,9 +818,9 @@ def write_children(data_info_parent, type_entry, string_name_offset, data_size, 
             data_child += data_sub_child
             data_child_size += data_sub_child_size
             data_offset += data_sub_child_size
-        else:
-            # Write children offset section
-            data_child_offset_section += string_name_offset.to_bytes(4, 'big')
+
+        # Write children offset section
+        data_child_offset_section += name_offset.to_bytes(4, 'big')
         data_child_offset_section += data_offset.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.data_size.to_bytes(4, 'big')
         data_child_offset_section += data_info_child.child_count.to_bytes(4, 'big')

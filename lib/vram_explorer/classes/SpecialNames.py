@@ -9,4 +9,7 @@ class SpecialNames:
         self.layer_equipment_offset = 0
         self.face_anim_A_offset = 0
         self.nodes_offset = 0
+        self.mesh_offset = 0
+        self.shape_offset = 0
+        self.transform_offset = 0
         self.dbz_eye_info_offset = 0

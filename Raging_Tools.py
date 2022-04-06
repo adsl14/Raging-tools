@@ -711,6 +711,55 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Get the type entry scne
                         scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
+                        # Write the '[LAYERS]'
+                        special_names.layers_offset = string_name_offset
+                        string_table += b'\x00' + "[LAYERS]".encode('utf-8')
+                        string_table_size += 1 + len("[LAYERS]")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'Layer_EQUIPMENT'
+                        special_names.layer_equipment_offset = string_name_offset
+                        string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
+                        string_table_size += 1 + len("Layer_EQUIPMENT")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'face_anim_A_offset'
+                        special_names.face_anim_A_offset = string_name_offset
+                        string_table += b'\x00' + "face_anim_A".encode('utf-8')
+                        string_table_size += 1 + len("face_anim_A")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the '[NODES]'
+                        special_names.nodes_offset = string_name_offset
+                        string_table += b'\x00' + "[NODES]".encode('utf-8')
+                        string_table_size += 1 + len("[NODES]")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'mesh'
+                        special_names.mesh_offset = string_name_offset
+                        string_table += b'\x00' + "mesh".encode('utf-8')
+                        string_table_size += 1 + len("mesh")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'shape'
+                        special_names.shape_offset = string_name_offset
+                        string_table += b'\x00' + "shape".encode('utf-8')
+                        string_table_size += 1 + len("shape")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
+                        # Write the 'transform'
+                        special_names.transform_offset = string_name_offset
+                        string_table += b'\x00' + "transform".encode('utf-8')
+                        string_table_size += 1 + len("transform")
+                        # Update the offset
+                        string_name_offset = 1 + string_table_size
+
                         # Write the 'dbz_eye_info_offset'
                         special_names.dbz_eye_info_offset = string_name_offset
                         string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
