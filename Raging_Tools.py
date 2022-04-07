@@ -543,7 +543,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
                             string_table_size += 1 + len(shap_data_entry.data_info.name)
 
-
                             # Write the data_entry for each shape
                             data_entry += shap_data_entry.data_type
                             data_entry += i.to_bytes(4, 'big')
