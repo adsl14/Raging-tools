@@ -690,7 +690,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 for _ in range(0, 3):
                     eye_data = EyeData()
                     eye_data.unk00_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                    file.seek(108, os.SEEK_CUR)
+                    eye_data.unk04 = file.read(108)
 
                     scne_eye_info.eyes_data.append(eye_data)
 
@@ -998,10 +998,27 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     name_offset = special_names.layers_offset
                 # [NODES] section
                 elif i == 1:
-                    # TEMP
-                    #data_info_child.child_count = 5
-                    # Write the 'layers_offset'
+                    # Write the 'nodes_offset'
                     name_offset = special_names.nodes_offset
+                else:
+
+                    # Write the data
+                    scne_eye_info = data_info_child.data
+                    num_eyes_info = int(data_info_child.data_size / 112)
+                    special_name_offset = 0
+                    for j in range(0, num_eyes_info):
+                        eye_data = scne_eye_info.eyes_data[j]
+                        if j == 0:
+                            special_name_offset = special_names.eye_ball_r_offset
+                        elif j == 1:
+                            special_name_offset = special_names.eye_ball_l_offset
+                        else:
+                            special_name_offset = 0
+                        data_child += special_name_offset.to_bytes(4, 'big')
+                        data_child += eye_data.unk04
+
+                    # Write the 'DbzEyeInfo'
+                    name_offset = special_names.dbz_eye_info_offset
 
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:

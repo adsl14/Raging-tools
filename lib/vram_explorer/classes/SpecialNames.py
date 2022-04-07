@@ -7,6 +7,8 @@ class SpecialNames:
         self.map1_offset = 0
         self.layers_offset = 0
         self.layer_equipment_offset = 0
+        self.eye_ball_r_offset = 0
+        self.eye_ball_l_offset = 0
         self.face_anim_A_offset = 0
         self.nodes_offset = 0
         self.mesh_offset = 0
