@@ -27,7 +27,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
     action_save_material_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
-    get_dxt_value, fix_bmp_header_data
+    get_dxt_value, fix_bmp_header_data, check_name_is_string_table
 
 
 def initialize_ve(main_window, qt_widgets):
@@ -836,21 +836,7 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                             break
 
                     # Search if the scne_model parent is already in the string table
-                    found = False
-                    data_info_child_2 = None
-                    for j in range(0, data_info_parent.child_count):
-                        # Avoid comparing the current child
-                        if i != j:
-                            # Get the child
-                            data_info_child_2 = data_info_parent.child_info[j]
-
-                            # Check if the parent name value of the current child, is already written
-                            # in the main name from other child
-                            if scne_model.parent_offset == data_info_child_2.name_offset:
-                                if data_info_child_2.name_offset_calculated:
-                                    found = True
-                                    name_offset = data_info_child_2.new_name_offset
-                                break
+                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
                     # The parent name value is not in the string table
                     if not found:
                         # Write the name of the parent value
@@ -863,16 +849,20 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                         # Update the other child we have found
                         if data_info_child_2 is not None:
                             data_info_child_2.name_offset_calculated = True
+                            data_info_child_2.new_name_offset = name_offset
 
                     data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
 
                     # Write the name offset with the new material
-                    new_name = scne_model.parent_name + ":" + scne_material.name
-                    name_offset = string_name_offset
-                    string_table_child += b'\x00' + new_name.encode('utf-8')
-                    string_name_size = 1 + len(new_name)
-                    string_table_child_size += string_name_size
+                    if data_info_child.name_offset_calculated:
+                        name_offset = data_info_child.new_name_offset
+                    else:
+                        new_name = scne_model.parent_name + ":" + scne_material.name
+                        name_offset = string_name_offset
+                        string_table_child += b'\x00' + new_name.encode('utf-8')
+                        string_name_size = 1 + len(new_name)
+                        string_table_child_size += string_name_size
 
                 elif scne_model.type_name == 'shape':
                     # Write the type
@@ -891,21 +881,7 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                         data_child += b'\x00\x00\x00\x00'
 
                     # Search if the scne_model parent is already in the string table
-                    found = False
-                    data_info_child_2 = None
-                    for j in range(0, data_info_parent.child_count):
-                        # Avoid comparing the current child
-                        if i != j:
-                            # Get the child
-                            data_info_child_2 = data_info_parent.child_info[j]
-
-                            # Check if the parent name value of the current child, is already written
-                            # in the main name from other child
-                            if scne_model.parent_offset == data_info_child_2.name_offset:
-                                if data_info_child_2.name_offset_calculated:
-                                    found = True
-                                    name_offset = data_info_child_2.new_name_offset
-                                break
+                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
                     # The parent name value is not in the string table
                     if not found:
                         # Write the name of the parent value
@@ -918,15 +894,19 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                         # Update the other child we have found
                         if data_info_child_2 is not None:
                             data_info_child_2.name_offset_calculated = True
+                            data_info_child_2.new_name_offset = name_offset
 
                     data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
 
                     # Write the name offset with the new material
-                    name_offset = string_name_offset
-                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
-                    string_name_size = 1 + len(data_info_child.name)
-                    string_table_child_size += string_name_size
+                    if data_info_child.name_offset_calculated:
+                        name_offset = data_info_child.new_name_offset
+                    else:
+                        name_offset = string_name_offset
+                        string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                        string_name_size = 1 + len(data_info_child.name)
+                        string_table_child_size += string_name_size
 
                 elif scne_model.type_name == 'transform':
                     # Write the type
@@ -935,21 +915,7 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     data_child += special_names.layer_equipment_offset.to_bytes(4, 'big')
 
                     # Search if the scne_model parent is already in the string table
-                    found = False
-                    data_info_child_2 = None
-                    for j in range(0, data_info_parent.child_count):
-                        # Avoid comparing the current child
-                        if i != j:
-                            # Get the child
-                            data_info_child_2 = data_info_parent.child_info[j]
-
-                            # Check if the parent name value of the current child, is already written
-                            # in the main name from other child
-                            if scne_model.parent_offset == data_info_child_2.name_offset:
-                                if data_info_child_2.name_offset_calculated:
-                                    found = True
-                                    name_offset = data_info_child_2.new_name_offset
-                                break
+                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
                     # The parent name value is not in the string table
                     if not found:
                         # Write the name of the parent value
@@ -962,14 +928,19 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                         # Update the other child we have found
                         if data_info_child_2 is not None:
                             data_info_child_2.name_offset_calculated = True
+                            data_info_child_2.new_name_offset = name_offset
 
                     data_child += name_offset.to_bytes(4, 'big')
 
                     # Write the name offset with the new material
-                    name_offset = string_name_offset
-                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
-                    string_name_size = 1 + len(data_info_child.name)
-                    string_table_child_size += string_name_size
+                    if data_info_child.name_offset_calculated:
+                        name_offset = data_info_child.new_name_offset
+                    else:
+                        name_offset = string_name_offset
+                        string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                        string_name_size = 1 + len(data_info_child.name)
+                        string_table_child_size += string_name_size
+
                 else:
                     data_child += b'\x00\x00\x00\x00'
                     data_child += b'\x00\x00\x00\x00'
