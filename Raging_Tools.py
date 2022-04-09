@@ -739,13 +739,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
-                            # Write the 'Layer_EQUIPMENT'
-                            special_names.layer_equipment_offset = string_name_offset
-                            string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                            string_table_size += 1 + len("Layer_EQUIPMENT")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Write the 'face_anim_A_offset'
                             special_names.face_anim_A_offset = string_name_offset
                             string_table += b'\x00' + "face_anim_A".encode('utf-8')
