@@ -9,5 +9,6 @@ class ScneModel:
     self.parent_offset = 0
     # Extra info
     self.type_name = ""
+    self.layer_name = ""
     self.parent_name = ""
     self.parent_new_offset = 0

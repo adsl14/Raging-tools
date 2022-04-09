@@ -521,6 +521,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
+                            # Write the 'damage'
+                            special_names.damage_offset = string_name_offset
+                            string_table += b'\x00' + "damage".encode('utf-8')
+                            string_table_size += 1 + len("damage")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'normal'
+                            special_names.normal_offset = string_name_offset
+                            string_table += b'\x00' + "normal".encode('utf-8')
+                            string_table_size += 1 + len("normal")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
                             # Write the 'DbzEdgeInfo'
                             special_names.dbz_edge_info_offset = string_name_offset
                             string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')

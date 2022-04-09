@@ -674,6 +674,8 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 aux_pointer_file_scne = file.tell()
                 scne_model.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                   scne_model.type_offset)
+                scne_model.layer_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                   scne_model.layer_offset)
                 scne_model.parent_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                     scne_model.parent_offset)
                 file.seek(aux_pointer_file_scne)
@@ -862,10 +864,23 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                             for layer in mtrl_data_entry.data_info.data.layers:
                                 if layer.source_name_offset != 0:
                                     scne_material_info = ScneMaterialInfo()
-                                    scne_material_info.name_offset = type_layer_new_offsets[main_window.typeVal.
-                                                                                            findData(layer.
-                                                                                                     layer_name_offset)]
-                                    scne_material_info.type_offset = special_names.map1_offset
+
+                                    # Get the index where is located in the combobox
+                                    type_layer_index = main_window.typeVal.findData(layer.layer_name_offset)
+
+                                    # Get the new offset for this layer
+                                    scne_material_info.name_offset = type_layer_new_offsets[type_layer_index]
+
+                                    # Get the name of this layer
+                                    name_layer = main_window.typeVal.itemText(type_layer_index)
+                                    # Write the type of layer
+                                    if name_layer == "COLORMAP1":
+                                        scne_material_info.type_offset = special_names.damage_offset
+                                    elif name_layer == "NORMALMAP":
+                                        scne_material_info.type_offset = special_names.normal_offset
+                                    else:
+                                        scne_material_info.type_offset = special_names.map1_offset
+
                                     scne_material_info.unk08 = 0
                                     scne_material.material_info.append(scne_material_info)
                                     material_info_count += 1
@@ -890,7 +905,11 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                             data_info_child_2.name_offset_calculated = True
                             data_info_child_2.new_name_offset = name_offset
 
-                    data_child += b'\x00\x00\x00\x00'
+                    # Write the cae anim layer
+                    if scne_model.layer_name == "face_anim_A":
+                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
 
                     # Write the name offset with the new material
@@ -940,7 +959,11 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                             data_info_child_2.name_offset_calculated = True
                             data_info_child_2.new_name_offset = name_offset
 
-                    data_child += b'\x00\x00\x00\x00'
+                    # Write the face anim layer
+                    if scne_model.layer_name == "face_anim_A":
+                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
 
                     # Write the name offset with the new material
@@ -962,11 +985,15 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     data_child += special_names.transform_offset.to_bytes(4, 'big')
                     data_child += b'\x00\x00\x00\x00'
 
-                    # Write the layer name offset but only when originally there'was data
-                    if scne_model.layer_offset != 0:
+                    # Write the layer name offset but only when originally there was data
+                    # Write the layer equipment
+                    if scne_model.layer_name == "Layer_EQUIPMENT":
                         data_child += special_names.layer_equipment_offset.to_bytes(4, 'big')
+                    # Write the cae anim layer
+                    elif scne_model.layer_name == "face_anim_A":
+                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
                     else:
-                        data_child += b'\x00\x00\00\00'
+                        data_child += b'\x00\x00\x00\x00'
 
                     # Search if the scne_model parent is already in the string table
                     found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
