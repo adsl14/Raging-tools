@@ -8,3 +8,5 @@ class VertexDecl:
         self.vertex_format = b''
         self.stride = 0
         self.offset = 0
+        # Extra info
+        self.resource_name = ""

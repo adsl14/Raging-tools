@@ -643,14 +643,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                     # Read all the data
                                     data += vertex_decl.unk0x00
+                                    # If the vertex usage is 5 (texture), we write how to use that texture in the mesh
                                     if vertex_decl.vertex_usage == 5:
-                                        if vertex_decl.index == 0:
+                                        if vertex_decl.resource_name == 'map1':
                                             data += special_names.map1_offset.to_bytes(4, 'big')
-                                        # Vertex index is 1
-                                        elif "eye_" in vbuf_data_entry.data_info.name:
+                                        elif vertex_decl.resource_name == 'damage':
+                                            data += special_names.damage_offset.to_bytes(4, 'big')
+                                        elif vertex_decl.resource_name == 'normal':
+                                            data += special_names.normal_offset.to_bytes(4, 'big')
+                                        elif vertex_decl.resource_name == 'eyeball':
                                             data += special_names.eyeball_offset.to_bytes(4, 'big')
                                         else:
-                                            data += special_names.damage_offset.to_bytes(4, 'big')
+                                            data += b'\x00\x00\x00\x00'
                                     else:
                                         data += b'\x00\x00\x00\x00'
                                     data += vertex_decl.vertex_usage.to_bytes(2, 'big')
@@ -800,6 +804,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                        scne_data_entry.data_info, b'SCNE',
                                                        string_name_offset, data_size,
                                                        special_names)
+
+                                    # Reset all the [NODES] children name offset calculated
+                                    nodes = scne_data_entry.data_info.child_info[1].child_info
+                                    for node in nodes:
+                                        if node.name_offset_calculated:
+                                            node.name_offset_calculated = False
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child

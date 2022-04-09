@@ -389,6 +389,12 @@ def open_spr_file(main_window, model, spr_path):
                         vertex_decl.stride = int.from_bytes(file.read(2), "big")
                         vertex_decl.offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+                        # Store the name
+                        aux_pointer_file_vertex = file.tell()
+                        vertex_decl.resource_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
+                                                                               + vertex_decl.resource_name_offset)
+                        file.seek(aux_pointer_file_vertex)
+
                         # Store the vertex_decl in the array
                         vbuf_info.vertex_decl.append(vertex_decl)
 
@@ -644,7 +650,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 # Save the data
                 shap_info.data = file.read(64)
-                shap_info.source_name = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                shap_info.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 shap_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 shap_info.unk0x48 = file.read(VEV.bytes2Read)
 
@@ -799,12 +805,16 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
             shap_info = data_info_child.data
 
             # Assign the name offset for each children and write the data
-            if i == 0:
-                name_offset = special_names.dbz_edge_info_offset
-                data_child += shap_info.data
-                data_child += shap_info.source_name.to_bytes(4, 'big')
-                data_child += special_names.map1_offset.to_bytes(4, 'big')
-                data_child += shap_info.unk0x48
+            if data_info_parent.child_count > 1:
+                if i == 0:
+                    name_offset = special_names.dbz_edge_info_offset
+                    data_child += shap_info.data
+                    data_child += shap_info.source_name_offset.to_bytes(4, 'big')
+                    data_child += special_names.map1_offset.to_bytes(4, 'big')
+                    data_child += shap_info.unk0x48
+                else:
+                    name_offset = special_names.dbz_shape_info_offset
+                    data_child += shap_info.data
             else:
                 name_offset = special_names.dbz_shape_info_offset
                 data_child += shap_info.data
@@ -878,7 +888,7 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                                     main_name_splited = data_info_child.name.split("|")
                                     mesh_main_part = main_name_splited[2]
                                     shape_part = main_name_splited[-1].split(":")[0]
-                                    if mesh_main_part == 'body' or 'face' in shape_part or 'eyebrows' in shape_part:
+                                    if 'body' in mesh_main_part or 'face' in shape_part or 'eyebrows' in shape_part:
                                         # Write the type of layer
                                         if name_layer == "COLORMAP1":
                                             scne_material_info.type_offset = special_names.damage_offset
