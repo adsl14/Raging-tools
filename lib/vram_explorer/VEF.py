@@ -395,8 +395,32 @@ def open_spr_file(main_window, model, spr_path):
                     # Save the vbuf_info class in the data of the spr_data_entry
                     sprp_data_entry.data_info.data = vbuf_info
 
+                # Save the data when is the type BONE
+                elif sprp_type_entry.data_type == b"BONE":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Read all the data
+                    sprp_data_entry.data_info.data = file.read(sprp_data_entry.data_info.data_size)
+
+                # Save the data when is the type DRVN
+                elif sprp_type_entry.data_type == b"DRVN":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Read all the data
+                    sprp_data_entry.data_info.data = file.read(sprp_data_entry.data_info.data_size)
+
                 # Save the data when is the type TXAN
                 elif sprp_type_entry.data_type == b'TXAN':
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Read all the data
+                    sprp_data_entry.data_info.data = file.read(sprp_data_entry.data_info.data_size)
 
                     # Add the txan_data_entry to the combo box (material section) but only the name and name_offset
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
@@ -651,7 +675,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 scne_model.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                   scne_model.type_offset)
                 scne_model.parent_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                  scne_model.parent_offset)
+                                                                    scne_model.parent_offset)
                 file.seek(aux_pointer_file_scne)
 
                 sprp_data_info_child.data = scne_model
@@ -696,6 +720,14 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 sprp_data_info_child.data = scne_eye_info
 
+        # Get the bone data
+        elif type_section == b'BONE':
+            # Move where the data starts
+            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+
+            # Store the data
+            sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+
         # Restore the pointer of the file in order to read the following children
         file.seek(aux_pointer_file)
 
@@ -708,7 +740,8 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(main_window, num_material, type_layer_new_offsets, data_info_parent, type_entry, string_name_offset, data_size, special_names):
+def write_children(main_window, num_material, type_layer_new_offsets, data_info_parent, type_entry, string_name_offset,
+                   data_size, special_names):
 
     string_table_child = b''
     string_table_child_size = 0
@@ -829,7 +862,9 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                             for layer in mtrl_data_entry.data_info.data.layers:
                                 if layer.source_name_offset != 0:
                                     scne_material_info = ScneMaterialInfo()
-                                    scne_material_info.name_offset = type_layer_new_offsets[main_window.typeVal.findData(layer.layer_name_offset)]
+                                    scne_material_info.name_offset = type_layer_new_offsets[main_window.typeVal.
+                                                                                            findData(layer.
+                                                                                                     layer_name_offset)]
                                     scne_material_info.type_offset = special_names.map1_offset
                                     scne_material_info.unk08 = 0
                                     scne_material.material_info.append(scne_material_info)
@@ -1005,7 +1040,6 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     # Write the data
                     scne_eye_info = data_info_child.data
                     num_eyes_info = int(data_info_child.data_size / 112)
-                    special_name_offset = 0
                     for j in range(0, num_eyes_info):
                         eye_data = scne_eye_info.eyes_data[j]
                         if j == 0:
@@ -1020,10 +1054,20 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     # Write the 'DbzEyeInfo'
                     name_offset = special_names.dbz_eye_info_offset
 
+        # The type entry is bone
+        elif type_entry == b'BONE':
+
+            # Write the name
+            name_offset = special_names.dbz_bone_info_offset
+
+            # Write the data
+            data_child += data_info_child.data
+
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(main_window, num_material, type_layer_new_offsets,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material,
+                                                                           type_layer_new_offsets,
                                                                            data_info_child, type_entry,
                                                                            string_name_offset +
                                                                            string_name_size, data_offset +

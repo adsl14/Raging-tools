@@ -16,3 +16,5 @@ class SpecialNames:
         self.transform_offset = 0
         self.material_offset = 0
         self.dbz_eye_info_offset = 0
+        self.dbz_bone_info_offset = 0
+        self.null_offset = 0

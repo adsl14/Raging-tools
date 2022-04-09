@@ -377,7 +377,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_info_size += 12
 
                     # ------------------
-                    # --- Write MTRL ---
+                    # --- Write MTRL --- (inside, we write SHAP, VBUF, SCNE, BONE, DRVN and TXAN
                     # ------------------
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
@@ -458,8 +458,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                 # The TXAN wasn't added to the string name, so the name offset
                                                 # will be calculated
                                                 if not txan_name_offset_assigned[j]:
-                                                    name = txan_data_entry.data_info.name + "." + \
-                                                           txan_data_entry.data_info.extension
+                                                    name = txan_data_entry.data_info.name + \
+                                                           ("." + txan_data_entry.data_info.extension
+                                                            if txan_data_entry.data_info.extension else "")
                                                     string_name_offset = 1 + string_table_size
                                                     txan_data_entry.data_info.new_name_offset = string_name_offset
                                                     string_table += b'\x00' + name.encode('utf-8')
@@ -473,7 +474,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if mtrl_data_entry.data_info.child_count > 0:
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
-                                    write_children(self, num_material, type_layer_new_offsets, mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
+                                    write_children(self, num_material, type_layer_new_offsets,
+                                                   mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
                                                    special_names)
 
                                 # Update the string_name and string_table_size
@@ -505,310 +507,524 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         entry_count += 1
                         entry_info_size += 12
 
-                    # ------------------
-                    # --- Write SHAP ---
-                    # ------------------
-                    if b'SHAP' in VEV.sprp_file.type_entry:
-                        # Get the type entry shap
-                        shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
+                        # ------------------
+                        # --- Write SHAP ---
+                        # ------------------
+                        if b'SHAP' in VEV.sprp_file.type_entry:
+                            # Get the type entry shap
+                            shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
-                        # Write the 'map1'
-                        special_names.map1_offset = string_name_offset
-                        string_table += b'\x00' + "map1".encode('utf-8')
-                        string_table_size += 1 + len("map1")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
+                            # Write the 'map1'
+                            special_names.map1_offset = string_name_offset
+                            string_table += b'\x00' + "map1".encode('utf-8')
+                            string_table_size += 1 + len("map1")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
 
-                        # Write the 'DbzEdgeInfo'
-                        special_names.dbz_edge_info_offset = string_name_offset
-                        string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
-                        string_table_size += 1 + len("DbzEdgeInfo")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
+                            # Write the 'DbzEdgeInfo'
+                            special_names.dbz_edge_info_offset = string_name_offset
+                            string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
+                            string_table_size += 1 + len("DbzEdgeInfo")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
 
-                        # Write the 'DbzShapeInfo'
-                        special_names.dbz_shape_info_offset = string_name_offset
-                        string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
-                        string_table_size += 1 + len("DbzShapeInfo")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
+                            # Write the 'DbzShapeInfo'
+                            special_names.dbz_shape_info_offset = string_name_offset
+                            string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
+                            string_table_size += 1 + len("DbzShapeInfo")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
 
-                        # Get each shape data entry
-                        for i in range(0, shap_type_entry.data_count):
-                            # Get the data entry for the SHAP
-                            shap_data_entry = shap_type_entry.data_entry[i]
+                            # Get each shape data entry
+                            for i in range(0, shap_type_entry.data_count):
+                                # Get the data entry for the SHAP
+                                shap_data_entry = shap_type_entry.data_entry[i]
 
-                            # Write the name for each shape
-                            shap_data_entry.data_info.new_name_offset = string_name_offset
-                            string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
-                            string_table_size += 1 + len(shap_data_entry.data_info.name)
+                                # Write the name for each shape
+                                shap_data_entry.data_info.new_name_offset = string_name_offset
+                                string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
+                                string_table_size += 1 + len(shap_data_entry.data_info.name)
 
-                            # Write the data_entry for each shape
-                            data_entry += shap_data_entry.data_type
-                            data_entry += i.to_bytes(4, 'big')
-                            data_entry += string_name_offset.to_bytes(4, 'big')
-                            data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += shap_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += shap_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            # We write the child offset later
-
-                            # Write the data for each shape
-                            shap_info = shap_data_entry.data_info.data
-                            data += shap_info.data
-                            data_size += shap_data_entry.data_info.data_size
-
-                            # Write children (if any)
-                            if shap_data_entry.data_info.child_count > 0:
-                                string_table_child, string_table_child_size, string_name_offset, data_child, \
-                                    data_child_size, data_offset = \
-                                    write_children(self, num_material, type_layer_new_offsets, shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
-                                                   special_names)
-
-                                # Update the string_name and string_table_size
-                                string_table += string_table_child
-                                string_table_size += string_table_child_size
-
-                                # Update the data and data_size
-                                data += data_child
-                                data_size += data_child_size
-
-                                # Write in the data entry, the children offset
+                                # Write the data_entry for each shape
+                                data_entry += shap_data_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+                                data_entry += string_name_offset.to_bytes(4, 'big')
                                 data_entry += data_offset.to_bytes(4, 'big')
-                            else:
+                                data_entry += shap_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += shap_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                # We write the child offset later
+
+                                # Write the data for each shape
+                                shap_info = shap_data_entry.data_info.data
+                                data += shap_info.data
+                                data_size += shap_data_entry.data_info.data_size
+
+                                # Write children (if any)
+                                if shap_data_entry.data_info.child_count > 0:
+                                    string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                        data_child_size, data_offset = \
+                                        write_children(self, num_material, type_layer_new_offsets,
+                                                       shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
+                                                       special_names)
+
+                                    # Update the string_name and string_table_size
+                                    string_table += string_table_child
+                                    string_table_size += string_table_child_size
+
+                                    # Update the data and data_size
+                                    data += data_child
+                                    data_size += data_child_size
+
+                                    # Write in the data entry, the children offset
+                                    data_entry += data_offset.to_bytes(4, 'big')
+                                else:
+                                    # Child offset
+                                    data_entry += b'\x00\x00\x00\x00'
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Update offsets for the next entry
+                                string_name_offset = 1 + string_table_size
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'SHAP' + b'\x00\x00\x00\x05' + shap_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
+
+                        # ------------------
+                        # --- Write VBUF ---
+                        # ------------------
+                        if b'VBUF' in VEV.sprp_file.type_entry:
+                            # Get the type entry shap
+                            vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
+
+                            # Get each vbuf data entry
+                            for i in range(0, vbuf_type_entry.data_count):
+                                # Get the data entry for the VBUF
+                                vbuf_data_entry = vbuf_type_entry.data_entry[i]
+
+                                # Write the name for each vbuf
+                                vbuf_data_entry.data_info.new_name_offset = string_name_offset
+                                string_table += b'\x00' + vbuf_data_entry.data_info.name.encode('utf-8')
+                                string_table_size += 1 + len(vbuf_data_entry.data_info.name)
+
+                                # Write each vertexDecl first
+                                vbuf_info = vbuf_data_entry.data_info.data
+                                data_offset_vertex_decl = data_size
+                                for j in range(0, vbuf_info.decl_count_0):
+
+                                    vertex_decl = vbuf_info.vertex_decl[j]
+
+                                    # Read all the data
+                                    data += vertex_decl.unk0x00
+                                    data += vertex_decl.resource_name_offset.to_bytes(4, 'big')
+                                    data += vertex_decl.vertex_usage
+                                    data += vertex_decl.index.to_bytes(2, 'big')
+                                    data += vertex_decl.vertex_format
+                                    data += vertex_decl.stride.to_bytes(2, 'big')
+                                    data += vertex_decl.offset.to_bytes(4, 'big')
+                                    data_size += 20
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Write the data_entry for each vbuf
+                                data_offset = data_size
+                                data_entry += vbuf_data_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+                                data_entry += string_name_offset.to_bytes(4, 'big')
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += vbuf_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += vbuf_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                # We write the child offset later
+
+                                # Write the data for each vbuf
+                                data += vbuf_info.unk0x00
+                                data += vbuf_info.unk0x04
+                                data += vbuf_info.data_offset.to_bytes(4, 'big')
+                                data += vbuf_info.data_size.to_bytes(4, 'big')
+                                data += vbuf_info.vertex_count.to_bytes(4, 'big')
+                                data += vbuf_info.unk0x14
+                                data += vbuf_info.unk0x16
+                                data += vbuf_info.decl_count_0.to_bytes(2, 'big')
+                                data += vbuf_info.decl_count_1.to_bytes(2, 'big')
+                                data += data_offset_vertex_decl.to_bytes(4, 'big')
+                                data_size += vbuf_data_entry.data_info.data_size
+
                                 # Child offset
                                 data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
 
-                            # Check if the data, the module of 16 is 0
-                            data, data_size = check_entry_module(data, data_size, 16)
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
 
-                            # Update offsets for the next entry
+                                # Update offsets for the next entry
+                                string_name_offset = 1 + string_table_size
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'VBUF' + b'\x00\x00\x00\x0A' + vbuf_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
+
+                        # ------------------
+                        # --- Write SCNE ---
+                        # ------------------
+                        if b'SCNE' in VEV.sprp_file.type_entry:
+                            # Get the type entry scne
+                            scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
+
+                            # Write the '[LAYERS]'
+                            special_names.layers_offset = string_name_offset
+                            string_table += b'\x00' + "[LAYERS]".encode('utf-8')
+                            string_table_size += 1 + len("[LAYERS]")
+                            # Update the offset
                             string_name_offset = 1 + string_table_size
-                            data_offset = data_size
 
-                        # Update the entry info
-                        entry_info += b'SHAP' + b'\x00\x00\x00\x05' + shap_type_entry.data_count.to_bytes(4, 'big')
-                        # Update the sizes
-                        entry_count += 1
-                        entry_info_size += 12
-
-                    # ------------------
-                    # --- Write VBUF ---
-                    # ------------------
-                    if b'VBUF' in VEV.sprp_file.type_entry:
-                        # Get the type entry shap
-                        vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
-
-                        # Get each vbuf data entry
-                        for i in range(0, vbuf_type_entry.data_count):
-                            # Get the data entry for the VBUF
-                            vbuf_data_entry = vbuf_type_entry.data_entry[i]
-
-                            # Write the name for each vbuf
-                            vbuf_data_entry.data_info.new_name_offset = string_name_offset
-                            string_table += b'\x00' + vbuf_data_entry.data_info.name.encode('utf-8')
-                            string_table_size += 1 + len(vbuf_data_entry.data_info.name)
-
-                            # Write each vertexDecl first
-                            vbuf_info = vbuf_data_entry.data_info.data
-                            data_offset_vertex_decl = data_size
-                            for j in range(0, vbuf_info.decl_count_0):
-
-                                vertex_decl = vbuf_info.vertex_decl[j]
-
-                                # Read all the data
-                                data += vertex_decl.unk0x00
-                                data += vertex_decl.resource_name_offset.to_bytes(4, 'big')
-                                data += vertex_decl.vertex_usage
-                                data += vertex_decl.index.to_bytes(2, 'big')
-                                data += vertex_decl.vertex_format
-                                data += vertex_decl.stride.to_bytes(2, 'big')
-                                data += vertex_decl.offset.to_bytes(4, 'big')
-                                data_size += 20
-
-                            # Check if the data, the module of 16 is 0
-                            data, data_size = check_entry_module(data, data_size, 16)
-
-                            # Write the data_entry for each vbuf
-                            data_offset = data_size
-                            data_entry += vbuf_data_entry.data_type
-                            data_entry += i.to_bytes(4, 'big')
-                            data_entry += string_name_offset.to_bytes(4, 'big')
-                            data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += vbuf_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += vbuf_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            # We write the child offset later
-
-                            # Write the data for each vbuf
-                            data += vbuf_info.unk0x00
-                            data += vbuf_info.unk0x04
-                            data += vbuf_info.data_offset.to_bytes(4, 'big')
-                            data += vbuf_info.data_size.to_bytes(4, 'big')
-                            data += vbuf_info.vertex_count.to_bytes(4, 'big')
-                            data += vbuf_info.unk0x14
-                            data += vbuf_info.unk0x16
-                            data += vbuf_info.decl_count_0.to_bytes(2, 'big')
-                            data += vbuf_info.decl_count_1.to_bytes(2, 'big')
-                            data += data_offset_vertex_decl.to_bytes(4, 'big')
-                            data_size += vbuf_data_entry.data_info.data_size
-
-                            # Child offset
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
-
-                            # Check if the data, the module of 16 is 0
-                            data, data_size = check_entry_module(data, data_size, 16)
-
-                            # Update offsets for the next entry
+                            # Write the 'Layer_EQUIPMENT'
+                            special_names.layer_equipment_offset = string_name_offset
+                            string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
+                            string_table_size += 1 + len("Layer_EQUIPMENT")
+                            # Update the offset
                             string_name_offset = 1 + string_table_size
-                            data_offset = data_size
 
-                        # Update the entry info
-                        entry_info += b'VBUF' + b'\x00\x00\x00\x0A' + vbuf_type_entry.data_count.to_bytes(4, 'big')
-                        # Update the sizes
-                        entry_count += 1
-                        entry_info_size += 12
-
-                    # ------------------
-                    # --- Write SCNE ---
-                    # ------------------
-                    if b'SCNE' in VEV.sprp_file.type_entry:
-                        # Get the type entry scne
-                        scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
-
-                        # Write the '[LAYERS]'
-                        special_names.layers_offset = string_name_offset
-                        string_table += b'\x00' + "[LAYERS]".encode('utf-8')
-                        string_table_size += 1 + len("[LAYERS]")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'Layer_EQUIPMENT'
-                        special_names.layer_equipment_offset = string_name_offset
-                        string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                        string_table_size += 1 + len("Layer_EQUIPMENT")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'EYEBALL_R'
-                        special_names.eye_ball_r_offset = string_name_offset
-                        string_table += b'\x00' + "EYEBALL_R".encode('utf-8')
-                        string_table_size += 1 + len("EYEBALL_R")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'EYEBALL_L'
-                        special_names.eye_ball_l_offset = string_name_offset
-                        string_table += b'\x00' + "EYEBALL_L".encode('utf-8')
-                        string_table_size += 1 + len("EYEBALL_L")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'Layer_EQUIPMENT'
-                        special_names.layer_equipment_offset = string_name_offset
-                        string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                        string_table_size += 1 + len("Layer_EQUIPMENT")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'face_anim_A_offset'
-                        special_names.face_anim_A_offset = string_name_offset
-                        string_table += b'\x00' + "face_anim_A".encode('utf-8')
-                        string_table_size += 1 + len("face_anim_A")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the '[NODES]'
-                        special_names.nodes_offset = string_name_offset
-                        string_table += b'\x00' + "[NODES]".encode('utf-8')
-                        string_table_size += 1 + len("[NODES]")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'mesh'
-                        special_names.mesh_offset = string_name_offset
-                        string_table += b'\x00' + "mesh".encode('utf-8')
-                        string_table_size += 1 + len("mesh")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'shape'
-                        special_names.shape_offset = string_name_offset
-                        string_table += b'\x00' + "shape".encode('utf-8')
-                        string_table_size += 1 + len("shape")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'transform'
-                        special_names.transform_offset = string_name_offset
-                        string_table += b'\x00' + "transform".encode('utf-8')
-                        string_table_size += 1 + len("transform")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the '[MATERIAL]'
-                        special_names.material_offset = string_name_offset
-                        string_table += b'\x00' + "[MATERIAL]".encode('utf-8')
-                        string_table_size += 1 + len("[MATERIAL]")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Write the 'dbz_eye_info_offset'
-                        special_names.dbz_eye_info_offset = string_name_offset
-                        string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
-                        string_table_size += 1 + len("DbzEyeInfo")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
-                        # Get each SCNE entry
-                        for i in range(0, scne_type_entry.data_count):
-                            scne_data_entry = scne_type_entry.data_entry[i]
-
-                            # Write children (if any)
-                            if scne_data_entry.data_info.child_count > 0:
-                                string_table_child, string_table_child_size, string_name_offset, data_child, \
-                                    data_child_size, data_offset = \
-                                    write_children(self, num_material, type_layer_new_offsets, scne_data_entry.data_info, b'SCNE', string_name_offset, data_size,
-                                                   special_names)
-
-                                # Update the string_name and string_table_size
-                                string_table += string_table_child
-                                string_table_size += string_table_child_size
-
-                                # Update the data and data_size
-                                data += data_child
-                                data_size += data_child_size
-
-                            # Write the name for the scne
-                            name = "scene_" + self.fileNameText.text() + ".mb"
-                            string_table += b'\x00' + name.encode('utf-8')
-                            string_table_size += 1 + len(name)
-
-                            # Write the data_entry
-                            data_entry += scne_data_entry.data_type
-                            data_entry += i.to_bytes(4, 'big')
-                            data_entry += string_name_offset.to_bytes(4, 'big')
-                            data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += scne_data_entry.data_info.data_size.to_bytes(4, 'big')
-                            data_entry += scne_data_entry.data_info.child_count.to_bytes(4, 'big')
-                            data_entry += data_offset.to_bytes(4, 'big')
-                            data_entry += b'\x00\x00\x00\x00'
-                            data_entry_size += 32
-
-                            # Check if the data, the module of 16 is 0
-                            data, data_size = check_entry_module(data, data_size, 16)
-
-                            # Update offsets for the next entry
+                            # Write the 'EYEBALL_R'
+                            special_names.eye_ball_r_offset = string_name_offset
+                            string_table += b'\x00' + "EYEBALL_R".encode('utf-8')
+                            string_table_size += 1 + len("EYEBALL_R")
+                            # Update the offset
                             string_name_offset = 1 + string_table_size
-                            data_offset = data_size
 
-                        # Update the entry info
-                        entry_info += b'SCNE' + b'\x00\x00\x00\x07' + scne_type_entry.data_count.to_bytes(4, 'big')
-                        # Update the sizes
-                        entry_count += 1
-                        entry_info_size += 12
+                            # Write the 'EYEBALL_L'
+                            special_names.eye_ball_l_offset = string_name_offset
+                            string_table += b'\x00' + "EYEBALL_L".encode('utf-8')
+                            string_table_size += 1 + len("EYEBALL_L")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'Layer_EQUIPMENT'
+                            special_names.layer_equipment_offset = string_name_offset
+                            string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
+                            string_table_size += 1 + len("Layer_EQUIPMENT")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'face_anim_A_offset'
+                            special_names.face_anim_A_offset = string_name_offset
+                            string_table += b'\x00' + "face_anim_A".encode('utf-8')
+                            string_table_size += 1 + len("face_anim_A")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the '[NODES]'
+                            special_names.nodes_offset = string_name_offset
+                            string_table += b'\x00' + "[NODES]".encode('utf-8')
+                            string_table_size += 1 + len("[NODES]")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'mesh'
+                            special_names.mesh_offset = string_name_offset
+                            string_table += b'\x00' + "mesh".encode('utf-8')
+                            string_table_size += 1 + len("mesh")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'shape'
+                            special_names.shape_offset = string_name_offset
+                            string_table += b'\x00' + "shape".encode('utf-8')
+                            string_table_size += 1 + len("shape")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'transform'
+                            special_names.transform_offset = string_name_offset
+                            string_table += b'\x00' + "transform".encode('utf-8')
+                            string_table_size += 1 + len("transform")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the '[MATERIAL]'
+                            special_names.material_offset = string_name_offset
+                            string_table += b'\x00' + "[MATERIAL]".encode('utf-8')
+                            string_table_size += 1 + len("[MATERIAL]")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Write the 'dbz_eye_info_offset'
+                            special_names.dbz_eye_info_offset = string_name_offset
+                            string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
+                            string_table_size += 1 + len("DbzEyeInfo")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Get each SCNE entry
+                            for i in range(0, scne_type_entry.data_count):
+                                scne_data_entry = scne_type_entry.data_entry[i]
+
+                                # Write children (if any)
+                                if scne_data_entry.data_info.child_count > 0:
+                                    string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                        data_child_size, data_offset = \
+                                        write_children(self, num_material, type_layer_new_offsets,
+                                                       scne_data_entry.data_info, b'SCNE',
+                                                       string_name_offset, data_size,
+                                                       special_names)
+
+                                    # Update the string_name and string_table_size
+                                    string_table += string_table_child
+                                    string_table_size += string_table_child_size
+
+                                    # Update the data and data_size
+                                    data += data_child
+                                    data_size += data_child_size
+
+                                # Write the name for the scne
+                                name = "scene_" + self.fileNameText.text() + ".mb"
+                                string_table += b'\x00' + name.encode('utf-8')
+                                string_table_size += 1 + len(name)
+
+                                # Write the data_entry
+                                data_entry += scne_data_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+                                data_entry += string_name_offset.to_bytes(4, 'big')
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += scne_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += scne_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Update offsets for the next entry
+                                string_name_offset = 1 + string_table_size
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'SCNE' + b'\x00\x00\x00\x07' + scne_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
+
+                        # ------------------
+                        # --- Write BONE ---
+                        # ------------------
+                        if b'BONE' in VEV.sprp_file.type_entry:
+                            # Get the type entry bone
+                            bone_type_entry = VEV.sprp_file.type_entry[b'BONE']
+
+                            # Write the 'DbzBoneInfo'
+                            special_names.dbz_bone_info_offset = string_name_offset
+                            string_table += b'\x00' + "DbzBoneInfo".encode('utf-8')
+                            string_table_size += 1 + len("DbzBoneInfo")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
+                            # Get each bone data entry
+                            for i in range(0, bone_type_entry.data_count):
+                                # Get the data entry for the BONE
+                                bone_data_entry = bone_type_entry.data_entry[i]
+
+                                # Write the name for each bone
+                                string_table += b'\x00' + bone_data_entry.data_info.name.encode('utf-8')
+                                string_table_size += 1 + len(bone_data_entry.data_info.name)
+
+                                # Write the data_entry for each shape
+                                data_entry += bone_data_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+                                data_entry += string_name_offset.to_bytes(4, 'big')
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += bone_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += bone_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                # We write the child offset later
+
+                                # Write the data for each bone
+                                data += bone_data_entry.data_info.data
+                                data_size += bone_data_entry.data_info.data_size
+
+                                # Write children (if any)
+                                if bone_data_entry.data_info.child_count > 0:
+                                    string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                        data_child_size, data_offset = \
+                                        write_children(self, num_material, type_layer_new_offsets,
+                                                       bone_data_entry.data_info, b'BONE', string_table_size, data_size,
+                                                       special_names)
+
+                                    # Update the string_name and string_table_size
+                                    string_table += string_table_child
+                                    string_table_size += string_table_child_size
+
+                                    # Update the data and data_size
+                                    data += data_child
+                                    data_size += data_child_size
+
+                                    # Write in the data entry, the children offset
+                                    data_entry += data_offset.to_bytes(4, 'big')
+                                else:
+                                    # Child offset
+                                    data_entry += b'\x00\x00\x00\x00'
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Update offsets for the next entry
+                                string_name_offset = 1 + string_table_size
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'BONE' + b'\x00\x00\x00\x03' + bone_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
+
+                        # ------------------
+                        # --- Write DRVN ---
+                        # ------------------
+                        if b'DRVN' in VEV.sprp_file.type_entry:
+                            # Get the type entry drvn
+                            drvn_type_entry = VEV.sprp_file.type_entry[b'DRVN']
+
+                            # Get each drvn data entry
+                            for i in range(0, drvn_type_entry.data_count):
+                                # Get the data entry for the BONE
+                                drvn_data_entry = drvn_type_entry.data_entry[i]
+
+                                # Write the name for each bone
+                                name = "driven_" + self.fileNameText.text() + ".mb"
+                                string_table += b'\x00' + name.encode('utf-8')
+                                string_table_size += 1 + len(name)
+
+                                # Write the data_entry for each shape
+                                data_entry += drvn_data_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+                                data_entry += string_name_offset.to_bytes(4, 'big')
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += drvn_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += drvn_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                # We write the child offset later
+
+                                # Write the data for each bone
+                                data += drvn_data_entry.data_info.data
+                                data_size += drvn_data_entry.data_info.data_size
+
+                                # Write children (if any)
+                                if drvn_data_entry.data_info.child_count > 0:
+                                    string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                        data_child_size, data_offset = \
+                                        write_children(self, num_material, type_layer_new_offsets,
+                                                       drvn_data_entry.data_info, b'DRVN', string_table_size, data_size,
+                                                       special_names)
+
+                                    # Update the string_name and string_table_size
+                                    string_table += string_table_child
+                                    string_table_size += string_table_child_size
+
+                                    # Update the data and data_size
+                                    data += data_child
+                                    data_size += data_child_size
+
+                                    # Write in the data entry, the children offset
+                                    data_entry += data_offset.to_bytes(4, 'big')
+                                else:
+                                    # Child offset
+                                    data_entry += b'\x00\x00\x00\x00'
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Update offsets for the next entry
+                                string_name_offset = 1 + string_table_size
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'DRVN' + b'\x00\x00\x00\x01' + drvn_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
+
+                        # ------------------
+                        # --- Write TXAN ---
+                        # ------------------
+                        if b'TXAN' in VEV.sprp_file.type_entry:
+                            # Get the type entry drvn
+                            txan_type_entry = VEV.sprp_file.type_entry[b'TXAN']
+
+                            # Get each txan data entry
+                            for i in range(0, txan_type_entry.data_count):
+                                # Get the data entry for the BONE
+                                txan_data_entry = txan_type_entry.data_entry[i]
+
+                                # Write the data_entry for each shape
+                                data_entry += txan_type_entry.data_type
+                                data_entry += i.to_bytes(4, 'big')
+
+                                if txan_name_offset_assigned[i]:
+                                    data_entry += txan_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                                else:
+                                    # Write the name for each txan
+                                    string_table += b'\x00' + txan_data_entry.data_info.name.encode('utf-8')
+                                    string_table_size += 1 + len(txan_data_entry.data_info.name)
+                                    data_entry += string_name_offset.to_bytes(4, 'big')
+                                    # Update offset for the string table
+                                    string_name_offset = 1 + string_table_size
+
+                                data_entry += data_offset.to_bytes(4, 'big')
+                                data_entry += txan_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                data_entry += txan_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                # We write the child offset later
+
+                                # Write the data for each bone
+                                data += txan_data_entry.data_info.data
+                                data_size += txan_data_entry.data_info.data_size
+
+                                # Write children (if any)
+                                if txan_data_entry.data_info.child_count > 0:
+                                    string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                        data_child_size, data_offset = \
+                                        write_children(self, num_material, type_layer_new_offsets,
+                                                       txan_data_entry.data_info, b'TXAN', string_table_size, data_size,
+                                                       special_names)
+
+                                    # Update the string_name and string_table_size
+                                    string_table += string_table_child
+                                    string_table_size += string_table_child_size
+
+                                    # Update the data and data_size
+                                    data += data_child
+                                    data_size += data_child_size
+
+                                    # Write in the data entry, the children offset
+                                    data_entry += data_offset.to_bytes(4, 'big')
+                                else:
+                                    # Child offset
+                                    data_entry += b'\x00\x00\x00\x00'
+                                data_entry += b'\x00\x00\x00\x00'
+                                data_entry_size += 32
+
+                                # Check if the data, the module of 16 is 0
+                                data, data_size = check_entry_module(data, data_size, 16)
+
+                                # Update offsets for the next entry
+                                data_offset = data_size
+
+                            # Update the entry info
+                            entry_info += b'TXAN' + b'\x00\x00\x00\x01' + txan_type_entry.data_count.to_bytes(4, 'big')
+                            # Update the sizes
+                            entry_count += 1
+                            entry_info_size += 12
 
                     # Write the basename, ioram and vram offsets names
                     name_offset = 1 + string_table_size
