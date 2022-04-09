@@ -383,7 +383,7 @@ def open_spr_file(main_window, model, spr_path):
                         # Read all the data
                         vertex_decl.unk0x00 = file.read(VEV.bytes2Read)
                         vertex_decl.resource_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
-                        vertex_decl.vertex_usage = file.read(2)
+                        vertex_decl.vertex_usage = int.from_bytes(file.read(2), "big")
                         vertex_decl.index = int.from_bytes(file.read(2), "big")
                         vertex_decl.vertex_format = file.read(2)
                         vertex_decl.stride = int.from_bytes(file.read(2), "big")
@@ -871,13 +871,28 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                                     # Get the new offset for this layer
                                     scne_material_info.name_offset = type_layer_new_offsets[type_layer_index]
 
+
                                     # Get the name of this layer
                                     name_layer = main_window.typeVal.itemText(type_layer_index)
-                                    # Write the type of layer
-                                    if name_layer == "COLORMAP1":
-                                        scne_material_info.type_offset = special_names.damage_offset
-                                    elif name_layer == "NORMALMAP":
-                                        scne_material_info.type_offset = special_names.normal_offset
+                                    # Get the name of the scene part in order to write the type of material
+                                    # for the specific part of the mesh
+                                    main_name_splited = data_info_child.name.split("|")
+                                    mesh_main_part = main_name_splited[2]
+                                    shape_part = main_name_splited[-1].split(":")[0]
+                                    if mesh_main_part == 'body' or 'face' in shape_part:
+                                        # Write the type of layer
+                                        if name_layer == "COLORMAP1":
+                                            scne_material_info.type_offset = special_names.damage_offset
+                                        elif name_layer == "NORMALMAP":
+                                            scne_material_info.type_offset = special_names.normal_offset
+                                        else:
+                                            scne_material_info.type_offset = special_names.map1_offset
+                                    elif 'eye_' in shape_part:
+                                        # Write the type of layer
+                                        if name_layer == "COLORMAP0":
+                                            scne_material_info.type_offset = special_names.eyeball_offset
+                                        else:
+                                            scne_material_info.type_offset = special_names.map1_offset
                                     else:
                                         scne_material_info.type_offset = special_names.map1_offset
 

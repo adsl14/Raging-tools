@@ -617,6 +617,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the type entry shap
                             vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
 
+                            # Write the 'eyeball'
+                            special_names.eyeball_offset = string_name_offset
+                            string_table += b'\x00' + "eyeball".encode('utf-8')
+                            string_table_size += 1 + len("eyeball")
+                            # Update the offset
+                            string_name_offset = 1 + string_table_size
+
                             # Get each vbuf data entry
                             for i in range(0, vbuf_type_entry.data_count):
                                 # Get the data entry for the VBUF
@@ -636,8 +643,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                     # Read all the data
                                     data += vertex_decl.unk0x00
-                                    data += vertex_decl.resource_name_offset.to_bytes(4, 'big')
-                                    data += vertex_decl.vertex_usage
+                                    if vertex_decl.vertex_usage == 5:
+                                        if vertex_decl.index == 0:
+                                            data += special_names.map1_offset.to_bytes(4, 'big')
+                                        # Vertex index is 1
+                                        else:
+                                            data += special_names.eyeball_offset.to_bytes(4, 'big')
+                                    else:
+                                        data += b'\x00\x00\x00\x00'
+                                    data += vertex_decl.vertex_usage.to_bytes(2, 'big')
                                     data += vertex_decl.index.to_bytes(2, 'big')
                                     data += vertex_decl.vertex_format
                                     data += vertex_decl.stride.to_bytes(2, 'big')
