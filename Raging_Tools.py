@@ -647,8 +647,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if vertex_decl.index == 0:
                                             data += special_names.map1_offset.to_bytes(4, 'big')
                                         # Vertex index is 1
-                                        else:
+                                        elif "eye_" in vbuf_data_entry.data_info.name:
                                             data += special_names.eyeball_offset.to_bytes(4, 'big')
+                                        else:
+                                            data += special_names.damage_offset.to_bytes(4, 'big')
                                     else:
                                         data += b'\x00\x00\x00\x00'
                                     data += vertex_decl.vertex_usage.to_bytes(2, 'big')

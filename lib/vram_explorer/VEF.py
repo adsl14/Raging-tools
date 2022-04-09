@@ -871,7 +871,6 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                                     # Get the new offset for this layer
                                     scne_material_info.name_offset = type_layer_new_offsets[type_layer_index]
 
-
                                     # Get the name of this layer
                                     name_layer = main_window.typeVal.itemText(type_layer_index)
                                     # Get the name of the scene part in order to write the type of material
@@ -879,7 +878,7 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                                     main_name_splited = data_info_child.name.split("|")
                                     mesh_main_part = main_name_splited[2]
                                     shape_part = main_name_splited[-1].split(":")[0]
-                                    if mesh_main_part == 'body' or 'face' in shape_part:
+                                    if mesh_main_part == 'body' or 'face' in shape_part or 'eyebrows' in shape_part:
                                         # Write the type of layer
                                         if name_layer == "COLORMAP1":
                                             scne_material_info.type_offset = special_names.damage_offset
