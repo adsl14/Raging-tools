@@ -6,9 +6,9 @@ It gather all the tools that were made by adsl14, like [vram explorer](https://g
 
 Compatibility list
 ```
-Dragon Ball Raging Blast (only textures)
-Dragon Ball Raging Blast 2
-Dragon Ball Z Ultimate Tenkaichi (only textures)
+Dragon Ball Raging Blast (PS3) -> Only textures
+Dragon Ball Raging Blast 2 (PS3)
+Dragon Ball Z Ultimate Tenkaichi (PS3) -> Only textures
 ```
 
 Credits:
