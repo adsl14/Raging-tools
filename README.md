@@ -1,23 +1,37 @@
-# Raging tools
+# Raging Tools
 
-This tool will help you in order to edit the games Dragon Ball Raging Blast, Dragon Ball Raging Blast 2 and Dragon Ball Z Ultimate Tenkaichi.
+Raging Tools is a tool that will help you in order to edit the games from the Raging Blast series. You can edit textures, shaders, transformations, parameters, camera values, export/import animations, etc.
 
 It gather all the tools that were made by adsl14, like [vram explorer](https://github.com/adsl14/vram-explorer), [character parameters editor](https://github.com/adsl14/character-parameters-editor) and pak explorer.
 
-Credits to the Raging Blast Modding community and specially to revelation from [XeNTaX](https://forum.xentax.com) forum who made the compress/uncompress tool.
+Compatibility list
+```
+Dragon Ball Raging Blast (only textures)
+Dragon Ball Raging Blast 2
+Dragon Ball Z Ultimate Tenkaichi (only textures)
+```
 
-You can get access to the Raging Blast Modding community in the [Discord](https://discord.gg/JpCvDCgpnb) server.
+Credits:
+<ul> 
+  <li>To <b>revelation (revel8n)</b> from <a href=https://forum.xentax.com>XeNTaX</a> forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</li>
+  <li>To <b><a href=https://github.com/ascomods>Ascomods</a></b> for his contributions.</li>
+  <li>To <b><a href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b> for his contributions.</li>
+  <li>To <b><a href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b> for his contributions.</li>
+  <li>To <b>316austin316</b> for his contributions.</li>
+  <li>To <b>SSJLVegeta</b> for his contributions.</li>
+  <li>To the <a href=https://discord.gg/JpCvDCgpnb>Raging Blast Modding community</a>.</li>
+</ul>
 
 ## Requisites
 
 If you want to run the <b>source code</b>, the required packages are the following:
 
-<ul>
-  <li>natsort 7.1.1</li>
-  <li>numpy 1.21.1</li>
-  <li>pyglet 1.5.16</li>
-  <li>pyqt5 5.15.4</li>
-</ul>
+```
+natsort 7.1.1
+numpy 1.21.1
+pyglet 1.5.16
+pyqt5 5.15.4
+```
 
 # IMPORTANT!
 
