@@ -331,6 +331,13 @@ def open_spr_file(main_window, model, spr_path):
                         mtrl_layer.layer_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                         mtrl_layer.source_name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+                        # Store the name of the layer
+                        if mtrl_layer.layer_name_offset != 0:
+                            aux_pointer_mtrl_layer = file.tell()
+                            mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                               mtrl_layer.layer_name_offset)
+                            file.seek(aux_pointer_mtrl_layer)
+
                         # Store the layer in the actual material
                         mtrl_info.layers.append(mtrl_layer)
 
@@ -738,8 +745,6 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     # Store the name to the combo box
                     if found_layer:
                         aux_pointer_file_scne = file.tell()
-                        mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                           scne_materia_info.name_offset)
                         mtrl_layer.effect_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                             scne_materia_info.type_offset)
 
@@ -927,7 +932,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                             scne_material.material_info = []
                             material_info_count = 0
                             for layer in mtrl_data_entry.data_info.data.layers:
-                                if layer.source_name_offset != 0:
+                                # We only add to the scene the layers that has an effect added
+                                if layer.effect_name_offset != 0:
                                     scne_material_info = ScneMaterialInfo()
 
                                     # Get the new offset for this layer
@@ -1101,12 +1107,16 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 data_child += scne_material.new_name_offset.to_bytes(4, 'big')
                 data_child += scne_material.unk04.to_bytes(4, 'big')
                 data_child += scne_material.material_info_count.to_bytes(4, 'big')
+                data_info_child.data_size = 12
                 for j in range(0, scne_material.material_info_count):
                     scene_material_info = scne_material.material_info[j]
 
                     data_child += scene_material_info.name_offset.to_bytes(4, 'big')
                     data_child += scene_material_info.type_offset.to_bytes(4, 'big')
                     data_child += scene_material_info.unk08.to_bytes(4, 'big')
+
+                    # Update the new size
+                    data_info_child.data_size += 12
 
                 # Write the 'material_offset'
                 name_offset = special_names.material_offset
