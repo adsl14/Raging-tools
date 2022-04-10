@@ -844,7 +844,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
 
             # Get the name offset
-            name_offset = special_names.dbz_char_mtrl_offset
+            name_offset = special_names["DbzCharMtrl"]
 
         # The type entry is shape
         elif type_entry == b'SHAP':
@@ -854,17 +854,17 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             # Assign the name offset for each children and write the data
             if data_info_parent.child_count > 1:
                 if i == 0:
-                    name_offset = special_names.dbz_edge_info_offset
+                    name_offset = special_names["DbzEdgeInfo"]
                     data_child += shap_info.data
                     data_child += shap_info.source_name_offset.to_bytes(4, 'big')
                     data_child += main_window.effectVal.itemData(main_window.effectVal.findText('map1'))\
                         .to_bytes(4, 'big')
                     data_child += shap_info.unk0x48
                 else:
-                    name_offset = special_names.dbz_shape_info_offset
+                    name_offset = special_names["DbzShapeInfo"]
                     data_child += shap_info.data
             else:
-                name_offset = special_names.dbz_shape_info_offset
+                name_offset = special_names["DbzShapeInfo"]
                 data_child += shap_info.data
 
         # The type entry is scene
@@ -873,24 +873,14 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             # Assign the name offset for each children and write the data
             # [LAYERS] children
             if data_info_parent.name == "[LAYERS]":
-                if "Layer" in data_info_child.name:
-                    # Write the 'Layer_EQUIPMENT'
-                    special_names.layer_equipment_offset = string_name_offset
-                    name_offset = string_name_offset
-                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
-                    string_name_size = 1 + len(data_info_child.name)
-                    # Update the offset
-                    string_table_child_size += string_name_size
-                    string_name_offset += string_name_size
-                else:
-                    # Write the 'face_anim_A_offset'
-                    special_names.face_anim_A_offset = string_name_offset
-                    name_offset = string_name_offset
-                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
-                    string_name_size = 1 + len(data_info_child.name)
-                    # Update the offset
-                    string_table_child_size += string_name_size
-                    string_name_offset += string_name_size
+                # Add to a dictionary, the special names
+                special_names[data_info_child.name] = string_name_offset
+                name_offset = string_name_offset
+                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                string_name_size = 1 + len(data_info_child.name)
+                # Update the offset
+                string_table_child_size += string_name_size
+                string_name_offset += string_name_size
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
 
@@ -900,7 +890,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 # The type scene is a mesh
                 if scne_model.type_name == 'mesh':
                     # Write the type
-                    data_child += special_names.mesh_offset.to_bytes(4, 'big')
+                    data_child += special_names["mesh"].to_bytes(4, 'big')
 
                     # Search the VBUF that is related to this SCNE and write the new calculated offset
                     found = False
@@ -968,9 +958,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                             data_info_child_2.name_offset_calculated = True
                             data_info_child_2.new_name_offset = name_offset
 
-                    # Write the cae anim layer
-                    if scne_model.layer_name == "face_anim_A":
-                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
+                    # Write the face anim layer
+                    if scne_model.layer_name in special_names:
+                        data_child += special_names[scne_model.layer_name].to_bytes(4, 'big')
                     else:
                         data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
@@ -988,7 +978,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
 
                 elif scne_model.type_name == 'shape':
                     # Write the type
-                    data_child += special_names.shape_offset.to_bytes(4, 'big')
+                    data_child += special_names["shape"].to_bytes(4, 'big')
 
                     # Search the SHAP that is related to this SCNE and write the new calculated offset
                     found = False
@@ -1023,8 +1013,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                             data_info_child_2.new_name_offset = name_offset
 
                     # Write the face anim layer
-                    if scne_model.layer_name == "face_anim_A":
-                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
+                    if scne_model.layer_name in special_names:
+                        data_child += special_names[scne_model.layer_name].to_bytes(4, 'big')
                     else:
                         data_child += b'\x00\x00\x00\x00'
                     data_child += name_offset.to_bytes(4, 'big')
@@ -1045,16 +1035,12 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     scne_model = data_info_child.data
 
                     # Write the type
-                    data_child += special_names.transform_offset.to_bytes(4, 'big')
+                    data_child += special_names["transform"].to_bytes(4, 'big')
                     data_child += b'\x00\x00\x00\x00'
 
                     # Write the layer name offset but only when originally there was data
-                    # Write the layer equipment
-                    if scne_model.layer_name == "Layer_EQUIPMENT":
-                        data_child += special_names.layer_equipment_offset.to_bytes(4, 'big')
-                    # Write the cae anim layer
-                    elif scne_model.layer_name == "face_anim_A":
-                        data_child += special_names.face_anim_A_offset.to_bytes(4, 'big')
+                    if scne_model.layer_name in special_names:
+                        data_child += special_names[scne_model.layer_name].to_bytes(4, 'big')
                     else:
                         data_child += b'\x00\x00\x00\x00'
 
@@ -1119,16 +1105,16 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     data_info_child.data_size += 12
 
                 # Write the 'material_offset'
-                name_offset = special_names.material_offset
+                name_offset = special_names["[MATERIAL]"]
             else:
                 # [LAYERS] section
                 if i == 0:
                     # Write the 'layers_offset'
-                    name_offset = special_names.layers_offset
+                    name_offset = special_names["[LAYERS]"]
                 # [NODES] section
                 elif i == 1:
                     # Write the 'nodes_offset'
-                    name_offset = special_names.nodes_offset
+                    name_offset = special_names["[NODES]"]
                 else:
                     # Write the data
                     scne_eye_info = data_info_child.data
@@ -1136,22 +1122,22 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     for j in range(0, num_eyes_info):
                         eye_data = scne_eye_info.eyes_data[j]
                         if j == 0:
-                            special_name_offset = special_names.eye_ball_r_offset
+                            special_name_offset = special_names["EYEBALL_R"]
                         elif j == 1:
-                            special_name_offset = special_names.eye_ball_l_offset
+                            special_name_offset = special_names["EYEBALL_L"]
                         else:
                             special_name_offset = 0
                         data_child += special_name_offset.to_bytes(4, 'big')
                         data_child += eye_data.unk04
 
                     # Write the 'DbzEyeInfo'
-                    name_offset = special_names.dbz_eye_info_offset
+                    name_offset = special_names["DbzEyeInfo"]
 
         # The type entry is bone
         elif type_entry == b'BONE':
 
             # Write the name
-            name_offset = special_names.dbz_bone_info_offset
+            name_offset = special_names["DbzBoneInfo"]
 
             # Write the data
             data_child += data_info_child.data
