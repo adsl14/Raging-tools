@@ -1,6 +1,6 @@
 # Raging Tools
 
-Raging Tools is a tool that will help you in order to edit the games from the Raging Blast series. You can edit textures, shaders, transformations, parameters, camera values, export/import animations, etc.
+Raging Tools is a tool that will help you in order to edit the games from the Raging Blast series. You can edit textures, shaders, transformations, parameters, camera values, export/import animations, explore zpak files, etc.
 
 It gather all the tools that were made by adsl14, like [vram explorer](https://github.com/adsl14/vram-explorer), [character parameters editor](https://github.com/adsl14/character-parameters-editor) and pak explorer.
 
