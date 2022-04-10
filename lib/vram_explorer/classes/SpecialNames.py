@@ -4,10 +4,6 @@ class SpecialNames:
         self.dbz_char_mtrl_offset = 0
         self.dbz_edge_info_offset = 0
         self.dbz_shape_info_offset = 0
-        self.map1_offset = 0
-        self.damage_offset = 0
-        self.normal_offset = 0
-        self.eyeball_offset = 0
         self.layers_offset = 0
         self.layer_equipment_offset = 0
         self.eye_ball_r_offset = 0

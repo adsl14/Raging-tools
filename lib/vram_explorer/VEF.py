@@ -25,7 +25,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
     action_remove_material_logic, action_material_children_logic, action_model_part_val_changed, \
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
-    action_save_material_logic
+    action_save_material_logic, action_effect_val_changed
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
     get_dxt_value, fix_bmp_header_data, check_name_is_string_table
 
@@ -50,6 +50,7 @@ def initialize_ve(main_window, qt_widgets):
     main_window.materialVal.currentIndexChanged.connect(lambda: action_material_val_changed(main_window))
     main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
     main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
+    main_window.effectVal.currentIndexChanged.connect(lambda: action_effect_val_changed(main_window))
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
@@ -57,6 +58,7 @@ def initialize_ve(main_window, qt_widgets):
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
+    main_window.effectVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
@@ -113,12 +115,14 @@ def load_data_to_ve(main_window):
     # Reset combo box values
     main_window.materialVal.clear()
     main_window.typeVal.clear()
-    main_window.typeVal.addItem("EMPTY", 0)
+    main_window.typeVal.addItem("", 0)
+    main_window.effectVal.clear()
+    main_window.effectVal.addItem("", 0)
     main_window.textureVal.clear()
-    main_window.textureVal.addItem("EMPTY", 0)
+    main_window.textureVal.addItem("", 0)
     main_window.modelPartVal.clear()
     main_window.materialModelPartVal.clear()
-    main_window.materialModelPartVal.addItem("EMPTY", 0)
+    main_window.materialModelPartVal.addItem("", 0)
     # Reset model list view
     main_window.listView.model().clear()
 
@@ -159,6 +163,7 @@ def load_data_to_ve(main_window):
         main_window.materialVal.setEnabled(True)
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
+        main_window.effectVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
@@ -176,6 +181,7 @@ def load_data_to_ve(main_window):
         main_window.materialVal.setEnabled(False)
         main_window.layerVal.setEnabled(False)
         main_window.typeVal.setEnabled(False)
+        main_window.effectVal.setEnabled(False)
         main_window.textureVal.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
@@ -698,12 +704,48 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 scne_material.unk04 = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 scne_material.material_info_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
+                # Search first the material that this scene is using currently
+                found_material = False
+                found_layer = False
+                layers = []
+                mtrl_layer = MtrlLayer()
+                for i in range(main_window.materialVal.count()):
+                    mtrl_data_info = main_window.materialVal.itemData(i).data_info
+                    if scne_material.name_offset == mtrl_data_info.name_offset:
+                        found_material = True
+                        layers = mtrl_data_info.data.layers
+                        break
+
+                # Store the scne material
                 for _ in range(0, scne_material.material_info_count):
                     scne_materia_info = ScneMaterialInfo()
 
                     scne_materia_info.name_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     scne_materia_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                    # Assign to the layer from the material that this scne is usign, the effect for that layer
+                    if found_material:
+                        for i in range(0, 10):
+                            mtrl_layer = layers[i]
+                            if mtrl_layer.layer_name_offset == scne_materia_info.name_offset:
+                                mtrl_layer.effect_name_offset = scne_materia_info.type_offset
+                                found_layer = True
+                                break
+                            else:
+                                continue
+
+                    # Store the name to the combo box
+                    if found_layer:
+                        aux_pointer_file_scne = file.tell()
+                        mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                           scne_materia_info.name_offset)
+                        mtrl_layer.effect_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                            scne_materia_info.type_offset)
+
+                        if main_window.effectVal.findText(mtrl_layer.effect_name) == -1:
+                            main_window.effectVal.addItem(mtrl_layer.effect_name, scne_materia_info.type_offset)
+                        file.seek(aux_pointer_file_scne)
 
                     scne_material.material_info.append(scne_materia_info)
 
@@ -748,7 +790,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(main_window, num_material, type_layer_new_offsets, data_info_parent, type_entry, string_name_offset,
+def write_children(main_window, num_material, data_info_parent, type_entry, string_name_offset,
                    data_size, special_names):
 
     string_table_child = b''
@@ -810,7 +852,8 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     name_offset = special_names.dbz_edge_info_offset
                     data_child += shap_info.data
                     data_child += shap_info.source_name_offset.to_bytes(4, 'big')
-                    data_child += special_names.map1_offset.to_bytes(4, 'big')
+                    data_child += main_window.effectVal.itemData(main_window.effectVal.findText('map1'))\
+                        .to_bytes(4, 'big')
                     data_child += shap_info.unk0x48
                 else:
                     name_offset = special_names.dbz_shape_info_offset
@@ -825,12 +868,24 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
             # Assign the name offset for each children and write the data
             # [LAYERS] children
             if data_info_parent.name == "[LAYERS]":
-                if i == 0:
-                    # Write the 'layer_equipment_offset'
-                    name_offset = special_names.layer_equipment_offset
+                if "Layer" in data_info_child.name:
+                    # Write the 'Layer_EQUIPMENT'
+                    special_names.layer_equipment_offset = string_name_offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    # Update the offset
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
                 else:
                     # Write the 'face_anim_A_offset'
-                    name_offset = special_names.face_anim_A_offset
+                    special_names.face_anim_A_offset = string_name_offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    # Update the offset
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
 
@@ -875,35 +930,13 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                                 if layer.source_name_offset != 0:
                                     scne_material_info = ScneMaterialInfo()
 
-                                    # Get the index where is located in the combobox
-                                    type_layer_index = main_window.typeVal.findData(layer.layer_name_offset)
-
                                     # Get the new offset for this layer
-                                    scne_material_info.name_offset = type_layer_new_offsets[type_layer_index]
+                                    scne_material_info.name_offset = main_window.typeVal\
+                                        .itemData(main_window.typeVal.findText(layer.layer_name))
 
-                                    # Get the name of this layer
-                                    name_layer = main_window.typeVal.itemText(type_layer_index)
-                                    # Get the name of the scene part in order to write the type of material
-                                    # for the specific part of the mesh
-                                    main_name_splited = data_info_child.name.split("|")
-                                    mesh_main_part = main_name_splited[2]
-                                    shape_part = main_name_splited[-1].split(":")[0]
-                                    if 'body' in mesh_main_part or 'face' in shape_part or 'eyebrows' in shape_part:
-                                        # Write the type of layer
-                                        if name_layer == "COLORMAP1":
-                                            scne_material_info.type_offset = special_names.damage_offset
-                                        elif name_layer == "NORMALMAP":
-                                            scne_material_info.type_offset = special_names.normal_offset
-                                        else:
-                                            scne_material_info.type_offset = special_names.map1_offset
-                                    elif 'eye_' in shape_part:
-                                        # Write the type of layer
-                                        if name_layer == "COLORMAP0":
-                                            scne_material_info.type_offset = special_names.eyeball_offset
-                                        else:
-                                            scne_material_info.type_offset = special_names.map1_offset
-                                    else:
-                                        scne_material_info.type_offset = special_names.map1_offset
+                                    # Get the new offset for this layer effect
+                                    scne_material_info.type_offset = main_window.effectVal.\
+                                        itemData(main_window.effectVal.findText(layer.effect_name))
 
                                     scne_material_info.unk08 = 0
                                     scne_material.material_info.append(scne_material_info)
@@ -1087,7 +1120,6 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
                     # Write the 'nodes_offset'
                     name_offset = special_names.nodes_offset
                 else:
-
                     # Write the data
                     scne_eye_info = data_info_child.data
                     num_eyes_info = int(data_info_child.data_size / 112)
@@ -1118,7 +1150,6 @@ def write_children(main_window, num_material, type_layer_new_offsets, data_info_
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
                 data_sub_child_size, data_offset_children = write_children(main_window, num_material,
-                                                                           type_layer_new_offsets,
                                                                            data_info_child, type_entry,
                                                                            string_name_offset +
                                                                            string_name_size, data_offset +

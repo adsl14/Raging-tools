@@ -162,6 +162,16 @@
           </layout>
          </widget>
         </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="fileNameText">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
         <item row="5" column="0">
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
@@ -360,16 +370,6 @@
           </item>
          </layout>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="fileNameText">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </item>
         <item row="11" column="0">
          <widget class="QFrame" name="frame_6">
           <property name="sizePolicy">
@@ -471,6 +471,16 @@
            <property name="horizontalSpacing">
             <number>6</number>
            </property>
+           <item row="1" column="6">
+            <widget class="QLabel" name="textureText">
+             <property name="text">
+              <string>Texture</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0">
             <widget class="QLabel" name="materialText">
              <property name="sizePolicy">
@@ -506,16 +516,6 @@
              </property>
             </widget>
            </item>
-           <item row="1" column="5">
-            <widget class="QLabel" name="textureText">
-             <property name="text">
-              <string>Texture</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="4">
             <widget class="QLabel" name="typeText">
              <property name="text">
@@ -523,19 +523,6 @@
              </property>
              <property name="alignment">
               <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="8">
-            <widget class="QPushButton" name="removeMaterialButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Remove</string>
              </property>
             </widget>
            </item>
@@ -615,19 +602,6 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="7">
-            <widget class="QPushButton" name="addMaterialButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Add</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="3">
             <widget class="QLabel" name="layerText">
              <property name="sizePolicy">
@@ -654,7 +628,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="5">
+           <item row="3" column="6">
             <widget class="QComboBox" name="textureVal">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -676,10 +650,56 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="9">
+           <item row="3" column="7">
             <widget class="QPushButton" name="editMaterialChildrenButton">
              <property name="text">
               <string>Edit child</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="5">
+            <widget class="QComboBox" name="effectVal">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>0</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="9">
+            <widget class="QPushButton" name="removeMaterialButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Remove</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="9">
+            <widget class="QPushButton" name="addMaterialButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>Add</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="5">
+            <widget class="QLabel" name="effectText">
+             <property name="text">
+              <string>Effect</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
              </property>
             </widget>
            </item>
@@ -7983,7 +8003,7 @@
      <x>0</x>
      <y>0</y>
      <width>979</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFIle">

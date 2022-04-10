@@ -381,16 +381,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     # ------------------
                     if b'MTRL' in VEV.sprp_file.type_entry:
                         num_material = self.materialVal.count()
-                        num_layer_effect = self.typeVal.count()
+                        num_layer_type = self.typeVal.count()
 
                         # Write each type layer effect
-                        type_layer_new_offsets = [0, 0, 0, 0, 0, 0, 0, 0]
-                        for i in range(1, num_layer_effect):
+                        for i in range(1, num_layer_type):
                             # Get the layer from the tool
                             layer_effect_name = self.typeVal.itemText(i)
 
                             # Write the name for each layer effect
-                            type_layer_new_offsets[i] = string_name_offset
+                            self.typeVal.setItemData(i, string_name_offset)
                             string_table += b'\x00' + layer_effect_name.encode('utf-8')
                             string_table_size += 1 + len(layer_effect_name)
 
@@ -436,7 +435,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             data += mtrl_info.unk_00
                             for layer in mtrl_info.layers:
                                 # Search for the layer type assigned to the material
-                                data += type_layer_new_offsets[self.typeVal.findData(layer.layer_name_offset)]\
+                                data += self.typeVal.itemData(self.typeVal.findText(layer.layer_name))\
                                     .to_bytes(4, 'big')
                                 # Search for the texture assigned to the material
                                 if layer.source_name_offset == 0:
@@ -474,9 +473,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if mtrl_data_entry.data_info.child_count > 0:
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
-                                    write_children(self, num_material, type_layer_new_offsets,
-                                                   mtrl_data_entry.data_info, b'MTRL', string_table_size, data_size,
-                                                   special_names)
+                                    write_children(self, num_material, mtrl_data_entry.data_info, b'MTRL',
+                                                   string_table_size, data_size, special_names)
 
                                 # Update the string_name and string_table_size
                                 string_table += string_table_child
@@ -514,26 +512,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the type entry shap
                             shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
-                            # Write the 'map1'
-                            special_names.map1_offset = string_name_offset
-                            string_table += b'\x00' + "map1".encode('utf-8')
-                            string_table_size += 1 + len("map1")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
+                            # Write all the effects that applies to the material
+                            num_layer_effect = self.effectVal.count()
+                            for i in range(1, num_layer_effect):
+                                # Get the layer from the tool
+                                layer_effect_name = self.effectVal.itemText(i)
 
-                            # Write the 'damage'
-                            special_names.damage_offset = string_name_offset
-                            string_table += b'\x00' + "damage".encode('utf-8')
-                            string_table_size += 1 + len("damage")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
+                                # Write the name for each layer effect
+                                self.effectVal.setItemData(i, string_name_offset)
+                                string_table += b'\x00' + layer_effect_name.encode('utf-8')
+                                string_table_size += 1 + len(layer_effect_name)
 
-                            # Write the 'normal'
-                            special_names.normal_offset = string_name_offset
-                            string_table += b'\x00' + "normal".encode('utf-8')
-                            string_table_size += 1 + len("normal")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
+                                # Update the offset
+                                string_name_offset = 1 + string_table_size
 
                             # Write the 'DbzEdgeInfo'
                             special_names.dbz_edge_info_offset = string_name_offset
@@ -577,9 +568,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if shap_data_entry.data_info.child_count > 0:
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
-                                        write_children(self, num_material, type_layer_new_offsets,
-                                                       shap_data_entry.data_info, b'SHAP', string_table_size, data_size,
-                                                       special_names)
+                                        write_children(self, num_material, shap_data_entry.data_info, b'SHAP',
+                                                       string_table_size, data_size, special_names)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -617,13 +607,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the type entry shap
                             vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
 
-                            # Write the 'eyeball'
-                            special_names.eyeball_offset = string_name_offset
-                            string_table += b'\x00' + "eyeball".encode('utf-8')
-                            string_table_size += 1 + len("eyeball")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Get each vbuf data entry
                             for i in range(0, vbuf_type_entry.data_count):
                                 # Get the data entry for the VBUF
@@ -645,14 +628,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     data += vertex_decl.unk0x00
                                     # If the vertex usage is 5 (texture), we write how to use that texture in the mesh
                                     if vertex_decl.vertex_usage == 5:
-                                        if vertex_decl.resource_name == 'map1':
-                                            data += special_names.map1_offset.to_bytes(4, 'big')
-                                        elif vertex_decl.resource_name == 'damage':
-                                            data += special_names.damage_offset.to_bytes(4, 'big')
-                                        elif vertex_decl.resource_name == 'normal':
-                                            data += special_names.normal_offset.to_bytes(4, 'big')
-                                        elif vertex_decl.resource_name == 'eyeball':
-                                            data += special_names.eyeball_offset.to_bytes(4, 'big')
+                                        index = self.effectVal.findText(vertex_decl.resource_name)
+                                        if index != -1:
+                                            data += self.effectVal.itemData(index).to_bytes(4, 'big')
                                         else:
                                             data += b'\x00\x00\x00\x00'
                                     else:
@@ -722,13 +700,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
-                            # Write the 'Layer_EQUIPMENT'
-                            special_names.layer_equipment_offset = string_name_offset
-                            string_table += b'\x00' + "Layer_EQUIPMENT".encode('utf-8')
-                            string_table_size += 1 + len("Layer_EQUIPMENT")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Write the 'EYEBALL_R'
                             special_names.eye_ball_r_offset = string_name_offset
                             string_table += b'\x00' + "EYEBALL_R".encode('utf-8')
@@ -740,13 +711,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             special_names.eye_ball_l_offset = string_name_offset
                             string_table += b'\x00' + "EYEBALL_L".encode('utf-8')
                             string_table_size += 1 + len("EYEBALL_L")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
-                            # Write the 'face_anim_A_offset'
-                            special_names.face_anim_A_offset = string_name_offset
-                            string_table += b'\x00' + "face_anim_A".encode('utf-8')
-                            string_table_size += 1 + len("face_anim_A")
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
@@ -800,10 +764,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if scne_data_entry.data_info.child_count > 0:
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
-                                        write_children(self, num_material, type_layer_new_offsets,
-                                                       scne_data_entry.data_info, b'SCNE',
-                                                       string_name_offset, data_size,
-                                                       special_names)
+                                        write_children(self, num_material, scne_data_entry.data_info, b'SCNE',
+                                                       string_name_offset, data_size, special_names)
 
                                     # Reset all the [NODES] children name offset calculated
                                     nodes = scne_data_entry.data_info.child_info[1].child_info
@@ -888,9 +850,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if bone_data_entry.data_info.child_count > 0:
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
-                                        write_children(self, num_material, type_layer_new_offsets,
-                                                       bone_data_entry.data_info, b'BONE', string_table_size, data_size,
-                                                       special_names)
+                                        write_children(self, num_material, bone_data_entry.data_info, b'BONE',
+                                                       string_table_size, data_size, special_names)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -955,9 +916,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if drvn_data_entry.data_info.child_count > 0:
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
-                                        write_children(self, num_material, type_layer_new_offsets,
-                                                       drvn_data_entry.data_info, b'DRVN', string_table_size, data_size,
-                                                       special_names)
+                                        write_children(self, num_material, drvn_data_entry.data_info, b'DRVN',
+                                                       string_table_size, data_size, special_names)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -1027,9 +987,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 if txan_data_entry.data_info.child_count > 0:
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
-                                        write_children(self, num_material, type_layer_new_offsets,
-                                                       txan_data_entry.data_info, b'TXAN', string_table_size, data_size,
-                                                       special_names)
+                                        write_children(self, num_material, txan_data_entry.data_info, b'TXAN',
+                                                       string_table_size, data_size, special_names)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child

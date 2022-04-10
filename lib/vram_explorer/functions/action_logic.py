@@ -283,6 +283,9 @@ def action_material_val_changed(main_window):
             # Get the type of layer (index 0)
             main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
 
+            # Get the effect of layer (index 0)
+            main_window.effectVal.setCurrentIndex(main_window.effectVal.findData(layer.effect_name_offset))
+
             # Get the texture for the layer (index 0)
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
@@ -319,7 +322,10 @@ def action_layer_val_changed(main_window):
         layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Get the type of layer
-        main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
+        main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
+
+        # Get the effect of layer
+        main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
 
         # Get the texture for the layer
         main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
@@ -337,6 +343,22 @@ def action_type_val_changed(main_window):
 
         # Store the selected type of layer
         layer.layer_name_offset = main_window.typeVal.itemData(main_window.typeVal.currentIndex())
+        layer.layer_name = main_window.typeVal.itemText(main_window.typeVal.currentIndex())
+
+
+def action_effect_val_changed(main_window):
+
+    if VEV.enable_combo_box:
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        mtrl_data = mtrl_data_entry.data_info.data
+
+        # Get the layer index
+        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
+
+        # Store the selected effect of layer
+        layer.effect_name_offset = main_window.effectVal.itemData(main_window.effectVal.currentIndex())
+        layer.effect_name = main_window.effectVal.itemText(main_window.effectVal.currentIndex())
 
 
 def action_texture_val_changed(main_window):
