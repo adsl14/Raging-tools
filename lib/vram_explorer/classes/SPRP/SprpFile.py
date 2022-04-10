@@ -10,5 +10,5 @@ class SprpFile:
         self.data_info_base = 0
         self.data_block_base = 0
         self.file_size = 0
-         # SprpTypeEntry
+        # SprpTypeEntry
         self.type_entry = {}

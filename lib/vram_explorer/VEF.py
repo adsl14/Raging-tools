@@ -111,7 +111,6 @@ def load_data_to_ve(main_window):
     # Reset integer values
     VEV.unique_temp_name_offset = 0
     VEV.DbzCharMtrl_offset = 0
-    VEV.string_table_size_increment = 0
     # Reset combo box values
     main_window.materialVal.clear()
     main_window.typeVal.clear()
@@ -473,17 +472,13 @@ def open_spr_file(main_window, model, spr_path):
 
             # Add the layers effects
             for layer_effect in VEV.layer_type_effects:
-                main_window.typeVal.addItem(layer_effect, VEV.unique_temp_name_offset)
-                VEV.unique_temp_name_offset += 1
+                main_window.typeVal.addItem(layer_effect, 0)
 
             while True:
                 name, extension = get_name_from_spr(file, offset)
 
-                # We found the offset of DbzCharMtrl
-                if name == "DbzCharMtrl":
-                    VEV.DbzCharMtrl_offset = offset - VEV.sprp_file.string_table_base
                 # Find the type effects
-                elif name in VEV.layer_type_effects:
+                if name in VEV.layer_type_effects:
                     main_window.typeVal.setItemData(main_window.typeVal.findText(name),
                                                     offset - VEV.sprp_file.string_table_base)
                 # We reached the end of the string base section
@@ -1610,7 +1605,6 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     # Create a new spr_data_entry
     sprp_data_entry.data_type = b'TX2D'
     sprp_data_entry.index = main_window.listView.model().rowCount()
-    sprp_data_entry.new_entry = True
 
     # Store the data_info from the data_entry
     # The name offset value will be unique and temporal for now
@@ -1632,9 +1626,6 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     VEV.enable_combo_box = False
     main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
     VEV.enable_combo_box = True
-
-    # Increment the string_table_size difference
-    VEV.string_table_size_increment += 1 + sprp_data_entry.data_info.name_size
 
 
 # Will add a new texture to the list view, creating a new sprp_data_entry

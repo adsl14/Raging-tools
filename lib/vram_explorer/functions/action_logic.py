@@ -194,21 +194,9 @@ def action_remove_logic(main_window):
         # The user wants to remove the selected texture
         if answer == msg.Yes:
 
-            # Update the index for the data_entry. If we're dealing with new added textures, we recalculate their
-            # offsets
+            # Update the index for the data_entry
             current_index_list_view = main_window.listView.selectionModel().currentIndex().row()
-            for i in range(current_index_list_view + 1,  main_window.listView.model().rowCount()):
 
-                # Get the data entry
-                data_entry = main_window.listView.model().item(i, 0).data()
-
-                # Reduce their index
-                data_entry.index -= 1
-
-            # Reduce the increment of the string table size only if it was a brand new texture
-            data_entry = main_window.listView.model().item(current_index_list_view, 0).data()
-            if data_entry.new_entry:
-                VEV.string_table_size_increment += - 1 - data_entry.data_info.name_size
             # Remove from the array of textures in the window list
             main_window.listView.model().removeRow(current_index_list_view)
 
@@ -387,7 +375,6 @@ def action_add_material_logic(main_window):
         sprp_data_entry = SprpDataEntry()
         sprp_data_entry.data_type = b'MTRL'
         sprp_data_entry.index = main_window.materialVal.count()
-        sprp_data_entry.new_entry = True
 
         # Store the data_info properties
         # The name offset value will be unique and temporal for now
@@ -417,7 +404,6 @@ def action_add_material_logic(main_window):
 
         # Create the children sprp_data_info
         sprp_data_info_children = SprpDataInfo()
-        sprp_data_info_children.name_offset = VEV.DbzCharMtrl_offset
         sprp_data_info_children.data_size = 96
 
         # Create a default material properties for the new material
@@ -455,9 +441,6 @@ def action_add_material_logic(main_window):
         main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
         VEV.enable_combo_box = True
 
-        # Increment the string_table_size difference
-        VEV.string_table_size_increment += 1 + sprp_data_entry.data_info.name_size
-
 
 def action_remove_material_logic(main_window):
 
@@ -474,21 +457,13 @@ def action_remove_material_logic(main_window):
         # The user wants to remove the selected texture
         if answer == msg.Yes:
 
-            # Update the index for the data_entry. If we're dealing with new added material, we recalculate their
-            # offsets
-            current_index_list_view = main_window.materialVal.currentIndex()
-            for i in range(current_index_list_view + 1,  main_window.materialVal.count()):
-
-                # Get the mtrl data_entry
-                data_entry = main_window.materialVal.itemData(i)
-
-                # Reduce their index
-                data_entry.index -= 1
+            # Remove the material
+            current_index_material_model = main_window.materialVal.currentIndex()
+            material_name_offset = main_window.materialVal.itemData(current_index_material_model).data_info.name_offset
+            main_window.materialVal.removeItem(current_index_material_model)
 
             # Search the model part that is using the material removed to assing the empty offset one
             VEV.enable_combo_box = False
-            current_index_material_model = main_window.materialVal.currentIndex()
-            material_name_offset = main_window.materialVal.itemData(current_index_material_model).data_info.name_offset
             for i in range(0, main_window.modelPartVal.count()):
                 data_info_children = main_window.modelPartVal.itemData(i)
                 if data_info_children.data.name_offset == material_name_offset:
@@ -499,11 +474,7 @@ def action_remove_material_logic(main_window):
             # we leave the combo box to be in the index 0
             if main_window.materialModelPartVal.currentIndex() == current_index_material_model+1:
                 main_window.materialModelPartVal.setCurrentIndex(0)
-            # Reduce the increment of the string table size only if it was a brand new material
-            data_entry = main_window.materialVal.itemData(current_index_list_view)
-            if data_entry.new_entry:
-                VEV.string_table_size_increment += - 1 - data_entry.data_info.name_size
-            main_window.materialVal.removeItem(current_index_material_model)
+
             main_window.materialModelPartVal.removeItem(current_index_material_model + 1)
 
             VEV.enable_combo_box = True
