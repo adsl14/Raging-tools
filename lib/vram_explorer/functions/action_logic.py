@@ -281,10 +281,10 @@ def action_material_val_changed(main_window):
         # If the index is 0, we call by ourselfs the methods of the type and texture material
         else:
             # Get the type of layer (index 0)
-            main_window.typeVal.setCurrentIndex(main_window.typeVal.findData(layer.layer_name_offset))
+            main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
 
             # Get the effect of layer (index 0)
-            main_window.effectVal.setCurrentIndex(main_window.effectVal.findData(layer.effect_name_offset))
+            main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
 
             # Get the texture for the layer (index 0)
             main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))

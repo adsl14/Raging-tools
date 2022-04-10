@@ -713,7 +713,6 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 # Search first the material that this scene is using currently
                 found_material = False
-                found_layer = False
                 layers = []
                 mtrl_layer = MtrlLayer()
                 for i in range(main_window.materialVal.count()):
@@ -732,6 +731,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                     # Assign to the layer from the material that this scne is usign, the effect for that layer
+                    found_layer = False
                     if found_material:
                         for i in range(0, 10):
                             mtrl_layer = layers[i]
