@@ -12,6 +12,7 @@ from lib.functions import del_rw
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import change_endian, load_data_to_ve, write_children
+from lib.vram_explorer.classes.SPRP.SprpTypeEntry import SprpTypeEntry
 from lib.vram_explorer.functions.auxiliary import write_separator_vram, check_entry_module
 from lib.vram_explorer.VEF import initialize_ve
 
@@ -268,6 +269,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         string_name_offset = 1
                         string_table_size, data_entry_size, data_offset, data_size = 0, 0, 0, 0
                         entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
+                        # Vars used for the txan
+                        txan_name_offset_assigned = []
+                        txan_entry = SprpTypeEntry()
                         # We will save in this class, some special name offsets
                         special_names_dict = {}
 
@@ -410,11 +414,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 string_name_offset = 1 + string_table_size
 
                             # TXAN values (will be used to know if the txan entries name offset are already added
-                            # to the spr
-                            txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
-                            txan_name_offset_assigned = []
-                            for _ in range(0, txan_entry.data_count):
-                                txan_name_offset_assigned.append(False)
+                            # to the spr)
+                            if b'TXAN' in VEV.sprp_file.type_entry:
+                                txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
+                                for _ in range(0, txan_entry.data_count):
+                                    txan_name_offset_assigned.append(False)
 
                             # Write each material
                             for i in range(0, num_material):
