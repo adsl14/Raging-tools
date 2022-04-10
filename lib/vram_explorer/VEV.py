@@ -12,6 +12,9 @@ class VEV:
 	message_base_import_texture_end = "It could crash in a real hardware. Do you want to continue?"
 	message_base_import_BMP_start = "There are some errors while importing the texture:"
 
+	# Asking base message when we need to ask to the user from differents options
+	message_vram_format = "Choose the format for the vram file:"
+
 	# number of bytes that usually reads the program
 	bytes2Read = 4
 	# vram separator that will differ depending of the width, height and encoding of the texture. Only for dds images
@@ -48,3 +51,5 @@ class VEV:
 	enable_combo_box = False
 	# Unique offset that will be used when adding a new material/texture
 	unique_temp_name_offset = 0
+	# List of the Raging Blast series games that we will use it to ask to the user for the vram format
+	vram_export_format = ["Raging Blast", "Raging Blast 2 / Ultimate Tenkaichi"]
