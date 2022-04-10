@@ -843,29 +843,49 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             for j in range(len(mtrl_prop.unk0x50)):
                 data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
 
-            # Get the name offset
-            name_offset = special_names["DbzCharMtrl"]
+            # Write the name DbzCharMtrl. If it doesn't exists, we create it
+            if data_info_child.name in special_names:
+                name_offset = special_names[data_info_child.name]
+            else:
+                special_names[data_info_child.name] = string_name_offset
+                name_offset = string_name_offset
+                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                string_name_size = 1 + len(data_info_child.name)
+                # Update the offset
+                string_table_child_size += string_name_size
+                string_name_offset += string_name_size
 
         # The type entry is shape
         elif type_entry == b'SHAP':
 
             shap_info = data_info_child.data
 
-            # Assign the name offset for each children and write the data
+            # Write the data
             if data_info_parent.child_count > 1:
-                if i == 0:
-                    name_offset = special_names["DbzEdgeInfo"]
+                # DbzEdgeInfo
+                if data_info_child.data_size == 76:
                     data_child += shap_info.data
                     data_child += shap_info.source_name_offset.to_bytes(4, 'big')
                     data_child += main_window.effectVal.itemData(main_window.effectVal.findText('map1'))\
                         .to_bytes(4, 'big')
                     data_child += shap_info.unk0x48
+                # DbzShapeInfo
                 else:
-                    name_offset = special_names["DbzShapeInfo"]
                     data_child += shap_info.data
             else:
-                name_offset = special_names["DbzShapeInfo"]
                 data_child += shap_info.data
+
+            # Write the name DbzEdgeInfo or DbzShapeInfo. If it doesn't exists, we create it
+            if data_info_child.name in special_names:
+                name_offset = special_names[data_info_child.name]
+            else:
+                special_names[data_info_child.name] = string_name_offset
+                name_offset = string_name_offset
+                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                string_name_size = 1 + len(data_info_child.name)
+                # Update the offset
+                string_table_child_size += string_name_size
+                string_name_offset += string_name_size
 
         # The type entry is scene
         elif type_entry == b'SCNE':
@@ -1104,18 +1124,22 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     # Update the new size
                     data_info_child.data_size += 12
 
-                # Write the 'material_offset'
-                name_offset = special_names["[MATERIAL]"]
-            else:
-                # [LAYERS] section
-                if i == 0:
-                    # Write the 'layers_offset'
-                    name_offset = special_names["[LAYERS]"]
-                # [NODES] section
-                elif i == 1:
-                    # Write the 'nodes_offset'
-                    name_offset = special_names["[NODES]"]
+                # Write the name [MATERIAL]. If it doesn't exists, we create it
+                if data_info_child.name in special_names:
+                    name_offset = special_names[data_info_child.name]
                 else:
+                    special_names[data_info_child.name] = string_name_offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    # Update the offset
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
+            else:
+                # [LAYERS] section i --> 0
+                # [NODES] section i --> 1
+                # DbzEyeInfo section i --> 2
+                if i > 1:
                     # Write the data
                     scne_eye_info = data_info_child.data
                     num_eyes_info = int(data_info_child.data_size / 112)
@@ -1130,14 +1154,32 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         data_child += special_name_offset.to_bytes(4, 'big')
                         data_child += eye_data.unk04
 
-                    # Write the 'DbzEyeInfo'
-                    name_offset = special_names["DbzEyeInfo"]
+                # Write the name [LAYERS], [NODES] or DbzEyeInfo. If it doesn't exists, we create it
+                if data_info_child.name in special_names:
+                    name_offset = special_names[data_info_child.name]
+                else:
+                    special_names[data_info_child.name] = string_name_offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    # Update the offset
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
 
         # The type entry is bone
         elif type_entry == b'BONE':
 
-            # Write the name
-            name_offset = special_names["DbzBoneInfo"]
+            # Write the name. If it doesn't exists, we create it
+            if data_info_child.name in special_names:
+                name_offset = special_names[data_info_child.name]
+            else:
+                special_names[data_info_child.name] = string_name_offset
+                name_offset = string_name_offset
+                string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                string_name_size = 1 + len(data_info_child.name)
+                # Update the offset
+                string_table_child_size += string_name_size
+                string_name_offset += string_name_size
 
             # Write the data
             data_child += data_info_child.data
@@ -1147,8 +1189,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
                 data_sub_child_size, data_offset_children = write_children(main_window, num_material,
                                                                            data_info_child, type_entry,
-                                                                           string_name_offset +
-                                                                           string_name_size, data_offset +
+                                                                           string_name_offset, data_offset +
                                                                            data_info_child.data_size, special_names)
 
             # Write children offset section first

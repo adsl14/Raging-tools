@@ -395,13 +395,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
-                        # Write the 'DbzCharMtrl'
-                        special_names_dict["DbzCharMtrl"] = string_name_offset
-                        string_table += b'\x00' + "DbzCharMtrl".encode('utf-8')
-                        string_table_size += 1 + len("DbzCharMtrl")
-                        # Update the offset
-                        string_name_offset = 1 + string_table_size
-
                         # TXAN values (will be used to know if the txan entries name offset are already added
                         # to the spr
                         txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
@@ -473,7 +466,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 string_table_child, string_table_child_size, string_name_offset, data_child, \
                                     data_child_size, data_offset = \
                                     write_children(self, num_material, mtrl_data_entry.data_info, b'MTRL',
-                                                   string_table_size, data_size, special_names_dict)
+                                                   string_table_size + 1, data_size, special_names_dict)
 
                                 # Update the string_name and string_table_size
                                 string_table += string_table_child
@@ -525,20 +518,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 # Update the offset
                                 string_name_offset = 1 + string_table_size
 
-                            # Write the 'DbzEdgeInfo'
-                            special_names_dict["DbzEdgeInfo"] = string_name_offset
-                            string_table += b'\x00' + "DbzEdgeInfo".encode('utf-8')
-                            string_table_size += 1 + len("DbzEdgeInfo")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
-                            # Write the 'DbzShapeInfo'
-                            special_names_dict["DbzShapeInfo"] = string_name_offset
-                            string_table += b'\x00' + "DbzShapeInfo".encode('utf-8')
-                            string_table_size += 1 + len("DbzShapeInfo")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Get each shape data entry
                             for i in range(0, shap_type_entry.data_count):
                                 # Get the data entry for the SHAP
@@ -568,7 +547,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
                                         write_children(self, num_material, shap_data_entry.data_info, b'SHAP',
-                                                       string_table_size, data_size, special_names_dict)
+                                                       string_table_size + 1, data_size, special_names_dict)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -692,13 +671,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the type entry scne
                             scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
 
-                            # Write the '[LAYERS]'
-                            special_names_dict["[LAYERS]"] = string_name_offset
-                            string_table += b'\x00' + "[LAYERS]".encode('utf-8')
-                            string_table_size += 1 + len("[LAYERS]")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Write the 'EYEBALL_R'
                             special_names_dict["EYEBALL_R"] = string_name_offset
                             string_table += b'\x00' + "EYEBALL_R".encode('utf-8')
@@ -710,13 +682,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             special_names_dict["EYEBALL_L"] = string_name_offset
                             string_table += b'\x00' + "EYEBALL_L".encode('utf-8')
                             string_table_size += 1 + len("EYEBALL_L")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
-                            # Write the '[NODES]'
-                            special_names_dict["[NODES]"] = string_name_offset
-                            string_table += b'\x00' + "[NODES]".encode('utf-8')
-                            string_table_size += 1 + len("[NODES]")
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
@@ -741,20 +706,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Update the offset
                             string_name_offset = 1 + string_table_size
 
-                            # Write the '[MATERIAL]'
-                            special_names_dict["[MATERIAL]"] = string_name_offset
-                            string_table += b'\x00' + "[MATERIAL]".encode('utf-8')
-                            string_table_size += 1 + len("[MATERIAL]")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
-                            # Write the 'dbz_eye_info_offset'
-                            special_names_dict["DbzEyeInfo"] = string_name_offset
-                            string_table += b'\x00' + "DbzEyeInfo".encode('utf-8')
-                            string_table_size += 1 + len("DbzEyeInfo")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Get each SCNE entry
                             for i in range(0, scne_type_entry.data_count):
                                 scne_data_entry = scne_type_entry.data_entry[i]
@@ -764,7 +715,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
                                         write_children(self, num_material, scne_data_entry.data_info, b'SCNE',
-                                                       string_name_offset, data_size, special_names_dict)
+                                                       string_table_size + 1, data_size, special_names_dict)
 
                                     # Reset all the [NODES] children name offset calculated
                                     nodes = scne_data_entry.data_info.child_info[1].child_info
@@ -816,13 +767,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # Get the type entry bone
                             bone_type_entry = VEV.sprp_file.type_entry[b'BONE']
 
-                            # Write the 'DbzBoneInfo'
-                            special_names_dict["DbzBoneInfo"] = string_name_offset
-                            string_table += b'\x00' + "DbzBoneInfo".encode('utf-8')
-                            string_table_size += 1 + len("DbzBoneInfo")
-                            # Update the offset
-                            string_name_offset = 1 + string_table_size
-
                             # Get each bone data entry
                             for i in range(0, bone_type_entry.data_count):
                                 # Get the data entry for the BONE
@@ -850,7 +794,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
                                         write_children(self, num_material, bone_data_entry.data_info, b'BONE',
-                                                       string_table_size, data_size, special_names_dict)
+                                                       string_table_size + 1, data_size, special_names_dict)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -916,7 +860,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
                                         write_children(self, num_material, drvn_data_entry.data_info, b'DRVN',
-                                                       string_table_size, data_size, special_names_dict)
+                                                       string_table_size + 1, data_size, special_names_dict)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
@@ -987,7 +931,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table_child, string_table_child_size, string_name_offset, data_child, \
                                         data_child_size, data_offset = \
                                         write_children(self, num_material, txan_data_entry.data_info, b'TXAN',
-                                                       string_table_size, data_size, special_names_dict)
+                                                       string_table_size + 1, data_size, special_names_dict)
 
                                     # Update the string_name and string_table_size
                                     string_table += string_table_child
