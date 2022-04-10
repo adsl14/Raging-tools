@@ -621,26 +621,30 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
 
                 # Save the info of the material children in the mtrl_prop var
-                mtrl_prop = MtrlProp()
-                mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
-                for i in range(len(mtrl_prop.unk0x04)):
-                    mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
-                mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                for i in range(len(mtrl_prop.Border_RGBA)):
-                    mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
-                for i in range(len(mtrl_prop.unk0x44)):
-                    mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
-                for i in range(len(mtrl_prop.unk0x50)):
-                    mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+                # Raging Blast 2 material
+                if sprp_data_info_child.data_size == 96:
+                    mtrl_prop = MtrlProp()
+                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x04)):
+                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.Border_RGBA)):
+                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x44)):
+                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x50)):
+                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+                else:
+                    mtrl_prop = file.read(sprp_data_info_child.data_size)
 
                 sprp_data_info_child.data = mtrl_prop
 
@@ -813,29 +817,33 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             mtrl_prop = data_info_child.data
 
             # Write the data
-            data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
-            data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
-            for j in range(len(mtrl_prop.unk0x04)):
-                data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
-            data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
-            data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
-            data_child += struct.pack('>f', mtrl_prop.Saturation_base)
-            data_child += \
-                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
-            data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
-            data_child += \
-                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
-            data_child += \
-                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
-            data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
-            data_child += \
-                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
-            for j in range(len(mtrl_prop.Border_RGBA)):
-                data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
-            for j in range(len(mtrl_prop.unk0x44)):
-                data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
-            for j in range(len(mtrl_prop.unk0x50)):
-                data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
+            # Raging Blast 2 material children
+            if data_info_child.data_size == 96:
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+                for j in range(len(mtrl_prop.unk0x04)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
+                data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_base)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+                for j in range(len(mtrl_prop.Border_RGBA)):
+                    data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+                for j in range(len(mtrl_prop.unk0x44)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
+                for j in range(len(mtrl_prop.unk0x50)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
+            else:
+                data_child += mtrl_prop
 
             # Write the name DbzCharMtrl. If it doesn't exists, we create it
             if data_info_child.name in special_names:
