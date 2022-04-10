@@ -800,7 +800,6 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
 
     string_table_child = b''
     string_table_child_size = 0
-    string_name_size = 0
     name_offset = 0
     data_child, data_child_offset_section = b'', b''
     data_child_size, data_child_offset_section_size = 0, 0
@@ -1135,6 +1134,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     # Update the offset
                     string_table_child_size += string_name_size
                     string_name_offset += string_name_size
+            # [LAYERS], [NODES] or DbzEdgeInfo
             else:
                 # [LAYERS] section i --> 0
                 # [NODES] section i --> 1
