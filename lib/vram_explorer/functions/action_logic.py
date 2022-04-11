@@ -1,3 +1,5 @@
+import struct
+
 from lib.packages import os, QFileDialog, QInputDialog, QLineEdit, QMessageBox
 from lib.vram_explorer import VEF
 from lib.vram_explorer.VEV import VEV
@@ -404,6 +406,7 @@ def action_add_material_logic(main_window):
 
         # Create the children sprp_data_info
         sprp_data_info_children = SprpDataInfo()
+        sprp_data_info_children.name = "DbzCharMtrl"
         sprp_data_info_children.data_size = 96
 
         # Create a default material properties for the new material
@@ -478,6 +481,151 @@ def action_remove_material_logic(main_window):
             main_window.materialModelPartVal.removeItem(current_index_material_model + 1)
 
             VEV.enable_combo_box = True
+
+
+def action_material_export_logic(main_window):
+
+    # Get the current mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
+
+    # Ask the path
+    export_path = QFileDialog.getSaveFileName(main_window, "Export material", os.path.join(
+        main_window.old_path_file, mtrl_data_entry.data_info.name))[0]
+
+    # If the user has selected a path, we export the material
+    if export_path:
+        file = open(export_path, mode="wb")
+        # Write the unk data (normaly is 112 bytes)
+        file.write(mtrl_data.unk_00)
+        # If the material has children, we write them too
+        if mtrl_data_entry.data_info.child_count > 0:
+            mtrl_child = mtrl_data_entry.data_info.child_info[0]
+            mtrl_prop = mtrl_child.data
+            data_child = b''
+            # Raging Blast 2 child
+            if mtrl_child.data_size == VEV.rb2_material_child_size:
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+                data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+                for j in range(len(mtrl_prop.unk0x04)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
+                data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
+                data_child += struct.pack('>f', mtrl_prop.Saturation_base)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+                data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+                data_child += \
+                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+                for j in range(len(mtrl_prop.Border_RGBA)):
+                    data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+                for j in range(len(mtrl_prop.unk0x44)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
+                for j in range(len(mtrl_prop.unk0x50)):
+                    data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
+            else:
+                data_child += mtrl_prop
+
+            file.write(data_child)
+        file.close()
+
+
+def action_material_import_logic(main_window):
+
+    # Ask to the user from what file wants to open the camera files
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import material", main_window.old_path_file, "")[0]
+
+    if os.path.exists(file_export_path):
+        with open(file_export_path, mode="rb") as file:
+
+            size_file = len(file.read())
+            child_size = size_file - VEV.material_values_size
+            # The file of the camera has to be 52 bytes length
+            if size_file >= VEV.material_values_size:
+                file.seek(0)
+            else:
+                # Wrong material file
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setWindowIcon(main_window.ico_image)
+                msg.setText("Invalid material file. It should have at least 112 bytes")
+                msg.exec()
+                return
+
+            # Get the current mtrl entry
+            mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+            mtrl_data = mtrl_data_entry.data_info.data
+
+            # Read the main data
+            mtrl_data.unk_00 = file.read(VEV.material_values_size)
+
+            # Read children (if any)
+            if child_size > 0:
+                # The children from the file has 96 of size (RB2 material children)
+                if child_size == VEV.rb2_material_child_size:
+                    mtrl_prop = MtrlProp()
+                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x04)):
+                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.Border_RGBA)):
+                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x44)):
+                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                    for i in range(len(mtrl_prop.unk0x50)):
+                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+
+                    # Enable the material children edition
+                    if not main_window.editMaterialChildrenButton.isEnabled():
+                        main_window.editMaterialChildrenButton.setEnabled(True)
+
+                    # Load the material children to the window
+                    VEF.load_material_children_to_window(main_window, mtrl_prop)
+                # Generic material children
+                else:
+                    mtrl_prop = file.read(child_size)
+                    # Disable the material children edition
+                    if main_window.editMaterialChildrenButton.isEnabled():
+                        main_window.editMaterialChildrenButton.setEnabled(False)
+
+                # Check if the actual material has a children section or not
+                if mtrl_data_entry.data_info.child_count > 0:
+                    mtrl_data_entry.data_info.child_info[0].data = mtrl_prop
+                else:
+                    sprp_data_info_child = SprpDataInfo()
+                    sprp_data_info_child.data = mtrl_prop
+                    sprp_data_info_child.name = "DbzCharMtrl"
+                    mtrl_data_entry.data_info.child_info.append(sprp_data_info_child)
+                    mtrl_data_entry.data_info.child_count = 1
+
+                # Update the size of the children
+                mtrl_data_entry.data_info.child_info[0].data_size = child_size
+
+            # The material from the file doesn't have children, so we remove it
+            else:
+                mtrl_data_entry.data_info.child_count = 0
+                mtrl_data_entry.data_info.child_info = []
+
+                # Disable the material children edition
+                if main_window.editMaterialChildrenButton.isEnabled():
+                    main_window.editMaterialChildrenButton.setEnabled(False)
+
+    # Change old path
+    main_window.old_path_file = file_export_path
 
 
 def action_material_children_logic(main_window):

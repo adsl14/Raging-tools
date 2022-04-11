@@ -25,7 +25,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
     action_remove_material_logic, action_material_children_logic, action_model_part_val_changed, \
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
-    action_save_material_logic, action_effect_val_changed
+    action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
     get_dxt_value, fix_bmp_header_data, check_name_is_string_table
 
@@ -52,17 +52,21 @@ def initialize_ve(main_window, qt_widgets):
     main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
     main_window.effectVal.currentIndexChanged.connect(lambda: action_effect_val_changed(main_window))
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
+    main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
+    main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
+    main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
-    main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
     main_window.effectVal.setEnabled(False)
     main_window.textureVal.setEnabled(False)
+    main_window.exportMaterialButton.setEnabled(False)
+    main_window.importMaterialButton.setEnabled(False)
+    main_window.editMaterialChildrenButton.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
-    main_window.editMaterialChildrenButton.setEnabled(False)
 
     # Model part
     main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -164,9 +168,11 @@ def load_data_to_ve(main_window):
         main_window.typeVal.setEnabled(True)
         main_window.effectVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
+        main_window.exportMaterialButton.setEnabled(True)
+        main_window.importMaterialButton.setEnabled(True)
+        main_window.editMaterialChildrenButton.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
-        main_window.editMaterialChildrenButton.setEnabled(True)
 
         main_window.modelPartVal.setEnabled(True)
         main_window.materialModelPartVal.setEnabled(True)
@@ -182,9 +188,11 @@ def load_data_to_ve(main_window):
         main_window.typeVal.setEnabled(False)
         main_window.effectVal.setEnabled(False)
         main_window.textureVal.setEnabled(False)
+        main_window.exportMaterialButton.setEnabled(False)
+        main_window.importMaterialButton.setEnabled(False)
+        main_window.editMaterialChildrenButton.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
-        main_window.editMaterialChildrenButton.setEnabled(False)
 
         main_window.modelPartVal.setEnabled(False)
         main_window.materialModelPartVal.setEnabled(False)
@@ -622,7 +630,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 # Save the info of the material children in the mtrl_prop var
                 # Raging Blast 2 material
-                if sprp_data_info_child.data_size == 96:
+                if sprp_data_info_child.data_size == VEV.rb2_material_child_size:
                     mtrl_prop = MtrlProp()
                     mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
                     mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
@@ -818,7 +826,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
 
             # Write the data
             # Raging Blast 2 material children
-            if data_info_child.data_size == 96:
+            if data_info_child.data_size == VEV.rb2_material_child_size:
                 data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
                 data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
                 for j in range(len(mtrl_prop.unk0x04)):

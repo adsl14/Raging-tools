@@ -32,6 +32,7 @@ def action_export_camera_button_logic(main_window):
 
 
 def action_import_camera_button_logic(main_window):
+
     # Ask to the user from what file wants to open the camera files
     name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
                 main_window.camera_type_key.currentText().replace(" ", "_") + "." + IPV.camera_extension
