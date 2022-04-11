@@ -41,11 +41,11 @@ if the path in Windows is very long, the tool will <b>crash!</b>
 Windows has a limit for the path name, so run the tool in a place where the path is not too long 
 (<i>Program files</i> for example)
 
-## vram explorer
+## Vram Explorer
 
 <img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
 
-<i>vram explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and <i>.vram</i> file, the textures will be loaded.
+<i>Vram Explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and <i>.vram</i> file, the textures will be loaded.
 
 It will show you for each texture, the <b>Resolution</b>, <b>Mipmaps</b> and <b>Encoding</b>. You can export the textures, import over the original, export all the textures, import all the textures from a folder (for this feature, the folder should have the exact filenames of the original textures), remove textures or add a brand new texture.
 
@@ -56,11 +56,11 @@ At the bottom of the tool, there is a material section where you can edit the pr
 At the bottom of the material section, there is another section where you can assing to a 3D model part, what material will be used. <b>WARNING: if there is a 3D model part that doesn't have any material assigned, the game will crash so be aware of removing materials!</b>
 
 
-## pak explorer
+## Pak Explorer
 
 <img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
 
-<i>pak explorer</i> is a tool that will unpack the files that has the extension <i>.zpak</i> (encrypted pak file) or <i>.pak</i> (decrypted pak file). It uses a <i>Depth-first search</i> since the information in those files are stored as a <i>tree graph structure</i>.
+<i>Pak Explorer</i> is a tool that will unpack the files that has the extension <i>.zpak</i> (encrypted pak file) or <i>.pak</i> (decrypted pak file). It uses a <i>Depth-first search</i> since the information in those files are stored as a <i>tree graph structure</i>.
 
 When opens a <i>.zpak</i> or <i>.pak</i> file, it will store all the sub-files in disk, in order to write the files propertly. When the algorithm finishes, the tool will show the full path of the sub-files.
 
@@ -80,7 +80,7 @@ inserted into the unpacked files before repacking everything.
 
 This tool is divided in three tabs:
 
-### general parameters
+### General Parameters
 
 This tab holds the general parameters of the characters, like transformations, glow, lightnings, health, aura size, etc.
 
@@ -96,7 +96,7 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
   </li>
 </ul>   
 
-### individual parameters
+### Individual Parameters
 
 <img src="images/character_parameters_editor_individual_parameters.jpg" alt="character_parameters_editor_individual_parameters" width="50%">
 
