@@ -35,7 +35,7 @@ pyqt5 5.15.4
 
 # IMPORTANT!
 
-It is highly recomended to place the tool in <i>Program files</i> because when using <i>pak explorer</i>, 
+It is highly recomended to place the tool in <i>Program files</i> because when using <i>Pak Explorer</i>, 
 if the path in Windows is very long, the tool will <b>crash!</b>
 
 Windows has a limit for the path name, so run the tool in a place where the path is not too long 
@@ -68,10 +68,10 @@ You can export the files, import a new one, export all the files or open the fol
 
 ## character parameters editor
 
-<i>character parameters editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, aura size and more. 
+<i>Character Parameters Editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, aura size and more. 
 
 Since these files are <i>.zpak</i>, 
-the <i>pak explorer</i> will be activated too, and show you all the sub-files that the main <i>.zpak</i> file has.
+the <i>Pak Explorer</i> will be activated too, and show you all the sub-files that the main <i>.zpak</i> file has.
 
 If you have doubts about what parameter is modifying, leaving the pointer of your mouse in the name of the parameter, it will pop up a description of that parameter.
 
@@ -104,7 +104,7 @@ This tab holds the individual parameters of one character. This parameters are t
 
 In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> (Where XYZ are generic numbers) located in <i>st_pack_battle_character_pt_ps3.afs (Raging Blast 2)</i>.
 
-### roster editor
+### Roster Editor
 
 <img src="images/character_parameters_editor_roster_editor.jpg" alt="character_parameters_editor_roster_editor" width="50%">
 
