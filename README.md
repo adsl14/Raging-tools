@@ -51,7 +51,7 @@ It will show you for each texture, the <b>Resolution</b>, <b>Mipmaps</b> and <b>
 
 When a texture is imported over a original one, the tool will check the new texture file and compare it with the original one. If they have differences in resolution, mipmaps or/and encoding, it will tell you those differences and ask you if you want to import the new texture. However, for images that are originally swizzled, the tool won't let you import a texture that has those differences because the swizzle algorithm needs the width and height from the original texture.
 
-At the bottom of the tool, there is a material section where you can edit the properties of the material. You can select the material and change the layers, type, the texture to being used, and the values of the material children. Moreover, you can add a new material to the spr, or remove the current one.
+At the bottom of the tool, there is a material section where you can edit the properties of the material. You can select the material and change the layers, type, effect, the texture to being used, and the values of the material children. Moreover, you can add a new material to the spr, remove the current one, export and import their values (and children if any).
 
 At the bottom of the material section, there is another section where you can assing to a 3D model part, what material will be used. <b>WARNING: if there is a 3D model part that doesn't have any material assigned, the game will crash so be aware of removing materials!</b>
 
