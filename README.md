@@ -66,7 +66,7 @@ When opens a <i>.zpak</i> or <i>.pak</i> file, it will store all the sub-files i
 
 You can export the files, import a new one, export all the files or open the folder where those files are located.
 
-## character parameters editor
+## Character Parameters Editor
 
 <i>Character Parameters Editor</i> is a tool that will edit the parameters of the characters, like glow, lightnings, aura size and more. 
 
