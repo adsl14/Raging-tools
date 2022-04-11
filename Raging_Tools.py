@@ -643,6 +643,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     # Check if the data, the module of 16 is 0
                                     data, data_size = check_entry_module(data, data_size, 16)
 
+                                    # If we check the size of the vbuf data due to Game Assets Converter
+                                    # store the size as 'header + data' instead of 'header'. If the size is different
+                                    # from 32, we modify the original size
+                                    if vbuf_data_entry.data_info.data_size != 32:
+                                        vbuf_data_entry.data_info.data_size = 32
+
                                     # Write the data_entry for each vbuf
                                     data_offset = data_size
                                     data_entry += vbuf_data_entry.data_type

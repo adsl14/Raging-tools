@@ -25,13 +25,18 @@ def get_name_from_spr(file, offset):
         # If the value is not 00, we store the char
         if data != b'\x00':
 
-            # Some bytes can't be decoded directly, so we will add the string directly instead
-            if data == b'\x82':
-                data_decoded = ","
-            elif data == b'\x8c':
-                data_decoded = "Œ"
-            else:
+            try:
                 data_decoded = data.decode('utf-8')
+            except UnicodeDecodeError:
+                # Some bytes can't be decoded directly, so we will add the string directly instead
+                if data == b'\x82':
+                    data_decoded = ","
+                elif data == b'\x8c':
+                    data_decoded = "Œ"
+                elif data == b'\xf3':
+                    data_decoded = "ó"
+                else:
+                    data_decoded = "?"
 
             name += data_decoded
 
