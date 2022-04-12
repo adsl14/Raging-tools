@@ -55,6 +55,7 @@ At the bottom of the tool, there is a material section where you can edit the pr
 
 At the bottom of the material section, there is another section where you can assing to a 3D model part, what material will be used. <b>WARNING: if there is a 3D model part that doesn't have any material assigned, the game will crash so be aware of removing materials!</b>
 
+Lastly, when saving the spr and vram, it will ask you which format for the vram output would you like to generate. This selection will make the vram more accurate to the game selected, avoiding crashes in <b>console</b>
 
 ## Pak Explorer
 
