@@ -6,3 +6,5 @@ class ShapInfo:
         self.source_name_offset = 0
         self.type_offset = 0
         self.unk0x48 = b''
+        # Extra info
+        self.type_name = ""

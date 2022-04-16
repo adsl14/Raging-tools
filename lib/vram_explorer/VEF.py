@@ -674,6 +674,12 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 shap_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                 shap_info.unk0x48 = file.read(VEV.bytes2Read)
 
+                # Store the names
+                aux_pointer_file_shap = file.tell()
+                shap_info.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
+                                                                 + shap_info.type_offset)
+                file.seek(aux_pointer_file_shap)
+
             # Get all the data if is everything else
             else:
                 # Save the data
@@ -876,8 +882,15 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 if data_info_child.data_size == 76:
                     data_child += shap_info.data
                     data_child += shap_info.source_name_offset.to_bytes(4, 'big')
-                    data_child += main_window.effectVal.itemData(main_window.effectVal.findText('map1'))\
-                        .to_bytes(4, 'big')
+                    
+                    # Check if this shape has a type assigned. We won't assign anything if originally the
+                    # shape didn't have a type assigned
+                    effect_val_index = main_window.effectVal.findText(shap_info.type_name)
+                    if effect_val_index != -1:
+                        data_child += main_window.effectVal.itemData(effect_val_index).to_bytes(4, 'big')
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
+
                     data_child += shap_info.unk0x48
                 # DbzShapeInfo
                 else:
