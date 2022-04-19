@@ -882,7 +882,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 if data_info_child.data_size == 76:
                     data_child += shap_info.data
                     data_child += shap_info.source_name_offset.to_bytes(4, 'big')
-                    
+
                     # Check if this shape has a type assigned. We won't assign anything if originally the
                     # shape didn't have a type assigned
                     effect_val_index = main_window.effectVal.findText(shap_info.type_name)
@@ -984,22 +984,27 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
 
                             break
 
-                    # Search if the scne_model parent is already in the string table
-                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
-                    # The parent name value is not in the string table
-                    if not found:
-                        # Write the name of the parent value
-                        name_offset = string_name_offset
-                        string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
-                        string_name_size = 1 + len(scne_model.parent_name)
-                        string_table_child_size += string_name_size
-                        string_name_offset += string_name_size
+                    # Search if the scne_model parent is already in the string table, buy only when it has originally
+                    # a parent
+                    if scne_model.parent_offset != 0:
+                        found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model,
+                                                                                           data_info_parent)
+                        # The parent name value is not in the string table
+                        if not found:
+                            # Write the name of the parent value
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.parent_name)
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
 
-                        # Update the other child we have found if the parent name value and the main name of the
-                        # other child is the same
-                        if scne_model.parent_offset == data_info_child_2.name_offset:
-                            data_info_child_2.name_offset_calculated = True
-                            data_info_child_2.new_name_offset = name_offset
+                            # Update the other child we have found if the parent name value and the main name of the
+                            # other child is the same
+                            if scne_model.parent_offset == data_info_child_2.name_offset:
+                                data_info_child_2.name_offset_calculated = True
+                                data_info_child_2.new_name_offset = name_offset
+                    else:
+                        name_offset = 0
 
                     # Write the face anim layer
                     if scne_model.layer_name in special_names:
@@ -1038,22 +1043,27 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     if not found:
                         data_child += b'\x00\x00\x00\x00'
 
-                    # Search if the scne_model parent is already in the string table
-                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
-                    # The parent name value is not in the string table
-                    if not found:
-                        # Write the name of the parent value
-                        name_offset = string_name_offset
-                        string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
-                        string_name_size = 1 + len(scne_model.parent_name)
-                        string_table_child_size += string_name_size
-                        string_name_offset += string_name_size
+                    # Search if the scne_model parent is already in the string table, buy only when it has originally
+                    # a parent
+                    if scne_model.parent_offset != 0:
+                        found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model,
+                                                                                           data_info_parent)
+                        # The parent name value is not in the string table
+                        if not found:
+                            # Write the name of the parent value
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.parent_name)
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
 
-                        # Update the other child we have found if the parent name value and the main name of the
-                        # other child is the same
-                        if scne_model.parent_offset == data_info_child_2.name_offset:
-                            data_info_child_2.name_offset_calculated = True
-                            data_info_child_2.new_name_offset = name_offset
+                            # Update the other child we have found if the parent name value and the main name of the
+                            # other child is the same
+                            if scne_model.parent_offset == data_info_child_2.name_offset:
+                                data_info_child_2.name_offset_calculated = True
+                                data_info_child_2.new_name_offset = name_offset
+                    else:
+                        name_offset = 0
 
                     # Write the face anim layer
                     if scne_model.layer_name in special_names:
@@ -1087,22 +1097,27 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     else:
                         data_child += b'\x00\x00\x00\x00'
 
-                    # Search if the scne_model parent is already in the string table
-                    found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model, data_info_parent)
-                    # The parent name value is not in the string table
-                    if not found:
-                        # Write the name of the parent value
-                        name_offset = string_name_offset
-                        string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
-                        string_name_size = 1 + len(scne_model.parent_name)
-                        string_table_child_size += string_name_size
-                        string_name_offset += string_name_size
+                    # Search if the scne_model parent is already in the string table, buy only when it has originally
+                    # a parent
+                    if scne_model.parent_offset != 0:
+                        found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model,
+                                                                                           data_info_parent)
+                        # The parent name value is not in the string table
+                        if not found:
+                            # Write the name of the parent value
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.parent_name)
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
 
-                        # Update the other child we have found if the parent name value and the main name of the
-                        # other child is the same
-                        if scne_model.parent_offset == data_info_child_2.name_offset:
-                            data_info_child_2.name_offset_calculated = True
-                            data_info_child_2.new_name_offset = name_offset
+                            # Update the other child we have found if the parent name value and the main name of the
+                            # other child is the same
+                            if scne_model.parent_offset == data_info_child_2.name_offset:
+                                data_info_child_2.name_offset_calculated = True
+                                data_info_child_2.new_name_offset = name_offset
+                    else:
+                        name_offset = 0
 
                     data_child += name_offset.to_bytes(4, 'big')
 
