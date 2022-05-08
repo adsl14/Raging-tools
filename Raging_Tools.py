@@ -993,24 +993,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 entry_info_size += 12
 
                         # Write the basename, ioram and vram offsets names
-                        name_offset = 1 + string_table_size
-                        name = self.fileNameText.text() + ".spr"
-                        string_table += b'\x00' + name.encode('utf-8')
-                        string_table_size += 1 + len(name)
                         # If the spr doesn't have an ioram file, we won't write the name on it
                         if VEV.sprp_file.sprp_header.ioram_data_size > 0:
+
+                            # Write the xmb extension
+                            name_offset = 1 + string_table_size
+                            name = self.fileNameText.text() + ".xmb"
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + len(name)
+
                             ioram_name_offset = 1 + string_table_size
                             ioram_data_size = VEV.sprp_file.sprp_header.ioram_data_size
                             name = self.fileNameText.text() + ".ioram"
                             string_table += b'\x00' + name.encode('utf-8')
                             string_table_size += 1 + len(name)
                         else:
+
+                            # Write the spr extension
+                            name_offset = 1 + string_table_size
+                            name = self.fileNameText.text() + ".spr"
+                            string_table += b'\x00' + name.encode('utf-8')
+                            string_table_size += 1 + len(name)
+
                             ioram_name_offset = 0
                             ioram_data_size = 0
                         vram_name_offset = 1 + string_table_size
                         name = self.fileNameText.text() + ".vram"
                         string_table += b'\x00' + name.encode('utf-8')
                         string_table_size += 1 + len(name)
+
+                        # Write the watermark
+                        string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
+                        string_table_size += 1 + len(VEV.watermark_message)
 
                         # Check if the entry_info, the module of 16 is 0
                         entry_info, entry_info_size = check_entry_module(entry_info, entry_info_size, 16)
