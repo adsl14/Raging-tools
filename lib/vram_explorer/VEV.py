@@ -7,6 +7,9 @@ class VEV:
 	dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
 	swizzle_path = os.path.join("lib", "vram_explorer", "resources", "swizzle.exe")
 
+	# Watermark message when generates the SPR
+	watermark_message = "Generated with Raging Tools - by adsl14"
+
 	# Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
 	message_base_import_texture_start = "The new texture has the following differences from the original:"
 	message_base_import_texture_end = "It could crash in a real hardware. Do you want to continue?"
@@ -37,7 +40,8 @@ class VEV:
 	material_values_size = 112
 	# Layer material effects
 	layer_type_effects = ["COLORMAP", "COLORMAP0", "COLORMAP1", "NORMALMAP", "REFLECTMAP", "TOONMAP",
-																							"INCANDESCENCEMAP_RAMP"]
+																							"INCANDESCENCEMAP_RAMP",
+																							"miScatterColor_RAMP"]
 
 	# *** vars that need to be reseted when loading a new spr/vram file ***
 	# --- SPR vars ---
