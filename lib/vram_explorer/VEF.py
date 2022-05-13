@@ -1175,10 +1175,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     string_name_offset += string_name_size
             # [LAYERS], [NODES] or DbzEdgeInfo
             else:
-                # [LAYERS] section i --> 0
-                # [NODES] section i --> 1
-                # DbzEyeInfo section i --> 2
-                if i > 1:
+
+                if data_info_child.name == "DbzEyeInfo":
                     # Write the data
                     scne_eye_info = data_info_child.data
                     num_eyes_info = int(data_info_child.data_size / 112)
