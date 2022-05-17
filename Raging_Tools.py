@@ -480,15 +480,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                                             name = txan_data_entry.data_info.name + \
                                                                    ("." + txan_data_entry.data_info.extension
                                                                     if txan_data_entry.data_info.extension else "")
-                                                            string_name_offset = 1 + string_table_size
                                                             txan_data_entry.data_info.new_name_offset = \
-                                                                string_name_offset
+                                                                1 + string_table_size
                                                             string_table += b'\x00' + name.encode('utf-8')
                                                             string_table_size += 1 + len(name)
                                                             txan_name_offset_assigned[j] = True
                                                         data += txan_data_entry.data_info.new_name_offset.\
                                                             to_bytes(4, 'big')
+                                                        found = True
                                                         break
+                                            # If we didn't find anything, we add it to the special names var.
+                                            if not found:
+                                                # The special name wasn't added to the string name, so the name offset
+                                                # will be calculated
+                                                if layer.source_name not in special_names_dict:
+                                                    # Write the name for the special name
+                                                    special_names_dict[layer.source_name] = 1 + string_table_size
+                                                    string_table += b'\x00' + layer.source_name.encode('utf-8')
+                                                    string_table_size += 1 + len(layer.source_name)
+
+                                                data += special_names_dict[layer.source_name].to_bytes(4, 'big')
+
                                     data_size += mtrl_data_entry.data_info.data_size
 
                                     # Write the children material (if any)

@@ -344,6 +344,12 @@ def open_spr_file(main_window, model, spr_path):
                             mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                                mtrl_layer.layer_name_offset)
                             file.seek(aux_pointer_mtrl_layer)
+                        # Store the name of the source
+                        if mtrl_layer.source_name_offset != 0:
+                            aux_pointer_mtrl_layer = file.tell()
+                            mtrl_layer.source_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                                mtrl_layer.source_name_offset)
+                            file.seek(aux_pointer_mtrl_layer)
 
                         # Store the layer in the actual material
                         mtrl_info.layers.append(mtrl_layer)
