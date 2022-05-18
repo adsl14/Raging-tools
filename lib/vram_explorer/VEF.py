@@ -712,6 +712,8 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 aux_pointer_file_scne = file.tell()
                 scne_model.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                   scne_model.type_offset)
+                scne_model.name_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
+                                                                  scne_model.name_offset)
                 scne_model.layer_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                    scne_model.layer_offset)
                 scne_model.parent_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
@@ -793,6 +795,12 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_eye_info.eyes_data.append(eye_data)
 
                 sprp_data_info_child.data = scne_eye_info
+
+            # By default, we store the unknown info
+            else:
+                file.seek(VEV.sprp_file.data_block_base + sprp_data_info_child.data_offset)
+
+                sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
 
         # Get the bone data
         elif type_section == b'BONE':
@@ -930,16 +938,31 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 # Update the offset
                 string_table_child_size += string_name_size
                 string_name_offset += string_name_size
+
             # [NODES] children
             elif data_info_parent.name == "[NODES]":
 
-                # Write the data
+                # Get the scne model
                 scne_model = data_info_child.data
+
+                # Write the unk data
                 data_child += scne_model.unk00.to_bytes(4, 'big')
+
+                # Write the type
+                if scne_model.type_offset != 0:
+                    if scne_model.type_name not in special_names:
+                        special_names[scne_model.type_name] = string_name_offset
+                        string_table_child += b'\x00' + scne_model.type_name.encode('utf-8')
+                        string_name_size = 1 + len(scne_model.type_name)
+                        # Update the offset
+                        string_table_child_size += string_name_size
+                        string_name_offset += string_name_size
+                    data_child += special_names[scne_model.type_name].to_bytes(4, 'big')
+                else:
+                    data_child += b'\x00\x00\x00\x00'
+
                 # The type scene is a mesh
                 if scne_model.type_name == 'mesh':
-                    # Write the type
-                    data_child += special_names["mesh"].to_bytes(4, 'big')
 
                     # Search the VBUF that is related to this SCNE and write the new calculated offset
                     found = False
@@ -1030,9 +1053,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         string_table_child_size += string_name_size
                         string_name_offset += string_name_size
 
+                # The type scene is a shape
                 elif scne_model.type_name == 'shape':
-                    # Write the type
-                    data_child += special_names["shape"].to_bytes(4, 'big')
 
                     # Search the SHAP that is related to this SCNE and write the new calculated offset
                     found = False
@@ -1088,18 +1110,26 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         string_table_child_size += string_name_size
                         string_name_offset += string_name_size
 
+                # The type scene is a transform
                 elif scne_model.type_name == 'transform':
 
-                    # Get the scene model
-                    scne_model = data_info_child.data
-
-                    # Write the type
-                    data_child += special_names["transform"].to_bytes(4, 'big')
+                    # Write the name
                     data_child += b'\x00\x00\x00\x00'
 
                     # Write the layer name offset but only when originally there was data
-                    if scne_model.layer_name in special_names:
-                        data_child += special_names[scne_model.layer_name].to_bytes(4, 'big')
+                    if scne_model.layer_offset != 0:
+                        if scne_model.layer_name in special_names:
+                            name_offset = special_names[scne_model.layer_name]
+                        else:
+                            special_names[scne_model.layer_name] = string_name_offset
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.layer_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.layer_name)
+                            # Update the offset
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
+
+                        data_child += name_offset.to_bytes(4, 'big')
                     else:
                         data_child += b'\x00\x00\x00\x00'
 
@@ -1137,10 +1167,85 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         string_table_child_size += string_name_size
                         string_name_offset += string_name_size
 
+                # The type scene is a camera
+                elif scne_model.type_name == 'camera':
+
+                    # Write the name
+                    if scne_model.name_offset != 0:
+                        if scne_model.name_name in special_names:
+                            name_offset = special_names[scne_model.name_name]
+                        else:
+                            special_names[scne_model.name_name] = string_name_offset
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.name_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.name_name)
+                            # Update the offset
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
+
+                        data_child += name_offset.to_bytes(4, 'big')
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
+
+                    # Write the layer name offset but only when originally there was data
+                    if scne_model.layer_offset != "":
+                        if scne_model.layer_name in special_names:
+                            name_offset = special_names[scne_model.layer_name]
+                        else:
+                            special_names[scne_model.layer_name] = string_name_offset
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.layer_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.layer_name)
+                            # Update the offset
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
+
+                        data_child += name_offset.to_bytes(4, 'big')
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
+
+                    # Search if the scne_model parent is already in the string table, buy only when it has originally
+                    # a parent
+                    if scne_model.parent_offset != 0:
+                        found, name_offset, data_info_child_2 = check_name_is_string_table(i, scne_model,
+                                                                                           data_info_parent)
+                        # The parent name value is not in the string table
+                        if not found:
+                            # Write the name of the parent value
+                            name_offset = string_name_offset
+                            string_table_child += b'\x00' + scne_model.parent_name.encode('utf-8')
+                            string_name_size = 1 + len(scne_model.parent_name)
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
+
+                            # Update the other child we have found if the parent name value and the main name of the
+                            # other child is the same
+                            if scne_model.parent_offset == data_info_child_2.name_offset:
+                                data_info_child_2.name_offset_calculated = True
+                                data_info_child_2.new_name_offset = name_offset
+                    else:
+                        name_offset = 0
+
+                    data_child += name_offset.to_bytes(4, 'big')
+
+                    # Write the name offset with the new material
+                    if data_info_child.name_offset_calculated:
+                        name_offset = data_info_child.new_name_offset
+                    else:
+                        name_offset = string_name_offset
+                        string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                        string_name_size = 1 + len(data_info_child.name)
+                        string_table_child_size += string_name_size
+                        string_name_offset += string_name_size
+
+                # Default
                 else:
+
+                    # Write the name
                     data_child += b'\x00\x00\x00\x00'
+                    # Write the layer name
                     data_child += b'\x00\x00\x00\x00'
-                    data_child += b'\x00\x00\x00\x00'
+                    # Write the parent name
                     data_child += b'\x00\x00\x00\x00'
 
                     # Write the name offset
@@ -1149,6 +1254,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     string_name_size = 1 + len(data_info_child.name)
                     string_table_child_size += string_name_size
                     string_name_offset += string_name_size
+
             # [MATERIAL] children
             elif data_info_child.name == "[MATERIAL]":
 
@@ -1179,9 +1285,11 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     # Update the offset
                     string_table_child_size += string_name_size
                     string_name_offset += string_name_size
+
             # [LAYERS], [NODES] or DbzEdgeInfo
             else:
 
+                # Write the data when is DbzEyeInfo
                 if data_info_child.name == "DbzEyeInfo":
                     # Write the data
                     scne_eye_info = data_info_child.data
@@ -1189,15 +1297,35 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     for j in range(0, num_eyes_info):
                         eye_data = scne_eye_info.eyes_data[j]
                         if j == 0:
+                            if "EYEBALL_R" not in special_names:
+                                special_names["EYEBALL_R"] = string_name_offset
+                                string_table_child += b'\x00' + "EYEBALL_R".encode('utf-8')
+                                string_name_size = 1 + len("EYEBALL_R")
+                                # Update the offset
+                                string_table_child_size += string_name_size
+                                string_name_offset += string_name_size
                             special_name_offset = special_names["EYEBALL_R"]
                         elif j == 1:
+                            if "EYEBALL_L" not in special_names:
+                                special_names["EYEBALL_L"] = string_name_offset
+                                string_table_child += b'\x00' + "EYEBALL_L".encode('utf-8')
+                                string_name_size = 1 + len("EYEBALL_L")
+                                # Update the offset
+                                string_table_child_size += string_name_size
+                                string_name_offset += string_name_size
                             special_name_offset = special_names["EYEBALL_L"]
                         else:
                             special_name_offset = 0
                         data_child += special_name_offset.to_bytes(4, 'big')
                         data_child += eye_data.unk04
 
-                # Write the name [LAYERS], [NODES] or DbzEyeInfo. If it doesn't exists, we create it
+                # Write the unknown data
+                else:
+                    # Write the data
+                    data_child += data_info_child.data
+
+                # Write the name [LAYERS], [NODES], DbzEyeInfo or another special name.
+                # If it doesn't exists, we create it
                 if data_info_child.name in special_names:
                     name_offset = special_names[data_info_child.name]
                 else:

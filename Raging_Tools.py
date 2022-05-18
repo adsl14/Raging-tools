@@ -719,43 +719,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # --- Write SCNE ---
                             # ------------------
                             if b'SCNE' == type_entry:
+
                                 # Get the type entry scne
                                 scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
-
-                                # Write the 'EYEBALL_R'
-                                special_names_dict["EYEBALL_R"] = string_name_offset
-                                string_table += b'\x00' + "EYEBALL_R".encode('utf-8')
-                                string_table_size += 1 + len("EYEBALL_R")
-                                # Update the offset
-                                string_name_offset = 1 + string_table_size
-
-                                # Write the 'EYEBALL_L'
-                                special_names_dict["EYEBALL_L"] = string_name_offset
-                                string_table += b'\x00' + "EYEBALL_L".encode('utf-8')
-                                string_table_size += 1 + len("EYEBALL_L")
-                                # Update the offset
-                                string_name_offset = 1 + string_table_size
-
-                                # Write the 'mesh'
-                                special_names_dict["mesh"] = string_name_offset
-                                string_table += b'\x00' + "mesh".encode('utf-8')
-                                string_table_size += 1 + len("mesh")
-                                # Update the offset
-                                string_name_offset = 1 + string_table_size
-
-                                # Write the 'shape'
-                                special_names_dict["shape"] = string_name_offset
-                                string_table += b'\x00' + "shape".encode('utf-8')
-                                string_table_size += 1 + len("shape")
-                                # Update the offset
-                                string_name_offset = 1 + string_table_size
-
-                                # Write the 'transform'
-                                special_names_dict["transform"] = string_name_offset
-                                string_table += b'\x00' + "transform".encode('utf-8')
-                                string_table_size += 1 + len("transform")
-                                # Update the offset
-                                string_name_offset = 1 + string_table_size
 
                                 # Get each SCNE entry
                                 for i in range(0, scne_type_entry.data_count):
