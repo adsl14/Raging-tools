@@ -6,6 +6,7 @@ from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
 from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
 from lib.vram_explorer.classes.MTRL.MtrlProp import MtrlProp
+from lib.vram_explorer.classes.PSHD.PshdInfo import PshdInfo
 from lib.vram_explorer.classes.SCNE.EyeData import EyeData
 from lib.vram_explorer.classes.SCNE.ScneEyeInfo import ScneEyeInfo
 from lib.vram_explorer.classes.SCNE.ScneMaterial import ScneMaterial
@@ -20,6 +21,7 @@ from lib.vram_explorer.classes.TX2D.Tx2dInfo import Tx2dInfo
 from lib.vram_explorer.classes.TX2D.Tx2dVram import Tx2dVram
 from lib.vram_explorer.classes.VBUF.VBufInfo import VBufInfo
 from lib.vram_explorer.classes.VBUF.VertexDecl import VertexDecl
+from lib.vram_explorer.classes.VSHD.VshdInfo import VshdInfo
 from lib.vram_explorer.functions.action_logic import action_export_all_logic, action_import_all_logic, \
     action_import_logic, action_remove_logic, action_export_logic, action_add_logic, action_material_val_changed, \
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
@@ -133,7 +135,7 @@ def load_data_to_ve(main_window):
     basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
     # Open spr and vram
-    open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
+    exists_mtrl = open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
     open_vram_file(VEV.vram_file_path)
 
     # Set the index of the list view to be always the first row when loading a new spr/vram file
@@ -162,7 +164,7 @@ def load_data_to_ve(main_window):
     main_window.addButton.setEnabled(True)
 
     # Enable the buttons of material only if the spr holds mtrl section
-    if b'MTRL' in VEV.sprp_file.type_entry:
+    if exists_mtrl:
         main_window.materialVal.setEnabled(True)
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
@@ -218,6 +220,7 @@ def open_spr_file(main_window, model, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
+    exists_mtrl = False
 
     with open(spr_path, mode='rb') as file:
 
@@ -322,6 +325,10 @@ def open_spr_file(main_window, model, spr_path):
 
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
+
+                    # Since the spr hold MTRL entries, we store a flag
+                    if not exists_mtrl:
+                        exists_mtrl = True
 
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
@@ -458,6 +465,54 @@ def open_spr_file(main_window, model, spr_path):
                     main_window.textureVal.addItem(sprp_data_entry.data_info.name,
                                                    sprp_data_entry.data_info.name_offset)
 
+                # Save the data when is the type VSHD
+                elif sprp_type_entry.data_type == b'VSHD':
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Create the VSHD info
+                    vshd_info = VshdInfo()
+
+                    # Read the data
+                    vshd_info.unk0x00 = file.read(12)
+                    vshd_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    vshd_info.unk0x10 = file.read(8)
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset -
+                              vshd_info.data_size)
+                    vshd_info.data = file.read(vshd_info.data_size)
+
+                    # Save the vshd_info class in the data of the spr_data_entry
+                    sprp_data_entry.data_info.data = vshd_info
+
+                # Save the data when is the type PSHD
+                elif sprp_type_entry.data_type == b'PSHD':
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Create the PSHD info
+                    pshd_info = PshdInfo()
+
+                    # Read the data
+                    pshd_info.unk0x00 = file.read(12)
+                    pshd_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset -
+                              pshd_info.data_size)
+                    pshd_info.data = file.read(pshd_info.data_size)
+
+                    # Save the vshd_info class in the data of the spr_data_entry
+                    sprp_data_entry.data_info.data = pshd_info
+
+                # Save the data when is the type ANIM
+                elif sprp_type_entry.data_type == b"ANIM":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Read all the data
+                    sprp_data_entry.data_info.data = file.read(sprp_data_entry.data_info.data_size)
+
                 # Get all the children sprp_data_info
                 if sprp_data_entry.data_info.child_count > 0:
                     read_children(main_window, file, sprp_data_entry.data_info, sprp_data_entry.data_type)
@@ -480,7 +535,7 @@ def open_spr_file(main_window, model, spr_path):
         VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
 
         # If there is material in the spr file, we try to find specific names
-        if b'MTRL' in VEV.sprp_file.type_entry:
+        if exists_mtrl:
             offset = 161
             stop_offset = VEV.sprp_file.sprp_header.string_table_size + 160
 
@@ -500,6 +555,8 @@ def open_spr_file(main_window, model, spr_path):
                     break
 
                 offset = file.tell()
+
+    return exists_mtrl
 
 
 def open_vram_file(vram_path):

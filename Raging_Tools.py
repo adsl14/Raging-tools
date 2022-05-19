@@ -403,6 +403,151 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 entry_info_size += 12
 
                             # ------------------
+                            # --- Write VSHD ---
+                            # ------------------
+                            if b'VSHD' == type_entry:
+                                # Get the type entry vshd
+                                vshd_type_entry = VEV.sprp_file.type_entry[b'VSHD']
+
+                                # Get each vshd data entry
+                                for i in range(0, vshd_type_entry.data_count):
+                                    # Get the data entry for the VSHD
+                                    vshd_data_entry = vshd_type_entry.data_entry[i]
+
+                                    # Get the data for the vshd
+                                    vshd_data = vshd_data_entry.data_info.data
+
+                                    # Write the name for each vshd
+                                    vshd_data_entry.data_info.new_name_offset = string_name_offset
+                                    string_table += b'\x00' + vshd_data_entry.data_info.name.encode('utf-8')
+                                    string_table_size += 1 + len(vshd_data_entry.data_info.name)
+
+                                    # Write the data_entry for each vshd
+                                    data_entry += vshd_data_entry.data_type
+                                    data_entry += i.to_bytes(4, 'big')
+                                    data_entry += string_name_offset.to_bytes(4, 'big')
+                                    data_entry += (data_offset + vshd_data.data_size).to_bytes(4, 'big')
+                                    data_entry += vshd_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                    data_entry += vshd_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                    # We write the child offset later
+
+                                    # Write the data for each vshd
+                                    data += vshd_data.data
+                                    data += vshd_data.unk0x00
+                                    data += vshd_data.data_size.to_bytes(4, 'big')
+                                    data += vshd_data.unk0x10
+                                    data_size += vshd_data.data_size + vshd_data_entry.data_info.data_size
+
+                                    # Write children (if any)
+                                    if vshd_data_entry.data_info.child_count > 0:
+                                        string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                            data_child_size, data_offset = \
+                                            write_children(self, num_material, vshd_data_entry.data_info, b'VSHD',
+                                                           string_table_size + 1, data_size, special_names_dict)
+
+                                        # Update the string_name and string_table_size
+                                        string_table += string_table_child
+                                        string_table_size += string_table_child_size
+
+                                        # Update the data and data_size
+                                        data += data_child
+                                        data_size += data_child_size
+
+                                        # Write in the data entry, the children offset
+                                        data_entry += data_offset.to_bytes(4, 'big')
+                                    else:
+                                        # Child offset
+                                        data_entry += b'\x00\x00\x00\x00'
+                                    data_entry += b'\x00\x00\x00\x00'
+                                    data_entry_size += 32
+
+                                    # Check if the data, the module of 16 is 0
+                                    data, data_size = check_entry_module(data, data_size, 16)
+
+                                    # Update offsets for the next entry
+                                    string_name_offset = 1 + string_table_size
+                                    data_offset = data_size
+
+                                # Update the entry info
+                                entry_info += b'VSHD' + b'\x00\x00\x00\x08' + \
+                                              vshd_type_entry.data_count.to_bytes(4, 'big')
+                                # Update the sizes
+                                entry_count += 1
+                                entry_info_size += 12
+
+                            # ------------------
+                            # --- Write PSHD ---
+                            # ------------------
+                            if b'PSHD' == type_entry:
+                                # Get the type entry pshd
+                                pshd_type_entry = VEV.sprp_file.type_entry[b'PSHD']
+
+                                # Get each pshd data entry
+                                for i in range(0, pshd_type_entry.data_count):
+                                    # Get the data entry for the PSHD
+                                    pshd_data_entry = pshd_type_entry.data_entry[i]
+
+                                    # Get the data for the pshd
+                                    pshd_data = pshd_data_entry.data_info.data
+
+                                    # Write the name for each pshd
+                                    pshd_data_entry.data_info.new_name_offset = string_name_offset
+                                    string_table += b'\x00' + pshd_data_entry.data_info.name.encode('utf-8')
+                                    string_table_size += 1 + len(pshd_data_entry.data_info.name)
+
+                                    # Write the data_entry for each pshd
+                                    data_entry += pshd_data_entry.data_type
+                                    data_entry += i.to_bytes(4, 'big')
+                                    data_entry += string_name_offset.to_bytes(4, 'big')
+                                    data_entry += (data_offset + pshd_data.data_size).to_bytes(4, 'big')
+                                    data_entry += pshd_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                    data_entry += pshd_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                    # We write the child offset later
+
+                                    # Write the data for each vshd
+                                    data += pshd_data.data
+                                    data += pshd_data.unk0x00
+                                    data += pshd_data.data_size.to_bytes(4, 'big')
+                                    data_size += pshd_data.data_size + pshd_data_entry.data_info.data_size
+
+                                    # Write children (if any)
+                                    if pshd_data_entry.data_info.child_count > 0:
+                                        string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                            data_child_size, data_offset = \
+                                            write_children(self, num_material, pshd_data_entry.data_info, b'PSHD',
+                                                           string_table_size + 1, data_size, special_names_dict)
+
+                                        # Update the string_name and string_table_size
+                                        string_table += string_table_child
+                                        string_table_size += string_table_child_size
+
+                                        # Update the data and data_size
+                                        data += data_child
+                                        data_size += data_child_size
+
+                                        # Write in the data entry, the children offset
+                                        data_entry += data_offset.to_bytes(4, 'big')
+                                    else:
+                                        # Child offset
+                                        data_entry += b'\x00\x00\x00\x00'
+                                    data_entry += b'\x00\x00\x00\x00'
+                                    data_entry_size += 32
+
+                                    # Check if the data, the module of 16 is 0
+                                    data, data_size = check_entry_module(data, data_size, 16)
+
+                                    # Update offsets for the next entry
+                                    string_name_offset = 1 + string_table_size
+                                    data_offset = data_size
+
+                                # Update the entry info
+                                entry_info += b'PSHD' + b'\x00\x00\x00\x08' + \
+                                              pshd_type_entry.data_count.to_bytes(4, 'big')
+                                # Update the sizes
+                                entry_count += 1
+                                entry_info_size += 12
+
+                            # ------------------
                             # --- Write MTRL ---
                             # ------------------
                             if b'MTRL' == type_entry:
@@ -625,7 +770,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # --- Write VBUF ---
                             # ------------------
                             if b'VBUF' == type_entry:
-                                # Get the type entry shap
+                                # Get the type entry vbuf
                                 vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
 
                                 # Get each vbuf data entry
@@ -794,7 +939,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     string_table += b'\x00' + bone_data_entry.data_info.name.encode('utf-8')
                                     string_table_size += 1 + len(bone_data_entry.data_info.name)
 
-                                    # Write the data_entry for each shape
+                                    # Write the data_entry for each bone
                                     data_entry += bone_data_entry.data_type
                                     data_entry += i.to_bytes(4, 'big')
                                     data_entry += string_name_offset.to_bytes(4, 'big')
@@ -853,15 +998,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # Get each drvn data entry
                                 for i in range(0, drvn_type_entry.data_count):
-                                    # Get the data entry for the BONE
+                                    # Get the data entry for the DRVN
                                     drvn_data_entry = drvn_type_entry.data_entry[i]
 
-                                    # Write the name for each bone
+                                    # Write the name for each drvn
                                     name = "driven_" + self.fileNameText.text() + ".mb"
                                     string_table += b'\x00' + name.encode('utf-8')
                                     string_table_size += 1 + len(name)
 
-                                    # Write the data_entry for each shape
+                                    # Write the data_entry for each devn
                                     data_entry += drvn_data_entry.data_type
                                     data_entry += i.to_bytes(4, 'big')
                                     data_entry += string_name_offset.to_bytes(4, 'big')
@@ -870,7 +1015,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     data_entry += drvn_data_entry.data_info.child_count.to_bytes(4, 'big')
                                     # We write the child offset later
 
-                                    # Write the data for each bone
+                                    # Write the data for each drvn
                                     data += drvn_data_entry.data_info.data
                                     data_size += drvn_data_entry.data_info.data_size
 
@@ -915,15 +1060,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # --- Write TXAN ---
                             # ------------------
                             if b'TXAN' == type_entry:
-                                # Get the type entry drvn
+                                # Get the type entry txan
                                 txan_type_entry = VEV.sprp_file.type_entry[b'TXAN']
 
                                 # Get each txan data entry
                                 for i in range(0, txan_type_entry.data_count):
-                                    # Get the data entry for the BONE
+                                    # Get the data entry for the TXAN
                                     txan_data_entry = txan_type_entry.data_entry[i]
 
-                                    # Write the data_entry for each shape
+                                    # Write the data_entry for each txan
                                     data_entry += txan_type_entry.data_type
                                     data_entry += i.to_bytes(4, 'big')
 
@@ -942,7 +1087,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     data_entry += txan_data_entry.data_info.child_count.to_bytes(4, 'big')
                                     # We write the child offset later
 
-                                    # Write the data for each bone
+                                    # Write the data for each txan
                                     data += txan_data_entry.data_info.data
                                     data_size += txan_data_entry.data_info.data_size
 
@@ -978,6 +1123,72 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 # Update the entry info
                                 entry_info += b'TXAN' + b'\x00\x00\x00\x01' + \
                                               txan_type_entry.data_count.to_bytes(4, 'big')
+                                # Update the sizes
+                                entry_count += 1
+                                entry_info_size += 12
+
+                            # ------------------
+                            # --- Write ANIM ---
+                            # ------------------
+                            if b'ANIM' == type_entry:
+                                # Get the type entry anim
+                                anim_type_entry = VEV.sprp_file.type_entry[b'ANIM']
+
+                                # Get each anim data entry
+                                for i in range(0, anim_type_entry.data_count):
+                                    # Get the data entry for the ANIM
+                                    anim_data_entry = anim_type_entry.data_entry[i]
+
+                                    # Write the name for each anim
+                                    string_table += b'\x00' + anim_data_entry.data_info.name.encode('utf-8')
+                                    string_table_size += 1 + len(anim_data_entry.data_info.name)
+
+                                    # Write the data_entry for each anim
+                                    data_entry += anim_data_entry.data_type
+                                    data_entry += i.to_bytes(4, 'big')
+                                    data_entry += string_name_offset.to_bytes(4, 'big')
+                                    data_entry += data_offset.to_bytes(4, 'big')
+                                    data_entry += anim_data_entry.data_info.data_size.to_bytes(4, 'big')
+                                    data_entry += anim_data_entry.data_info.child_count.to_bytes(4, 'big')
+                                    # We write the child offset later
+
+                                    # Write the data for each anim
+                                    data += anim_data_entry.data_info.data
+                                    data_size += anim_data_entry.data_info.data_size
+
+                                    # Write children (if any)
+                                    if anim_data_entry.data_info.child_count > 0:
+                                        string_table_child, string_table_child_size, string_name_offset, data_child, \
+                                            data_child_size, data_offset = \
+                                            write_children(self, num_material, anim_data_entry.data_info, b'ANIM',
+                                                           string_table_size + 1, data_size, special_names_dict)
+
+                                        # Update the string_name and string_table_size
+                                        string_table += string_table_child
+                                        string_table_size += string_table_child_size
+
+                                        # Update the data and data_size
+                                        data += data_child
+                                        data_size += data_child_size
+
+                                        # Write in the data entry, the children offset
+                                        data_entry += data_offset.to_bytes(4, 'big')
+                                    else:
+                                        # Child offset
+                                        data_entry += b'\x00\x00\x00\x00'
+                                    data_entry += b'\x00\x00\x00\x00'
+                                    data_entry_size += 32
+
+                                    # Check if the data, the module of 16 is 0
+                                    data, data_size = check_entry_module(data, data_size, 16)
+
+                                    # Update offsets for the next entry
+                                    string_name_offset = 1 + string_table_size
+                                    data_offset = data_size
+
+                                # Update the entry info
+                                entry_info += b'ANIM' + b'\x00\x00\x00\x03' + \
+                                              anim_type_entry.data_count.to_bytes(4, 'big')
                                 # Update the sizes
                                 entry_count += 1
                                 entry_info_size += 12
