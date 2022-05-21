@@ -95,21 +95,21 @@ def write_separator_vram(output_vram_file, data_entry):
 
 
 def create_header(value):
-    if value == 8:
+    if value == 8 or value == 15:
         return bytes.fromhex("04000000"), "DXT1".encode(), bytes.fromhex(
             "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
             "00 00 00 00 00 00 ".strip())
-    elif value == 24 or value == 32:
+    elif value == 24 or value == 31 or value == 32:
         return bytes.fromhex("04000000"), "DXT5".encode(), bytes.fromhex(
             "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 10 00 00 00 00 00 00 00 00 00 00 00 00 "
             "00 00 00 00 00 00 ".strip())
 
 
 def get_encoding_name(value):
-    # 0x00 RGBA, 0x08 DXT1, 0x24 and 0x32 as DXT5
-    if value == 8:
+    # 0x00 RGBA, 0x08 and 0x15 DXT1, 0x24, 0x31 and 0x32 as DXT5
+    if value == 8 or value == 15:
         return "DXT1"
-    elif value == 24 or value == 32:
+    elif value == 24 or value == 31 or value == 32:
         return "DXT5"
     elif value == 0:
         return "RGBA"
