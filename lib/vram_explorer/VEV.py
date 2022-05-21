@@ -50,6 +50,11 @@ class VEV:
     # --- VRAM vars ---
     # Path where the vram file is located
     vram_file_path = ""
+    # Flag that will store if the spr holds mtrl entries
+    exists_mtrl = False
+    # Flag that will be used to detect to generate the spr from scratch (mainly if it holds vshd or pshd entries
+    # (used in maps), we won't generate the spr from scratch
+    enable_spr_scratch = True
 
     # --- GENERAL vars ---
     # Enable or disable combo box onchange

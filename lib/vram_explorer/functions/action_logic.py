@@ -135,12 +135,25 @@ def action_import_all_logic(main_window):
     # Ask to the user from where to import the files into the tool
     folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures", VEV.spr_file_path)
 
-    message = ""
-
     if folder_import_path:
+
+        # Message to show
+        message = ""
+        # Flag that will be used to show the texture modified in the tool
+        show_texture = False
+        # Get the current texture selected
+        current_selected_texture = main_window.listView.selectionModel().currentIndex().row()
         # Get all the textures name from memory
-        for i in range(0, main_window.listView.model().rowCount()):
+        num_textures = main_window.listView.model().rowCount()
+
+        for i in range(0, num_textures):
             data_entry = main_window.listView.model().item(i, 0).data()
+
+            # Check if is the texture that the user is currently selected, to show it in the tool
+            if i == current_selected_texture:
+                show_texture = True
+            elif show_texture:
+                show_texture = False
 
             # Get the output extension
             if data_entry.data_info.data.dxt_encoding != 0:
@@ -155,7 +168,7 @@ def action_import_all_logic(main_window):
             # If the tool finds errors, it won't import the texture and will add a message at the end with the errors
             path_file = os.path.join(folder_import_path, texture_name_extension)
             if os.path.exists(path_file):
-                message = message + VEF.import_texture(main_window, path_file, False)
+                message = message + VEF.import_texture(main_window, path_file, False, show_texture, i)
             else:
                 message = message + "<li>" + texture_name_extension + " not found!" + "</li>"
 
@@ -178,7 +191,8 @@ def action_import_logic(main_window):
                                               ";; BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
-        VEF.import_texture(main_window, import_path, True)
+        VEF.import_texture(main_window, import_path, True, True,
+                           main_window.listView.selectionModel().currentIndex().row())
 
 
 def action_remove_logic(main_window):

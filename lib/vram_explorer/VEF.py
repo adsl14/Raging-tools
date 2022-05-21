@@ -29,7 +29,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
     action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
-    get_dxt_value, fix_bmp_header_data, check_name_is_string_table
+    get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram
 
 
 def initialize_ve(main_window, qt_widgets):
@@ -135,7 +135,7 @@ def load_data_to_ve(main_window):
     basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
     # Open spr and vram
-    exists_mtrl = open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
+    open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
     open_vram_file(VEV.vram_file_path)
 
     # Set the index of the list view to be always the first row when loading a new spr/vram file
@@ -163,8 +163,18 @@ def load_data_to_ve(main_window):
     main_window.removeButton.setEnabled(True)
     main_window.addButton.setEnabled(True)
 
+    # If the spr holds entries like pshd or vshd (used in maps), we won't enable the texture
+    # adding, removing and the material edition
+    if VEV.enable_spr_scratch:
+        main_window.addButton.setEnabled(True)
+        main_window.removeButton.setEnabled(True)
+    else:
+        main_window.addButton.setEnabled(False)
+        main_window.removeButton.setEnabled(False)
+        VEV.exists_mtrl = False
+
     # Enable the buttons of material only if the spr holds mtrl section
-    if exists_mtrl:
+    if VEV.exists_mtrl:
         main_window.materialVal.setEnabled(True)
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
@@ -220,7 +230,8 @@ def open_spr_file(main_window, model, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
-    exists_mtrl = False
+    VEV.exists_mtrl = False
+    VEV.enable_spr_scratch = True
 
     with open(spr_path, mode='rb') as file:
 
@@ -327,8 +338,8 @@ def open_spr_file(main_window, model, spr_path):
                 elif sprp_type_entry.data_type == b"MTRL":
 
                     # Since the spr hold MTRL entries, we store a flag
-                    if not exists_mtrl:
-                        exists_mtrl = True
+                    if not VEV.exists_mtrl:
+                        VEV.exists_mtrl = True
 
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
@@ -468,6 +479,10 @@ def open_spr_file(main_window, model, spr_path):
                 # Save the data when is the type VSHD
                 elif sprp_type_entry.data_type == b'VSHD':
 
+                    # If the spr hold vshd or pshd, we will active the flag
+                    if VEV.enable_spr_scratch:
+                        VEV.enable_spr_scratch = False
+
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
 
@@ -487,6 +502,10 @@ def open_spr_file(main_window, model, spr_path):
 
                 # Save the data when is the type PSHD
                 elif sprp_type_entry.data_type == b'PSHD':
+
+                    # If the spr hold vshd or pshd, we will active the flag
+                    if VEV.enable_spr_scratch:
+                        VEV.enable_spr_scratch = False
 
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
@@ -535,7 +554,7 @@ def open_spr_file(main_window, model, spr_path):
         VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
 
         # If there is material in the spr file, we try to find specific names
-        if exists_mtrl:
+        if VEV.exists_mtrl:
             offset = 161
             stop_offset = VEV.sprp_file.sprp_header.string_table_size + 160
 
@@ -555,8 +574,6 @@ def open_spr_file(main_window, model, spr_path):
                     break
 
                 offset = file.tell()
-
-    return exists_mtrl
 
 
 def open_vram_file(vram_path):
@@ -660,6 +677,129 @@ def open_vram_file(vram_path):
             if i < VEV.sprp_file.type_entry[b'TX2D'].data_count - 1:
                 print("Separator: " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i+1].data_info.data.data_offset -
                       file.tell()))'''
+
+
+def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_size, entry_count, string_table,
+                        string_table_size, string_name_offset, data_entry, data_entry_size, data, data_size,
+                        data_offset, vram_separator, num_textures):
+
+    with open(vram_path_modified, mode="wb") as output_vram_file:
+
+        # Get each data_entry (TX2D) and store the texture properties
+        for i in range(0, num_textures):
+
+            # Get the texture from the tool
+            tx2d_data_entry = main_window.listView.model().item(i, 0).data()
+
+            # Write the name for each texture
+            name = tx2d_data_entry.data_info.name + "." + \
+                tx2d_data_entry.data_info.extension
+            string_table += b'\x00' + name.encode('utf-8')
+            string_table_size += 1 + len(name)
+
+            # Write the data_entry for each texture
+            data_entry += tx2d_data_entry.data_type
+            data_entry += i.to_bytes(4, 'big')
+            tx2d_data_entry.data_info.new_name_offset = string_name_offset
+            data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+            data_entry += data_offset.to_bytes(4, 'big')
+            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
+            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
+            # We write the child offset later
+
+            # Write the data for each texture
+            # Get the tx2d info
+            tx2d_info = tx2d_data_entry.data_info.data
+            data += tx2d_info.unk0x00.to_bytes(4, 'big')
+            data += output_vram_file.tell().to_bytes(4, 'big')
+            data += tx2d_info.unk0x08.to_bytes(4, 'big')
+            data += tx2d_info.data_size.to_bytes(4, 'big')
+            data += tx2d_info.width.to_bytes(2, 'big')
+            data += tx2d_info.height.to_bytes(2, 'big')
+            data += tx2d_info.unk0x14.to_bytes(2, 'big')
+            data += tx2d_info.mip_maps.to_bytes(2, 'big')
+            data += tx2d_info.unk0x18.to_bytes(4, 'big')
+            data += tx2d_info.unk0x1c.to_bytes(4, 'big')
+            data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
+            data += b'\00\00\00'
+            data_size += tx2d_data_entry.data_info.data_size
+
+            # Child offset
+            data_entry += b'\x00\x00\x00\x00'
+            data_entry += b'\x00\x00\x00\x00'
+            data_entry_size += 32
+
+            # Check if the data, the module of 16 is 0
+            data, data_size = check_entry_module(data, data_size, 16)
+
+            # Update offsets for the next entry
+            string_name_offset = 1 + string_table_size
+            data_offset = data_size
+
+            # Write the textures in the vram file
+            # It's a DDS image
+            if tx2d_info.dxt_encoding != 0:
+                output_vram_file.write(tx2d_info.tx2d_vram.data[128:])
+                # Write the vram separator
+                if vram_separator and i < num_textures - 1:
+                    write_separator_vram(output_vram_file, tx2d_data_entry)
+            # It's a BMP image
+            else:
+
+                if tx2d_data_entry.data_info.extension != "png":
+                    # We're dealing with a shader. We have to change the endian
+                    if tx2d_info.height == 1:
+                        output_vram_file.write(change_endian(tx2d_info.
+                                                             tx2d_vram.data[54:]))
+                    else:
+                        output_vram_file.write(tx2d_info.tx2d_vram.data[54:])
+                else:
+                    # Write in disk the data swizzled
+                    with open("tempSwizzledImage", mode="wb") as file:
+                        file.write(tx2d_info.tx2d_vram.data)
+
+                    # Write in disk the data unswizzled
+                    with open("tempUnSwizzledImage", mode="wb") as file:
+                        file.write(tx2d_info.tx2d_vram.data_unswizzle[54:])
+
+                    # Write in disk the indexes
+                    with open("Indexes.txt", mode="w") as file:
+                        for index in tx2d_info.tx2d_vram. \
+                                indexes_unswizzle_algorithm:
+                            file.write(index + ";")
+
+                    # Run the exe file of 'swizzle.exe'
+                    # with the option '-s' to swizzle the image
+                    args = os.path.join(VEV.swizzle_path) + " \"" + \
+                        "tempSwizzledImage" + "\" \"" + \
+                        "tempUnSwizzledImage" + "\" \"" + "Indexes.txt" + "\" \"" + "-s" + \
+                        "\""
+                    os.system('cmd /c ' + args)
+
+                    # Get the data from the .exe
+                    with open("tempSwizzledImageModified", mode="rb") as file:
+                        tx2d_info.tx2d_vram.data = file.read()
+
+                    # Remove the temp files
+                    os.remove("tempSwizzledImage")
+                    os.remove("tempUnSwizzledImage")
+                    os.remove("Indexes.txt")
+                    os.remove("tempSwizzledImageModified")
+
+                    output_vram_file.write(tx2d_info.tx2d_vram.data)
+
+        # Get the new vram size by getting the position of the pointer in the output file
+        # since it's in the end of the file
+        vram_data_size = output_vram_file.tell()
+
+        # Update the entry info
+    entry_info += b'TX2D' + b'\x00\x01\x00\x00' + num_textures.to_bytes(4, 'big')
+    # Update the sizes
+    entry_count += 1
+    entry_info_size += 12
+
+    return entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
+        data_entry_size, data, data_size, data_offset, vram_data_size
 
 
 def read_children(main_window, file, sprp_data_info, type_section):
@@ -1606,13 +1746,12 @@ def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width
 # import_file_path -> path where the file is located
 # ask_user -> flag that will activate or deactive a pop up message when the imported texture has differences with
 # the original texture
-def import_texture(main_window, import_file_path, ask_user):
+def import_texture(main_window, import_file_path, ask_user, show_texture, index):
 
     with open(import_file_path, mode="rb") as file:
         header = file.read(4)
 
-        current_selected_index = main_window.listView.selectionModel().currentIndex().row()
-        data_entry = main_window.listView.model().item(current_selected_index, 0).data()
+        data_entry = main_window.listView.model().item(index, 0).data()
 
         # It's a DDS modded image
         if header == b'DDS ':
@@ -1684,12 +1823,14 @@ def import_texture(main_window, import_file_path, ask_user):
             replace_texture_properties(main_window, data_entry, unk0x00, len_data, width, height, mip_maps, 2804419200,
                                        dxt_encoding)
 
-            try:
-                # Show texture in the program
-                show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
+            # If the flag is activated, we show the texture
+            if show_texture:
+                try:
+                    # Show texture in the program
+                    show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
 
-            except OSError:
-                main_window.imageTexture.clear()
+                except OSError:
+                    main_window.imageTexture.clear()
 
         # it's a BMP modded image
         elif header[:2] == b'BM':
@@ -1770,12 +1911,14 @@ def import_texture(main_window, import_file_path, ask_user):
             # Replace the texture properties in memory
             replace_texture_properties(main_window, data_entry, 2, len_data, width, height, 1, 2804746880, 0)
 
-            try:
-                # Show texture in the program
-                show_bmp_image(main_window.imageTexture, data, width, height)
+            # If the flag is activated, we show the texture
+            if show_texture:
+                try:
+                    # Show texture in the program
+                    show_bmp_image(main_window.imageTexture, data, width, height)
 
-            except OSError:
-                main_window.imageTexture.clear()
+                except OSError:
+                    main_window.imageTexture.clear()
 
         else:
             # Wrong texture file
