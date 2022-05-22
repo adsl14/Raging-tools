@@ -7,7 +7,7 @@ class VEV:
     swizzle_path = os.path.join("lib", "vram_explorer", "resources", "swizzle.exe")
 
     # Watermark message when generates the SPR
-    watermark_message = "Generated with Raging Tools - by adsl14"
+    watermark_message = "Generated.with.Raging.Tools"
 
     # Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
     message_base_import_texture_start = "The new texture has the following differences from the original:"

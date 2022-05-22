@@ -57,6 +57,8 @@ At the bottom of the material section, there is another section where you can as
 
 Lastly, when saving the spr and vram, it will ask you which format for the vram output would you like to generate. This selection is <b>important</b> since will make the vram more accurate to the game selected, avoiding crashes in <b>console</b>.
 
+<b>NOTE</b>: Due to maps spr files has a different structure, <i>Vram Explorer</i> only will let you import or export textures. Adding and removing textures, material edition, and assing to a 3D model part a material, won't be allowed for now.
+
 ## Pak Explorer
 
 <img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
