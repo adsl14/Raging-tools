@@ -9,7 +9,8 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     action_export_animation_button_logic, action_import_animation_button_logic, \
     action_export_all_animation_button_logic, action_import_all_animation_button_logic, \
     action_export_blast_button_logic, action_import_blast_button_logic, action_export_all_blast_button_logic, \
-    action_import_all_blast_button_logic
+    action_import_all_blast_button_logic, on_background_color_trans_change
+from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
 from lib.packages import struct, QMessageBox
 
 
@@ -69,8 +70,12 @@ def initialize_operate_character(main_window):
         main_window.direction_last_hit_combo_value.addItem(element, IPV.direction_last_hit_combo_values[element])
 
     # Set the background color combo
-    for element in IPV.color_background_combo_values:
-        main_window.background_color_combo_value.addItem(element, IPV.color_background_combo_values[element])
+    # Set the transformation background color
+    for element in IPV.color_background_values:
+        main_window.background_color_combo_value.addItem(element, IPV.color_background_values[element])
+        main_window.background_color_trans_value.addItem(element, IPV.color_background_values[element])
+    main_window.background_color_trans_value.currentIndexChanged.connect(lambda:
+                                                                         on_background_color_trans_change(main_window))
 
     # Set animations
     for element in IPV.animations_types:
@@ -118,18 +123,18 @@ def initialize_operate_character(main_window):
 
 def read_single_character_parameters(main_window):
 
-    # Read all the animation values
-    read_animation_files(main_window, 0, main_window.animation_type)
-    main_window.animation_type.setCurrentIndex(0)
-    read_animation_files(main_window, IPV.size_between_animation_and_effects, main_window.animation_properties)
-    main_window.animation_properties.setCurrentIndex(0)
-
     # character info
     IPV.character_i_path = main_window.listView_2.model().item(726, 0).text()
     # camera info
     IPV.camera_i_path = main_window.listView_2.model().item(727, 0).text()
     # blast info
     IPV.blast_i_path = main_window.listView_2.model().item(728, 0).text()
+
+    # Read all the animation values
+    read_animation_files(main_window, 0, main_window.animation_type)
+    main_window.animation_type.setCurrentIndex(0)
+    read_animation_files(main_window, IPV.size_between_animation_and_effects, main_window.animation_properties)
+    main_window.animation_properties.setCurrentIndex(0)
 
     # Read character info file
     with open(IPV.character_i_path, mode="rb") as file:
@@ -281,6 +286,64 @@ def write_single_character_parameters(main_window):
                 with open(animation_properties_files[j].path, mode="wb") as file:
                     file.write(animation_properties_files[j].data)
 
+    # Save all character info
+    with open(IPV.character_i_path, mode="rb+") as file:
+        # Speed of charging
+        file.write(struct.pack('>f', main_window.speed_of_charging_value.value()))
+        file.write(struct.pack('>f', main_window.speed_of_charging_value_2.value()))
+        # Ki regeneration rate
+        file.write(struct.pack('>f', main_window.ki_regeneration_rate_value.value()))
+
+        # Ki cost of dash
+        file.seek(4, 1)
+        file.write(struct.pack('>f', main_window.ki_cost_of_dash_value.value()))
+
+        # Movement speed normal and sidestep
+        file.seek(12, 1)
+        file.write(struct.pack('>f', main_window.movement_speed_value.value()))
+        file.write(struct.pack('>f', main_window.sidestep_speed_value.value()))
+
+        # Movement speed up and down
+        file.seek(12, 1)
+        file.write(struct.pack('>f', main_window.up_speed_value.value()))
+        file.write(struct.pack('>f', main_window.down_speed_value.value()))
+        file.write(struct.pack('>f', main_window.dash_up_speed_value.value()))
+        file.write(struct.pack('>f', main_window.dash_down_speed_value.value()))
+
+        # Attack damage
+        file.seek(4, 1)
+        file.write(main_window.attack_value.value().to_bytes(2, byteorder="big"))
+        # Ki blast damage
+        file.seek(4, 1)
+        file.write(main_window.blast_damage_value.value().to_bytes(2, byteorder="big"))
+
+        # Defense/Armor
+        file.seek(1, 1)
+        file.write(main_window.defense_value.value().to_bytes(1, byteorder="big"))
+
+        # Number of ki blasts
+        file.seek(31, 1)
+        file.write(main_window.number_ki_blasts_value.value().to_bytes(1, byteorder="big"))
+
+        # Cost of ki blast
+        file.seek(13, 1)
+        file.write(main_window.cost_of_blast_value.value().to_bytes(1, byteorder="big"))
+        # Size of ki blast
+        file.write(struct.pack('>f', main_window.size_of_blast_value.value()))
+
+        # Cancel set and Type fighting
+        file.seek(8, 1)
+        file.write(main_window.cancel_set_value.currentData().to_bytes(1, byteorder="big"))
+        file.write(main_window.type_fighting_value.currentData().to_bytes(1, byteorder="big"))
+
+        # Direction last hit fast combo
+        file.seek(1, 1)
+        file.write(main_window.direction_last_hit_combo_value.currentData().to_bytes(1, byteorder="big"))
+
+        # Color background fast combo
+        file.seek(3, 1)
+        file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
+
     # Save all camera info
     with open(IPV.camera_i_path, mode="rb+") as file:
 
@@ -345,64 +408,6 @@ def write_single_character_parameters(main_window):
             else:
                 file.seek(IPV.size_between_blast, 1)
 
-    # Save all the info
-    with open(IPV.character_i_path, mode="rb+") as file:
-        # Speed of charging
-        file.write(struct.pack('>f', main_window.speed_of_charging_value.value()))
-        file.write(struct.pack('>f', main_window.speed_of_charging_value_2.value()))
-        # Ki regeneration rate
-        file.write(struct.pack('>f', main_window.ki_regeneration_rate_value.value()))
-
-        # Ki cost of dash
-        file.seek(4, 1)
-        file.write(struct.pack('>f', main_window.ki_cost_of_dash_value.value()))
-
-        # Movement speed normal and sidestep
-        file.seek(12, 1)
-        file.write(struct.pack('>f', main_window.movement_speed_value.value()))
-        file.write(struct.pack('>f', main_window.sidestep_speed_value.value()))
-
-        # Movement speed up and down
-        file.seek(12, 1)
-        file.write(struct.pack('>f', main_window.up_speed_value.value()))
-        file.write(struct.pack('>f', main_window.down_speed_value.value()))
-        file.write(struct.pack('>f', main_window.dash_up_speed_value.value()))
-        file.write(struct.pack('>f', main_window.dash_down_speed_value.value()))
-
-        # Attack damage
-        file.seek(4, 1)
-        file.write(main_window.attack_value.value().to_bytes(2, byteorder="big"))
-        # Ki blast damage
-        file.seek(4, 1)
-        file.write(main_window.blast_damage_value.value().to_bytes(2, byteorder="big"))
-
-        # Defense/Armor
-        file.seek(1, 1)
-        file.write(main_window.defense_value.value().to_bytes(1, byteorder="big"))
-
-        # Number of ki blasts
-        file.seek(31, 1)
-        file.write(main_window.number_ki_blasts_value.value().to_bytes(1, byteorder="big"))
-
-        # Cost of ki blast
-        file.seek(13, 1)
-        file.write(main_window.cost_of_blast_value.value().to_bytes(1, byteorder="big"))
-        # Size of ki blast
-        file.write(struct.pack('>f', main_window.size_of_blast_value.value()))
-
-        # Cancel set and Type fighting
-        file.seek(8, 1)
-        file.write(main_window.cancel_set_value.currentData().to_bytes(1, byteorder="big"))
-        file.write(main_window.type_fighting_value.currentData().to_bytes(1, byteorder="big"))
-
-        # Direction last hit fast combo
-        file.seek(1, 1)
-        file.write(main_window.direction_last_hit_combo_value.currentData().to_bytes(1, byteorder="big"))
-
-        # Color background fast combo
-        file.seek(3, 1)
-        file.write(main_window.background_color_combo_value.currentData().to_bytes(1, byteorder="big"))
-
 
 def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load, animation_combo_box):
 
@@ -415,6 +420,10 @@ def read_animation_file(main_window, index_list_view, combo_box_label, number_fi
         with open(animation.path, mode="rb") as file:
             animation.data = file.read()
         animation.size = len(animation.data)
+
+        # Check if the file is 'Transformation in' from properties in order to read the background color
+        if index_list_view == 671 and animation_combo_box.objectName() == "animation_properties" and i == 0:
+            read_transformation_effect(main_window, animation)
 
         # Add all the instances to an array
         item_data_animation.append(animation)
@@ -654,6 +663,7 @@ def export_animation(animation_array, file_export_path):
 
 
 def import_animation(main_window, file_export_path, animation_array, name_file=None, animations_files_error=None):
+
     if file_export_path:
 
         with open(file_export_path, mode="rb") as file:
@@ -684,7 +694,7 @@ def import_animation(main_window, file_export_path, animation_array, name_file=N
                 total_size = 0
 
                 # Read the size of each animation file
-                for i in range(number_anim_files):
+                for _ in range(number_anim_files):
                     size = int.from_bytes(file.read(4), "big")
                     sizes_number_of_files.append(size)
                     total_size += size

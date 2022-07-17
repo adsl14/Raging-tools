@@ -867,9 +867,9 @@
              <widget class="QFrame" name="transPartner">
               <property name="geometry">
                <rect>
-                <x>190</x>
-                <y>40</y>
-                <width>281</width>
+                <x>160</x>
+                <y>41</y>
+                <width>291</width>
                 <height>41</height>
                </rect>
               </property>
@@ -877,17 +877,17 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="transPartnerText">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>161</width>
+                 <width>151</width>
                  <height>21</height>
                 </rect>
                </property>
@@ -927,7 +927,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -940,9 +940,9 @@
              <widget class="QFrame" name="transEffect">
               <property name="geometry">
                <rect>
-                <x>190</x>
+                <x>160</x>
                 <y>0</y>
-                <width>281</width>
+                <width>291</width>
                 <height>41</height>
                </rect>
               </property>
@@ -950,10 +950,10 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QComboBox" name="transEffectValue">
                <property name="geometry">
@@ -968,9 +968,9 @@
               <widget class="QLabel" name="transEffectText">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>161</width>
+                 <width>151</width>
                  <height>21</height>
                 </rect>
                </property>
@@ -985,9 +985,9 @@
              <widget class="QFrame" name="camera_size">
               <property name="geometry">
                <rect>
-                <x>270</x>
-                <y>330</y>
-                <width>261</width>
+                <x>280</x>
+                <y>321</y>
+                <width>301</width>
                 <height>51</height>
                </rect>
               </property>
@@ -995,17 +995,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="camera_size_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>20</y>
-                 <width>81</width>
+                 <width>71</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -1093,9 +1096,9 @@
              <widget class="QFrame" name="health">
               <property name="geometry">
                <rect>
-                <x>270</x>
-                <y>290</y>
-                <width>151</width>
+                <x>280</x>
+                <y>280</y>
+                <width>301</width>
                 <height>41</height>
                </rect>
               </property>
@@ -1103,15 +1106,18 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="health_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>12</y>
                  <width>41</width>
                  <height>16</height>
@@ -1153,9 +1159,9 @@
              <widget class="QFrame" name="hit_box">
               <property name="geometry">
                <rect>
-                <x>270</x>
-                <y>380</y>
-                <width>121</width>
+                <x>280</x>
+                <y>372</y>
+                <width>301</width>
                 <height>41</height>
                </rect>
               </property>
@@ -1163,10 +1169,13 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QDoubleSpinBox" name="hit_box_value">
                <property name="geometry">
@@ -1190,9 +1199,9 @@
               <widget class="QLabel" name="hit_box_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>51</width>
+                 <width>41</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -1232,7 +1241,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1254,7 +1263,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1273,7 +1282,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1292,7 +1301,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1311,7 +1320,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1330,7 +1339,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1349,7 +1358,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1368,7 +1377,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1387,7 +1396,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1406,7 +1415,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1425,7 +1434,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1444,7 +1453,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1463,7 +1472,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1482,7 +1491,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1501,7 +1510,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1520,7 +1529,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1539,7 +1548,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1558,7 +1567,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1577,7 +1586,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1596,7 +1605,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1615,7 +1624,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1634,7 +1643,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1653,7 +1662,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1672,7 +1681,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1691,7 +1700,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1710,7 +1719,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1729,7 +1738,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1748,7 +1757,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1767,7 +1776,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1786,7 +1795,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1805,7 +1814,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1824,7 +1833,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1843,7 +1852,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1862,7 +1871,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1881,7 +1890,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1900,7 +1909,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1919,7 +1928,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1938,7 +1947,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1957,7 +1966,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1976,7 +1985,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -1995,7 +2004,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2014,7 +2023,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2033,7 +2042,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2052,7 +2061,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2071,7 +2080,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2090,7 +2099,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2109,7 +2118,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2128,7 +2137,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2147,7 +2156,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2166,7 +2175,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2185,7 +2194,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2204,7 +2213,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2223,7 +2232,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2242,7 +2251,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2261,7 +2270,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2280,7 +2289,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2299,7 +2308,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2318,7 +2327,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2337,7 +2346,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2356,7 +2365,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2375,7 +2384,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2394,7 +2403,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2413,7 +2422,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2432,7 +2441,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2451,7 +2460,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2470,7 +2479,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2492,7 +2501,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2511,7 +2520,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2530,7 +2539,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2549,7 +2558,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2560,8 +2569,8 @@
               <property name="geometry">
                <rect>
                 <x>590</x>
-                <y>310</y>
-                <width>231</width>
+                <y>321</y>
+                <width>291</width>
                 <height>41</height>
                </rect>
               </property>
@@ -2569,17 +2578,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="glow_lightning_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>91</width>
+                 <width>81</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -2607,9 +2619,9 @@
              <widget class="QFrame" name="transformPanel">
               <property name="geometry">
                <rect>
-                <x>0</x>
+                <x>10</x>
                 <y>0</y>
-                <width>191</width>
+                <width>141</width>
                 <height>181</height>
                </rect>
               </property>
@@ -2625,7 +2637,7 @@
                </property>
                <property name="geometry">
                 <rect>
-                 <x>33</x>
+                 <x>3</x>
                  <y>75</y>
                  <width>61</width>
                  <height>61</height>
@@ -2641,7 +2653,7 @@
               <widget class="QLabel" name="transSlotPanel1">
                <property name="geometry">
                 <rect>
-                 <x>65</x>
+                 <x>35</x>
                  <y>43</y>
                  <width>61</width>
                  <height>61</height>
@@ -2657,7 +2669,7 @@
               <widget class="QLabel" name="transSlotPanel2">
                <property name="geometry">
                 <rect>
-                 <x>99</x>
+                 <x>69</x>
                  <y>75</y>
                  <width>61</width>
                  <height>61</height>
@@ -2673,7 +2685,7 @@
               <widget class="QLabel" name="transSlotPanel3">
                <property name="geometry">
                 <rect>
-                 <x>65</x>
+                 <x>35</x>
                  <y>108</y>
                  <width>61</width>
                  <height>61</height>
@@ -2689,7 +2701,7 @@
               <widget class="QLabel" name="transText">
                <property name="geometry">
                 <rect>
-                 <x>30</x>
+                 <x>0</x>
                  <y>10</y>
                  <width>131</width>
                  <height>21</height>
@@ -2699,7 +2711,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/tx_transform_US.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/tx_transform_US.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -2708,7 +2720,7 @@
               <widget class="QLabel" name="transPanel">
                <property name="geometry">
                 <rect>
-                 <x>30</x>
+                 <x>0</x>
                  <y>35</y>
                  <width>141</width>
                  <height>141</height>
@@ -2718,7 +2730,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/pl_transform.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/pl_transform.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>false</bool>
@@ -2744,7 +2756,7 @@
                <string/>
               </property>
               <property name="pixmap">
-               <pixmap>../character_parameters_editor/images/large/chara_up_chips_l_000.png</pixmap>
+               <pixmap>../../character_parameters_editor/images/large/chara_up_chips_l_000.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -2754,8 +2766,8 @@
               <property name="geometry">
                <rect>
                 <x>590</x>
-                <y>270</y>
-                <width>221</width>
+                <y>280</y>
+                <width>291</width>
                 <height>41</height>
                </rect>
               </property>
@@ -2763,17 +2775,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="color_lightning_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>91</width>
+                 <width>81</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -2801,8 +2816,8 @@
              <widget class="QFrame" name="amount_ki_per_fusion">
               <property name="geometry">
                <rect>
-                <x>630</x>
-                <y>80</y>
+                <x>620</x>
+                <y>82</y>
                 <width>261</width>
                 <height>81</height>
                </rect>
@@ -2811,17 +2826,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="amount_ki_per_fusion_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>131</width>
+                 <width>121</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -2979,9 +2997,9 @@
              <widget class="QFrame" name="animation_per_transformation">
               <property name="geometry">
                <rect>
-                <x>190</x>
-                <y>160</y>
-                <width>281</width>
+                <x>160</x>
+                <y>163</y>
+                <width>291</width>
                 <height>111</height>
                </rect>
               </property>
@@ -2989,17 +3007,17 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="animation_per_transformation_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>181</width>
+                 <width>171</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -3016,7 +3034,7 @@
               <widget class="QLabel" name="animation_trans1_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>40</y>
                  <width>16</width>
                  <height>20</height>
@@ -3038,7 +3056,7 @@
               <widget class="QLabel" name="animation_trans2_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>80</y>
                  <width>16</width>
                  <height>20</height>
@@ -3060,7 +3078,7 @@
               <widget class="QLabel" name="animation_trans3_text">
                <property name="geometry">
                 <rect>
-                 <x>140</x>
+                 <x>150</x>
                  <y>40</y>
                  <width>16</width>
                  <height>20</height>
@@ -3082,7 +3100,7 @@
               <widget class="QLabel" name="animation_trans4_text">
                <property name="geometry">
                 <rect>
-                 <x>140</x>
+                 <x>150</x>
                  <y>80</y>
                  <width>16</width>
                  <height>20</height>
@@ -3104,7 +3122,7 @@
               <widget class="QComboBox" name="trans1_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>30</x>
                  <y>40</y>
                  <width>101</width>
                  <height>22</height>
@@ -3114,7 +3132,7 @@
               <widget class="QComboBox" name="trans3_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>160</x>
+                 <x>170</x>
                  <y>40</y>
                  <width>101</width>
                  <height>22</height>
@@ -3124,7 +3142,7 @@
               <widget class="QComboBox" name="trans2_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>30</x>
                  <y>80</y>
                  <width>101</width>
                  <height>22</height>
@@ -3134,7 +3152,7 @@
               <widget class="QComboBox" name="trans4_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>160</x>
+                 <x>170</x>
                  <y>80</y>
                  <width>101</width>
                  <height>22</height>
@@ -3145,7 +3163,7 @@
              <widget class="QFrame" name="fusionPartnerTrigger">
               <property name="geometry">
                <rect>
-                <x>630</x>
+                <x>620</x>
                 <y>0</y>
                 <width>261</width>
                 <height>41</height>
@@ -3155,17 +3173,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="fusionPartnerTrigger_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>151</width>
+                 <width>141</width>
                  <height>21</height>
                 </rect>
                </property>
@@ -3205,7 +3226,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -3218,9 +3239,9 @@
              <widget class="QFrame" name="amount_ki_per_transformation">
               <property name="geometry">
                <rect>
-                <x>190</x>
-                <y>80</y>
-                <width>281</width>
+                <x>160</x>
+                <y>82</y>
+                <width>291</width>
                 <height>81</height>
                </rect>
               </property>
@@ -3228,17 +3249,17 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="amount_ki_per_transformation_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>181</width>
+                 <width>171</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -3399,8 +3420,8 @@
              <widget class="QFrame" name="animation_per_fusion">
               <property name="geometry">
                <rect>
-                <x>630</x>
-                <y>160</y>
+                <x>620</x>
+                <y>163</y>
                 <width>261</width>
                 <height>111</height>
                </rect>
@@ -3409,17 +3430,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="animation_per_fusion_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>121</width>
+                 <width>111</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -3436,7 +3460,7 @@
               <widget class="QLabel" name="animation_fusion1_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>40</y>
                  <width>16</width>
                  <height>20</height>
@@ -3458,7 +3482,7 @@
               <widget class="QLabel" name="animation_fusion2_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>80</y>
                  <width>16</width>
                  <height>20</height>
@@ -3480,7 +3504,7 @@
               <widget class="QLabel" name="animation_fusion3_text">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>140</x>
                  <y>40</y>
                  <width>16</width>
                  <height>20</height>
@@ -3502,7 +3526,7 @@
               <widget class="QLabel" name="animation_fusion4_text">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>140</x>
                  <y>80</y>
                  <width>16</width>
                  <height>20</height>
@@ -3524,7 +3548,7 @@
               <widget class="QComboBox" name="fusion1_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>30</x>
                  <y>40</y>
                  <width>91</width>
                  <height>22</height>
@@ -3534,7 +3558,7 @@
               <widget class="QComboBox" name="fusion3_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>150</x>
+                 <x>160</x>
                  <y>40</y>
                  <width>91</width>
                  <height>22</height>
@@ -3544,7 +3568,7 @@
               <widget class="QComboBox" name="fusion2_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>30</x>
                  <y>80</y>
                  <width>91</width>
                  <height>22</height>
@@ -3554,7 +3578,7 @@
               <widget class="QComboBox" name="fusion4_animation_value">
                <property name="geometry">
                 <rect>
-                 <x>150</x>
+                 <x>160</x>
                  <y>80</y>
                  <width>91</width>
                  <height>22</height>
@@ -3565,8 +3589,8 @@
              <widget class="QFrame" name="aura_size">
               <property name="geometry">
                <rect>
-                <x>270</x>
-                <y>420</y>
+                <x>280</x>
+                <y>413</y>
                 <width>301</width>
                 <height>51</height>
                </rect>
@@ -3575,17 +3599,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="aura_size_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>20</y>
-                 <width>61</width>
+                 <width>51</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -3699,8 +3726,8 @@
              <widget class="QFrame" name="fusionPartnerVisual">
               <property name="geometry">
                <rect>
-                <x>630</x>
-                <y>40</y>
+                <x>620</x>
+                <y>41</y>
                 <width>261</width>
                 <height>41</height>
                </rect>
@@ -3709,17 +3736,20 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="fusionPartnerVisual_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>141</width>
+                 <width>131</width>
                  <height>21</height>
                 </rect>
                </property>
@@ -3759,7 +3789,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -3772,9 +3802,9 @@
              <widget class="QFrame" name="fusionPanel">
               <property name="geometry">
                <rect>
-                <x>470</x>
+                <x>460</x>
                 <y>0</y>
-                <width>161</width>
+                <width>151</width>
                 <height>181</height>
                </rect>
               </property>
@@ -3790,7 +3820,7 @@
                </property>
                <property name="geometry">
                 <rect>
-                 <x>17</x>
+                 <x>7</x>
                  <y>75</y>
                  <width>61</width>
                  <height>61</height>
@@ -3806,7 +3836,7 @@
               <widget class="QLabel" name="fusiSlotPanel1">
                <property name="geometry">
                 <rect>
-                 <x>49</x>
+                 <x>39</x>
                  <y>43</y>
                  <width>61</width>
                  <height>61</height>
@@ -3822,7 +3852,7 @@
               <widget class="QLabel" name="fusiSlotPanel2">
                <property name="geometry">
                 <rect>
-                 <x>83</x>
+                 <x>73</x>
                  <y>75</y>
                  <width>61</width>
                  <height>61</height>
@@ -3838,7 +3868,7 @@
               <widget class="QLabel" name="fusiSlotPanel3">
                <property name="geometry">
                 <rect>
-                 <x>49</x>
+                 <x>39</x>
                  <y>108</y>
                  <width>61</width>
                  <height>61</height>
@@ -3854,7 +3884,7 @@
               <widget class="QLabel" name="fusiPanelText">
                <property name="geometry">
                 <rect>
-                 <x>40</x>
+                 <x>30</x>
                  <y>10</y>
                  <width>81</width>
                  <height>21</height>
@@ -3864,7 +3894,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/tx_fusion_US.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/tx_fusion_US.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -3873,7 +3903,7 @@
               <widget class="QLabel" name="fusiPanel">
                <property name="geometry">
                 <rect>
-                 <x>14</x>
+                 <x>4</x>
                  <y>35</y>
                  <width>141</width>
                  <height>141</height>
@@ -3883,7 +3913,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/fourSlot/pl_fusion.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/fourSlot/pl_fusion.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>false</bool>
@@ -3900,16 +3930,19 @@
               <property name="geometry">
                <rect>
                 <x>590</x>
-                <y>350</y>
-                <width>231</width>
+                <y>362</y>
+                <width>291</width>
                 <height>51</height>
                </rect>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QComboBox" name="aura_type_value">
                <property name="geometry">
@@ -3924,7 +3957,7 @@
               <widget class="QLabel" name="aura_type_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>20</y>
                  <width>61</width>
                  <height>16</height>
@@ -3942,16 +3975,19 @@
               <property name="geometry">
                <rect>
                 <x>590</x>
-                <y>400</y>
+                <y>413</y>
                 <width>291</width>
                 <height>61</height>
                </rect>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="ico_boost_stick_r_up_image">
                <property name="geometry">
@@ -3966,7 +4002,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/controller/ico_boost_stick_r_up.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/controller/ico_boost_stick_r_up.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -4058,9 +4094,9 @@
               <widget class="QLabel" name="ico_boost_stick_r_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>0</y>
-                 <width>71</width>
+                 <width>61</width>
                  <height>21</height>
                 </rect>
                </property>
@@ -4084,7 +4120,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/controller/ico_boost_stick_r_r.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/controller/ico_boost_stick_r_r.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -4266,7 +4302,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/controller/ico_boost_stick_r_d.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/controller/ico_boost_stick_r_d.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -4368,7 +4404,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/controller/ico_boost_stick_r_push_00.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/controller/ico_boost_stick_r_push_00.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -4390,7 +4426,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/controller/ico_boost_stick_r_l.png</pixmap>
+                <pixmap>../../character_parameters_editor/images/controller/ico_boost_stick_r_l.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -4509,7 +4545,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>200</y>
+                <y>210</y>
                 <width>371</width>
                 <height>131</height>
                </rect>
@@ -4518,15 +4554,15 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="ki_values_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>0</y>
                  <width>61</width>
                  <height>16</height>
@@ -4897,21 +4933,24 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>340</y>
-                <width>651</width>
+                <y>350</y>
+                <width>641</width>
                 <height>141</height>
                </rect>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
               </property>
               <widget class="QLabel" name="animation_text_title">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>0</y>
                  <width>111</width>
                  <height>16</height>
@@ -4927,7 +4966,7 @@
               <widget class="QPushButton" name="exportAllAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>470</x>
+                 <x>460</x>
                  <y>40</y>
                  <width>81</width>
                  <height>23</height>
@@ -4940,7 +4979,7 @@
               <widget class="QPushButton" name="importAllAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>560</x>
+                 <x>550</x>
                  <y>40</y>
                  <width>81</width>
                  <height>23</height>
@@ -4953,7 +4992,7 @@
               <widget class="QPushButton" name="importAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>380</x>
+                 <x>370</x>
                  <y>40</y>
                  <width>81</width>
                  <height>23</height>
@@ -4966,7 +5005,7 @@
               <widget class="QComboBox" name="animation_type">
                <property name="geometry">
                 <rect>
-                 <x>60</x>
+                 <x>50</x>
                  <y>40</y>
                  <width>221</width>
                  <height>21</height>
@@ -4976,7 +5015,7 @@
               <widget class="QPushButton" name="exportAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>290</x>
+                 <x>280</x>
                  <y>40</y>
                  <width>81</width>
                  <height>23</height>
@@ -4989,7 +5028,7 @@
               <widget class="QLabel" name="animation_text">
                <property name="geometry">
                 <rect>
-                 <x>140</x>
+                 <x>130</x>
                  <y>20</y>
                  <width>71</width>
                  <height>16</height>
@@ -5005,7 +5044,7 @@
               <widget class="QPushButton" name="importAllAnimationPropertiesButton">
                <property name="geometry">
                 <rect>
-                 <x>560</x>
+                 <x>550</x>
                  <y>100</y>
                  <width>81</width>
                  <height>23</height>
@@ -5018,7 +5057,7 @@
               <widget class="QPushButton" name="exportAnimationPropertiesButton">
                <property name="geometry">
                 <rect>
-                 <x>290</x>
+                 <x>280</x>
                  <y>100</y>
                  <width>81</width>
                  <height>23</height>
@@ -5031,7 +5070,7 @@
               <widget class="QComboBox" name="animation_properties">
                <property name="geometry">
                 <rect>
-                 <x>60</x>
+                 <x>50</x>
                  <y>100</y>
                  <width>221</width>
                  <height>21</height>
@@ -5041,7 +5080,7 @@
               <widget class="QLabel" name="animation_text_2">
                <property name="geometry">
                 <rect>
-                 <x>140</x>
+                 <x>130</x>
                  <y>80</y>
                  <width>71</width>
                  <height>16</height>
@@ -5057,7 +5096,7 @@
               <widget class="QPushButton" name="exportAllAnimationPropertiesButton">
                <property name="geometry">
                 <rect>
-                 <x>470</x>
+                 <x>460</x>
                  <y>100</y>
                  <width>81</width>
                  <height>23</height>
@@ -5070,7 +5109,7 @@
               <widget class="QPushButton" name="importAnimationPropertiesButton">
                <property name="geometry">
                 <rect>
-                 <x>380</x>
+                 <x>370</x>
                  <y>100</y>
                  <width>81</width>
                  <height>23</height>
@@ -5085,8 +5124,8 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>891</width>
+                <y>10</y>
+                <width>911</width>
                 <height>191</height>
                </rect>
               </property>
@@ -5094,17 +5133,17 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="camera_values_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>10</y>
-                 <width>91</width>
+                 <width>81</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -5923,21 +5962,21 @@
               <property name="geometry">
                <rect>
                 <x>650</x>
-                <y>200</y>
-                <width>251</width>
+                <y>210</y>
+                <width>261</width>
                 <height>181</height>
                </rect>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="melee_values_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>0</y>
                  <width>81</width>
                  <height>16</height>
@@ -6141,7 +6180,7 @@
               <property name="geometry">
                <rect>
                 <x>380</x>
-                <y>200</y>
+                <y>210</y>
                 <width>261</width>
                 <height>131</height>
                </rect>
@@ -6150,15 +6189,15 @@
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="movement_speed_text_2">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
+                 <x>10</x>
                  <y>0</y>
                  <width>151</width>
                  <height>16</height>
@@ -6410,25 +6449,25 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>490</y>
-                <width>601</width>
-                <height>31</height>
+                <y>500</y>
+                <width>581</width>
+                <height>41</height>
                </rect>
               </property>
               <property name="toolTip">
                <string/>
               </property>
               <property name="frameShape">
-               <enum>QFrame::StyledPanel</enum>
+               <enum>QFrame::WinPanel</enum>
               </property>
               <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
+               <enum>QFrame::Sunken</enum>
               </property>
               <widget class="QLabel" name="blast_values_text">
                <property name="geometry">
                 <rect>
-                 <x>0</x>
-                 <y>0</y>
+                 <x>10</x>
+                 <y>10</y>
                  <width>71</width>
                  <height>16</height>
                 </rect>
@@ -6444,7 +6483,7 @@
                <property name="geometry">
                 <rect>
                  <x>80</x>
-                 <y>0</y>
+                 <y>10</y>
                  <width>131</width>
                  <height>21</height>
                 </rect>
@@ -6454,7 +6493,7 @@
                <property name="geometry">
                 <rect>
                  <x>220</x>
-                 <y>0</y>
+                 <y>10</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -6467,7 +6506,7 @@
                <property name="geometry">
                 <rect>
                  <x>310</x>
-                 <y>0</y>
+                 <y>10</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -6480,7 +6519,7 @@
                <property name="geometry">
                 <rect>
                  <x>400</x>
-                 <y>0</y>
+                 <y>10</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -6493,13 +6532,71 @@
                <property name="geometry">
                 <rect>
                  <x>490</x>
-                 <y>0</y>
+                 <y>10</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
                </property>
                <property name="text">
                 <string>Import all...</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QFrame" name="transformation_values">
+              <property name="geometry">
+               <rect>
+                <x>650</x>
+                <y>400</y>
+                <width>261</width>
+                <height>61</height>
+               </rect>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::WinPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <widget class="QLabel" name="transformation_values_text">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>0</y>
+                 <width>121</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Parameters that modify the transformation effects properties of the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Transformation values:</string>
+               </property>
+              </widget>
+              <widget class="QComboBox" name="background_color_trans_value">
+               <property name="geometry">
+                <rect>
+                 <x>130</x>
+                 <y>30</y>
+                 <width>101</width>
+                 <height>22</height>
+                </rect>
+               </property>
+              </widget>
+              <widget class="QLabel" name="background_color_trans_text">
+               <property name="geometry">
+                <rect>
+                 <x>20</x>
+                 <y>30</y>
+                 <width>91</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Background color of the transformation when is triggered.&lt;/p&gt;&lt;p&gt;This parameter will be enabled only for transformations effects that has a background color.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Background color:</string>
                </property>
               </widget>
              </widget>
@@ -6522,6 +6619,9 @@
               </property>
               <property name="text">
                <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap>../../character_parameters_editor/images/large/chara_up_chips_l_000.png</pixmap>
               </property>
               <property name="scaledContents">
                <bool>true</bool>
@@ -6558,7 +6658,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6577,7 +6677,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6596,7 +6696,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6615,7 +6715,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6634,7 +6734,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6672,7 +6772,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6691,7 +6791,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6710,7 +6810,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6729,7 +6829,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6748,7 +6848,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6767,7 +6867,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6786,7 +6886,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6805,7 +6905,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6824,7 +6924,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6843,7 +6943,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6862,7 +6962,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6881,7 +6981,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6900,7 +7000,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6919,7 +7019,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6938,7 +7038,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6957,7 +7057,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -6992,7 +7092,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7011,7 +7111,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7030,7 +7130,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7049,7 +7149,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7068,7 +7168,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7087,7 +7187,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7106,7 +7206,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7125,7 +7225,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7144,7 +7244,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7163,7 +7263,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7182,7 +7282,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7201,7 +7301,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7220,7 +7320,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7239,7 +7339,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7258,7 +7358,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7277,7 +7377,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7296,7 +7396,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7315,7 +7415,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7334,7 +7434,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7353,7 +7453,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7372,7 +7472,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7391,7 +7491,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7410,7 +7510,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7429,7 +7529,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7448,7 +7548,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7467,7 +7567,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7486,7 +7586,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7505,7 +7605,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7524,7 +7624,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7543,7 +7643,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7562,7 +7662,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7581,7 +7681,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7600,7 +7700,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7619,7 +7719,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7638,7 +7738,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7657,7 +7757,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7692,7 +7792,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7711,7 +7811,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7730,7 +7830,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7749,7 +7849,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7768,7 +7868,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7787,7 +7887,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7806,7 +7906,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7825,7 +7925,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7844,7 +7944,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7863,7 +7963,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7882,7 +7982,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7901,7 +8001,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7920,7 +8020,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7939,7 +8039,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7958,7 +8058,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -7977,7 +8077,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
+                <pixmap>../../character_parameters_editor/images/small/chara_chips_000.bmp</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>

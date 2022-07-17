@@ -1,3 +1,4 @@
+from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
 from lib.character_parameters_editor import IPF
@@ -224,16 +225,20 @@ def action_import_animation_button_logic(main_window, animation_combo_box):
     # Ask to the user from what file wants to open the camera files
     name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
                 animation_combo_box.currentText().replace(" ", "_") + "." + IPV.animations_extension
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import animation",
+    file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
-    if os.path.exists(file_export_path):
+    if os.path.exists(file_import_path):
         # Import a single animation
         animation_array = animation_combo_box.currentData()
-        IPF.import_animation(main_window, file_export_path, animation_array)
+        IPF.import_animation(main_window, file_import_path, animation_array)
+
+        # Check if the combo box is 'animation_properties' and is the file 'transformation in'
+        if animation_combo_box.objectName() == "animation_properties" and animation_combo_box.currentIndex() == 57:
+            read_transformation_effect(main_window, animation_array[0])
 
         # Change old path
-        main_window.old_path_file = file_export_path
+        main_window.old_path_file = file_import_path
 
 
 def action_import_all_animation_button_logic(main_window, animation_combo_box):
@@ -249,8 +254,12 @@ def action_import_all_animation_button_logic(main_window, animation_combo_box):
         for i in range(0, len(animation_files)):
             # Import every single animation
             animation_array = animation_combo_box.itemData(i)
-            IPF.import_animation(os.path.join(folder_import, animation_files[i]), animation_array,
+            IPF.import_animation(main_window, os.path.join(folder_import, animation_files[i]), animation_array,
                                  animation_files[i], animations_files_error)
+
+            # Check if the combo box is 'animation_properties' and is the file 'transformation in' (57)
+            if animation_combo_box.objectName() == "animation_properties" and i == 57:
+                read_transformation_effect(main_window, animation_array[0])
 
         # We show a message with the animations files that couldn't get imported
         if animations_files_error:
@@ -526,3 +535,15 @@ def on_unk13_value_changed(main_window):
         main_window.camera_type_key.currentData().unknowns["unknown_block_13"] = \
             main_window.unk13_value.value()
         main_window.camera_type_key.currentData().modified = True
+
+
+def on_background_color_trans_change(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the color of the background when we change the combo box background color transformation
+        animation = main_window.animation_properties.itemData(57)[0]
+        animation.data = animation.data[:IPV.trans_effect_position_byte] + \
+            main_window.background_color_trans_value.\
+            currentData().to_bytes(1, "big") + animation.data[IPV.trans_effect_position_byte+1:]
+        animation.modified = True

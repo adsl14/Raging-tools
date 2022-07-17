@@ -2,7 +2,6 @@
 
 class IPV:
 
-    # path and positions of files and data
     character_i_path = ""
     camera_i_path = ""
     blast_i_path = ""
@@ -13,9 +12,9 @@ class IPV:
                               "Cancel 6": 5, "Cancel 7": 6, "Cancel 8": 7, "Cancel 9": 8, "Cancel 10": 9,
                               "Cancel 11": 10, "Cancel 12": 11, "Cancel 13": 13, "Cancel 14": 14})
     direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
-    color_background_combo_values = dict({"Red": 76, "Pink": 84, "Blue": 88, "Lighter Blue": 86, "Purple": 80,
-                                          "Yellow": 94, "Darkner Yellow": 74, "Lighter Yellow": 92, "Black": 78,
-                                          "Gray": 82})
+    color_background_values = dict({"Red": 76, "Pink": 84, "Blue": 88, "Lighter Blue": 86, "Purple": 80,
+                                    "Golden": 98, "Yellow": 94, "Darkner Yellow": 74, "Lighter Yellow": 92,
+                                    "Black": 78,  "Gray": 82})
     # Camera properties
     # Don't change the order, because the file has this order when we read the file
     camera_types_cutscene = ["Entry (1P)", "Entry (2P)", "Entry 2 (1P)", "Entry 2 (2P)", "Entry 3 (1P)",
@@ -49,3 +48,6 @@ class IPV:
     # Blast properties
     size_between_blast = 100
     blast_extension = "bla"
+    # Transformation effect values
+    trans_effect_identification_file = b'<#\xd7\n'
+    trans_effect_position_byte = 0
