@@ -1,3 +1,4 @@
+from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene

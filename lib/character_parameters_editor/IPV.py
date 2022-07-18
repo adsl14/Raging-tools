@@ -14,7 +14,8 @@ class IPV:
     direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
     color_background_values = dict({"Red": 76, "Pink": 84, "Blue": 88, "Lighter Blue": 86, "Purple": 80,
                                     "Golden": 98, "Yellow": 94, "Darkner Yellow": 74, "Lighter Yellow": 92,
-                                    "Black": 78,  "Gray": 82})
+                                    "Lighter Green": 31, "Green": 90, "Black": 78, "Gray": 82, "Unknown": 99,
+                                    "Unknown 2": 28})
     # Camera properties
     # Don't change the order, because the file has this order when we read the file
     camera_types_cutscene = ["Entry (1P)", "Entry (2P)", "Entry 2 (1P)", "Entry 2 (2P)", "Entry 3 (1P)",

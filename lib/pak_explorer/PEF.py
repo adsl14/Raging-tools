@@ -355,10 +355,13 @@ def load_data_to_pe_cpe(main_window):
         # Save the id of the character to the character parameters editor tab
         CPEV.file_character_id = data.split("_")[2]
 
+        # We're changing the character (avoid combo box code)
+        CPEV.change_character = True
+
         # Read all the data from the files and store it in the global_character from IPV.
         read_single_character_parameters(main_window)
 
-        # We're not changing the character in the main panel (play combo box code)
+        # We're not changing the character (play combo box code)
         CPEV.change_character = False
 
         # Open the tab (character parameters editor)
