@@ -2074,10 +2074,20 @@ def load_material_children_to_window(main_window, mtrl_child_data):
     main_window.MaterialChildEditorUI.saturation_glow_value.setValue(int(mtrl_child_data.Saturation_glow*100))
     main_window.MaterialChildEditorUI.brightness_base_value.setValue(int(mtrl_child_data.Brightness_toonmap*100))
     main_window.MaterialChildEditorUI.brightness_glow_value.setValue(int(mtrl_child_data.Brightness_incandescence*100))
-    border_rgba = str(mtrl_child_data.Border_RGBA).replace("[", "").replace("]", "")
-    main_window.MaterialChildEditorUI.border_color_color \
-        .setStyleSheet("background-color: rgba(" + border_rgba + ");")
-    main_window.MaterialChildEditorUI.border_color_R_value.setValue(int(mtrl_child_data.Border_RGBA[0]*255))
-    main_window.MaterialChildEditorUI.border_color_G_value.setValue(int(mtrl_child_data.Border_RGBA[1]*255))
-    main_window.MaterialChildEditorUI.border_color_B_value.setValue(int(mtrl_child_data.Border_RGBA[2]*255))
-    main_window.MaterialChildEditorUI.border_color_A_value.setValue(int(mtrl_child_data.Border_RGBA[3]*255))
+
+    red_value = int(mtrl_child_data.Border_RGBA[0]*255)
+    green_value = int(mtrl_child_data.Border_RGBA[1]*255)
+    blue_value = int(mtrl_child_data.Border_RGBA[2]*255)
+    alpha_value = int(mtrl_child_data.Border_RGBA[3]*255)
+    # If the value of the new RGBA is different from the old one, we change the border color
+    if main_window.MaterialChildEditorUI.border_color_R_value.value() != red_value or \
+            main_window.MaterialChildEditorUI.border_color_G_value.value() != green_value or \
+            main_window.MaterialChildEditorUI.border_color_B_value.value() != blue_value or \
+            main_window.MaterialChildEditorUI.border_color_A_value.value() != alpha_value:
+        border_rgba = str(mtrl_child_data.Border_RGBA).replace("[", "").replace("]", "")
+        main_window.MaterialChildEditorUI.border_color_color.setStyleSheet(
+            "background-color: rgba(" + border_rgba + ");")
+        main_window.MaterialChildEditorUI.border_color_R_value.setValue(red_value)
+        main_window.MaterialChildEditorUI.border_color_G_value.setValue(green_value)
+        main_window.MaterialChildEditorUI.border_color_B_value.setValue(blue_value)
+        main_window.MaterialChildEditorUI.border_color_A_value.setValue(alpha_value)
