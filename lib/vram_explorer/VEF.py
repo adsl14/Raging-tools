@@ -1071,7 +1071,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 data_child += mtrl_prop
 
             # Write the name DbzCharMtrl. If it doesn't exists, we create it
-            if data_info_child.name_offset != 0:
+            if data_info_child.name != "":
                 if data_info_child.name in special_names:
                     name_offset = special_names[data_info_child.name]
                 else:
