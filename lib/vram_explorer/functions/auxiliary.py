@@ -151,8 +151,10 @@ def check_entry_module(entry, entry_size, module):
         for i in range(rest):
             entry += b'\00'
             entry_size += 1
+    else:
+        rest = 0
 
-    return entry, entry_size
+    return entry, entry_size, rest
 
 
 def check_name_is_string_table(current_index, scne_model, data_info_parent):

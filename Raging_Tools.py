@@ -356,7 +356,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -428,7 +428,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -568,7 +568,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -649,7 +649,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -688,14 +688,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                             # Read all the data
                                             data += vertex_decl.unk0x00
-                                            # If the vertex usage is 5 (texture),
-                                            # we write how to use that texture in the mesh
-                                            if vertex_decl.vertex_usage == 5:
-                                                index = self.effectVal.findText(vertex_decl.resource_name)
-                                                if index != -1:
-                                                    data += self.effectVal.itemData(index).to_bytes(4, 'big')
-                                                else:
-                                                    data += b'\x00\x00\x00\x00'
+                                            # Search what type of effect is using the vertex declaration for the mesh
+                                            # If we don't find anything, we write 0
+                                            index = self.effectVal.findText(vertex_decl.resource_name)
+                                            if index != -1:
+                                                data += self.effectVal.itemData(index).to_bytes(4, 'big')
                                             else:
                                                 data += b'\x00\x00\x00\x00'
                                             data += vertex_decl.vertex_usage.to_bytes(2, 'big')
@@ -706,7 +703,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                             data_size += 20
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # If we check the size of the vbuf data due to Game Assets Converter
                                         # store the size as 'header + data' instead of 'header'. If the size is
@@ -743,7 +740,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -806,7 +803,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -872,7 +869,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -939,7 +936,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -1011,7 +1008,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         data_offset = data_size
@@ -1076,7 +1073,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         data_entry_size += 32
 
                                         # Check if the data, the module of 16 is 0
-                                        data, data_size = check_entry_module(data, data_size, 16)
+                                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
                                         # Update offsets for the next entry
                                         string_name_offset = 1 + string_table_size
@@ -1124,10 +1121,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             string_table_size += 1 + len(VEV.watermark_message)
 
                             # Check if the entry_info, the module of 16 is 0
-                            entry_info, entry_info_size = check_entry_module(entry_info, entry_info_size, 16)
+                            entry_info, entry_info_size, padding_size = check_entry_module(entry_info, entry_info_size,
+                                                                                           16)
 
                             # Check if the string_table_size, the module of 16 is 0
-                            string_table, string_table_size = check_entry_module(string_table, string_table_size, 16)
+                            string_table, string_table_size, padding_size = check_entry_module(string_table,
+                                                                                               string_table_size, 16)
 
                             # Create the header
                             header = VEV.sprp_file.sprp_header.data_tag + b'\00\01\00\01' + \
@@ -1155,8 +1154,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
                                 string_table_size += 1 + len(VEV.watermark_message)
                                 # Check if the string_table_size, the module of 16 is 0
-                                string_table, string_table_size = check_entry_module(string_table,
-                                                                                     string_table_size, 16)
+                                string_table, string_table_size, padding_size = check_entry_module(string_table,
+                                                                                                   string_table_size,
+                                                                                                   16)
 
                                 # Write the data entry
                                 # Write the TX2D entry only

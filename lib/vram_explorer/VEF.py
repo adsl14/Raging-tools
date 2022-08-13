@@ -730,7 +730,7 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
             data_entry_size += 32
 
             # Check if the data, the module of 16 is 0
-            data, data_size = check_entry_module(data, data_size, 16)
+            data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
             # Update offsets for the next entry
             string_name_offset = 1 + string_table_size
@@ -1031,6 +1031,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
     data_offset_children = 0
 
     for i in range(0, data_info_parent.child_count):
+
+        # Declarate a padding size and reset the padding for each child
+        padding_size = 0
 
         # Get the child
         data_info_child = data_info_parent.child_info[i]
@@ -1434,7 +1437,7 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                     string_table_child_size += string_name_size
                     string_name_offset += string_name_size
 
-            # [LAYERS], [NODES] or DbzEdgeInfo
+            # [LAYERS], [NODES], [TRANSFORM] or DbzEdgeInfo
             else:
 
                 # Write the data when is DbzEyeInfo
@@ -1488,6 +1491,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 else:
                     name_offset = 0
 
+            # Add a padding when the data is written
+            data_child, n, padding_size = check_entry_module(data_child, data_offset + data_info_child.data_size, 16)
+
         # The type entry is bone
         elif type_entry == b'BONE':
 
@@ -1515,7 +1521,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 data_sub_child_size, data_offset_children = write_children(main_window, num_material,
                                                                            data_info_child, type_entry,
                                                                            string_name_offset, data_offset +
-                                                                           data_info_child.data_size, special_names)
+                                                                           data_info_child.data_size + padding_size,
+                                                                           special_names)
 
             # Write children offset section first
             data_child_offset_section += name_offset.to_bytes(4, 'big')
@@ -1540,9 +1547,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         data_child_offset_section += data_offset_children.to_bytes(4, 'big')
 
         # Update the offsets
-        data_child_size += data_info_child.data_size
+        data_child_size += data_info_child.data_size + padding_size
         data_child_offset_section_size += 20
-        data_offset += data_info_child.data_size
+        data_offset += data_info_child.data_size + padding_size
 
     return string_table_child, string_table_child_size, string_name_offset, data_child + data_child_offset_section, \
         data_child_size + data_child_offset_section_size, data_offset
