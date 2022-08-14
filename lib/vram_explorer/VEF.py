@@ -1029,16 +1029,8 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
     data_child_size, data_child_offset_section_size = 0, 0
     data_offset = data_size
     data_offset_children = 0
-    # Declarate a flag so we add a padding for specific nodes child ([MATERIAL] and [TRANSFORM])
-    enable_padding_offset_section = False
 
     for i in range(0, data_info_parent.child_count):
-
-        # Declarate a padding size one for data, and another for the offset section
-        # The padding will be reset for each child because doing this, we can add the padding separaterly (we can
-        # add the padding for 'shape' type scne model, and not for 'mesh' type scne model for example)
-        padding_size = 0
-        padding_offset_section_size = 0
 
         # Get the child
         data_info_child = data_info_parent.child_info[i]
@@ -1414,9 +1406,6 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             # [MATERIAL] children
             elif data_info_child.name == "[MATERIAL]":
 
-                # Enable padding for offset section when the node is MATERIAL
-                enable_padding_offset_section = True
-
                 # Write the data
                 scne_material = data_info_child.data
                 data_child += scne_material.new_name_offset.to_bytes(4, 'big')
@@ -1448,8 +1437,14 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
             # [LAYERS], [NODES], [TRANSFORM] or DbzEdgeInfo
             else:
 
+                # Add a padding of zeros before writting the data
+                data_child, n, padding_size = check_entry_module(data_child, data_offset, 16)
+                data_child_size += padding_size
+                data_offset += padding_size
+
                 # Write the data when is DbzEyeInfo
                 if data_info_child.name == "DbzEyeInfo":
+
                     # Write the data
                     scne_eye_info = data_info_child.data
                     num_eyes_info = int(data_info_child.data_size / 112)
@@ -1481,10 +1476,6 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 # Write the unknown data
                 else:
 
-                    # Enable padding for offset section when the node is TRANSFORM
-                    if data_info_child.name == "[TRANSFORM]":
-                        enable_padding_offset_section = True
-
                     # Write the data
                     data_child += data_info_child.data
 
@@ -1503,9 +1494,6 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                         string_name_offset += string_name_size
                 else:
                     name_offset = 0
-
-            # Add a padding when the data is written
-            data_child, n, padding_size = check_entry_module(data_child, data_offset + data_info_child.data_size, 16)
 
         # The type entry is bone
         elif type_entry == b'BONE':
@@ -1531,10 +1519,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(main_window, num_material,
-                                                                           data_info_child, type_entry,
-                                                                           string_name_offset, data_offset +
-                                                                           data_info_child.data_size + padding_size,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child,
+                                                                           type_entry, string_name_offset,
+                                                                           data_offset + data_info_child.data_size,
                                                                            special_names)
 
             # Write children offset section first
@@ -1559,19 +1546,10 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         data_child_offset_section += data_info_child.child_count.to_bytes(4, 'big')
         data_child_offset_section += data_offset_children.to_bytes(4, 'big')
 
-        if enable_padding_offset_section:
-            # Add a padding when the data offset section is written
-            data_child_offset_section, n, padding_offset_section_size = check_entry_module(data_child_offset_section,
-                                                                                           data_offset +
-                                                                                           data_info_child.data_size +
-                                                                                           padding_size + 20, 16)
-            # Disable flag
-            enable_padding_offset_section = False
-
         # Update the offsets
-        data_child_size += data_info_child.data_size + padding_size
-        data_child_offset_section_size += 20 + padding_offset_section_size
-        data_offset += data_info_child.data_size + padding_size
+        data_child_size += data_info_child.data_size
+        data_child_offset_section_size += 20
+        data_offset += data_info_child.data_size
 
     return string_table_child, string_table_child_size, string_name_offset, data_child + data_child_offset_section, \
         data_child_size + data_child_offset_section_size, data_offset
