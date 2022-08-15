@@ -29,7 +29,8 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
     action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
-    get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram
+    get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram, \
+    search_texture
 
 
 def initialize_ve(main_window, qt_widgets):
@@ -1019,7 +1020,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         sprp_data_info.child_info.append(sprp_data_info_child)
 
 
-def write_children(main_window, num_material, data_info_parent, type_entry, string_name_offset,
+def write_children(main_window, num_material, num_textures, data_info_parent, type_entry, string_name_offset,
                    data_size, special_names):
 
     string_table_child = b''
@@ -1095,7 +1096,15 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
                 # DbzEdgeInfo
                 if data_info_child.data_size == 76:
                     data_child += shap_info.data
-                    data_child += shap_info.source_name_offset.to_bytes(4, 'big')
+
+                    # If the DbzEdgeInfo child is using a texture, we'll try to find it
+                    if shap_info.source_name_offset != 0:
+                        found, data_child = search_texture(main_window, data_child, shap_info.source_name_offset,
+                                                           num_textures)
+                        if not found:
+                            data_child += b'\x00\x00\x00\x00'
+                    else:
+                        data_child += b'\x00\x00\x00\x00'
 
                     # Check if this shape has a type assigned. We won't assign anything if originally the
                     # shape didn't have a type assigned
@@ -1519,8 +1528,9 @@ def write_children(main_window, num_material, data_info_parent, type_entry, stri
         # If the child has others child, we write them first
         if data_info_child.child_count > 0:
             string_table_sub_child, string_table_sub_child_size, string_name_offset_children, data_sub_child, \
-                data_sub_child_size, data_offset_children = write_children(main_window, num_material, data_info_child,
-                                                                           type_entry, string_name_offset,
+                data_sub_child_size, data_offset_children = write_children(main_window, num_material, num_textures,
+                                                                           data_info_child, type_entry,
+                                                                           string_name_offset,
                                                                            data_offset + data_info_child.data_size,
                                                                            special_names)
 

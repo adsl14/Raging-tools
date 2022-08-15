@@ -13,7 +13,7 @@ from lib.functions import del_rw
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import load_data_to_ve, write_children, generate_tx2d_entry
 from lib.vram_explorer.classes.SPRP.SprpTypeEntry import SprpTypeEntry
-from lib.vram_explorer.functions.auxiliary import check_entry_module
+from lib.vram_explorer.functions.auxiliary import check_entry_module, search_texture
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
@@ -336,7 +336,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if vshd_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, vshd_data_entry.data_info, b'VSHD',
+                                                write_children(self, num_material, num_textures,
+                                                               vshd_data_entry.data_info, b'VSHD',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -408,7 +409,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if pshd_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, pshd_data_entry.data_info, b'PSHD',
+                                                write_children(self, num_material, num_textures,
+                                                               pshd_data_entry.data_info, b'PSHD',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -499,16 +501,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                             if layer.source_name_offset == 0:
                                                 data += b'\00\00\00\00'
                                             else:
-                                                found = False
                                                 # Search the texture
-                                                for j in range(0, num_textures):
-                                                    tx2d_data_entry = self.listView.model().item(j, 0).data()
-                                                    if tx2d_data_entry.data_info.name_offset == \
-                                                            layer.source_name_offset:
-                                                        data += tx2d_data_entry.data_info.new_name_offset.\
-                                                                to_bytes(4, 'big')
-                                                        found = True
-                                                        break
+                                                found, data = search_texture(self, data, layer.source_name_offset,
+                                                                             num_textures)
                                                 # Search in the TXAN entries
                                                 if not found:
                                                     for j in range(0, txan_entry.data_count):
@@ -548,7 +543,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if mtrl_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, mtrl_data_entry.data_info, b'MTRL',
+                                                write_children(self, num_material, num_textures,
+                                                               mtrl_data_entry.data_info, b'MTRL',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -629,7 +625,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if shap_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, shap_data_entry.data_info, b'SHAP',
+                                                write_children(self, num_material, num_textures,
+                                                               shap_data_entry.data_info, b'SHAP',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -769,7 +766,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if scne_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, scne_data_entry.data_info, b'SCNE',
+                                                write_children(self, num_material, num_textures,
+                                                               scne_data_entry.data_info, b'SCNE',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Reset all the [NODES] children name offset calculated
@@ -849,7 +847,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if bone_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, bone_data_entry.data_info, b'BONE',
+                                                write_children(self, num_material, num_textures,
+                                                               bone_data_entry.data_info, b'BONE',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -916,7 +915,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if drvn_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, drvn_data_entry.data_info, b'DRVN',
+                                                write_children(self, num_material, num_textures,
+                                                               drvn_data_entry.data_info, b'DRVN',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -988,7 +988,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if txan_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, txan_data_entry.data_info, b'TXAN',
+                                                write_children(self, num_material, num_textures,
+                                                               txan_data_entry.data_info, b'TXAN',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size
@@ -1053,7 +1054,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         if anim_data_entry.data_info.child_count > 0:
                                             string_table_child, string_table_child_size, string_name_offset, \
                                                 data_child, data_child_size, data_offset = \
-                                                write_children(self, num_material, anim_data_entry.data_info, b'ANIM',
+                                                write_children(self, num_material, num_textures,
+                                                               anim_data_entry.data_info, b'ANIM',
                                                                string_table_size + 1, data_size, special_names_dict)
 
                                             # Update the string_name and string_table_size

@@ -177,3 +177,15 @@ def check_name_is_string_table(current_index, scne_model, data_info_parent):
                 break
 
     return found, name_offset, data_info_child_2
+
+
+# Get the new name offset of the texture by searching the original texture offset name
+def search_texture(self, data, source_name_offset, num_textures):
+
+    for i in range(0, num_textures):
+        tx2d_data_entry = self.listView.model().item(i, 0).data()
+        if tx2d_data_entry.data_info.name_offset == source_name_offset:
+            data += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+            return True, data
+
+    return False, data
