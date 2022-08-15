@@ -438,6 +438,9 @@ def open_spr_file(main_window, model, spr_path):
                         aux_pointer_file_vertex = file.tell()
                         vertex_decl.resource_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
                                                                                + vertex_decl.resource_name_offset)
+                        # Store the effect type
+                        if main_window.effectVal.findText(vertex_decl.resource_name) == -1:
+                            main_window.effectVal.addItem(vertex_decl.resource_name, vertex_decl.resource_name_offset)
                         file.seek(aux_pointer_file_vertex)
 
                         # Store the vertex_decl in the array
@@ -967,6 +970,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
                         mtrl_layer.effect_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                             scne_materia_info.type_offset)
 
+                        # Store the effect type
                         if main_window.effectVal.findText(mtrl_layer.effect_name) == -1:
                             main_window.effectVal.addItem(mtrl_layer.effect_name, scne_materia_info.type_offset)
                         file.seek(aux_pointer_file_scne)
