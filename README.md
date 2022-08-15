@@ -105,6 +105,8 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
 
 This tab holds the individual parameters of one character. This parameters are the camera values, movement speed, animations, melee values, etc.
 
+You can change also the background color when the character is transforming. However, for some characters this option won't be avaliable. To enable it for those characters, you need to export the properties of 'Transformation in' in the 'Animation values' from a character that originally has a transformation background, and then import those properties to the character you want to change the background color.
+
 In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> (Where XYZ are generic numbers) located in <i>st_pack_battle_character_pt_ps3.afs (Raging Blast 2)</i>.
 
 ### Roster Editor
