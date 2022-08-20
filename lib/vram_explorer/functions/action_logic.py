@@ -1,5 +1,3 @@
-import struct
-
 from lib.packages import os, QFileDialog, QInputDialog, QLineEdit, QMessageBox
 from lib.vram_explorer import VEF
 from lib.vram_explorer.VEV import VEV
@@ -90,7 +88,7 @@ def action_export_all_logic(main_window):
 
     # Ask to the user where to save the files
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.splitext(
-        VEV.spr_file_path)[0])[0]
+        VEV.spr_file_path)[0] + "_textures")[0]
 
     # Check if the user selected the folder
     if folder_export_path:
@@ -99,7 +97,8 @@ def action_export_all_logic(main_window):
         if not os.path.exists(folder_export_path):
             os.mkdir(folder_export_path)
 
-        for i in range(0, main_window.listView.model().rowCount()):
+        num_textures = main_window.listView.model().rowCount()
+        for i in range(0, num_textures):
             data_entry = main_window.listView.model().item(i, 0).data()
             # The image is dds
             if data_entry.data_info.data.dxt_encoding != 0:
@@ -133,7 +132,7 @@ def action_export_all_logic(main_window):
 def action_import_all_logic(main_window):
 
     # Ask to the user from where to import the files into the tool
-    folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures", VEV.spr_file_path)
+    folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures")
 
     if folder_import_path:
 
@@ -168,7 +167,7 @@ def action_import_all_logic(main_window):
             # If the tool finds errors, it won't import the texture and will add a message at the end with the errors
             path_file = os.path.join(folder_import_path, texture_name_extension)
             if os.path.exists(path_file):
-                message = message + VEF.import_texture(main_window, path_file, False, show_texture, i)
+                message = message + VEF.import_texture(main_window, path_file, False, show_texture, data_entry)
             else:
                 message = message + "<li>" + texture_name_extension + " not found!" + "</li>"
 
@@ -185,14 +184,19 @@ def action_import_all_logic(main_window):
 def action_import_logic(main_window):
 
     # Open texture file
-    import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(VEV.spr_file_path, ""),
+    import_path = QFileDialog.getOpenFileName(main_window, "Import texture", os.path.join(main_window.old_path_file,
+                                                                                          ""),
                                               "Supported files (*.dds *.bmp) "
                                               ";; DDS file (*.dds) "
                                               ";; BMP file (*.bmp)")[0]
     # The user didn't cancel the file to import
     if os.path.exists(import_path):
-        VEF.import_texture(main_window, import_path, True, True,
-                           main_window.listView.selectionModel().currentIndex().row())
+        data_entry = main_window.listView.model().item(main_window.listView.selectionModel().currentIndex().row(), 0)\
+            .data()
+        VEF.import_texture(main_window, import_path, True, True, data_entry)
+
+        # Change old path
+        main_window.old_path_file = import_path
 
 
 def action_remove_logic(main_window):
@@ -501,7 +505,6 @@ def action_material_export_logic(main_window):
 
     # Get the current mtrl entry
     mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    mtrl_data = mtrl_data_entry.data_info.data
 
     # Ask the path
     export_path = QFileDialog.getSaveFileName(main_window, "Export material", os.path.join(
@@ -509,137 +512,105 @@ def action_material_export_logic(main_window):
 
     # If the user has selected a path, we export the material
     if export_path:
-        file = open(export_path, mode="wb")
-        # Write the unk data (normaly is 112 bytes)
-        file.write(mtrl_data.unk_00)
-        # If the material has children, we write them too
-        if mtrl_data_entry.data_info.child_count > 0:
-            mtrl_child = mtrl_data_entry.data_info.child_info[0]
-            mtrl_prop = mtrl_child.data
-            data_child = b''
-            # Raging Blast 2 child
-            if mtrl_child.data_size == VEV.rb2_material_child_size:
-                data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
-                data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
-                for j in range(len(mtrl_prop.unk0x04)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
-                data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
-                data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
-                data_child += struct.pack('>f', mtrl_prop.Saturation_base)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
-                data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
-                data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
-                data_child += \
-                    struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
-                for j in range(len(mtrl_prop.Border_RGBA)):
-                    data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
-                for j in range(len(mtrl_prop.unk0x44)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
-                for j in range(len(mtrl_prop.unk0x50)):
-                    data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
-            else:
-                data_child += mtrl_prop
-
-            file.write(data_child)
-        file.close()
+        VEF.export_material(export_path, mtrl_data_entry)
 
 
 def action_material_import_logic(main_window):
 
     # Ask to the user from what file wants to open the camera files
-    file_export_path = QFileDialog.getOpenFileName(main_window, "Import material", main_window.old_path_file, "")[0]
+    file_import_path = QFileDialog.getOpenFileName(main_window, "Import material", main_window.old_path_file, "")[0]
 
-    if os.path.exists(file_export_path):
-        with open(file_export_path, mode="rb") as file:
+    if os.path.exists(file_import_path):
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+        message = VEF.import_material(main_window, file_import_path, mtrl_data_entry, False, True)
 
-            size_file = len(file.read())
-            child_size = size_file - VEV.material_values_size
-            # The file of the camera has to be 52 bytes length
-            if size_file >= VEV.material_values_size:
-                file.seek(0)
+        # Check if there is an error
+        if message:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText(message)
+            msg.exec()
+
+        # Change old path
+        main_window.old_path_file = file_import_path
+
+
+def action_material_export_all_logic(main_window):
+
+    # Ask to the user where to save the files
+    folder_export_path = QFileDialog.getSaveFileName(main_window, "Export materials", os.path.splitext(
+        VEV.spr_file_path)[0] + "_materials")[0]
+
+    # Check if the user selected the folder
+    if folder_export_path:
+
+        # Create the folder
+        if not os.path.exists(folder_export_path):
+            os.mkdir(folder_export_path)
+
+        num_materials = main_window.materialVal.count()
+        for i in range(0, num_materials):
+            # Get the mtrl entry
+            mtrl_data_entry = main_window.materialVal.itemData(i)
+            # Export the material
+            VEF.export_material(os.path.join(folder_export_path, mtrl_data_entry.data_info.name), mtrl_data_entry)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
+        message = "All the materials were exported in: <b>" + folder_export_path \
+                  + "</b><br><br> Do you wish to open the folder?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
+
+
+def action_material_import_all_logic(main_window):
+
+    # Ask to the user from where to import the files into the tool
+    folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import materials")
+
+    if folder_import_path:
+
+        # Message to show
+        message = ""
+        # Get the current index material that the user is watching
+        current_index = main_window.materialVal.currentIndex()
+        # This flag will be used to show the current child values of the material that the user is watching
+        show_edited_child = False
+        # Get all the textures name from memory
+        num_materials = main_window.materialVal.count()
+
+        for i in range(0, num_materials):
+            # Get the mtrl name
+            mtrl_data_entry = main_window.materialVal.itemData(i)
+
+            if i == current_index:
+                show_edited_child = True
+            elif show_edited_child:
+                show_edited_child = False
+
+            # Get the path and check in the folder the material. If the tool find the material, we import it
+            # If the tool finds errors, it won't import the material and will add a message at the end with the errors
+            path_file = os.path.join(folder_import_path, mtrl_data_entry.data_info.name)
+            if os.path.exists(path_file):
+                message = message + VEF.import_material(main_window, path_file, mtrl_data_entry, True,
+                                                        show_edited_child)
             else:
-                # Wrong material file
-                msg = QMessageBox()
-                msg.setWindowTitle("Error")
-                msg.setWindowIcon(main_window.ico_image)
-                msg.setText("Invalid material file. It should have at least 112 bytes")
-                msg.exec()
-                return
+                message = message + "<li>" + mtrl_data_entry.data_info.name + " not found!" + "</li>"
 
-            # Get the current mtrl entry
-            mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-            mtrl_data = mtrl_data_entry.data_info.data
-
-            # Read the main data
-            mtrl_data.unk_00 = file.read(VEV.material_values_size)
-
-            # Read children (if any)
-            if child_size > 0:
-                # The children from the file has 96 of size (RB2 material children)
-                if child_size == VEV.rb2_material_child_size:
-                    mtrl_prop = MtrlProp()
-                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x04)):
-                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.Border_RGBA)):
-                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x44)):
-                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x50)):
-                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
-
-                    # Enable the material children edition
-                    if not main_window.editMaterialChildrenButton.isEnabled():
-                        main_window.editMaterialChildrenButton.setEnabled(True)
-
-                    # Load the material children to the window
-                    VEF.load_material_children_to_window(main_window, mtrl_prop)
-                # Generic material children
-                else:
-                    mtrl_prop = file.read(child_size)
-                    # Disable the material children edition
-                    if main_window.editMaterialChildrenButton.isEnabled():
-                        main_window.editMaterialChildrenButton.setEnabled(False)
-
-                # Check if the actual material has a children section or not
-                if mtrl_data_entry.data_info.child_count > 0:
-                    mtrl_data_entry.data_info.child_info[0].data = mtrl_prop
-                else:
-                    sprp_data_info_child = SprpDataInfo()
-                    sprp_data_info_child.data = mtrl_prop
-                    sprp_data_info_child.name = "DbzCharMtrl"
-                    mtrl_data_entry.data_info.child_info.append(sprp_data_info_child)
-                    mtrl_data_entry.data_info.child_count = 1
-
-                # Update the size of the children
-                mtrl_data_entry.data_info.child_info[0].data_size = child_size
-
-            # The material from the file doesn't have children, so we remove it
-            else:
-                mtrl_data_entry.data_info.child_count = 0
-                mtrl_data_entry.data_info.child_info = []
-
-                # Disable the material children edition
-                if main_window.editMaterialChildrenButton.isEnabled():
-                    main_window.editMaterialChildrenButton.setEnabled(False)
-
-    # Change old path
-    main_window.old_path_file = file_export_path
+        # If there is a message, it has detected differences
+        if message:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("Found the following errors while importing:" + "<ul>" + message + "</ul>")
+            msg.exec()
+            return
 
 
 def action_material_children_logic(main_window):

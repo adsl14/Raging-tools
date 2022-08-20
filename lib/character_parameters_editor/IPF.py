@@ -104,7 +104,7 @@ def initialize_operate_character(main_window):
         lambda: action_import_animation_button_logic(main_window, main_window.animation_properties))
     # Export all animation properties button
     main_window.exportAllAnimationPropertiesButton.clicked.connect(
-        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_properties, " properties"))
+        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_properties, "_properties"))
     # Import all animation properties button
     main_window.importAllAnimationPropertiesButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))

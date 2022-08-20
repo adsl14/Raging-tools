@@ -187,7 +187,7 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
 
 def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
     # Ask to the user the folder output
-    name_folder = CPEV.file_character_id + "_animations" + ("_" + properties_text if properties_text else "")
+    name_folder = CPEV.file_character_id + "_animations" + properties_text
     folder_export_path = QFileDialog.getSaveFileName(main_window,
                                                      "Export animations" + properties_text,
                                                      os.path.join(main_window.old_path_file, name_folder), "")[0]
@@ -201,7 +201,8 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
         # Export all the files to the folder
         for i in range(0, animation_combo_box.count()):
             name_file = CPEV.file_character_id + "_" + str(i) + "_" + \
-                        animation_combo_box.itemText(i).replace(" ", "_") + "." + IPV.animations_extension
+                        animation_combo_box.itemText(i).replace(" ", "_") + properties_text + "." + \
+                        IPV.animations_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
             animation = animation_combo_box.itemData(i)

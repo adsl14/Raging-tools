@@ -27,7 +27,8 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
     action_remove_material_logic, action_material_children_logic, action_model_part_val_changed, \
     action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
-    action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic
+    action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic, \
+    action_material_export_all_logic, action_material_import_all_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
     get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram, \
     search_texture
@@ -57,6 +58,8 @@ def initialize_ve(main_window, qt_widgets):
     main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
     main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
     main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
+    main_window.exportAllMaterialButton.clicked.connect(lambda: action_material_export_all_logic(main_window))
+    main_window.importAllMaterialButton.clicked.connect(lambda: action_material_import_all_logic(main_window))
     main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
     main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
     main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
@@ -67,9 +70,11 @@ def initialize_ve(main_window, qt_widgets):
     main_window.textureVal.setEnabled(False)
     main_window.exportMaterialButton.setEnabled(False)
     main_window.importMaterialButton.setEnabled(False)
-    main_window.editMaterialChildrenButton.setEnabled(False)
+    main_window.exportAllMaterialButton.setEnabled(False)
+    main_window.importAllMaterialButton.setEnabled(False)
     main_window.addMaterialButton.setEnabled(False)
     main_window.removeMaterialButton.setEnabled(False)
+    main_window.editMaterialChildrenButton.setEnabled(False)
 
     # Model part
     main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -183,9 +188,11 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(True)
         main_window.exportMaterialButton.setEnabled(True)
         main_window.importMaterialButton.setEnabled(True)
-        main_window.editMaterialChildrenButton.setEnabled(True)
+        main_window.exportAllMaterialButton.setEnabled(True)
+        main_window.importAllMaterialButton.setEnabled(True)
         main_window.addMaterialButton.setEnabled(True)
         main_window.removeMaterialButton.setEnabled(True)
+        main_window.editMaterialChildrenButton.setEnabled(True)
 
         main_window.modelPartVal.setEnabled(True)
         main_window.materialModelPartVal.setEnabled(True)
@@ -203,9 +210,11 @@ def load_data_to_ve(main_window):
         main_window.textureVal.setEnabled(False)
         main_window.exportMaterialButton.setEnabled(False)
         main_window.importMaterialButton.setEnabled(False)
-        main_window.editMaterialChildrenButton.setEnabled(False)
+        main_window.exportAllMaterialButton.setEnabled(False)
+        main_window.importAllMaterialButton.setEnabled(False)
         main_window.addMaterialButton.setEnabled(False)
         main_window.removeMaterialButton.setEnabled(False)
+        main_window.editMaterialChildrenButton.setEnabled(False)
 
         main_window.modelPartVal.setEnabled(False)
         main_window.materialModelPartVal.setEnabled(False)
@@ -1767,12 +1776,10 @@ def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width
 # import_file_path -> path where the file is located
 # ask_user -> flag that will activate or deactive a pop up message when the imported texture has differences with
 # the original texture
-def import_texture(main_window, import_file_path, ask_user, show_texture, index):
+def import_texture(main_window, import_file_path, ask_user, show_texture, data_entry):
 
     with open(import_file_path, mode="rb") as file:
         header = file.read(4)
-
-        data_entry = main_window.listView.model().item(index, 0).data()
 
         # It's a DDS modded image
         if header == b'DDS ':
@@ -2112,3 +2119,141 @@ def load_material_children_to_window(main_window, mtrl_child_data):
         main_window.MaterialChildEditorUI.border_color_G_value.setValue(green_value)
         main_window.MaterialChildEditorUI.border_color_B_value.setValue(blue_value)
         main_window.MaterialChildEditorUI.border_color_A_value.setValue(alpha_value)
+
+
+# Export the material by giving the output path and mtrl entry
+def export_material(export_path, mtrl_data_entry):
+
+    file = open(export_path, mode="wb")
+    # Write the unk data (normaly is 112 bytes)
+    file.write(mtrl_data_entry.data_info.data.unk_00)
+    # If the material has children, we write them too
+    if mtrl_data_entry.data_info.child_count > 0:
+        mtrl_child = mtrl_data_entry.data_info.child_info[0]
+        mtrl_prop = mtrl_child.data
+        data_child = b''
+        # Raging Blast 2 child
+        if mtrl_child.data_size == VEV.rb2_material_child_size:
+            data_child += struct.pack('>f', mtrl_prop.Ilumination_Shadow_orientation)
+            data_child += struct.pack('>f', mtrl_prop.Ilumination_Light_orientation_glow)
+            for j in range(len(mtrl_prop.unk0x04)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x04[j])
+            data_child += struct.pack('>f', mtrl_prop.Brightness_purple_light_glow)
+            data_child += struct.pack('>f', mtrl_prop.Saturation_glow)
+            data_child += struct.pack('>f', mtrl_prop.Saturation_base)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_some_positions)
+            data_child += struct.pack('>f', mtrl_prop.Brightness_toonmap)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_toonmap_active_other_positions)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_some_positions)
+            data_child += struct.pack('>f', mtrl_prop.Brightness_incandescence)
+            data_child += \
+                struct.pack('>f', mtrl_prop.Brightness_incandescence_active_other_positions)
+            for j in range(len(mtrl_prop.Border_RGBA)):
+                data_child += struct.pack('>f', mtrl_prop.Border_RGBA[j])
+            for j in range(len(mtrl_prop.unk0x44)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x44[j])
+            for j in range(len(mtrl_prop.unk0x50)):
+                data_child += struct.pack('>f', mtrl_prop.unk0x50[j])
+        else:
+            data_child += mtrl_prop
+
+        file.write(data_child)
+    file.close()
+
+
+# Import the material
+def import_material(main_window, file_import_path, mtrl_data_entry, multiple_import, show_edited_child):
+
+    with open(file_import_path, mode="rb") as file:
+
+        size_file = len(file.read())
+        child_size = size_file - VEV.material_values_size
+        # The file of the camera has to be 52 bytes length
+        if size_file >= VEV.material_values_size:
+            file.seek(0)
+        else:
+            # Wrong material file
+            if multiple_import:
+                return "<li>" + mtrl_data_entry.data_info.name + ": " + \
+                       "Invalid material file. It should have at least 112 bytes" + "</li>"
+            else:
+                return "Invalid material file. It should have at least 112 bytes"
+
+        # Get the mtrl data
+        mtrl_data = mtrl_data_entry.data_info.data
+
+        # Read the main data
+        mtrl_data.unk_00 = file.read(VEV.material_values_size)
+
+        # Read children (if any)
+        if child_size > 0:
+            # The children from the file has 96 of size (RB2 material children)
+            if child_size == VEV.rb2_material_child_size:
+                mtrl_prop = MtrlProp()
+                mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x04)):
+                    mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.Border_RGBA)):
+                    mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x44)):
+                    mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x50)):
+                    mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+
+                # Only make changes for the material child window if the current material that we're modifying
+                # is the actual one that the user is watching
+                if show_edited_child:
+                    # Enable the material children edition
+                    if not main_window.editMaterialChildrenButton.isEnabled():
+                        main_window.editMaterialChildrenButton.setEnabled(True)
+                    # Load the material children to the window
+                    load_material_children_to_window(main_window, mtrl_prop)
+
+            # Generic material children
+            else:
+                mtrl_prop = file.read(child_size)
+
+                # Only make changes for the material child window if the current material that we're modifying
+                # is the actual one that the user is watching
+                if show_edited_child and main_window.editMaterialChildrenButton.isEnabled():
+                    # Disable the material children edition
+                    main_window.editMaterialChildrenButton.setEnabled(False)
+
+            # Check if the actual material has a children section or not
+            if mtrl_data_entry.data_info.child_count > 0:
+                mtrl_data_entry.data_info.child_info[0].data = mtrl_prop
+            else:
+                sprp_data_info_child = SprpDataInfo()
+                sprp_data_info_child.data = mtrl_prop
+                sprp_data_info_child.name = "DbzCharMtrl"
+                mtrl_data_entry.data_info.child_info.append(sprp_data_info_child)
+                mtrl_data_entry.data_info.child_count = 1
+
+            # Update the size of the children
+            mtrl_data_entry.data_info.child_info[0].data_size = child_size
+
+        # The material from the file doesn't have children, so we remove it
+        else:
+            mtrl_data_entry.data_info.child_count = 0
+            mtrl_data_entry.data_info.child_info = []
+
+            # Only make changes for the material child window if the current material that we're modifying
+            # is the actual one that the user is watching
+            if show_edited_child and main_window.editMaterialChildrenButton.isEnabled():
+                # Disable the material children edition
+                main_window.editMaterialChildrenButton.setEnabled(False)
+
+    return ""
