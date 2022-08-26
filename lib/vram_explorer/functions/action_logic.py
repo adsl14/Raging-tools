@@ -681,7 +681,7 @@ def action_save_material_logic(main_window):
 
         # Create the message window
         msg = QMessageBox()
-        message = "Do you wish to replace the current 'A' border color value  to all materials?"
+        message = "Do you wish to replace the current 'A' border color value to all materials?"
         # Ask to the user if he/she is sure that wants to replace the current border color values to all the materials
         msg.setWindowIcon(main_window.ico_image)
         message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
