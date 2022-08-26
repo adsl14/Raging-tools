@@ -615,6 +615,9 @@ def action_material_import_all_logic(main_window):
 
 def action_material_children_logic(main_window):
 
+    # Disable check border color apply values to all materials
+    main_window.MaterialChildEditorUI.border_color_apply_all_materials_check.setChecked(False)
+
     # Show the material editor window
     main_window.MaterialChildEditorWindow.show()
 
@@ -660,31 +663,50 @@ def action_rgb_changed_logic(main_window):
 
 def action_save_material_logic(main_window):
 
-    # Get the mtrl entry
-    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-    # Get the mtrl child data
-    mtrl_child_data = mtrl_data_entry.data_info.child_info[0].data
+    # Apply the changes with the current material
+    if not main_window.MaterialChildEditorUI.border_color_apply_all_materials_check.isChecked():
+        # Get the mtrl entry
+        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
 
-    mtrl_child_data.Ilumination_Shadow_orientation = \
-        float(main_window.MaterialChildEditorUI.shadow_orienation_value.value()/100)
-    mtrl_child_data.Ilumination_Light_orientation_glow = \
-        float(main_window.MaterialChildEditorUI.light_orientation_glow_value.value()/100)
-    mtrl_child_data.Saturation_base = float(main_window.MaterialChildEditorUI.saturation_base_value.value()/100)
-    mtrl_child_data.Saturation_glow = float(main_window.MaterialChildEditorUI.saturation_glow_value.value()/100)
-    mtrl_child_data.Brightness_toonmap = float(main_window.MaterialChildEditorUI.brightness_base_value.value()/100)
-    mtrl_child_data.Brightness_toonmap_active_some_positions = mtrl_child_data.Brightness_toonmap
-    mtrl_child_data.Brightness_toonmap_active_other_positions = mtrl_child_data.Brightness_toonmap
-    mtrl_child_data.Brightness_incandescence = \
-        float(main_window.MaterialChildEditorUI.brightness_glow_value.value()/100)
-    mtrl_child_data.Brightness_incandescence_active_some_positions = mtrl_child_data.Brightness_incandescence
-    mtrl_child_data.Brightness_incandescence_active_other_positions = mtrl_child_data.Brightness_incandescence
-    mtrl_child_data.Border_RGBA[0] = float(main_window.MaterialChildEditorUI.border_color_R_value.value()/255)
-    mtrl_child_data.Border_RGBA[1] = float(main_window.MaterialChildEditorUI.border_color_G_value.value()/255)
-    mtrl_child_data.Border_RGBA[2] = float(main_window.MaterialChildEditorUI.border_color_B_value.value()/255)
-    mtrl_child_data.Border_RGBA[3] = float(main_window.MaterialChildEditorUI.border_color_A_value.value()/255)
+        # Replace children material values
+        VEF.replace_material_children_values(main_window, mtrl_data_entry)
 
-    # Close the Material children editor window
-    main_window.MaterialChildEditorWindow.close()
+        # Close the Material children editor window
+        main_window.MaterialChildEditorWindow.close()
+
+    # Replace the border color values to all the children materials values
+    else:
+
+        # Create the message window
+        msg = QMessageBox()
+        message = "Do you wish to replace the current border color values to all materials?"
+        # Ask to the user if he/she is sure that wants to replace the current border color values to all the materials
+        msg.setWindowIcon(main_window.ico_image)
+        message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
+
+        # If the user says yes, then we replace the current border color values to all the children materials values
+        if message_import_result == msg.Yes:
+            # Get the number of materials
+            num_material = main_window.materialVal.count()
+
+            # Get each material from comboBox
+            for i in range(0, num_material):
+                # Get the mtrl entry
+                mtrl_data_entry = main_window.materialVal.itemData(i)
+
+                # Replace border color values
+                if i != main_window.materialVal.currentIndex():
+                    VEF.replace_border_color_values(main_window, mtrl_data_entry.data_info.child_info[0].data)
+                # While we're iterating in the comboBox, we find the current material that the user has selected,
+                # we edit not only the border color but all the current material children values
+                else:
+                    VEF.replace_material_children_values(main_window, mtrl_data_entry)
+
+            # Close the Material children editor window
+            main_window.MaterialChildEditorWindow.close()
+        else:
+            # Bring material children window to front again
+            main_window.MaterialChildEditorWindow.activateWindow()
 
 
 def action_cancel_material_logic(main_window):

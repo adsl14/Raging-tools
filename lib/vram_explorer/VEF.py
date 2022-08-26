@@ -1823,9 +1823,8 @@ def import_texture(main_window, import_file_path, ask_user, show_texture, data_e
                         VEV.message_base_import_texture_end
 
                     # Ask to the user if he/she is sure that wants to replace the texture
-                    msg.setWindowTitle("Warning")
                     msg.setWindowIcon(main_window.ico_image)
-                    message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
+                    message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
 
                     # If the users click on 'No', the modified texture won't be imported
                     if message_import_result == msg.No:
@@ -1906,9 +1905,8 @@ def import_texture(main_window, import_file_path, ask_user, show_texture, data_e
                         VEV.message_base_import_texture_end
 
                     # Ask to the user if he/she is sure that wants to replace the texture
-                    msg.setWindowTitle("Warning")
                     msg.setWindowIcon(main_window.ico_image)
-                    message_import_result = msg.question(main_window, '', message, msg.Yes | msg.No)
+                    message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
 
                     # If the users click on 'No', the modified texture won't be imported
                     if message_import_result == msg.No:
@@ -2257,3 +2255,36 @@ def import_material(main_window, file_import_path, mtrl_data_entry, multiple_imp
                 main_window.editMaterialChildrenButton.setEnabled(False)
 
     return ""
+
+
+# Replace material values with the values in the material children window
+def replace_material_children_values(main_window, mtrl_data_entry):
+
+    # Get the mtrl child data
+    mtrl_child_data = mtrl_data_entry.data_info.child_info[0].data
+
+    mtrl_child_data.Ilumination_Shadow_orientation = \
+        float(main_window.MaterialChildEditorUI.shadow_orienation_value.value() / 100)
+    mtrl_child_data.Ilumination_Light_orientation_glow = \
+        float(main_window.MaterialChildEditorUI.light_orientation_glow_value.value() / 100)
+    mtrl_child_data.Saturation_base = float(main_window.MaterialChildEditorUI.saturation_base_value.value() / 100)
+    mtrl_child_data.Saturation_glow = float(main_window.MaterialChildEditorUI.saturation_glow_value.value() / 100)
+    mtrl_child_data.Brightness_toonmap = float(main_window.MaterialChildEditorUI.brightness_base_value.value() / 100)
+    mtrl_child_data.Brightness_toonmap_active_some_positions = mtrl_child_data.Brightness_toonmap
+    mtrl_child_data.Brightness_toonmap_active_other_positions = mtrl_child_data.Brightness_toonmap
+    mtrl_child_data.Brightness_incandescence = \
+        float(main_window.MaterialChildEditorUI.brightness_glow_value.value() / 100)
+    mtrl_child_data.Brightness_incandescence_active_some_positions = mtrl_child_data.Brightness_incandescence
+    mtrl_child_data.Brightness_incandescence_active_other_positions = mtrl_child_data.Brightness_incandescence
+
+    # Replace the current values from window to the material border color
+    replace_border_color_values(main_window, mtrl_child_data)
+
+
+# Replace the current values from window to the material border color
+def replace_border_color_values(main_window, mtrl_child_data):
+
+    mtrl_child_data.Border_RGBA[0] = float(main_window.MaterialChildEditorUI.border_color_R_value.value() / 255)
+    mtrl_child_data.Border_RGBA[1] = float(main_window.MaterialChildEditorUI.border_color_G_value.value() / 255)
+    mtrl_child_data.Border_RGBA[2] = float(main_window.MaterialChildEditorUI.border_color_B_value.value() / 255)
+    mtrl_child_data.Border_RGBA[3] = float(main_window.MaterialChildEditorUI.border_color_A_value.value() / 255)
