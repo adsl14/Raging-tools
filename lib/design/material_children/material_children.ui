@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>463</width>
+    <width>437</width>
     <height>580</height>
    </rect>
   </property>
@@ -326,6 +326,16 @@
         </property>
        </widget>
       </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="border_color_R">
+        <property name="text">
+         <string>R</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
       <item row="15" column="0">
        <widget class="QLabel" name="border_color_A">
         <property name="text">
@@ -346,16 +356,6 @@
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
-       <widget class="QLabel" name="border_color_R">
-        <property name="text">
-         <string>R</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -385,19 +385,6 @@
         </property>
         <property name="maximum">
          <number>255</number>
-        </property>
-       </widget>
-      </item>
-      <item row="9" column="0">
-       <widget class="QSlider" name="border_color_R_slider">
-        <property name="maximum">
-         <number>255</number>
-        </property>
-        <property name="singleStep">
-         <number>1</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -431,8 +418,8 @@
         </property>
        </widget>
       </item>
-      <item row="16" column="0">
-       <widget class="QSlider" name="border_color_A_slider">
+      <item row="9" column="0">
+       <widget class="QSlider" name="border_color_R_slider">
         <property name="maximum">
          <number>255</number>
         </property>
@@ -441,16 +428,6 @@
         </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="13" column="0">
-       <widget class="QLabel" name="border_color_B">
-        <property name="text">
-         <string>B</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignCenter</set>
         </property>
        </widget>
       </item>
@@ -477,10 +454,33 @@
         </property>
        </widget>
       </item>
-      <item row="17" column="0">
-       <widget class="QCheckBox" name="border_color_apply_all_materials_check">
+      <item row="16" column="0">
+       <widget class="QSlider" name="border_color_A_slider">
+        <property name="maximum">
+         <number>255</number>
+        </property>
+        <property name="singleStep">
+         <number>1</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item row="13" column="0">
+       <widget class="QLabel" name="border_color_B">
         <property name="text">
-         <string>Apply to all materials</string>
+         <string>B</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="17" column="0">
+       <widget class="QCheckBox" name="border_color_A_apply_all_materials">
+        <property name="text">
+         <string>Apply 'A' value to all materials</string>
         </property>
         <property name="tristate">
          <bool>false</bool>
