@@ -314,8 +314,10 @@ def action_material_val_changed(main_window):
                     main_window.editMaterialChildrenButton.setEnabled(False)
 
         else:
+            # Close material children window and disable button for material children edition
             if main_window.editMaterialChildrenButton.isEnabled():
                 main_window.editMaterialChildrenButton.setEnabled(False)
+                main_window.MaterialChildEditorWindow.close()
 
 
 def action_layer_val_changed(main_window):
@@ -615,8 +617,8 @@ def action_material_import_all_logic(main_window):
 
 def action_material_children_logic(main_window):
 
-    # Disable check border color apply values to all materials
-    main_window.MaterialChildEditorUI.border_color_apply_all_materials_check.setChecked(False)
+    # Disable check 'A' value for border color apply to all materials
+    main_window.MaterialChildEditorUI.border_color_A_apply_all_materials.setChecked(False)
 
     # Show the material editor window
     main_window.MaterialChildEditorWindow.show()
@@ -664,7 +666,7 @@ def action_rgb_changed_logic(main_window):
 def action_save_material_logic(main_window):
 
     # Apply the changes with the current material
-    if not main_window.MaterialChildEditorUI.border_color_apply_all_materials_check.isChecked():
+    if not main_window.MaterialChildEditorUI.border_color_A_apply_all_materials.isChecked():
         # Get the mtrl entry
         mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
 
@@ -674,12 +676,12 @@ def action_save_material_logic(main_window):
         # Close the Material children editor window
         main_window.MaterialChildEditorWindow.close()
 
-    # Replace the border color values to all the children materials values
+    # Replace the 'A' value for border color to all the children materials
     else:
 
         # Create the message window
         msg = QMessageBox()
-        message = "Do you wish to replace the current border color values to all materials?"
+        message = "Do you wish to replace the current 'A' border color value  to all materials?"
         # Ask to the user if he/she is sure that wants to replace the current border color values to all the materials
         msg.setWindowIcon(main_window.ico_image)
         message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
@@ -694,13 +696,16 @@ def action_save_material_logic(main_window):
                 # Get the mtrl entry
                 mtrl_data_entry = main_window.materialVal.itemData(i)
 
-                # Replace border color values
-                if i != main_window.materialVal.currentIndex():
-                    VEF.replace_border_color_values(main_window, mtrl_data_entry.data_info.child_info[0].data)
-                # While we're iterating in the comboBox, we find the current material that the user has selected,
-                # we edit not only the border color but all the current material children values
-                else:
-                    VEF.replace_material_children_values(main_window, mtrl_data_entry)
+                # If there is a material that doesn't have children, we won't modify anything
+                if mtrl_data_entry.data_info.child_count > 0:
+                    # Replace 'A' border color value
+                    if i != main_window.materialVal.currentIndex():
+                        mtrl_data_entry.data_info.child_info[0].data.Border_RGBA[3] = \
+                            float(main_window.MaterialChildEditorUI.border_color_A_value.value() / 255)
+                    # While we're iterating in the comboBox, we find the current material that the user has selected,
+                    # we edit not only the 'A' border color value but all the current material children values
+                    else:
+                        VEF.replace_material_children_values(main_window, mtrl_data_entry)
 
             # Close the Material children editor window
             main_window.MaterialChildEditorWindow.close()

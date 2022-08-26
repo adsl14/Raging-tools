@@ -2257,7 +2257,7 @@ def import_material(main_window, file_import_path, mtrl_data_entry, multiple_imp
     return ""
 
 
-# Replace material values with the values in the material children window
+# Replace current children material values with the values in the material children window
 def replace_material_children_values(main_window, mtrl_data_entry):
 
     # Get the mtrl child data
@@ -2276,14 +2276,6 @@ def replace_material_children_values(main_window, mtrl_data_entry):
         float(main_window.MaterialChildEditorUI.brightness_glow_value.value() / 100)
     mtrl_child_data.Brightness_incandescence_active_some_positions = mtrl_child_data.Brightness_incandescence
     mtrl_child_data.Brightness_incandescence_active_other_positions = mtrl_child_data.Brightness_incandescence
-
-    # Replace the current values from window to the material border color
-    replace_border_color_values(main_window, mtrl_child_data)
-
-
-# Replace the current values from window to the material border color
-def replace_border_color_values(main_window, mtrl_child_data):
-
     mtrl_child_data.Border_RGBA[0] = float(main_window.MaterialChildEditorUI.border_color_R_value.value() / 255)
     mtrl_child_data.Border_RGBA[1] = float(main_window.MaterialChildEditorUI.border_color_G_value.value() / 255)
     mtrl_child_data.Border_RGBA[2] = float(main_window.MaterialChildEditorUI.border_color_B_value.value() / 255)
