@@ -1,5 +1,11 @@
 # Raging Tools
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+*Copyright © 2021-2022 adsl14*
+
+## Description
+
 Raging Tools is a tool that will help you in order to edit the games from the Raging Blast series. You can edit textures, shaders, transformations, parameters, camera values, export/import animations, explore zpak files, etc.
 
 It gathers several tools that were made previously, like [Vram Explorer](https://github.com/adsl14/vram-explorer), [Character Parameters Editor](https://github.com/adsl14/character-parameters-editor) and Pak Explorer.
