@@ -2660,7 +2660,7 @@ class Ui_MainWindow(object):
         self.animation_trans2_text.setText(_translate("MainWindow", "2"))
         self.animation_trans3_text.setText(_translate("MainWindow", "3"))
         self.animation_trans4_text.setText(_translate("MainWindow", "4"))
-        self.fusionPartnerTrigger_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>The character you need in your team in order to activate the fusion panel. Select only a character that has the fusion animation or/and potara animation (\'Fusion demo\' and \'Potara demo\' respectevly, located in their file \'operate_character_XYZ_m.zpak\').</p></body></html>"))
+        self.fusionPartnerTrigger_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>The character you need in your team in order to activate the fusion panel. Select only a character that has the fusion animation or/and potara animation (\'Fusion demo\' and \'Potara demo\' respectevly, located in their file \'operate_character_XYZ_m.zpak\'). Also, the character you\'re actually editing, needs also those animations. Otherwise, the fusion panel won\'t be activated.</p></body></html>"))
         self.fusionPartnerTrigger_text.setText(_translate("MainWindow", "Fusion partner (trigger):"))
         self.amount_ki_per_transformation_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>Amount of Ki that will be consumed when a transformation is activated.</p></body></html>"))
         self.amount_ki_per_transformation_text.setText(_translate("MainWindow", "Amount Ki per transformation:"))
