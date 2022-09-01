@@ -41,8 +41,8 @@ class IPV:
                         "Charged shot Ki moving forward", "Charged shot Ki moving left", "Charged shot Ki moving right",
                         "Charged shot Ki moving back", "Jump attack", "Jump Ki shot left", "Jump Ki shot right",
                         "Jump charged Ki shot", "Throw catch", "Throw", "Throw wall", "Guard", "Transformation in",
-                        "Transformation result", "Return in", "Return out", "Fusion in", "Fusion result", "Potara in",
-                        "Potara result", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose"]
+                        "Transformation result", "Return in", "Return out", "Fusion in", "Fusion result", "Fusion demo",
+                        "Potara in", "Potara result", "Potara demo", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose"]
     animations_extension = "spas"
     # Distance between the 'buffer' folders
     size_between_animation_and_effects = 363

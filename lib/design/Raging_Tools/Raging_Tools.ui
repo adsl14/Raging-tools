@@ -3215,7 +3215,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The character you need in your team in order to activate the fusion panel. Select only base form characters otherwise, it won't show the fusion panel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The character you need in your team in order to activate the fusion panel. Select only a character that has the fusion animation or/and potara animation ('Fusion demo' and 'Potara demo' respectevly, located in their file 'operate_character_XYZ_m.zpak').&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Fusion partner (trigger):</string>

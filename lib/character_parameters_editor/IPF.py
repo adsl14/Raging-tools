@@ -1,4 +1,3 @@
-from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
@@ -98,7 +97,7 @@ def initialize_operate_character(main_window):
         main_window.animation_properties.addItem(element)
     # Export animation properties button
     main_window.exportAnimationPropertiesButton.clicked.connect(
-        lambda: action_export_animation_button_logic(main_window, main_window.animation_properties))
+        lambda: action_export_animation_button_logic(main_window, main_window.animation_properties, "_properties"))
     # Import animation properties button
     main_window.importAnimationPropertiesButton.clicked.connect(
         lambda: action_import_animation_button_logic(main_window, main_window.animation_properties))
@@ -521,9 +520,11 @@ def read_animation_files(main_window, offset_index, animation_combo_box):
     # Fusion
     read_animation_file(main_window, 316+offset_index, "Fusion in", 2, animation_combo_box)
     read_animation_file(main_window, 318+offset_index, "Fusion result", 1, animation_combo_box)
+    read_animation_file(main_window, 319+offset_index, "Fusion demo", 2, animation_combo_box)
     # Potala
     read_animation_file(main_window, 321+offset_index, "Potara in", 2, animation_combo_box)
     read_animation_file(main_window, 323+offset_index, "Potara result", 1, animation_combo_box)
+    read_animation_file(main_window, 324+offset_index, "Potara demo", 2, animation_combo_box)
     # Cutscenes
     read_animation_file(main_window, 336+offset_index, "Entry 1", 2, animation_combo_box)
     read_animation_file(main_window, 338+offset_index, "Entry 2", 2, animation_combo_box)

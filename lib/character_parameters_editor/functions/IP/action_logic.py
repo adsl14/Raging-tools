@@ -157,10 +157,10 @@ def action_import_all_camera_button_logic(main_window):
             msg.exec()
 
 
-def action_export_animation_button_logic(main_window, animation_combo_box):
+def action_export_animation_button_logic(main_window, animation_combo_box, properties_text=""):
     # Ask to the user the file output
     name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
-                animation_combo_box.currentText().replace(" ", "_") + "." + IPV.animations_extension
+                animation_combo_box.currentText().replace(" ", "_") + properties_text + "." + IPV.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
@@ -171,18 +171,6 @@ def action_export_animation_button_logic(main_window, animation_combo_box):
         animation_array = animation_combo_box.currentData()
 
         IPF.export_animation(animation_array, file_export_path)
-
-        msg = QMessageBox()
-        msg.setWindowTitle("Message")
-        msg.setWindowIcon(main_window.ico_image)
-        message = "The animation file was exported in: <b>" + file_export_path \
-                  + "</b><br><br> Do you wish to open the path?"
-        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-        # If the users click on 'Yes', it will open the path where the files were saved
-        if message_open_exported_files == msg.Yes:
-            # Show the path folder to the user
-            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
 
 
 def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
