@@ -160,14 +160,15 @@ def action_import_all_camera_button_logic(main_window):
 def action_export_animation_button_logic(main_window, animation_type_index, properties_text=""):
     # Ask to the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
-                main_window.animation_type_value.currentText().replace(" ", "_") + properties_text + "." + IPV.animations_extension
+                main_window.animation_type_value.currentText().replace(" ", "_") + properties_text + "." + \
+                IPV.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
     # The user has selected an output
     if file_export_path:
 
-        # Get from the combo box, the array of animations ([[keyframes + effect], [keyframes + effects]])
+        # Get from the combo box, the array of animations ([[keyframes, effect], [keyframes, effects]])
         animation_array = main_window.animation_type_value.currentData()
 
         IPF.export_animation(animation_array, file_export_path, animation_type_index)
