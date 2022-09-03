@@ -6,7 +6,7 @@ from lib.character_parameters_editor.REF import write_cs_chip_file
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.design.Raging_Tools.Raging_Tools import *
-from lib.packages import os, rmtree, QFileDialog, QMessageBox
+from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat
 from lib.functions import del_rw
 
 # vram explorer
@@ -102,6 +102,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 args = os.path.join(PEV.dbrb_compressor_path) + " \"" + PEV.pak_file_path_original + "\" \"" + \
                     PEV.pak_file_path + "\""
                 os.system('cmd /c ' + args)
+                # Disable read only
+                os.chmod(PEV.pak_file_path, stat.S_IWRITE)
 
                 PEV.stpz_file = True
                 PEV.stpk_file = False
@@ -1313,8 +1315,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msg.exec()
 
     def closeEvent(self, event):
-        if os.path.exists(VEV.temp_folder):
-            rmtree(VEV.temp_folder, onerror=del_rw)
         if os.path.exists(PEV.temp_folder):
             rmtree(PEV.temp_folder, onerror=del_rw)
         event.accept()

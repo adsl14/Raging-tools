@@ -32,8 +32,7 @@ class VEV:
                 if i < 16:
                     vram_separator_16 += b'\x00'
         vram_separator_80 += b'\x00'
-    # Temp folder name
-    temp_folder = "temp_VE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+
     # Sizes for the material
     rb2_material_child_size = 96
     material_values_size = 112

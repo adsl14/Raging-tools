@@ -9,7 +9,7 @@ from lib.packages import rmtree, re, natsorted, move
 from lib.functions import del_rw
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
-from lib.packages import os, functools, QPixmap, QLabel, QStandardItem, QStandardItemModel, QMessageBox
+from lib.packages import os, functools, stat, QPixmap, QLabel, QStandardItem, QStandardItemModel, QMessageBox
 from lib.pak_explorer.PEV import PEV
 from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, \
     action_export_2_logic, action_import_2_logic, action_item_pak_explorer
@@ -652,6 +652,8 @@ def pack_and_save_file(main_window, path_output_file):
     args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
         + path_output_file + "\""
     os.system('cmd /c ' + args)
+    # Disable read only
+    os.chmod(path_output_file, stat.S_IWRITE)
 
     # Remove the 'old_pak' folder
     if PEV.stpz_file:

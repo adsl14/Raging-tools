@@ -1,4 +1,4 @@
-from lib.packages import datetime, os
+from lib.packages import os
 
 
 class PEV:
@@ -15,7 +15,7 @@ class PEV:
         separator = separator + bytes.fromhex("00")
 
     # Temp folder name
-    temp_folder = "temp_PE" + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+    temp_folder = "temp"
     # Path files
     pak_file_path_original = ""
     pak_file_path = ""
