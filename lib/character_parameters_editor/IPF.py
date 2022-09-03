@@ -79,34 +79,31 @@ def initialize_operate_character(main_window):
 
     # Set animations
     for element in IPV.animations_types:
-        main_window.animation_type.addItem(element)
+        main_window.animation_type_value.addItem(element)
     # Export animation button
     main_window.exportAnimationButton.clicked.connect(
-        lambda: action_export_animation_button_logic(main_window, main_window.animation_type))
+        lambda: action_export_animation_button_logic(main_window, 0))
     # Import animation button
     main_window.importAnimationButton.clicked.connect(
-        lambda: action_import_animation_button_logic(main_window, main_window.animation_type))
+        lambda: action_import_animation_button_logic(main_window, 0))
     # Export all animation button
     main_window.exportAllAnimationButton.clicked.connect(
-        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_type))
+        lambda: action_export_all_animation_button_logic(main_window, 0))
     # Import all animation button
     main_window.importAllAnimationButton.clicked.connect(
-        lambda: action_import_all_animation_button_logic(main_window, main_window.animation_type))
-    # Set animations properties
-    for element in IPV.animations_types:
-        main_window.animation_properties.addItem(element)
+        lambda: action_import_all_animation_button_logic(main_window, 0))
     # Export animation properties button
-    main_window.exportAnimationPropertiesButton.clicked.connect(
-        lambda: action_export_animation_button_logic(main_window, main_window.animation_properties, "_properties"))
+    main_window.exportAnimationEffectsButton.clicked.connect(
+        lambda: action_export_animation_button_logic(main_window, 1, "_effects"))
     # Import animation properties button
-    main_window.importAnimationPropertiesButton.clicked.connect(
-        lambda: action_import_animation_button_logic(main_window, main_window.animation_properties))
+    main_window.importAnimationEffectsButton.clicked.connect(
+        lambda: action_import_animation_button_logic(main_window, 1))
     # Export all animation properties button
-    main_window.exportAllAnimationPropertiesButton.clicked.connect(
-        lambda: action_export_all_animation_button_logic(main_window, main_window.animation_properties, "_properties"))
+    main_window.exportAllAnimationEffectsButton.clicked.connect(
+        lambda: action_export_all_animation_button_logic(main_window, 1, "_effects"))
     # Import all animation properties button
-    main_window.importAllAnimationPropertiesButton.clicked.connect(
-        lambda: action_import_all_animation_button_logic(main_window, main_window.animation_properties))
+    main_window.importAllAnimationEffectsButton.clicked.connect(
+        lambda: action_import_all_animation_button_logic(main_window, 1))
 
     # Set the blast type
     for i in range(0, 14):
@@ -131,10 +128,8 @@ def read_single_character_parameters(main_window):
     IPV.blast_i_path = main_window.listView_2.model().item(728, 0).text()
 
     # Read all the animation values
-    read_animation_files(main_window, 0, main_window.animation_type)
-    main_window.animation_type.setCurrentIndex(0)
-    read_animation_files(main_window, IPV.size_between_animation_and_effects, main_window.animation_properties)
-    main_window.animation_properties.setCurrentIndex(0)
+    read_animation_files(main_window, 0)
+    main_window.animation_type_value.setCurrentIndex(0)
 
     # Read character info file
     with open(IPV.character_i_path, mode="rb") as file:
@@ -274,17 +269,18 @@ def write_single_character_parameters(main_window):
 
     # Save all animation info (replace first the entire files)
     for i in range(0, len(IPV.animations_types)):
-        animation_files = main_window.animation_type.itemData(i)
-        animation_properties_files = main_window.animation_properties.itemData(i)
+        animation_files = main_window.animation_type_value.itemData(i)
 
         for j in range(0, len(animation_files)):
-            if animation_files[j].modified:
-                with open(animation_files[j].path, mode="wb") as file:
-                    file.write(animation_files[j].data)
+            # Animation file
+            if animation_files[j][0].modified:
+                with open(animation_files[j][0].path, mode="wb") as file:
+                    file.write(animation_files[j][0].data)
 
-            if animation_properties_files[j].modified:
-                with open(animation_properties_files[j].path, mode="wb") as file:
-                    file.write(animation_properties_files[j].data)
+            # Animation effects file
+            if animation_files[j][1].modified:
+                with open(animation_files[j][1].path, mode="wb") as file:
+                    file.write(animation_files[j][1].data)
 
     # Save all character info
     with open(IPV.character_i_path, mode="rb+") as file:
@@ -409,7 +405,7 @@ def write_single_character_parameters(main_window):
                 file.seek(IPV.size_between_blast, 1)
 
 
-def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load, animation_combo_box):
+def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load):
 
     item_data_animation = []
     for i in range(0, number_files_to_load):
@@ -421,116 +417,126 @@ def read_animation_file(main_window, index_list_view, combo_box_label, number_fi
             animation.data = file.read()
         animation.size = len(animation.data)
 
+        # Animation effect instance
+        animation_effect = Animation()
+        animation_effect.path = main_window.listView_2.model().item(IPV.size_between_animation_and_effects +
+                                                                    index_list_view + i, 0).text()
+        with open(animation_effect.path, mode="rb") as file:
+            animation_effect.data = file.read()
+        animation_effect.size = len(animation_effect.data)
+
         # Check if the file is 'Transformation in' from properties in order to read the background color
-        if index_list_view == 671 and animation_combo_box.objectName() == "animation_properties" and i == 0:
-            read_transformation_effect(main_window, animation)
+        if index_list_view == 308 and i == 0:
+            read_transformation_effect(main_window, animation_effect)
 
         # Add all the instances to an array
-        item_data_animation.append(animation)
+        item_data_animation.append([animation, animation_effect])
+
     # Add the array of Animation instances to the combo box
-    animation_combo_box.setItemData(animation_combo_box.findText(combo_box_label), item_data_animation)
+    main_window.animation_type_value.setItemData(main_window.animation_type_value.findText(combo_box_label),
+                                                 item_data_animation)
 
 
 # Read all the animation files
-def read_animation_files(main_window, offset_index, animation_combo_box):
+def read_animation_files(main_window, offset_index):
 
     # Idle ground
-    read_animation_file(main_window, offset_index, "Idle ground", 1, animation_combo_box)
+    read_animation_file(main_window, offset_index, "Idle ground", 1)
     # Idle fly
-    read_animation_file(main_window, 1+offset_index, "Idle fly", 1, animation_combo_box)
+    read_animation_file(main_window, 1 + offset_index, "Idle fly", 1)
     # Charge (in, loop)
-    read_animation_file(main_window, 2+offset_index, "Charge", 2, animation_combo_box)
+    read_animation_file(main_window, 2 + offset_index, "Charge", 2)
     # Charge max
-    read_animation_file(main_window, 4+offset_index, "Charge max", 1, animation_combo_box)
+    read_animation_file(main_window, 4 + offset_index, "Charge max", 1)
     # Idle ground tired
-    read_animation_file(main_window, 5+offset_index, "Idle ground tired", 1, animation_combo_box)
+    read_animation_file(main_window, 5 + offset_index, "Idle ground tired", 1)
     # Idle fly tired
-    read_animation_file(main_window, 6+offset_index, "Idle fly tired", 1, animation_combo_box)
+    read_animation_file(main_window, 6 + offset_index, "Idle fly tired", 1)
     # Dash
-    read_animation_file(main_window, 52+offset_index, "Dash", 1, animation_combo_box)
+    read_animation_file(main_window, 52 + offset_index, "Dash", 1)
     # Rush attack ground
-    read_animation_file(main_window, 66+offset_index, "Rush attack ground", 1, animation_combo_box)
-    read_animation_file(main_window, 67+offset_index, "Rush attack ground 2", 1, animation_combo_box)
-    read_animation_file(main_window, 68+offset_index, "Rush attack ground 3", 1, animation_combo_box)
-    read_animation_file(main_window, 69+offset_index, "Rush attack ground 4", 1, animation_combo_box)
-    read_animation_file(main_window, 70+offset_index, "Rush attack ground 5", 1, animation_combo_box)
+    read_animation_file(main_window, 66 + offset_index, "Rush attack ground", 1)
+    read_animation_file(main_window, 67 + offset_index, "Rush attack ground 2", 1)
+    read_animation_file(main_window, 68 + offset_index, "Rush attack ground 3", 1)
+    read_animation_file(main_window, 69 + offset_index, "Rush attack ground 4", 1)
+    read_animation_file(main_window, 70 + offset_index, "Rush attack ground 5", 1)
     # Rush attack fly
-    read_animation_file(main_window, 71+offset_index, "Rush attack fly", 1, animation_combo_box)
-    read_animation_file(main_window, 72+offset_index, "Rush attack fly 2", 1, animation_combo_box)
-    read_animation_file(main_window, 73+offset_index, "Rush attack fly 3", 1, animation_combo_box)
-    read_animation_file(main_window, 74+offset_index, "Rush attack fly 4", 1, animation_combo_box)
-    read_animation_file(main_window, 75+offset_index, "Rush attack fly 5", 1, animation_combo_box)
+    read_animation_file(main_window, 71 + offset_index, "Rush attack fly", 1)
+    read_animation_file(main_window, 72 + offset_index, "Rush attack fly 2", 1)
+    read_animation_file(main_window, 73 + offset_index, "Rush attack fly 3", 1)
+    read_animation_file(main_window, 74 + offset_index, "Rush attack fly 4", 1)
+    read_animation_file(main_window, 75 + offset_index, "Rush attack fly 5", 1)
     # Smash attack
-    read_animation_file(main_window, 76+offset_index, "Smash attack left", 3, animation_combo_box)
-    read_animation_file(main_window, 79+offset_index, "Smash attack right", 3, animation_combo_box)
-    read_animation_file(main_window, 82+offset_index, "Smash attack 2", 3, animation_combo_box)
-    read_animation_file(main_window, 85+offset_index, "Smash attack 3", 1, animation_combo_box)
-    read_animation_file(main_window, 86+offset_index, "Smash attack 4", 3, animation_combo_box)
-    read_animation_file(main_window, 89+offset_index, "Smash attack high", 3, animation_combo_box)
-    read_animation_file(main_window, 92+offset_index, "Smash attack low", 3, animation_combo_box)
-    read_animation_file(main_window, 95+offset_index, "Finish attack teleport", 2, animation_combo_box)
+    read_animation_file(main_window, 76 + offset_index, "Smash attack left", 3)
+    read_animation_file(main_window, 79 + offset_index, "Smash attack right", 3)
+    read_animation_file(main_window, 82 + offset_index, "Smash attack 2", 3)
+    read_animation_file(main_window, 85 + offset_index, "Smash attack 3", 1)
+    read_animation_file(main_window, 86 + offset_index, "Smash attack 4", 3)
+    read_animation_file(main_window, 89 + offset_index, "Smash attack high", 3)
+    read_animation_file(main_window, 92 + offset_index, "Smash attack low", 3)
+    read_animation_file(main_window, 95 + offset_index, "Finish attack teleport", 2)
     # Charge attack
-    read_animation_file(main_window, 97+offset_index,  "Charge attack", 3, animation_combo_box)
-    read_animation_file(main_window, 100+offset_index, "Charge attack high", 3, animation_combo_box)
-    read_animation_file(main_window, 103+offset_index, "Charge attack low", 3, animation_combo_box)
-    read_animation_file(main_window, 106+offset_index, "Charge attack left", 3, animation_combo_box)
-    read_animation_file(main_window, 109+offset_index, "Charge attack right", 3, animation_combo_box)
+    read_animation_file(main_window, 97 + offset_index,  "Charge attack", 3)
+    read_animation_file(main_window, 100 + offset_index, "Charge attack high", 3)
+    read_animation_file(main_window, 103 + offset_index, "Charge attack low", 3)
+    read_animation_file(main_window, 106 + offset_index, "Charge attack left", 3)
+    read_animation_file(main_window, 109 + offset_index, "Charge attack right", 3)
     # Dash attack
-    read_animation_file(main_window, 112+offset_index, "Dash attack", 3, animation_combo_box)
+    read_animation_file(main_window, 112 + offset_index, "Dash attack", 3)
     # Dash charge attack
-    read_animation_file(main_window, 115+offset_index, "Dash charge attack", 3, animation_combo_box)
-    read_animation_file(main_window, 118+offset_index, "Dash charge attack high", 3, animation_combo_box)
-    read_animation_file(main_window, 121+offset_index, "Dash charge attack low", 3, animation_combo_box)
-    read_animation_file(main_window, 124+offset_index, "Dash charge attack left", 3, animation_combo_box)
-    read_animation_file(main_window, 127+offset_index, "Dash charge attack right", 3, animation_combo_box)
+    read_animation_file(main_window, 115 + offset_index, "Dash charge attack", 3)
+    read_animation_file(main_window, 118 + offset_index, "Dash charge attack high", 3)
+    read_animation_file(main_window, 121 + offset_index, "Dash charge attack low", 3)
+    read_animation_file(main_window, 124 + offset_index, "Dash charge attack left", 3)
+    read_animation_file(main_window, 127 + offset_index, "Dash charge attack right", 3)
     # Shot ki
-    read_animation_file(main_window, 130+offset_index, "Shot Ki left hand", 3, animation_combo_box)
-    read_animation_file(main_window, 133+offset_index, "Shot Ki right hand", 3, animation_combo_box)
+    read_animation_file(main_window, 130 + offset_index, "Shot Ki left hand", 3)
+    read_animation_file(main_window, 133 + offset_index, "Shot Ki right hand", 3)
     # Charge Shot ki
-    read_animation_file(main_window, 136+offset_index, "Charge shot Ki", 3, animation_combo_box)
-    read_animation_file(main_window, 139+offset_index, "Charge shot Ki high", 3, animation_combo_box)
-    read_animation_file(main_window, 142+offset_index, "Charge shot Ki low", 3, animation_combo_box)
+    read_animation_file(main_window, 136 + offset_index, "Charge shot Ki", 3)
+    read_animation_file(main_window, 139 + offset_index, "Charge shot Ki high", 3)
+    read_animation_file(main_window, 142 + offset_index, "Charge shot Ki low", 3)
     # Shot ki while moving
-    read_animation_file(main_window, 145+offset_index, "Shot Ki moving forward", 1, animation_combo_box)
-    read_animation_file(main_window, 146+offset_index, "Shot Ki moving left", 1, animation_combo_box)
-    read_animation_file(main_window, 147+offset_index, "Shot Ki moving right", 1, animation_combo_box)
-    read_animation_file(main_window, 148+offset_index, "Shot Ki moving back", 1, animation_combo_box)
+    read_animation_file(main_window, 145 + offset_index, "Shot Ki moving forward", 1)
+    read_animation_file(main_window, 146 + offset_index, "Shot Ki moving left", 1)
+    read_animation_file(main_window, 147 + offset_index, "Shot Ki moving right", 1)
+    read_animation_file(main_window, 148 + offset_index, "Shot Ki moving back", 1)
     # Charged shot ki while moving
-    read_animation_file(main_window, 149+offset_index, "Charged shot Ki moving forward", 3, animation_combo_box)
-    read_animation_file(main_window, 152+offset_index, "Charged shot Ki moving left", 3, animation_combo_box)
-    read_animation_file(main_window, 155+offset_index, "Charged shot Ki moving right", 3, animation_combo_box)
-    read_animation_file(main_window, 158+offset_index, "Charged shot Ki moving back", 3, animation_combo_box)
+    read_animation_file(main_window, 149 + offset_index, "Charged shot Ki moving forward", 3)
+    read_animation_file(main_window, 152 + offset_index, "Charged shot Ki moving left", 3)
+    read_animation_file(main_window, 155 + offset_index, "Charged shot Ki moving right", 3)
+    read_animation_file(main_window, 158 + offset_index, "Charged shot Ki moving back", 3)
     # Jump attack
-    read_animation_file(main_window, 161+offset_index, "Jump attack", 3, animation_combo_box)
-    read_animation_file(main_window, 164+offset_index, "Jump Ki shot left", 1, animation_combo_box)
-    read_animation_file(main_window, 165+offset_index, "Jump Ki shot right", 1, animation_combo_box)
-    read_animation_file(main_window, 166+offset_index, "Jump charged Ki shot", 3, animation_combo_box)
+    read_animation_file(main_window, 161 + offset_index, "Jump attack", 3)
+    read_animation_file(main_window, 164 + offset_index, "Jump Ki shot left", 1)
+    read_animation_file(main_window, 165 + offset_index, "Jump Ki shot right", 1)
+    read_animation_file(main_window, 166 + offset_index, "Jump charged Ki shot", 3)
     # Throw
-    read_animation_file(main_window, 169+offset_index, "Throw catch", 1, animation_combo_box)
-    read_animation_file(main_window, 170+offset_index, "Throw", 8, animation_combo_box)
-    read_animation_file(main_window, 178+offset_index, "Throw wall", 5, animation_combo_box)
+    read_animation_file(main_window, 169 + offset_index, "Throw catch", 1)
+    read_animation_file(main_window, 170 + offset_index, "Throw", 8)
+    read_animation_file(main_window, 178 + offset_index, "Throw wall", 5)
     # Guard
-    read_animation_file(main_window, 267 + offset_index, "Guard", 1, animation_combo_box)
+    read_animation_file(main_window, 267 + offset_index, "Guard", 1)
     # Transformation
-    read_animation_file(main_window, 308+offset_index, "Transformation in", 2, animation_combo_box)
-    read_animation_file(main_window, 310+offset_index, "Transformation result", 1, animation_combo_box)
+    read_animation_file(main_window, 308 + offset_index, "Transformation in", 2)
+    read_animation_file(main_window, 310 + offset_index, "Transformation result", 1)
     # Return
-    read_animation_file(main_window, 311+offset_index, "Return in", 2, animation_combo_box)
-    read_animation_file(main_window, 313+offset_index, "Return out", 1, animation_combo_box)
+    read_animation_file(main_window, 311 + offset_index, "Return in", 2)
+    read_animation_file(main_window, 313 + offset_index, "Return out", 1)
     # Fusion
-    read_animation_file(main_window, 316+offset_index, "Fusion in", 2, animation_combo_box)
-    read_animation_file(main_window, 318+offset_index, "Fusion result", 1, animation_combo_box)
-    read_animation_file(main_window, 319+offset_index, "Fusion demo", 2, animation_combo_box)
+    read_animation_file(main_window, 316 + offset_index, "Fusion in", 2)
+    read_animation_file(main_window, 318 + offset_index, "Fusion result", 1)
+    read_animation_file(main_window, 319 + offset_index, "Fusion demo", 2)
     # Potala
-    read_animation_file(main_window, 321+offset_index, "Potara in", 2, animation_combo_box)
-    read_animation_file(main_window, 323+offset_index, "Potara result", 1, animation_combo_box)
-    read_animation_file(main_window, 324+offset_index, "Potara demo", 2, animation_combo_box)
+    read_animation_file(main_window, 321 + offset_index, "Potara in", 2)
+    read_animation_file(main_window, 323 + offset_index, "Potara result", 1)
+    read_animation_file(main_window, 324 + offset_index, "Potara demo", 2)
     # Cutscenes
-    read_animation_file(main_window, 336+offset_index, "Entry 1", 2, animation_combo_box)
-    read_animation_file(main_window, 338+offset_index, "Entry 2", 2, animation_combo_box)
-    read_animation_file(main_window, 340+offset_index, "Entry 3", 2, animation_combo_box)
-    read_animation_file(main_window, 342+offset_index, "Victory", 2, animation_combo_box)
-    read_animation_file(main_window, 344+offset_index, "Lose", 2, animation_combo_box)
+    read_animation_file(main_window, 336 + offset_index, "Entry 1", 2)
+    read_animation_file(main_window, 338 + offset_index, "Entry 2", 2)
+    read_animation_file(main_window, 340 + offset_index, "Entry 3", 2)
+    read_animation_file(main_window, 342 + offset_index, "Victory", 2)
+    read_animation_file(main_window, 344 + offset_index, "Lose", 2)
 
 
 def change_camera_cutscene_values(main_window, camera_cutscene):
@@ -640,7 +646,7 @@ def import_camera(camera_cutscene, file):
     camera_cutscene.modified = True
 
 
-def export_animation(animation_array, file_export_path):
+def export_animation(animation_array, file_export_path, animation_type_index):
     # Get the number of animations files
     number_anim_files = len(animation_array)
 
@@ -652,8 +658,8 @@ def export_animation(animation_array, file_export_path):
 
     # Get the sizes and data from each animation
     for animation_file in animation_array:
-        header_file = header_file + struct.pack('>I', animation_file.size)
-        data_file = data_file + animation_file.data
+        header_file = header_file + struct.pack('>I', animation_file[animation_type_index].size)
+        data_file = data_file + animation_file[animation_type_index].data
 
     # Write the header properties and then the data
     with open(file_export_path, mode="wb") as file:
@@ -664,7 +670,8 @@ def export_animation(animation_array, file_export_path):
         file.write(data_file)
 
 
-def import_animation(main_window, file_export_path, animation_array, name_file=None, animations_files_error=None):
+def import_animation(main_window, file_export_path, animation_array, animation_type_index, name_file=None,
+                     animations_files_error=None):
 
     if file_export_path:
 
@@ -737,9 +744,9 @@ def import_animation(main_window, file_export_path, animation_array, name_file=N
                 # Get each animation file
                 for i in range(0, len(animation_array)):
                     data_index_end = data_index_start + sizes_number_of_files[i]
-                    animation_array[i].data = data[data_index_start:data_index_end]
-                    animation_array[i].size = sizes_number_of_files[i]
-                    animation_array[i].modified = True
+                    animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
+                    animation_array[i][animation_type_index].size = sizes_number_of_files[i]
+                    animation_array[i][animation_type_index].modified = True
                     data_index_start = data_index_end
 
 

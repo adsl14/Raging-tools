@@ -157,10 +157,10 @@ def action_import_all_camera_button_logic(main_window):
             msg.exec()
 
 
-def action_export_animation_button_logic(main_window, animation_combo_box, properties_text=""):
+def action_export_animation_button_logic(main_window, animation_type_index, properties_text=""):
     # Ask to the user the file output
-    name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
-                animation_combo_box.currentText().replace(" ", "_") + properties_text + "." + IPV.animations_extension
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + properties_text + "." + IPV.animations_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
@@ -168,12 +168,12 @@ def action_export_animation_button_logic(main_window, animation_combo_box, prope
     if file_export_path:
 
         # Get from the combo box, the array of animations ([[keyframes + effect], [keyframes + effects]])
-        animation_array = animation_combo_box.currentData()
+        animation_array = main_window.animation_type_value.currentData()
 
-        IPF.export_animation(animation_array, file_export_path)
+        IPF.export_animation(animation_array, file_export_path, animation_type_index)
 
 
-def action_export_all_animation_button_logic(main_window, animation_combo_box, properties_text=""):
+def action_export_all_animation_button_logic(main_window, animation_type_index, properties_text=""):
     # Ask to the user the folder output
     name_folder = CPEV.file_character_id + "_animations" + properties_text
     folder_export_path = QFileDialog.getSaveFileName(main_window,
@@ -187,15 +187,15 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
             os.mkdir(folder_export_path)
 
         # Export all the files to the folder
-        for i in range(0, animation_combo_box.count()):
+        for i in range(0, main_window.animation_type_value.count()):
             name_file = CPEV.file_character_id + "_" + str(i) + "_" + \
-                        animation_combo_box.itemText(i).replace(" ", "_") + properties_text + "." + \
+                        main_window.animation_type_value.itemText(i).replace(" ", "_") + properties_text + "." + \
                         IPV.animations_extension
             file_export_path = os.path.join(folder_export_path, name_file)
 
-            animation = animation_combo_box.itemData(i)
+            animation_array = main_window.animation_type_value.itemData(i)
 
-            IPF.export_animation(animation, file_export_path)
+            IPF.export_animation(animation_array, file_export_path, animation_type_index)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -210,27 +210,27 @@ def action_export_all_animation_button_logic(main_window, animation_combo_box, p
             os.system('explorer.exe ' + folder_export_path.replace("/", "\\"))
 
 
-def action_import_animation_button_logic(main_window, animation_combo_box):
+def action_import_animation_button_logic(main_window, animation_type_index):
     # Ask to the user from what file wants to open the camera files
-    name_file = CPEV.file_character_id + "_" + str(animation_combo_box.currentIndex()) + "_" + \
-                animation_combo_box.currentText().replace(" ", "_") + "." + IPV.animations_extension
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + "." + IPV.animations_extension
     file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
     if os.path.exists(file_import_path):
         # Import a single animation
-        animation_array = animation_combo_box.currentData()
-        IPF.import_animation(main_window, file_import_path, animation_array)
+        animation_array = main_window.animation_type_value.currentData()
+        IPF.import_animation(main_window, file_import_path, animation_array, animation_type_index)
 
-        # Check if the combo box is 'animation_properties' and is the file 'transformation in'
-        if animation_combo_box.objectName() == "animation_properties" and animation_combo_box.currentIndex() == 57:
-            read_transformation_effect(main_window, animation_array[0])
+        # Check if is the file 'transformation in'
+        if main_window.animation_type_value.currentIndex() == 57:
+            read_transformation_effect(main_window, animation_array[0][1])
 
         # Change old path
         main_window.old_path_file = file_import_path
 
 
-def action_import_all_animation_button_logic(main_window, animation_combo_box):
+def action_import_all_animation_button_logic(main_window, animation_type_index):
     # Ask to the user from what file wants to open the camera files
     folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", main_window.old_path_file)
 
@@ -242,13 +242,13 @@ def action_import_all_animation_button_logic(main_window, animation_combo_box):
         # Get the filename of each animation
         for i in range(0, len(animation_files)):
             # Import every single animation
-            animation_array = animation_combo_box.itemData(i)
+            animation_array = main_window.animation_type_value.itemData(i)
             IPF.import_animation(main_window, os.path.join(folder_import, animation_files[i]), animation_array,
-                                 animation_files[i], animations_files_error)
+                                 animation_type_index, animation_files[i], animations_files_error)
 
             # Check if the combo box is 'animation_properties' and is the file 'transformation in' (57)
-            if animation_combo_box.objectName() == "animation_properties" and i == 57:
-                read_transformation_effect(main_window, animation_array[0])
+            if i == 57:
+                read_transformation_effect(main_window, animation_array[0][1])
 
         # We show a message with the animations files that couldn't get imported
         if animations_files_error:
@@ -531,8 +531,8 @@ def on_background_color_trans_change(main_window):
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
         # Change the color of the background when we change the combo box background color transformation
-        animation = main_window.animation_properties.itemData(57)[0]
-        animation.data = animation.data[:IPV.trans_effect_position_byte] + \
+        animation_effect = main_window.animation_type_value.itemData(57)[0][1]
+        animation_effect.data = animation_effect.data[:IPV.trans_effect_position_byte] + \
             main_window.background_color_trans_value.\
-            currentData().to_bytes(1, "big") + animation.data[IPV.trans_effect_position_byte+1:]
-        animation.modified = True
+            currentData().to_bytes(1, "big") + animation_effect.data[IPV.trans_effect_position_byte+1:]
+        animation_effect.modified = True
