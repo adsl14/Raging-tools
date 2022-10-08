@@ -352,7 +352,6 @@ def action_type_val_changed(main_window):
         layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Store the selected type of layer
-        layer.layer_name_offset = main_window.typeVal.itemData(main_window.typeVal.currentIndex())
         layer.layer_name = main_window.typeVal.itemText(main_window.typeVal.currentIndex())
 
 

@@ -184,6 +184,8 @@ def load_data_to_ve(main_window):
         main_window.materialVal.setEnabled(True)
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
+        for layer_effect in VEV.layer_type_effects:
+            main_window.typeVal.addItem(layer_effect, 0)
         main_window.effectVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
         main_window.exportMaterialButton.setEnabled(True)
@@ -565,28 +567,6 @@ def open_spr_file(main_window, model, spr_path):
 
         # Set the unique temp offset value by using the last position of the string table size
         VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
-
-        # If there is material in the spr file, we try to find specific names
-        if VEV.exists_mtrl:
-            offset = 161
-            stop_offset = VEV.sprp_file.sprp_header.string_table_size + 160
-
-            # Add the layers effects
-            for layer_effect in VEV.layer_type_effects:
-                main_window.typeVal.addItem(layer_effect, 0)
-
-            while True:
-                name, extension = get_name_from_spr(file, offset)
-
-                # Find the type effects
-                if name in VEV.layer_type_effects:
-                    main_window.typeVal.setItemData(main_window.typeVal.findText(name),
-                                                    offset - VEV.sprp_file.string_table_base)
-                # We reached the end of the string base section
-                if file.tell() > stop_offset:
-                    break
-
-                offset = file.tell()
 
 
 def open_vram_file(vram_path):
