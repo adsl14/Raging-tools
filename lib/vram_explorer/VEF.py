@@ -1205,6 +1205,7 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                     # If doesn't find anything, we append an empty offset
                     if not found:
                         data_child += b'\x00\x00\x00\x00'
+
                     # Update the material offset that the current scne is using
                     scne_material = data_info_child.child_info[0].data
                     for j in range(0, num_material):
@@ -1225,8 +1226,7 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                                     scne_material_info = ScneMaterialInfo()
 
                                     # Get the new offset for this layer
-                                    scne_material_info.name_offset = main_window.typeVal\
-                                        .itemData(main_window.typeVal.findText(layer.layer_name))
+                                    scne_material_info.name_offset = special_names[layer.layer_name]
 
                                     # Get the new offset for this layer effect
                                     scne_material_info.type_offset = main_window.effectVal.\

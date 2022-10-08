@@ -450,20 +450,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 # ------------------
                                 if b'MTRL' == type_entry:
                                     num_material = self.materialVal.count()
-                                    num_layer_type = self.typeVal.count()
-
-                                    # Write each type layer effect
-                                    for i in range(1, num_layer_type):
-                                        # Get the layer from the tool
-                                        layer_effect_name = self.typeVal.itemText(i)
-
-                                        # Write the name for each layer effect
-                                        self.typeVal.setItemData(i, string_name_offset)
-                                        string_table += b'\x00' + layer_effect_name.encode('utf-8')
-                                        string_table_size += 1 + len(layer_effect_name)
-
-                                        # Update the offset
-                                        string_name_offset = 1 + string_table_size
 
                                     # TXAN values (will be used to know if the txan entries name offset are
                                     # already added to the spr)
@@ -496,9 +482,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         mtrl_info = mtrl_data_entry.data_info.data
                                         data += mtrl_info.unk_00
                                         for layer in mtrl_info.layers:
-                                            # Search for the layer type assigned to the material
-                                            data += self.typeVal.itemData(self.typeVal.findText(layer.layer_name))\
-                                                .to_bytes(4, 'big')
+
+                                            # Assing to the spr, the layer type
+                                            if layer.layer_name == "":
+                                                data += b'\00\00\00\00'
+                                            else:
+                                                # The special name wasn't added to the string name, so the name
+                                                # offset will be calculated
+                                                if layer.layer_name not in special_names_dict:
+                                                    # Write the name for the special name
+                                                    special_names_dict[layer.layer_name] = 1 + string_table_size
+                                                    string_table += b'\x00' + layer.layer_name.encode('utf-8')
+                                                    string_table_size += 1 + len(layer.layer_name)
+
+                                                data += special_names_dict[layer.layer_name].to_bytes(4, 'big')
+
                                             # Search for the texture assigned to the material
                                             if layer.source_name_offset == 0:
                                                 data += b'\00\00\00\00'
