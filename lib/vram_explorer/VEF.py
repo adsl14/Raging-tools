@@ -1205,8 +1205,11 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                                 if layer.effect_name_offset != 0:
                                     scne_material_info = ScneMaterialInfo()
 
-                                    # Get the new offset for this layer
-                                    scne_material_info.name_offset = special_names[layer.layer_name]
+                                    # Get the new offset type for this layer
+                                    if layer.layer_name != "":
+                                        scne_material_info.name_offset = special_names[layer.layer_name]
+                                    else:
+                                        scne_material_info.name_offset = 0
 
                                     # Get the new offset for this layer effect
                                     scne_material_info.type_offset = main_window.effectVal.\
