@@ -39,7 +39,7 @@ class VEV:
     # Layer material effects
     layer_type_effects = ["COLORMAP", "COLORMAP0", "COLORMAP1", "NORMALMAP", "REFLECTMAP", "TOONMAP",
                           "INCANDESCENCEMAP_RAMP", "miScatterColor_RAMP"]
-    layer_effect = ["map1", "damage", "normal", "normal1", "eyeball"]
+    layer_effect = ["map1", "damage", "damege", "normal", "normal1", "eyeball"]
 
     # *** vars that need to be reseted when loading a new spr/vram file ***
     # --- SPR vars ---
