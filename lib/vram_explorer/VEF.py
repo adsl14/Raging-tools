@@ -959,25 +959,11 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_materia_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
-                    # Store the name of the type and effect
+                    # Store the name of the type
                     aux_pointer_file_scne = file.tell()
-
-                    scne_materia_info.name, nothing = get_name_from_spr(file,
-                                                                             VEV.sprp_file.string_table_base +
-                                                                             scne_materia_info.name_offset)
-                    # We have stored the type before in the combobox, but just in case we find
-                    # another one that is new, we add it to the combobox of effect type
-                    if main_window.typeVal.findText(scne_materia_info.name) == -1:
-                        main_window.typeVal.addItem(scne_materia_info.name, scne_materia_info.name_offset)
-
                     scne_materia_info.type_name, nothing = get_name_from_spr(file,
                                                                              VEV.sprp_file.string_table_base +
                                                                              scne_materia_info.type_offset)
-                    # We have stored the effect before in the combobox, but just in case we find
-                    # another one that is new, we add it to the combobox of effect type
-                    if main_window.effectVal.findText(scne_materia_info.type_name) == -1:
-                        main_window.effectVal.addItem(scne_materia_info.type_name, scne_materia_info.type_offset)
-
                     file.seek(aux_pointer_file_scne)
 
                     # Assign to the layer from the material that this scne is using, the effect for that layer
@@ -1244,16 +1230,7 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
 
                                     # Get the new offset for this layer effect
                                     if layer.effect_name != "":
-                                        if layer.effect_name in special_names:
-                                            scne_material_info.type_offset = special_names[layer.effect_name]
-                                        else:
-                                            special_names[layer.effect_name] = string_name_offset
-                                            scne_material_info.type_offset = special_names[layer.effect_name]
-                                            string_table_child += b'\x00' + layer.effect_name.encode('utf-8')
-                                            string_name_size = 1 + len(layer.effect_name)
-                                            # Update the offset
-                                            string_table_child_size += string_name_size
-                                            string_name_offset += string_name_size
+                                        scne_material_info.type_offset = special_names[layer.effect_name]
                                     else:
                                         scne_material_info.type_offset = 0
 
