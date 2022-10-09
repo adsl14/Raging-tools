@@ -6,5 +6,4 @@ class MtrlLayer:
         # Extra info
         self.layer_name = ""
         self.source_name = ""
-        self.effect_name_offset = 0
         self.effect_name = ""

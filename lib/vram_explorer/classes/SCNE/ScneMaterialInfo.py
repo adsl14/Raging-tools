@@ -5,3 +5,6 @@ class ScneMaterialInfo:
       self.name_offset = 0
       self.type_offset = 0
       self.unk08 = 0
+      # Extra info
+      self.name = ""
+      self.type_name = ""

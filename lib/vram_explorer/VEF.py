@@ -125,10 +125,17 @@ def load_data_to_ve(main_window):
     VEV.DbzCharMtrl_offset = 0
     # Reset combo box values
     main_window.materialVal.clear()
+
     main_window.typeVal.clear()
     main_window.typeVal.addItem("", 0)
+    for layer_effect in VEV.layer_type_effects:
+        main_window.typeVal.addItem(layer_effect, 0)
+
     main_window.effectVal.clear()
     main_window.effectVal.addItem("", 0)
+    for layer_effect in VEV.layer_effect:
+        main_window.effectVal.addItem(layer_effect, 0)
+
     main_window.textureVal.clear()
     main_window.textureVal.addItem("", 0)
     main_window.modelPartVal.clear()
@@ -184,8 +191,6 @@ def load_data_to_ve(main_window):
         main_window.materialVal.setEnabled(True)
         main_window.layerVal.setEnabled(True)
         main_window.typeVal.setEnabled(True)
-        for layer_effect in VEV.layer_type_effects:
-            main_window.typeVal.addItem(layer_effect, 0)
         main_window.effectVal.setEnabled(True)
         main_window.textureVal.setEnabled(True)
         main_window.exportMaterialButton.setEnabled(True)
@@ -373,6 +378,14 @@ def open_spr_file(main_window, model, spr_path):
                             aux_pointer_mtrl_layer = file.tell()
                             mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
                                                                                mtrl_layer.layer_name_offset)
+
+                            # We have added all the type material in the combobox,
+                            # but just in case we find another one that we didn't
+                            # store before while we're reading the material entries, then, we add the new type material
+                            # to the combobox
+                            if main_window.typeVal.findText(mtrl_layer.layer_name) == -1:
+                                main_window.typeVal.addItem(mtrl_layer.layer_name, 0)
+
                             file.seek(aux_pointer_mtrl_layer)
                         # Store the name of the source
                         if mtrl_layer.source_name_offset != 0:
@@ -449,7 +462,8 @@ def open_spr_file(main_window, model, spr_path):
                         aux_pointer_file_vertex = file.tell()
                         vertex_decl.resource_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
                                                                                + vertex_decl.resource_name_offset)
-                        # Store the effect type
+                        # We have stored the effect type before in the combobox, but just in case we find
+                        # another one that is new, we add it to the combobox of effect type
                         if main_window.effectVal.findText(vertex_decl.resource_name) == -1:
                             main_window.effectVal.addItem(vertex_decl.resource_name, vertex_decl.resource_name_offset)
                         file.seek(aux_pointer_file_vertex)
@@ -874,6 +888,11 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 aux_pointer_file_shap = file.tell()
                 shap_info.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
                                                                  + shap_info.type_offset)
+                # We have stored the effect type before in the combobox, but just in case we find
+                # another one that is new, we add it to the combobox of effect type
+                if main_window.effectVal.findText(shap_info.type_name) == -1:
+                    main_window.effectVal.addItem(shap_info.type_name, shap_info.type_offset)
+
                 file.seek(aux_pointer_file_shap)
 
             # Get all the data if is everything else
@@ -925,7 +944,6 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 # Search first the material that this scene is using currently
                 found_material = False
                 layers = []
-                mtrl_layer = MtrlLayer()
                 for i in range(main_window.materialVal.count()):
                     mtrl_data_info = main_window.materialVal.itemData(i).data_info
                     if scne_material.name_offset == mtrl_data_info.name_offset:
@@ -941,28 +959,35 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_materia_info.type_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     scne_materia_info.unk08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
-                    # Assign to the layer from the material that this scne is usign, the effect for that layer
-                    found_layer = False
+                    # Store the name of the type and effect
+                    aux_pointer_file_scne = file.tell()
+
+                    scne_materia_info.name, nothing = get_name_from_spr(file,
+                                                                             VEV.sprp_file.string_table_base +
+                                                                             scne_materia_info.name_offset)
+                    # We have stored the type before in the combobox, but just in case we find
+                    # another one that is new, we add it to the combobox of effect type
+                    if main_window.typeVal.findText(scne_materia_info.name) == -1:
+                        main_window.typeVal.addItem(scne_materia_info.name, scne_materia_info.name_offset)
+
+                    scne_materia_info.type_name, nothing = get_name_from_spr(file,
+                                                                             VEV.sprp_file.string_table_base +
+                                                                             scne_materia_info.type_offset)
+                    # We have stored the effect before in the combobox, but just in case we find
+                    # another one that is new, we add it to the combobox of effect type
+                    if main_window.effectVal.findText(scne_materia_info.type_name) == -1:
+                        main_window.effectVal.addItem(scne_materia_info.type_name, scne_materia_info.type_offset)
+
+                    file.seek(aux_pointer_file_scne)
+
+                    # Assign to the layer from the material that this scne is using, the effect for that layer
                     if found_material:
                         for i in range(0, 10):
                             mtrl_layer = layers[i]
                             if mtrl_layer.layer_name_offset == scne_materia_info.name_offset:
-                                mtrl_layer.effect_name_offset = scne_materia_info.type_offset
-                                found_layer = True
+                                # Store the name of the effect
+                                mtrl_layer.effect_name = scne_materia_info.type_name
                                 break
-                            else:
-                                continue
-
-                    # Store the name to the combo box
-                    if found_layer:
-                        aux_pointer_file_scne = file.tell()
-                        mtrl_layer.effect_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                            scne_materia_info.type_offset)
-
-                        # Store the effect type
-                        if main_window.effectVal.findText(mtrl_layer.effect_name) == -1:
-                            main_window.effectVal.addItem(mtrl_layer.effect_name, scne_materia_info.type_offset)
-                        file.seek(aux_pointer_file_scne)
 
                     scne_material.material_info.append(scne_materia_info)
 
@@ -1101,9 +1126,18 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
 
                     # Check if this shape has a type assigned. We won't assign anything if originally the
                     # shape didn't have a type assigned
-                    effect_val_index = main_window.effectVal.findText(shap_info.type_name)
-                    if effect_val_index != -1:
-                        data_child += main_window.effectVal.itemData(effect_val_index).to_bytes(4, 'big')
+                    # Get the new offset for this layer effect
+                    if shap_info.type_name != "":
+                        if shap_info.type_name in special_names:
+                            data_child += special_names[shap_info.type_name].to_bytes(4, 'big')
+                        else:
+                            special_names[shap_info.type_name] = string_name_offset
+                            data_child += special_names[shap_info.type_name].to_bytes(4, 'big')
+                            string_table_child += b'\x00' + shap_info.type_name.encode('utf-8')
+                            string_name_size = 1 + len(shap_info.type_name)
+                            # Update the offset
+                            string_table_child_size += string_name_size
+                            string_name_offset += string_name_size
                     else:
                         data_child += b'\x00\x00\x00\x00'
 
@@ -1201,23 +1235,32 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                             scne_material.material_info = []
                             material_info_count = 0
                             for layer in mtrl_data_entry.data_info.data.layers:
-                                # We only add to the scene the layers that has an effect added
-                                if layer.effect_name_offset != 0:
+                                # We only add to the scene the layers that has a type added
+                                if layer.layer_name != "":
                                     scne_material_info = ScneMaterialInfo()
 
                                     # Get the new offset type for this layer
-                                    if layer.layer_name != "":
-                                        scne_material_info.name_offset = special_names[layer.layer_name]
-                                    else:
-                                        scne_material_info.name_offset = 0
+                                    scne_material_info.name_offset = special_names[layer.layer_name]
 
                                     # Get the new offset for this layer effect
-                                    scne_material_info.type_offset = main_window.effectVal.\
-                                        itemData(main_window.effectVal.findText(layer.effect_name))
+                                    if layer.effect_name != "":
+                                        if layer.effect_name in special_names:
+                                            scne_material_info.type_offset = special_names[layer.effect_name]
+                                        else:
+                                            special_names[layer.effect_name] = string_name_offset
+                                            scne_material_info.type_offset = special_names[layer.effect_name]
+                                            string_table_child += b'\x00' + layer.effect_name.encode('utf-8')
+                                            string_name_size = 1 + len(layer.effect_name)
+                                            # Update the offset
+                                            string_table_child_size += string_name_size
+                                            string_name_offset += string_name_size
+                                    else:
+                                        scne_material_info.type_offset = 0
 
                                     scne_material_info.unk08 = 0
                                     scne_material.material_info.append(scne_material_info)
                                     material_info_count += 1
+
                             scne_material.material_info_count = material_info_count
 
                             break

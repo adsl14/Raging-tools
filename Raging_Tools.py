@@ -583,20 +583,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     # Get the type entry shap
                                     shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
 
-                                    # Write all the effects that applies to the material
-                                    num_layer_effect = self.effectVal.count()
-                                    for i in range(1, num_layer_effect):
-                                        # Get the layer from the tool
-                                        layer_effect_name = self.effectVal.itemText(i)
-
-                                        # Write the name for each layer effect
-                                        self.effectVal.setItemData(i, string_name_offset)
-                                        string_table += b'\x00' + layer_effect_name.encode('utf-8')
-                                        string_table_size += 1 + len(layer_effect_name)
-
-                                        # Update the offset
-                                        string_name_offset = 1 + string_table_size
-
                                     # Get each shape data entry
                                     for i in range(0, shap_type_entry.data_count):
                                         # Get the data entry for the SHAP
@@ -685,13 +671,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                             # Read all the data
                                             data += vertex_decl.unk0x00
-                                            # Search what type of effect is using the vertex declaration for the mesh
+
+                                            # Search what effect is using the vertex declaration for the mesh
                                             # If we don't find anything, we write 0
-                                            index = self.effectVal.findText(vertex_decl.resource_name)
-                                            if index != -1:
-                                                data += self.effectVal.itemData(index).to_bytes(4, 'big')
+                                            if vertex_decl.resource_name == "":
+                                                data += b'\00\00\00\00'
                                             else:
-                                                data += b'\x00\x00\x00\x00'
+                                                # The special name wasn't added to the string name, so the name
+                                                # offset will be calculated
+                                                if vertex_decl.resource_name not in special_names_dict:
+                                                    # Write the name for the special name
+                                                    special_names_dict[vertex_decl.resource_name] = 1 + \
+                                                                                                    string_table_size
+                                                    string_table += b'\x00' + vertex_decl.resource_name.encode('utf-8')
+                                                    string_table_size += 1 + len(vertex_decl.resource_name)
+
+                                                data += special_names_dict[vertex_decl.resource_name].to_bytes(4, 'big')
+
                                             data += vertex_decl.vertex_usage.to_bytes(2, 'big')
                                             data += vertex_decl.index.to_bytes(2, 'big')
                                             data += vertex_decl.vertex_format

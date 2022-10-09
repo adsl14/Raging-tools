@@ -366,7 +366,6 @@ def action_effect_val_changed(main_window):
         layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
         # Store the selected effect of layer
-        layer.effect_name_offset = main_window.effectVal.itemData(main_window.effectVal.currentIndex())
         layer.effect_name = main_window.effectVal.itemText(main_window.effectVal.currentIndex())
 
 
