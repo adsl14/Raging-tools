@@ -133,9 +133,6 @@ def load_data_to_ve(main_window):
 
     main_window.effectVal.clear()
     main_window.effectVal.addItem("", 0)
-    for layer_effect in VEV.layer_effect:
-        main_window.effectVal.addItem(layer_effect, 0)
-
     main_window.textureVal.clear()
     main_window.textureVal.addItem("", 0)
     main_window.modelPartVal.clear()
@@ -462,8 +459,7 @@ def open_spr_file(main_window, model, spr_path):
                         aux_pointer_file_vertex = file.tell()
                         vertex_decl.resource_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
                                                                                + vertex_decl.resource_name_offset)
-                        # We have stored the effect type before in the combobox, but just in case we find
-                        # another one that is new, we add it to the combobox of effect type
+                        # Add the effect of the material in the combobox
                         if main_window.effectVal.findText(vertex_decl.resource_name) == -1:
                             main_window.effectVal.addItem(vertex_decl.resource_name, vertex_decl.resource_name_offset)
                         file.seek(aux_pointer_file_vertex)
@@ -888,8 +884,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
                 aux_pointer_file_shap = file.tell()
                 shap_info.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
                                                                  + shap_info.type_offset)
-                # We have stored the effect type before in the combobox, but just in case we find
-                # another one that is new, we add it to the combobox of effect type
+                # Add the effect of the material in the combobox
                 if main_window.effectVal.findText(shap_info.type_name) == -1:
                     main_window.effectVal.addItem(shap_info.type_name, shap_info.type_offset)
 
