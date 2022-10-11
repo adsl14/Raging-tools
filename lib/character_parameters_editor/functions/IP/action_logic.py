@@ -306,7 +306,7 @@ def action_import_blast_button_logic(main_window):
 
             size_file = len(file.read())
 
-            # The file of the camera has to be 100 bytes length
+            # The file of the blast has to be 100 bytes length
             if size_file == IPV.size_between_blast:
                 file.seek(0)
             else:
@@ -321,7 +321,7 @@ def action_import_blast_button_logic(main_window):
             # Get the instance of the combo box
             blast = main_window.blast_key.currentData()
 
-            # Import camera to memory
+            # Import blast values to memory
             IPF.import_blast(blast, file)
 
         # Change old path
@@ -372,7 +372,7 @@ def action_import_all_blast_button_logic(main_window):
     if folder_import:
 
         blasts_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
-        # Get the filename of each camera
+        # Get the filename of each blast
         for i in range(0, len(blasts_files)):
 
             # Read all the data
@@ -382,18 +382,14 @@ def action_import_all_blast_button_logic(main_window):
                 size_file = len(file.read())
                 file.seek(0)
 
-                # Check if camera has the correct size
+                # Check if blast values file has the correct size
                 if size_file == IPV.size_between_blast:
 
                     # Create an instance of Blast
                     blast = main_window.blast_key.itemData(i)
 
-                    # Import camera to memory
+                    # Import blast to memory
                     IPF.import_blast(blast, file)
-
-                    # Change the values in the tool only for the current selected item
-                    if main_window.blast_key.currentIndex() == i:
-                        IPF.change_camera_cutscene_values(main_window, blast)
 
                 else:
                     blasts_files_error.append(blasts_files[i])
