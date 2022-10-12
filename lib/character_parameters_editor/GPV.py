@@ -4,9 +4,10 @@ class GPV:
 
     # Flag that will tell us if the user has loaded the operate_character_parameters file
     operate_resident_param_file = False
-    # path for character info, transformer and game_resident_character_param.da
+    # path for character info, transformer, skill and game_resident_character_param.da
     resident_character_inf_path = ""
     resident_transformer_i_path = ""
+    resident_skill_path = ""
     game_resident_character_param = ""
     # number of bytes between each character
     sizeVisualParameters = 148
@@ -36,7 +37,7 @@ class GPV:
     mini_portraits_image_select_chara_window = []
 
     # List of character with their data from the file
-    character_list = []
+    character_list = []  # It stores the instances of character with all the info stored within
     chara_selected = 0  # Index of the char selected in the main panel
     trans_slot_panel_selected = 0  # Slot thas is being edited for the transformations
     transformation_partner_flag = False  # Flag transformation partner slot to know if the user has selected that
@@ -52,3 +53,6 @@ class GPV:
     characters_with_trans_index = [[1, 2, 3], [6, 7], [9, 10], [18, 19, 20], [23], [25, 26], [28], [30], [32, 33],
                                    [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86],
                                    [89]]
+
+    # Outputname for the signature skill
+    signature_output_name = "signature"

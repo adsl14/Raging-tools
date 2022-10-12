@@ -5,7 +5,8 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_glow_lightning_changed, on_transformation_ki_effect_changed, on_amount_ki_trans_changed, \
     on_animation_per_transformation_changed, on_amount_ki_fusion_changed, on_animation_per_fusion_changed, \
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
-    on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic
+    on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic, action_export_signature_button_logic, \
+    action_import_signature_button_logic
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
@@ -51,6 +52,10 @@ def initialize_operate_resident_param(main_window, qt_widgets):
 
     # Set the hit box
     main_window.hit_box_value.valueChanged.connect(lambda: on_hit_box_changed(main_window))
+
+    # Set the signature values
+    main_window.signature_parameters_export.clicked.connect(lambda: action_export_signature_button_logic(main_window))
+    main_window.signature_parameters_import.clicked.connect(lambda: action_import_signature_button_logic(main_window))
 
     # Set the aura size
     main_window.aura_size_idle_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=0))
@@ -208,6 +213,7 @@ def enable_disable_operate_resident_param_values(main_window, flag):
     main_window.health.setEnabled(flag)
     main_window.camera_size.setEnabled(flag)
     main_window.hit_box.setEnabled(flag)
+    main_window.signature_parameters.setEnabled(flag)
     main_window.aura_size.setEnabled(flag)
     main_window.color_lightning.setEnabled(flag)
     main_window.glow_lightning.setEnabled(flag)
@@ -243,7 +249,8 @@ def enable_disable_db_font_pad_ps3_values(main_window, flag):
     main_window.ico_boost_stick_r.setEnabled(flag)
 
 
-def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i):
+def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
+
     # --- character_inf ---
     # Health
     character.health = int.from_bytes(subpak_file_character_inf.read(4), byteorder='big')
@@ -348,6 +355,13 @@ def read_operate_resident_param(character, subpak_file_character_inf, subpak_fil
     # fusions_animation 4
     character.fusions_animation.append(int.from_bytes(subpak_file_transformer_i.read(1), byteorder='big'))
 
+    # --- resident_skill ---
+    character.position_skill = subpak_file_skill.tell()
+    character.signature_values = subpak_file_skill.read(4)
+    # The following four bytes are the ID of the character. We don't need to store them
+    subpak_file_skill.seek(4, 1)
+    character.signature_values += subpak_file_skill.read(84)
+
 
 def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
 
@@ -371,7 +385,7 @@ def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
     subpak_file_resident_character_param.seek(32, os.SEEK_CUR)
 
 
-def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i):
+def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
     # Move to the visual parameters character
     subpak_file_character_inf.seek(character.position_visual_parameters)
 
@@ -431,6 +445,13 @@ def write_operate_resident_param(character, subpak_file_character_inf, subpak_fi
         subpak_file_transformer_i.write(fusion_ki_ammount.to_bytes(1, byteorder="big"))
     for fusion_animation in character.fusions_animation:
         subpak_file_transformer_i.write(fusion_animation.to_bytes(1, byteorder="big"))
+
+    # Move to the skill parameters of the character
+    subpak_file_skill.seek(character.position_skill)
+    subpak_file_skill.write(character.signature_values[:4])
+    # Skip the following four bytes because it's just only the ID of the character
+    subpak_file_skill.seek(4, 1)
+    subpak_file_skill.write(character.signature_values[4:])
 
 
 def write_db_font_pad_ps3(character, subpak_file_resident_character_param):

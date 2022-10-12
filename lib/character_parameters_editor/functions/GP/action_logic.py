@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QFileDialog, QMessageBox
+
 from lib.packages import functools, os, QPixmap
 from lib.character_parameters_editor import GPF
 from lib.character_parameters_editor.CPEV import CPEV
@@ -444,6 +446,74 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
             GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
     main_window.selectCharaWindow.close()
+
+
+def action_export_signature_button_logic(main_window):
+
+    # Ask to the user the file output
+    name_file = str(GPV.chara_selected).zfill(3) + "_" + GPV.signature_output_name
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export signature parameters",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    # The user has selected an output
+    if file_export_path:
+
+        # Get the current character
+        character = GPV.character_list[GPV.chara_selected]
+
+        # Export the signature
+        with open(file_export_path, mode="wb") as output:
+            output.write(character.signature_values)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
+        message = "The signature file was exported in: <b>" + file_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def action_import_signature_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the signature
+    file_import_path = QFileDialog.getOpenFileName(main_window, "Import signature parameters",
+                                                   main_window.old_path_file, "")[0]
+
+    if os.path.exists(file_import_path):
+
+        with open(file_import_path, mode="rb") as input_file:
+            signature_input_data = input_file.read()
+
+        # If the length of the imported signature is not 88, we won't import it
+        if len(signature_input_data) != 88:
+            # Wrong signature file
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("Invalid signature file.")
+            msg.exec()
+        else:
+            character = GPV.character_list[GPV.chara_selected]
+            character.signature_values = signature_input_data
+
+            # Append the character class to the list of characters edited, but only once
+            if character not in GPV.character_list_edited:
+                GPV.character_list_edited.append(character)
+
+            # signature imported
+            msg = QMessageBox()
+            msg.setWindowTitle("Message")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("The signature file was imported suscessfully.")
+            msg.exec()
+
+        # Change old path
+        main_window.old_path_file = file_import_path
 
 
 def on_color_lightning_changed(main_window):

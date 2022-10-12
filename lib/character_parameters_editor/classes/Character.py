@@ -24,6 +24,10 @@ class Character:
 		self.amount_ki_fusions = [] * 4
 		self.fusions_animation = [] * 4
 
+		# Values for the file resident_skill_path
+		self.position_skill = 0
+		self.signature_values = b''
+
 		# Values for the file db_font_pad_PS3_s.zpak
 		self.position_resident_character_param = 0
 		self.aura_type = 0

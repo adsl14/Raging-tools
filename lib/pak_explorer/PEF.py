@@ -68,11 +68,15 @@ def load_data_to_pe_cpe(main_window):
         GPV.operate_resident_param_file = True
     
         # Read all the data from the files
-        # character_info and transformer_i
+        # character_info, transformer_i and skill.dat
         GPV.resident_character_inf_path = main_window.listView_2.model().item(3, 0).text()
         GPV.resident_transformer_i_path = main_window.listView_2.model().item(11, 0).text()
+        GPV.resident_skill_path = main_window.listView_2.model().item(16, 0).text()
         subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
         subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
+        subpak_file_skill = open(GPV.resident_skill_path, mode="rb")
+        # Moves to the position 4 in the skill file since there starts the information for the first character
+        subpak_file_skill.seek(4)
     
         # Read the data from the files and store the parameters
         for i in range(0, 100):
@@ -84,12 +88,14 @@ def load_data_to_pe_cpe(main_window):
             character.position_trans = i * GPV.sizeTrans
     
             # Store the information in the object and append to a list
-            read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i)
+            read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i,
+                                        subpak_file_skill)
             GPV.character_list.append(character)
     
         # Close the files
         subpak_file_character_inf.close()
         subpak_file_transformer_i.close()
+        subpak_file_skill.close()
     
         # We're changing the character in the main panel (avoid combo box code)
         CPEV.change_character = True

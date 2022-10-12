@@ -1241,17 +1241,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                     # Open the files
                                     subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
                                     subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
+                                    subpak_file_skill = open(GPV.resident_skill_path, mode="rb+")
+                                    subpak_file_skill.seek(4)
 
                                     print("Writing values in the file...")
                                     # Change the transformations in the file
                                     for character in GPV.character_list_edited:
                                         # Save all the info for each character
                                         write_operate_resident_param(character, subpak_file_character_inf,
-                                                                     subpak_file_transformer_i)
+                                                                     subpak_file_transformer_i, subpak_file_skill)
 
                                     # Close the files
                                     subpak_file_character_inf.close()
                                     subpak_file_transformer_i.close()
+                                    subpak_file_skill.close()
 
                                 # --- db_font_pad_ps3 ---
                                 else:
