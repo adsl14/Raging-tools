@@ -1122,7 +1122,7 @@
                <rect>
                 <x>280</x>
                 <y>280</y>
-                <width>301</width>
+                <width>171</width>
                 <height>41</height>
                </rect>
               </property>
@@ -1184,9 +1184,9 @@
               <property name="geometry">
                <rect>
                 <x>280</x>
-                <y>372</y>
-                <width>301</width>
-                <height>41</height>
+                <y>370</y>
+                <width>131</width>
+                <height>51</height>
                </rect>
               </property>
               <property name="toolTip">
@@ -3614,7 +3614,7 @@
               <property name="geometry">
                <rect>
                 <x>280</x>
-                <y>413</y>
+                <y>420</y>
                 <width>301</width>
                 <height>51</height>
                </rect>
@@ -4540,6 +4540,64 @@
                </item>
               </widget>
              </widget>
+             <widget class="QFrame" name="signature_parameters">
+              <property name="geometry">
+               <rect>
+                <x>410</x>
+                <y>370</y>
+                <width>171</width>
+                <height>50</height>
+               </rect>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::WinPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <widget class="QLabel" name="signature_parameters_text">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>0</y>
+                 <width>91</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The signature parameters of the character. If you change the animations of the signature in 'Individual Parameters' you have to change the signature values too in order to play the new animations propertly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Signature values:</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="signature_parameters_export">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>20</y>
+                 <width>75</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Export...</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="signature_parameters_import">
+               <property name="geometry">
+                <rect>
+                 <x>90</x>
+                 <y>20</y>
+                 <width>75</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Import...</string>
+               </property>
+              </widget>
+             </widget>
              <zorder>portrait</zorder>
              <zorder>transPartner</zorder>
              <zorder>transEffect</zorder>
@@ -4560,6 +4618,7 @@
              <zorder>fusionPanel</zorder>
              <zorder>aura_type</zorder>
              <zorder>ico_boost_stick_r</zorder>
+             <zorder>signature_parameters</zorder>
             </widget>
             <widget class="QWidget" name="operate_character_xyz_m_frame">
              <attribute name="title">
