@@ -55,4 +55,4 @@ class GPV:
                                    [89]]
 
     # Outputname for the signature skill
-    signature_output_name = "signature"
+    signature_output_name = "Signature_parameters"
