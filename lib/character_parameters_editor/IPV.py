@@ -2,9 +2,14 @@
 
 class IPV:
 
+    # Paths
     character_i_path = ""
     camera_i_path = ""
     blast_i_path = ""
+    # Indexes
+    signature_folder_index_list_view = None
+    # Regex values
+    skill_chara_XXX_m_regex = "skill_chara_0[0-9][0-9]_m"
     # Values for the combo box
     type_of_fighting_values = dict({"Type 1": 0, "Type 2": 1, "Type 3": 2, "Type 4": 3, "Type 5": 10, "Type 6": 11,
                                     "Type 7": 12})
@@ -42,10 +47,9 @@ class IPV:
                         "Charged shot Ki moving back", "Jump attack", "Jump Ki shot left", "Jump Ki shot right",
                         "Jump charged Ki shot", "Throw catch", "Throw", "Throw wall", "Guard", "Transformation in",
                         "Transformation result", "Return in", "Return out", "Fusion in", "Fusion result", "Fusion demo",
-                        "Potara in", "Potara result", "Potara demo", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose"]
+                        "Potara in", "Potara result", "Potara demo", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose",
+                        "Signature"]
     animations_extension = "spas"
-    # Distance between the 'buffer' folders
-    size_between_animation_and_effects = 363
     # Blast properties
     size_between_blast = 100
     blast_extension = "bla"

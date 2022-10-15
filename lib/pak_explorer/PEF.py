@@ -1,3 +1,4 @@
+from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.REF import read_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters
 from lib.character_parameters_editor.GPF import read_operate_resident_param, \
@@ -39,6 +40,8 @@ def load_data_to_pe_cpe(main_window):
     # Prepare the list view 2 in order to add the names
     model = QStandardItemModel()
     main_window.listView_2.setModel(model)
+    IPV.signature_folder_index_list_view = None
+    PEV.number_files = 0
     unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
            main_window.listView_2)
     main_window.listView_2.setCurrentIndex(main_window.listView_2.model().index(0, 0))
@@ -538,8 +541,9 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
 
             # Change the extension to his original one
             file.close()
-            new_file_path = os.path.join(os.path.dirname(path_file),
-                                         os.path.basename(path_file).split(".")[0] + "." + extension)
+            dir_name = os.path.dirname(path_file)
+            base_name = os.path.basename(path_file)
+            new_file_path = os.path.join(dir_name, base_name.split(".")[0] + "." + extension)
             os.rename(path_file, new_file_path)
 
             # Add to the listView_2
@@ -547,6 +551,15 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             item.setData(os.path.basename(new_file_path).split(";")[1])
             item.setEditable(False)
             list_view_2.model().appendRow(item)
+
+            # Check if we find a folder that is the signature one in order to store the index of the listView
+            dir_name_splited = dir_name.split(";")
+            if IPV.signature_folder_index_list_view is None and len(dir_name_splited) > 1 and \
+                    re.search(IPV.skill_chara_XXX_m_regex, dir_name_splited[1]):
+                IPV.signature_folder_index_list_view = PEV.number_files
+
+            # Increment the number of total files inside the pak file
+            PEV.number_files += 1
 
 
 def pack(path_folder, filenames, num_filenames, num_pak_files):

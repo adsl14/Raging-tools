@@ -221,10 +221,16 @@ def action_import_animation_button_logic(main_window, animation_type_index):
     if os.path.exists(file_import_path):
         # Import a single animation
         animation_array = main_window.animation_type_value.currentData()
-        IPF.import_animation(main_window, file_import_path, animation_array, animation_type_index)
+        IPF.import_animation(main_window, file_import_path, animation_array, animation_type_index,
+                             main_window.animation_type_value.currentIndex())
 
+        # In the signature animation (72), the array output of the animation could have more files after
+        # importing the new files. So, we change it in the combobox updating it
+        if main_window.animation_type_value.currentIndex() == 72:
+            main_window.animation_type_value.setItemData(main_window.animation_type_value.currentIndex(),
+                                                         animation_array)
         # Check if is the file 'transformation in'
-        if main_window.animation_type_value.currentIndex() == 57:
+        elif main_window.animation_type_value.currentIndex() == 57:
             read_transformation_effect(main_window, animation_array[0][1])
 
         # Change old path
@@ -245,10 +251,14 @@ def action_import_all_animation_button_logic(main_window, animation_type_index):
             # Import every single animation
             animation_array = main_window.animation_type_value.itemData(i)
             IPF.import_animation(main_window, os.path.join(folder_import, animation_files[i]), animation_array,
-                                 animation_type_index, animation_files[i], animations_files_error)
+                                 animation_type_index, i, animation_files[i], animations_files_error)
 
+            # In the signature animation (72), the array output of the animation could have more files after
+            # importing the new files. So, we change it in the combobox updating it
+            if i == 72:
+                main_window.animation_type_value.setItemData(i, animation_array)
             # Check if the combo box is 'animation_properties' and is the file 'transformation in' (57)
-            if i == 57:
+            elif i == 57:
                 read_transformation_effect(main_window, animation_array[0][1])
 
         # We show a message with the animations files that couldn't get imported
