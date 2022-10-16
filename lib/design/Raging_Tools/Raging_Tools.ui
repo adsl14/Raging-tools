@@ -5040,7 +5040,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds everything related to the animations of the character, including effects and properties like the keyframes (for example for a melee attack, what frames can hit the opponet)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds everything related to the animations of the character, including effects and properties like the keyframes (for example for a melee attack, what frames can hit the opponet)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;NOTES&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Transformation in -&amp;gt; If you want to change the background color while the character is transforming but the 'Transformation values' is disabled, you need to import a spae (Special animation effects) of a transformation that has a compatible background like Goku, Vegeta, Gohan, etc.&lt;/p&gt;&lt;p&gt;Signature -&amp;gt; some signatures trigger a Ki blast like Vegeta or Mirai Gohan. If you import a signature that triggers a Ki blast, you need to import the 'Signature Ki blast'. Moreover, you need to swap the .efdr, .spr and .vram too so the Ki blast can be shown during the attack. The .edfr and .spr are located in the character you want to get the signature, the path is &lt;span style=&quot; font-weight:600;&quot;&gt;temp\operate_character_xyz_m_d\effect_chara_xyz_m\forte_00_xy_m&lt;/span&gt;. You need to copy those and paste them in the character you want to swap the signature, in the path &lt;span style=&quot; font-weight:600;&quot;&gt;temp\operate_character_xyz_m_d\effect_chara_xyz_m\dummy_m &lt;/span&gt;(the first dummy folder you encounter). The .vram is located in the correspond effect_chara_xyz_v, normally the path should be something like &lt;span style=&quot; font-weight:600;&quot;&gt;temp\effect_chara_xyz_v\forte_00_xy.vram. &lt;/span&gt;Copy the vram to the correspond effect_chara_xyz_v, in the path &lt;span style=&quot; font-weight:600;&quot;&gt;temp\effect_chara_xyz_v\dummyV.vram&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Animation values:</string>
@@ -6653,7 +6653,7 @@
                 </rect>
                </property>
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Parameters that modify the transformation effects properties of the character&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Parameters that modify the transformation effects properties of the character.&lt;/p&gt;&lt;p&gt;If the option is disabled, it's because the character has a background that is not compatible to be changed. Check the tooltip of the 'Animation values' option for more details.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Transformation values:</string>
@@ -6683,6 +6683,64 @@
                </property>
                <property name="text">
                 <string>Background color:</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QFrame" name="signature_ki_blast">
+              <property name="geometry">
+               <rect>
+                <x>650</x>
+                <y>470</y>
+                <width>261</width>
+                <height>41</height>
+               </rect>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::WinPanel</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Sunken</enum>
+              </property>
+              <widget class="QLabel" name="signature_ki_blast_text">
+               <property name="geometry">
+                <rect>
+                 <x>10</x>
+                 <y>10</y>
+                 <width>91</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds the parameters for the Ki blast in the signature. If a signature has a Ki blast on it, it's necessary to change it in order to make the Ki blast a hit to the enemy.&lt;/p&gt;&lt;p&gt;Remember to change also the .efdr, .spr and .vram. More details in the tooltip of the 'Animation values'.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Signature Ki blast:</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="signature_ki_blast_export">
+               <property name="geometry">
+                <rect>
+                 <x>100</x>
+                 <y>10</y>
+                 <width>75</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Export...</string>
+               </property>
+              </widget>
+              <widget class="QPushButton" name="signature_ki_blast_import">
+               <property name="geometry">
+                <rect>
+                 <x>180</x>
+                 <y>10</y>
+                 <width>75</width>
+                 <height>23</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Import...</string>
                </property>
               </widget>
              </widget>

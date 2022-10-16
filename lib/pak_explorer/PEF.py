@@ -358,8 +358,8 @@ def load_data_to_pe_cpe(main_window):
         # We're not changing the character in the main panel (play combo box code)
         CPEV.change_character = False
 
-    # Check if the file is an operate_character_XXX_m type
-    elif re.search(CPEV.operate_character_XXX_m_regex, data):
+    # Check if the file is an operate_character_xyz_m type
+    elif re.search(CPEV.operate_character_xyz_m_regex, data):
 
         # Save the id of the character to the character parameters editor tab
         CPEV.file_character_id = data.split("_")[2]

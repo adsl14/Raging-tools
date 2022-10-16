@@ -5,7 +5,7 @@ class CPEV:
 
     # Allowed files
     operate_resident_param = 'operate_resident_param.pak'
-    operate_character_XXX_m_regex = "operate_character_0[0-9][0-9]_m.pak"
+    operate_character_xyz_m_regex = "operate_character_0[0-9][0-9]_m.pak"
     cs_chip = "cs_chip.dat"
     db_font_pad_PS3_s_d = "db_font_pad_PS3.spr"
 

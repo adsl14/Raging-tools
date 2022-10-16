@@ -420,6 +420,48 @@ def action_import_all_blast_button_logic(main_window):
             msg.exec()
 
 
+def action_export_signature_ki_blast_button_logic(main_window):
+
+    # Ask to the user the file output
+    name_file = CPEV.file_character_id + "_" + "Signature_ki_blast_properties"
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export signature ki blast",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    if file_export_path:
+
+        with open(file_export_path, mode="wb") as outputfile:
+            outputfile.write(IPV.signature_ki_blast.data)
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Message")
+        msg.setWindowIcon(main_window.ico_image)
+        message = "The signature ki blast file was exported in: <b>" + file_export_path \
+                  + "</b><br><br> Do you wish to open the path?"
+        message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
+
+        # If the users click on 'Yes', it will open the path where the files were saved
+        if message_open_exported_files == msg.Yes:
+            # Show the path folder to the user
+            os.system('explorer.exe ' + os.path.dirname(file_export_path).replace("/", "\\"))
+
+
+def action_import_signature_ki_blast_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the signature ki blast file
+    name_file = CPEV.file_character_id + "_" + "Signature_ki_blast_properties"
+    file_export_path = QFileDialog.getOpenFileName(main_window, "Import signature ki blast",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    if os.path.exists(file_export_path):
+
+        with open(file_export_path, mode="rb") as file:
+            IPV.signature_ki_blast.data = file.read()
+            IPV.signature_ki_blast.modified = True
+
+        # Change old path
+        main_window.old_path_file = file_export_path
+
+
 def on_camera_type_key_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting

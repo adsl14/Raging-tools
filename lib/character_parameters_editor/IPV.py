@@ -1,3 +1,4 @@
+from lib.character_parameters_editor.classes.SignatureKiBlast import SignatureKiBlast
 
 
 class IPV:
@@ -56,3 +57,5 @@ class IPV:
     # Transformation effect values
     trans_effect_identification_file = b'<#\xd7\n'
     trans_effect_position_byte = 0
+    # Signature ki blast var. This will store the parameters of the signature when a Ki blast is triggered
+    signature_ki_blast = SignatureKiBlast()

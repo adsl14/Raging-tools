@@ -13,7 +13,8 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     action_export_animation_button_logic, action_import_animation_button_logic, \
     action_export_all_animation_button_logic, action_import_all_animation_button_logic, \
     action_export_blast_button_logic, action_import_blast_button_logic, action_export_all_blast_button_logic, \
-    action_import_all_blast_button_logic, on_background_color_trans_change
+    action_import_all_blast_button_logic, on_background_color_trans_change, \
+    action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
 from lib.packages import struct, QMessageBox
 from lib.pak_explorer.PEV import PEV
@@ -82,6 +83,12 @@ def initialize_operate_character(main_window):
     main_window.background_color_trans_value.currentIndexChanged.connect(lambda:
                                                                          on_background_color_trans_change(main_window))
 
+    # Set the signature ki blast
+    main_window.signature_ki_blast_export.clicked.connect(lambda:
+                                                          action_export_signature_ki_blast_button_logic(main_window))
+    main_window.signature_ki_blast_import.clicked.connect(lambda:
+                                                          action_import_signature_ki_blast_button_logic(main_window))
+
     # Set animations
     for element in IPV.animations_types:
         main_window.animation_type_value.addItem(element)
@@ -131,6 +138,8 @@ def read_single_character_parameters(main_window):
     IPV.camera_i_path = main_window.listView_2.model().item(727, 0).text()
     # blast info
     IPV.blast_i_path = main_window.listView_2.model().item(728, 0).text()
+    # signature ki blast
+    IPV.signature_ki_blast.path = main_window.listView_2.model().item(745, 0).text()
 
     # Read all the animation values
     read_animation_files(main_window, 0)
@@ -268,6 +277,11 @@ def read_single_character_parameters(main_window):
 
         # Show the first item in the combo box and his values
         main_window.blast_key.setCurrentIndex(0)
+
+    # Read signature info file
+    with open(IPV.signature_ki_blast.path, mode="rb") as file:
+        IPV.signature_ki_blast.data = file.read()
+    IPV.signature_ki_blast.modified = False
 
 
 def write_single_character_parameters(main_window):
@@ -408,6 +422,11 @@ def write_single_character_parameters(main_window):
             # Ignore this blast
             else:
                 file.seek(IPV.size_between_blast, 1)
+
+    # Save all signature ki blast info
+    if IPV.signature_ki_blast.modified:
+        with open(IPV.signature_ki_blast.path, mode="wb") as file:
+            file.write(IPV.signature_ki_blast.data)
 
 
 def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load,
