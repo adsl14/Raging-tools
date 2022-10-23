@@ -122,7 +122,7 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
 <ul>
   <li>
     <i>operate_resident_param.zpak</i> located in 
-<i>st_pack_battle_others_pt_ps3.afs and st_pack_battle_others_pt_x360.afs (Raging Blast 2)</i>.
+<i>st_pack_battle_others_pt_ps3.afs and st_pack_battle_others_pt_x360.afs (Raging Blast 2)</i>.<br>
     <img src="images/character_parameters_editor_general_parameters_1.jpg" 
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
