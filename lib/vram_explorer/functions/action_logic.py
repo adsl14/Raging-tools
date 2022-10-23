@@ -22,12 +22,17 @@ def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_te
         if data_entry.data_info.data.data_size != 0:
 
             # If the encoding is DXT5 or DXT1, we show the dds image
-            if data_entry.data_info.data.dxt_encoding \
-               != 0:
-                # Create the dds in disk and open it
-                VEF.show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
-                                   data_entry.data_info.data.width,
-                                   data_entry.data_info.data.height)
+            if data_entry.data_info.data.dxt_encoding != 0:
+                # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
+                # we won't show anything in the tool view
+                if VEV.header_type_spr_file != b'SPR3' or data_entry.data_info.data.dxt_encoding != 32:
+                    # Create the dds in disk and open it
+                    VEF.show_dds_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
+                                       data_entry.data_info.data.width,
+                                       data_entry.data_info.data.height)
+                else:
+                    # Remove image in the tool view
+                    image_texture.clear()
             else:
                 if data_entry.data_info.extension \
                    != "png":

@@ -9,6 +9,9 @@ class VEV:
     # Watermark message when generates the SPR
     watermark_message = "Generated.with.Raging.Tools"
 
+    # header type for the spr
+    header_type_spr_file = b''
+
     # Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
     message_base_import_texture_start = "The new texture has the following differences from the original:"
     message_base_import_texture_end = "It could crash in a real hardware. Do you want to continue?"

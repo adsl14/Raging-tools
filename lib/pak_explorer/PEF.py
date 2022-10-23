@@ -284,8 +284,8 @@ def load_data_to_pe_cpe(main_window):
         if main_window.cs_chip.isEnabled():
             main_window.cs_chip.setEnabled(False)
 
-    # Check if the file is the db_font_pad_PS3_s.zpak
-    elif data == CPEV.db_font_pad_PS3_s_d:
+    # Check if the file is the db_font_pad_PS3_s.zpak or db_font_pad_X360_s.zpak
+    elif data == CPEV.db_font_pad_PS3_s_d or data == CPEV.db_font_pad_X360_s_d:
 
         # reset the values
         GPV.character_list_edited.clear()
@@ -562,7 +562,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             PEV.number_files += 1
 
 
-def pack(path_folder, filenames, num_filenames, num_pak_files):
+def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, separator):
 
     # Create the headers and data vars
     header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
@@ -591,7 +591,7 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
             num_sub_filenames = len(sub_filenames)
             num_subpak_files = int(sub_filenames[-1].split(";")[0]) + 1
 
-            pack(sub_folder_path, sub_filenames, num_sub_filenames, num_subpak_files)
+            pack(sub_folder_path, sub_filenames, num_sub_filenames, num_subpak_files, separator_size, separator)
 
         else:
             with open(os.path.join(path_folder, filename), mode="rb") as file_pointer:
@@ -613,8 +613,8 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
                     data_aux = data_aux + bytes.fromhex("00")
                 size = size_o + num_bytes_mod_16
 
-            # Calculate offset fot the subpak (64 is because of the separator)
-            offset = stpk_header_size + size_total_block_header_subpak + acumulated_sizes + 64
+            # Calculate offset fot the subpak (the last var is because of the separator)
+            offset = stpk_header_size + size_total_block_header_subpak + acumulated_sizes + separator_size
 
             # Increase the size for the next offset
             acumulated_sizes = acumulated_sizes + size
@@ -637,14 +637,14 @@ def pack(path_folder, filenames, num_filenames, num_pak_files):
         data = data + bytes.fromhex("00")
 
     # Create the pak file
-    pak_file = header_0 + header + PEV.separator + pak_file + data
+    pak_file = header_0 + header + separator + pak_file + data
 
     # Write the new pak file in the folder
     with open(path_folder + ".pak", mode="wb") as output_file:
         output_file.write(pak_file)
 
 
-def pack_and_save_file(main_window, path_output_file):
+def pack_and_save_file(main_window, path_output_file, separator_size, separator):
 
     # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
     # to the folder 'old_pak', so we can create a new packed file
@@ -663,7 +663,7 @@ def pack_and_save_file(main_window, path_output_file):
     filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
     num_filenames = len(filenames)
     num_pak_files = int(filenames[-1].split(";")[0]) + 1
-    pack(path_output_packed_file, filenames, num_filenames, num_pak_files)
+    pack(path_output_packed_file, filenames, num_filenames, num_pak_files, separator_size, separator)
 
     path_output_packed_file = path_output_packed_file + ".pak"
 

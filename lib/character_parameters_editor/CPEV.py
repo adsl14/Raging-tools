@@ -8,6 +8,7 @@ class CPEV:
     operate_character_xyz_m_regex = "operate_character_0[0-9][0-9]_m.pak"
     cs_chip = "cs_chip.dat"
     db_font_pad_PS3_s_d = "db_font_pad_PS3.spr"
+    db_font_pad_X360_s_d = "db_font_pad_X360.spr"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")

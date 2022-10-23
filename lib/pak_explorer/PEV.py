@@ -9,10 +9,15 @@ class PEV:
     STPK = b'STPK'
     stpz_file = False
 
-    # Separator that will be used in pak files (between header and data)
-    separator = b''
-    for i in range(0, 64):
-        separator = separator + bytes.fromhex("00")
+    # Separator that will be used in pak files (between header block and data)
+    separator_size_64 = 64
+    separator_64 = b''
+    separator_size_4032 = 4032
+    separator_4032 = b''
+    for i in range(0, separator_size_4032):
+        if i < 64:
+            separator_64 = separator_64 + bytes.fromhex("00")
+        separator_4032 = separator_4032 + bytes.fromhex("00")
 
     # Temp folder name
     temp_folder = "temp"

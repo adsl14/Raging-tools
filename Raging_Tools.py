@@ -137,7 +137,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 load_data_to_pe_cpe(self)
 
             # spr file
-            elif header_type == b'SPRP' or header_type == b'SPR\x00':
+            elif header_type == b'SPRP' or header_type == b'SPR3' or header_type == b'SPR\x00':
 
                 # Open vram file
                 path_file_2 = QFileDialog.getOpenFileName(self, "Open file", path_file,
@@ -146,11 +146,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 if os.path.exists(path_file_2):
                     # Get the header of the new file
                     with open(path_file_2, mode="rb") as input_file:
-                        header_type = input_file.read(4)
+                        header_type_2 = input_file.read(4)
 
                     # Check if the type of file is vram
-                    if header_type == b'STPZ' or header_type == b'STPK' or header_type == b'SPRP' \
-                            or header_type == b'SPR\x00':
+                    if header_type_2 == b'STPZ' or header_type_2 == b'STPK' or header_type_2 == b'SPRP' \
+                            or header_type_2 == b'SPR3' or header_type_2 == b'SPR\x00':
                         # Wrong vram file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
@@ -163,6 +163,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Store spr and vram paths
                         VEV.spr_file_path = path_file
                         VEV.vram_file_path = path_file_2
+                        # Store spr header
+                        VEV.header_type_spr_file = header_type
                 else:
                     # Wrong vram file
                     msg = QMessageBox()
@@ -186,10 +188,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                     # Get the header of the new file
                     with open(path_file_2, mode="rb") as input_file:
-                        header_type = input_file.read(4)
+                        header_type_2 = input_file.read(4)
 
                     # Check if the type of file is vram
-                    if header_type != b'SPRP' and header_type != b'SPR\x00':
+                    if header_type_2 != b'SPRP' and header_type_2 != b'SPR3' and \
+                            header_type_2 != b'SPR\x00':
                         # Wrong spr file
                         msg = QMessageBox()
                         msg.setWindowTitle("Error")
@@ -202,6 +205,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # Store spr and vram paths
                         VEV.vram_file_path = path_file
                         VEV.spr_file_path = path_file_2
+                        # Store spr header
+                        VEV.header_type_spr_file = header_type_2
                 else:
                     # Wrong spr file
                     msg = QMessageBox()
@@ -245,9 +250,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msg.exec()
                 else:
 
-                    # Ask to the user the format for the vram file
-                    vram_format = QInputDialog().getItem(self, "Vram format", VEV.message_vram_format,
-                                                         VEV.vram_export_format, editable=False, current=1)
+                    # Ask to the user the format for the vram file (only when is saving a vram and spr for PS3)
+                    # If is for Xbox, by default we won't add any vram separator between textures. We're saving
+                    # it with Raging Blast compatibility instead
+                    if VEV.header_type_spr_file != b'SPR3':
+                        vram_format = QInputDialog().getItem(self, "Vram format", VEV.message_vram_format,
+                                                             VEV.vram_export_format, editable=False, current=1)
+                    else:
+                        vram_format = [VEV.vram_export_format[0], True]
 
                     # The user has selected something
                     if vram_format[1]:
@@ -1231,7 +1241,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # Pack the files
                                 print("Packing the file...")
-                                pack_and_save_file(self, path_output_file)
+                                pack_and_save_file(self, path_output_file, PEV.separator_size_64, PEV.separator_64)
 
                             # If the user has edited one character, we will save the file
                             elif GPV.character_list_edited:
@@ -1274,7 +1284,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # Pack the files
                                 print("Packing the file...")
-                                pack_and_save_file(self, path_output_file)
+                                pack_and_save_file(self, path_output_file, PEV.separator_size_64, PEV.separator_64)
 
                             # --- cs_chip ---
                             # If the user has edited one character, we will save the file
@@ -1286,7 +1296,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # Pack the files
                                 print("Packing the file...")
-                                pack_and_save_file(self, path_output_file)
+                                pack_and_save_file(self, path_output_file, PEV.separator_size_64, PEV.separator_64)
 
                             else:
                                 msg = QMessageBox()
@@ -1298,12 +1308,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         # The user wants to save the values only from the 'pak explorer'
                         elif answer == msg.No:
                             print("Packing the file...")
-                            pack_and_save_file(self, path_output_file)
+                            pack_and_save_file(self, path_output_file, PEV.separator_size_64, PEV.separator_64)
 
                 # We save the data from the 'pak explorer' tab
                 elif self.pak_explorer.isEnabled():
-                    print("Packing the file...")
-                    pack_and_save_file(self, path_output_file)
+
+                    # Ask to the user if is packing a vram or ioram file for Xbox. If is for Xbox,
+                    # we have to change the separator size that is written between header and data. Otherwise
+                    # will crash or make an output with bugs and errors
+                    msg = QMessageBox()
+                    msg.setWindowTitle("Message")
+                    msg.setWindowIcon(self.ico_image)
+                    message = "Do you wish to pack the file with Xbox compatibility?"
+                    answer = msg.question(self, '', message, msg.Yes | msg.No)
+
+                    if answer == msg.Yes:
+                        # Packing file with Xbox compatibility (this is only when packing .vram or .ioram files, but
+                        # it looks like it's working for any other files)
+                        print("Packing the file with Xbox compatibility...")
+                        pack_and_save_file(self, path_output_file, PEV.separator_size_4032, PEV.separator_4032)
+                    else:
+                        print("Packing the file...")
+                        pack_and_save_file(self, path_output_file, PEV.separator_size_64, PEV.separator_64)
                 else:
                     msg = QMessageBox()
                     msg.setWindowTitle("Warning")
@@ -1323,7 +1349,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowIcon(self.ico_image)
         msg.setText(
             "<ul>"
-            "<li><b>Raging tools 1.7.3</b> by "
+            "<li><b>Raging tools 1.8</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>The tutorial of how to work with the tool or get the source code, can be found here: "
             "<a href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
@@ -1346,6 +1372,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     ' for his contributions.</li>'
                     '<li>To <b>316austin316</b> for his contributions.</li>'
                     '<li>To <b>SSJLVegeta</b> for his contributions.</li>'
+                    '<li>To <b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>'
+                    ' for his contributions.</li>'
                     '<li>To the <a href=https://discord.gg/JpCvDCgpnb>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()

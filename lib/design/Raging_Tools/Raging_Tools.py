@@ -2616,7 +2616,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Raging Tools 1.7.3 - by adsl14"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Raging Tools 1.8 - by adsl14"))
         self.nameMaterialText.setText(_translate("MainWindow", "Name"))
         self.effectText.setText(_translate("MainWindow", "Effect"))
         self.layerText.setText(_translate("MainWindow", "Layer"))

@@ -95,22 +95,43 @@ def write_separator_vram(output_vram_file, data_entry):
 
 
 def create_header(value):
+
+    # 0x00 RGBA, 0x08 and 0x15 DXT1, 0x24 and 0x31 as DXT5, 0x32 as ATI2 for XBOX or DXT5 for PS3
     if value == 8 or value == 15:
         return bytes.fromhex("04000000"), "DXT1".encode(), bytes.fromhex(
             "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 "
             "00 00 00 00 00 00 ".strip())
-    elif value == 24 or value == 31 or value == 32:
+    elif value == 24 or value == 31:
         return bytes.fromhex("04000000"), "DXT5".encode(), bytes.fromhex(
             "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 10 00 00 00 00 00 00 00 00 00 00 00 00 "
             "00 00 00 00 00 00 ".strip())
+    elif value == 32:
+        # If is an XBOX SPR, we return the ATI2 encoding
+        if VEV.header_type_spr_file == b'SPR3':
+            return bytes.fromhex("04000000"), "ATI2".encode(), bytes.fromhex(
+                "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 10 00 00 00 00 00 00 00 00 00 00 00 00 "
+                "00 00 00 00 00 00 ".strip())
+        # Means is a PS3 SPR, so we return DXT5
+        else:
+            return bytes.fromhex("04000000"), "DXT5".encode(), bytes.fromhex(
+                "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 10 00 00 00 00 00 00 00 00 00 00 00 00 "
+                "00 00 00 00 00 00 ".strip())
 
 
 def get_encoding_name(value):
-    # 0x00 RGBA, 0x08 and 0x15 DXT1, 0x24, 0x31 and 0x32 as DXT5
+
+    # 0x00 RGBA, 0x08 and 0x15 DXT1, 0x24 and 0x31 as DXT5, 0x32 as ATI2 for XBOX or DXT5 for PS3
     if value == 8 or value == 15:
         return "DXT1"
-    elif value == 24 or value == 31 or value == 32:
+    elif value == 24 or value == 31:
         return "DXT5"
+    elif value == 32:
+        # If is an XBOX SPR, we return the ATI2 encoding
+        if VEV.header_type_spr_file == b'SPR3':
+            return "ATI2"
+        # Means is a PS3 SP3, so we return DXT5
+        else:
+            return "DXT5"
     elif value == 0:
         return "RGBA"
     else:
@@ -118,11 +139,14 @@ def get_encoding_name(value):
 
 
 def get_dxt_value(encoding_name):
-    # 0x00 RGBA, 0x08 DXT1, 0x24 and 0x32 as DXT5
+
+    # 0x00 RGBA, 0x08 and 0x15 DXT1, 0x24 and 0x31 as DXT5, 0x32 as ATI2 for XBOX or DXT5 for PS3
     if encoding_name == "DXT1":
         return 8
     elif encoding_name == "DXT5":
         return 24
+    elif encoding_name == "ATI2":
+        return 32
 
 
 def fix_bmp_header_data(header, data_extra, data_texture):

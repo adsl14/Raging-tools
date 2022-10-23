@@ -32,6 +32,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
     get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram, \
     search_texture
+from lib.vram_explorer.functions.xbox_swizzle import process
 
 
 def initialize_ve(main_window, qt_widgets):
@@ -155,8 +156,11 @@ def load_data_to_ve(main_window):
     data_entry_0 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[0]
     if data_entry_0.data_info.data.dxt_encoding != 0:
         # Create the dds in disk and open it
-        show_dds_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
-                       data_entry_0.data_info.data.width, data_entry_0.data_info.data.height)
+        # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
+        # we won't show anything in the tool view
+        if VEV.header_type_spr_file != b'SPR3' or data_entry_0.data_info.data.dxt_encoding != 32:
+            show_dds_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
+                           data_entry_0.data_info.data.width, data_entry_0.data_info.data.height)
     else:
         if data_entry_0.data_info.extension != "png":
             show_bmp_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
@@ -592,12 +596,25 @@ def open_vram_file(vram_path):
             # Creating DXT5 and DXT1 heading
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding != 0:
 
-                header_2 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height.\
-                               to_bytes(4, 'little') + \
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width.\
-                               to_bytes(4, 'little') + \
-                               VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size.\
-                               to_bytes(4, 'little')
+                # Get texture first
+                file.seek(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset)
+                data = file.read(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size)
+                # Check if the spr file is from XBOX 360. We have to unswizzle the texture if that's so
+                if VEV.header_type_spr_file == b'SPR3':
+                    # Get the unswizzle texture and update the mip_maps and texture size
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps, data = \
+                        process(data, VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width,
+                                VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height,
+                                VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps,
+                                VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding,
+                                'unswizzle')
+                    # Update the new size of the texture
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size = len(data)
+
+                # Create the header
+                header_2 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height.to_bytes(4, 'little')\
+                    + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width.to_bytes(4, 'little') + \
+                    VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size.to_bytes(4, 'little')
 
                 header_3_2 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps.\
                     to_bytes(4, 'little')
@@ -608,14 +625,13 @@ def open_vram_file(vram_path):
                                                              .data_info.data.dxt_encoding)
                 header = header_1 + header_2 + header_3 + header_4 + header_5 + header_6
 
-                # Store the data in memory
-                file.seek(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset)
-                data = file.read(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size)
+                # Store header and texture data in memory
                 VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.tx2d_vram.data = header + data
 
             # Creating RGBA heading
             else:
 
+                # Create RGBA header
                 header_1_bmp = "42 4D"
                 header_2_bmp = (VEV.sprp_file.type_entry[b'TX2D'].data_entry[i]
                                 .data_info.data.data_size + 54).to_bytes(4, 'little').hex()
@@ -628,12 +644,13 @@ def open_vram_file(vram_path):
                 header_5_bmp = "01 00 20 00 00 00 00 00 00 00 00 00 12 0B 00 00 12 0B 00 00 00 00 00 00 00 00 00 00"
                 header = bytes.fromhex(header_1_bmp + header_2_bmp + header_3_bmp + header_4_bmp + header_5_bmp)
 
-                # Store the data in memory
+                # Get the texture
                 file.seek(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset)
                 data = file.read(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size)
                 # We're dealing with a shader
                 if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height == 1:
                     data = change_endian(data)
+                # Store header and texture
                 VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.tx2d_vram.data = header + data
 
                 # Check if the extension is png, to unswizzle the image
@@ -694,55 +711,25 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
             # Get the texture from the tool
             tx2d_data_entry = main_window.listView.model().item(i, 0).data()
 
-            # Write the name for each texture
-            name = tx2d_data_entry.data_info.name + "." + \
-                tx2d_data_entry.data_info.extension
-            string_table += b'\x00' + name.encode('utf-8')
-            string_table_size += 1 + len(name)
-
-            # Write the data_entry for each texture
-            data_entry += tx2d_data_entry.data_type
-            data_entry += i.to_bytes(4, 'big')
-            tx2d_data_entry.data_info.new_name_offset = string_name_offset
-            data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
-            data_entry += data_offset.to_bytes(4, 'big')
-            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
-            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
-            # We write the child offset later
-
-            # Write the data for each texture
             # Get the tx2d info
             tx2d_info = tx2d_data_entry.data_info.data
-            data += tx2d_info.unk0x00.to_bytes(4, 'big')
-            data += output_vram_file.tell().to_bytes(4, 'big')
-            data += tx2d_info.unk0x08.to_bytes(4, 'big')
-            data += tx2d_info.data_size.to_bytes(4, 'big')
-            data += tx2d_info.width.to_bytes(2, 'big')
-            data += tx2d_info.height.to_bytes(2, 'big')
-            data += tx2d_info.unk0x14.to_bytes(2, 'big')
-            data += tx2d_info.mip_maps.to_bytes(2, 'big')
-            data += tx2d_info.unk0x18.to_bytes(4, 'big')
-            data += tx2d_info.unk0x1c.to_bytes(4, 'big')
-            data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
-            data += b'\00\00\00'
-            data_size += tx2d_data_entry.data_info.data_size
 
-            # Child offset
-            data_entry += b'\x00\x00\x00\x00'
-            data_entry += b'\x00\x00\x00\x00'
-            data_entry_size += 32
-
-            # Check if the data, the module of 16 is 0
-            data, data_size, padding_size = check_entry_module(data, data_size, 16)
-
-            # Update offsets for the next entry
-            string_name_offset = 1 + string_table_size
-            data_offset = data_size
+            # Store the offset where the texture will be located in vram
+            texture_offset = output_vram_file.tell()
 
             # Write the textures in the vram file
             # It's a DDS image
             if tx2d_info.dxt_encoding != 0:
-                output_vram_file.write(tx2d_info.tx2d_vram.data[128:])
+                # Check if the spr file is from XBOX 360. We have to swizzle if that's so
+                if VEV.header_type_spr_file != b'SPR3':
+                    data_texture = tx2d_info.tx2d_vram.data[128:]
+                else:
+                    # Swizzle the texture for Xbox.
+                    # As a temporay fix, we use only 1 mipmaps and update the data size of the swizzled texture
+                    tx2d_info.mip_maps, data_texture = process(tx2d_info.tx2d_vram.data[128:], tx2d_info.width,
+                                                               tx2d_info.height, 1, tx2d_info.dxt_encoding, 'swizzle')
+                    tx2d_info.data_size = len(data_texture)
+                output_vram_file.write(data_texture)
                 # Write the vram separator
                 if vram_separator and i < num_textures - 1:
                     write_separator_vram(output_vram_file, tx2d_data_entry)
@@ -752,6 +739,10 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
                 if tx2d_data_entry.data_info.extension != "png":
                     # We're dealing with a shader. We have to change the endian
                     if tx2d_info.height == 1:
+                        # Since is a shader, it if is for a Xbox file, we need to change the 'related2encoding' value
+                        # Otherwise will make the character with black shaders
+                        if VEV.header_type_spr_file == b'SPR3':
+                            tx2d_info.unk0x00 = 130
                         output_vram_file.write(change_endian(tx2d_info.
                                                              tx2d_vram.data[54:]))
                     else:
@@ -791,11 +782,54 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
 
                     output_vram_file.write(tx2d_info.tx2d_vram.data)
 
+            # Write the name for each texture in the spr
+            name = tx2d_data_entry.data_info.name + "." + \
+                tx2d_data_entry.data_info.extension
+            string_table += b'\x00' + name.encode('utf-8')
+            string_table_size += 1 + len(name)
+
+            # Write the data_entry for each texture
+            data_entry += tx2d_data_entry.data_type
+            data_entry += i.to_bytes(4, 'big')
+            tx2d_data_entry.data_info.new_name_offset = string_name_offset
+            data_entry += tx2d_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+            data_entry += data_offset.to_bytes(4, 'big')
+            data_entry += tx2d_data_entry.data_info.data_size.to_bytes(4, 'big')
+            data_entry += tx2d_data_entry.data_info.child_count.to_bytes(4, 'big')
+            # We write the child offset later
+
+            # Write the data for each texture
+            data += tx2d_info.unk0x00.to_bytes(4, 'big')
+            data += texture_offset.to_bytes(4, 'big')
+            data += tx2d_info.unk0x08.to_bytes(4, 'big')
+            data += tx2d_info.data_size.to_bytes(4, 'big')
+            data += tx2d_info.width.to_bytes(2, 'big')
+            data += tx2d_info.height.to_bytes(2, 'big')
+            data += tx2d_info.unk0x14.to_bytes(2, 'big')
+            data += tx2d_info.mip_maps.to_bytes(2, 'big')
+            data += tx2d_info.unk0x18.to_bytes(4, 'big')
+            data += tx2d_info.unk0x1c.to_bytes(4, 'big')
+            data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
+            data += b'\00\00\00'
+            data_size += tx2d_data_entry.data_info.data_size
+
+            # Child offset
+            data_entry += b'\x00\x00\x00\x00'
+            data_entry += b'\x00\x00\x00\x00'
+            data_entry_size += 32
+
+            # Check if the data, the module of 16 is 0
+            data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+            # Update offsets for the next entry
+            string_name_offset = 1 + string_table_size
+            data_offset = data_size
+
         # Get the new vram size by getting the position of the pointer in the output file
         # since it's in the end of the file
         vram_data_size = output_vram_file.tell()
 
-        # Update the entry info
+    # Update the entry info
     entry_info += b'TX2D' + b'\x00\x01\x00\x00' + num_textures.to_bytes(4, 'big')
     # Update the sizes
     entry_count += 1
@@ -1852,7 +1886,12 @@ def import_texture(main_window, import_file_path, ask_user, show_texture, data_e
             if show_texture:
                 try:
                     # Show texture in the program
-                    show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
+                    # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
+                    # we won't show anything in the tool view
+                    if VEV.header_type_spr_file != b'SPR3' or dxt_encoding != 32:
+                        show_dds_image(main_window.imageTexture, None, width, height, import_file_path)
+                    else:
+                        main_window.imageTexture.clear()
 
                 except OSError:
                     main_window.imageTexture.clear()
