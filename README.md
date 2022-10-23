@@ -127,8 +127,8 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
   <li>
-    <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs (Raging Blast 2)</i>.
-    <i>db_font_pad_X360_s.zpak</i> located in <i>st_pack_boot_pt_x360.afs (Raging Blast 2)</i>.
+    <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs</i> and
+    <i>db_font_pad_X360_s.zpak</i> located in <i>st_pack_boot_pt_x360.afs (Raging Blast 2)</i>.<br>
     <img src="images/character_parameters_editor_general_parameters_2.jpg" 
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
