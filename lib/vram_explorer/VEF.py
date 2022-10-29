@@ -325,7 +325,7 @@ def open_spr_file(main_window, model, spr_path):
                     # Create the TX2D info
                     tx2d_info = Tx2dInfo()
 
-                    tx2d_info.unk0x00 = int.from_bytes(file.read(VEV.bytes2Read), "big")
+                    tx2d_info.related_2_encoding = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     tx2d_info.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     tx2d_info.unk0x08 = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     tx2d_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
@@ -717,6 +717,11 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
             # Store the offset where the texture will be located in vram
             texture_offset = output_vram_file.tell()
 
+            # Store some texture properties that can differ
+            mip_maps = tx2d_info.mip_maps
+            texture_data_size = tx2d_info.data_size
+            related_2_encoding = tx2d_info.related_2_encoding
+
             # Write the textures in the vram file
             # It's a DDS image
             if tx2d_info.dxt_encoding != 0:
@@ -725,10 +730,10 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
                     data_texture = tx2d_info.tx2d_vram.data[128:]
                 else:
                     # Swizzle the texture for Xbox.
-                    # As a temporay fix, we use only 1 mipmaps and update the data size of the swizzled texture
-                    tx2d_info.mip_maps, data_texture = process(tx2d_info.tx2d_vram.data[128:], tx2d_info.width,
-                                                               tx2d_info.height, 1, tx2d_info.dxt_encoding, 'swizzle')
-                    tx2d_info.data_size = len(data_texture)
+                    # As a temporay fix, we use only 1 mipmaps and store the data size of the swizzled texture
+                    mip_maps, data_texture = process(tx2d_info.tx2d_vram.data[128:], tx2d_info.width, tx2d_info.height,
+                                                     1, tx2d_info.dxt_encoding, 'swizzle')
+                    texture_data_size = len(data_texture)
                 output_vram_file.write(data_texture)
                 # Write the vram separator
                 if vram_separator and i < num_textures - 1:
@@ -742,9 +747,8 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
                         # Since is a shader, it if is for a Xbox file, we need to change the 'related2encoding' value
                         # Otherwise will make the character with black shaders
                         if VEV.header_type_spr_file == b'SPR3':
-                            tx2d_info.unk0x00 = 130
-                        output_vram_file.write(change_endian(tx2d_info.
-                                                             tx2d_vram.data[54:]))
+                            related_2_encoding = 130
+                        output_vram_file.write(change_endian(tx2d_info.tx2d_vram.data[54:]))
                     else:
                         output_vram_file.write(tx2d_info.tx2d_vram.data[54:])
                 else:
@@ -770,17 +774,15 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
                         "\""
                     os.system('cmd /c ' + args)
 
-                    # Get the data from the .exe
+                    # Get the data from the .exe and write it into the vram
                     with open("tempSwizzledImageModified", mode="rb") as file:
-                        tx2d_info.tx2d_vram.data = file.read()
+                        output_vram_file.write(file.read())
 
                     # Remove the temp files
                     os.remove("tempSwizzledImage")
                     os.remove("tempUnSwizzledImage")
                     os.remove("Indexes.txt")
                     os.remove("tempSwizzledImageModified")
-
-                    output_vram_file.write(tx2d_info.tx2d_vram.data)
 
             # Write the name for each texture in the spr
             name = tx2d_data_entry.data_info.name + "." + \
@@ -799,14 +801,14 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
             # We write the child offset later
 
             # Write the data for each texture
-            data += tx2d_info.unk0x00.to_bytes(4, 'big')
+            data += related_2_encoding.to_bytes(4, 'big')
             data += texture_offset.to_bytes(4, 'big')
             data += tx2d_info.unk0x08.to_bytes(4, 'big')
-            data += tx2d_info.data_size.to_bytes(4, 'big')
+            data += texture_data_size.to_bytes(4, 'big')
             data += tx2d_info.width.to_bytes(2, 'big')
             data += tx2d_info.height.to_bytes(2, 'big')
             data += tx2d_info.unk0x14.to_bytes(2, 'big')
-            data += tx2d_info.mip_maps.to_bytes(2, 'big')
+            data += mip_maps.to_bytes(2, 'big')
             data += tx2d_info.unk0x18.to_bytes(4, 'big')
             data += tx2d_info.unk0x1c.to_bytes(4, 'big')
             data += tx2d_info.dxt_encoding.to_bytes(1, 'big')
@@ -1772,9 +1774,9 @@ def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width
     # Get the difference in size between actual and modified texture to check if is necessary to update offsets
     difference = len_data - data_entry.data_info.data.data_size
 
-    # Change unk0x00 (related to the encoding)
-    if data_entry.data_info.data.unk0x00 != unk0x00:
-        data_entry.data_info.data.unk0x00 = unk0x00
+    # Change the var related to the encoding
+    if data_entry.data_info.data.related_2_encoding != unk0x00:
+        data_entry.data_info.data.related_2_encoding = unk0x00
 
     # Change size
     if difference != 0:
@@ -2056,9 +2058,9 @@ def add_texture(main_window, import_file_path):
             # We don't know about this value, but if the encoding is DXT5, has to be 34. However, if the encoding
             # is DXT1, the value has to be 2
             if sprp_data_entry.data_info.data.dxt_encoding == 24:
-                sprp_data_entry.data_info.data.unk0x00 = 34
+                sprp_data_entry.data_info.data.related_2_encoding = 34
             else:
-                sprp_data_entry.data_info.data.unk0x00 = 2
+                sprp_data_entry.data_info.data.related_2_encoding = 2
             # When is DXT encoding, this unk value has to be that value
             sprp_data_entry.data_info.data.unk0x1c = 2804419200
 
@@ -2092,7 +2094,7 @@ def add_texture(main_window, import_file_path):
             sprp_data_entry.data_info.data.dxt_encoding = 0
 
             # We don't know about this value, but for RGBA encoding, has to be 2
-            sprp_data_entry.data_info.data.unk0x00 = 2
+            sprp_data_entry.data_info.data.related_2_encoding = 2
             # We don't know about this value, but for RGBA encoding, has to be that value
             sprp_data_entry.data_info.data.unk0x1c = 2804746880
 

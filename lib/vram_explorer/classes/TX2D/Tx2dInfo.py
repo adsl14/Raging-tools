@@ -1,7 +1,7 @@
 class Tx2dInfo:
 
     def __init__(self):
-        self.unk0x00 = 0
+        self.related_2_encoding = 0
         self.data_offset = 0
         self.unk0x08 = 0
         self.data_size = 0
