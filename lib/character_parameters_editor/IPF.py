@@ -1,7 +1,5 @@
 import os
 
-from PyQt5.QtGui import QStandardItem
-
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
@@ -9,15 +7,15 @@ from lib.character_parameters_editor.classes.Animation import Animation
 from lib.character_parameters_editor.functions.IP.action_logic import on_camera_type_key_changed, \
     action_export_camera_button_logic, action_import_camera_button_logic, action_export_all_camera_button_logic, \
     action_import_all_camera_button_logic, on_pivot_value_changed, on_translations_changed, on_rotations_changed, \
-    on_speed_camera_changed, on_zoom_start_value_changed, on_zoom_end_value_changed, on_unk13_value_changed, \
+    on_speed_camera_changed, on_zoom_start_value_changed, on_zoom_end_value_changed, \
     action_export_animation_button_logic, action_import_animation_button_logic, \
     action_export_all_animation_button_logic, action_import_all_animation_button_logic, \
     action_export_blast_button_logic, action_import_blast_button_logic, action_export_all_blast_button_logic, \
     action_import_all_blast_button_logic, on_background_color_trans_change, \
-    action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic
-from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
+    action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic, on_blast_attack_changed
+from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
+    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file
 from lib.packages import struct, QMessageBox
-from lib.pak_explorer.PEV import PEV
 
 
 def initialize_operate_character(main_window):
@@ -59,9 +57,6 @@ def initialize_operate_character(main_window):
     # Set the zoom
     main_window.zoom_start_value.valueChanged.connect(lambda: on_zoom_start_value_changed(main_window))
     main_window.zoom_end_value.valueChanged.connect(lambda: on_zoom_end_value_changed(main_window))
-
-    # Set unk13
-    main_window.unk13_value.valueChanged.connect(lambda: on_unk13_value_changed(main_window))
 
     # Set the cancel set
     for element in IPV.cancel_set_values:
@@ -118,8 +113,33 @@ def initialize_operate_character(main_window):
         lambda: action_import_all_animation_button_logic(main_window, 1))
 
     # Set the blast type
+    main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
     for i in range(0, 14):
         main_window.blast_key.addItem("Attack " + str(i))
+    # Set the glow values
+    for element in IPV.glow_values:
+        main_window.glow_activation_value.addItem(element, IPV.glow_values[element])
+    # Set the stackable skill values
+    for element in IPV.stackable_skill:
+        main_window.stackable_skill_value.addItem(element, IPV.stackable_skill[element])
+    # Set the melee values
+    for element in IPV.melee_power_up_properties:
+        main_window.melee_power_up_value.addItem(element, IPV.melee_power_up_properties[element])
+    # Set the defense values
+    for element in IPV.defense_power_up_properties:
+        main_window.defense_power_up_value.addItem(element, IPV.defense_power_up_properties[element])
+    # Set the super attack values
+    for element in IPV.super_attack_power_up_properties:
+        main_window.super_attack_power_up_value.addItem(element, IPV.super_attack_power_up_properties[element])
+    # Set the Ki values
+    for element in IPV.ki_power_up_properties:
+        main_window.ki_power_up_value.addItem(element, IPV.ki_power_up_properties[element])
+    # Set the activation skill values
+    for element in IPV.activation_skill:
+        main_window.effect_attack_value.addItem(element, IPV.activation_skill[element])
+    # Set the chargeable/boost skill values
+    for element in IPV.chargeable_boost:
+        main_window.chargeable_value.addItem(element, IPV.chargeable_boost[element])
     # Export blast button
     main_window.exportBlastButton.clicked.connect(lambda: action_export_blast_button_logic(main_window))
     # Import blast button
@@ -218,42 +238,8 @@ def read_single_character_parameters(main_window):
             # Create an instance of cameraCutscene
             camera_cutscene = CameraCutscene()
 
-            # Get the pivots
-            camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
-            camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
-
-            # Rotations Z
-            camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Translations Y
-            camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Rotations Y
-            camera_cutscene.rotations["Y_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.rotations["Y_end"] = camera_cutscene.rotations["Y_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Zoom
-            camera_cutscene.zooms["Zoom_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.zooms["Zoom_end"] = camera_cutscene.zooms["Zoom_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Translations Z
-            camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
-            camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
-                struct.unpack('>f', file.read(4))[0]
-
-            # Camera speed (float values)
-            camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
-
-            # Unknown value block 13
-            camera_cutscene.unknown_block_13 = struct.unpack('>f', file.read(4))[0]
+            # Store all the data
+            store_camera_cutscene_from_file(camera_cutscene, file)
 
             # Set camera type combo box
             main_window.camera_type_key.setItemData(i, camera_cutscene)
@@ -269,13 +255,14 @@ def read_single_character_parameters(main_window):
             # Create an instance of Blast
             blast = Blast()
 
-            # Read data
-            blast.data = file.read(IPV.size_between_blast)
+            # Store all the blast values in memory
+            store_blast_values_from_file(blast, file)
 
             # Set blast combo box
             main_window.blast_key.setItemData(i, blast)
 
         # Show the first item in the combo box and his values
+        change_blast_values(main_window, main_window.blast_key.itemData(0))
         main_window.blast_key.setCurrentIndex(0)
 
     # Read signature info file
@@ -371,37 +358,7 @@ def write_single_character_parameters(main_window):
 
             # Camera has been modified
             if camera_cutscene.modified:
-                # Write the pivots
-                file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-                file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
-
-                # Rotations Z
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
-
-                # Translations Y
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
-
-                # Rotations Y
-                file.write(struct.pack('>f', camera_cutscene.rotations["Y_start"]))
-                file.write(struct.pack('>f', camera_cutscene.rotations["Y_end"] - camera_cutscene.rotations["Y_start"]))
-
-                # Zoom
-                file.write(struct.pack('>f', camera_cutscene.zooms["Zoom_start"]))
-                file.write(struct.pack('>f', camera_cutscene.zooms["Zoom_end"] - camera_cutscene.zooms["Zoom_start"]))
-
-                # Translations Z
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-                file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
-
-                # Camera speed (float values)
-                file.write(struct.pack('>f', camera_cutscene.camera_speed))
-
-                # Unknown value block 13
-                file.write(struct.pack('>f', camera_cutscene.unknown_block_13))
+                write_camera_cutscene_to_file(camera_cutscene, file)
 
             # Ignore this camera
             else:
@@ -417,7 +374,7 @@ def write_single_character_parameters(main_window):
             # Blast has been modified
             if blast.modified:
                 # Write all the data
-                file.write(blast.data)
+                write_blast_values_to_file(blast, file)
 
             # Ignore this blast
             else:
@@ -572,108 +529,15 @@ def read_animation_files(main_window, offset_index):
                         number_spa_signature_files, 2, 1)
 
 
-def change_camera_cutscene_values(main_window, camera_cutscene):
-    # Pivots
-    main_window.pivot_value.setValue(camera_cutscene.pivots["pivot_1"])
-    main_window.pivot_value_2.setValue(camera_cutscene.pivots["pivot_2"])
-    main_window.pivot_value_3.setValue(camera_cutscene.pivots["pivot_3"])
-    main_window.pivot_value_4.setValue(camera_cutscene.pivots["pivot_4"])
-
-    # Translations
-    main_window.translation_y_start_value.setValue(camera_cutscene.positions["Y_start"])
-    main_window.translation_y_end_value.setValue(camera_cutscene.positions["Y_end"])
-    main_window.translation_z_start_value.setValue(camera_cutscene.positions["Z_start"])
-    main_window.translation_z_end_value.setValue(camera_cutscene.positions["Z_end"])
-
-    # Rotations
-    main_window.rotation_y_start_value.setValue(camera_cutscene.rotations["Y_start"])
-    main_window.rotation_y_end_value.setValue(camera_cutscene.rotations["Y_end"])
-    main_window.rotation_z_start_value.setValue(camera_cutscene.rotations["Z_start"])
-    main_window.rotation_z_end_value.setValue(camera_cutscene.rotations["Z_end"])
-
-    # Zoom
-    main_window.zoom_start_value.setValue(camera_cutscene.zooms["Zoom_start"])
-    main_window.zoom_end_value.setValue(camera_cutscene.zooms["Zoom_end"])
-
-    # Speed
-    main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
-
-    # Block 13
-    main_window.unk13_value.setValue(camera_cutscene.unknown_block_13)
-
-
 def export_camera(file_export_path, camera_cutscene):
     with open(file_export_path, mode="wb") as file:
-        # Write the pivots
-        file.write(camera_cutscene.pivots["pivot_1"].to_bytes(1, byteorder="big"))
-        file.write(camera_cutscene.pivots["pivot_2"].to_bytes(1, byteorder="big"))
-        file.write(camera_cutscene.pivots["pivot_3"].to_bytes(1, byteorder="big"))
-        file.write(camera_cutscene.pivots["pivot_4"].to_bytes(1, byteorder="big"))
-
-        # Rotations Z
-        file.write(struct.pack('>f', camera_cutscene.rotations["Z_start"]))
-        file.write(struct.pack('>f', camera_cutscene.rotations["Z_end"] - camera_cutscene.rotations["Z_start"]))
-
-        # Translations Y
-        file.write(struct.pack('>f', camera_cutscene.positions["Y_start"]))
-        file.write(struct.pack('>f', camera_cutscene.positions["Y_end"] - camera_cutscene.positions["Y_start"]))
-
-        # Rotations Y
-        file.write(struct.pack('>f', camera_cutscene.rotations["Y_start"]))
-        file.write(struct.pack('>f', camera_cutscene.rotations["Y_end"] - camera_cutscene.rotations["Y_start"]))
-
-        # Zoom
-        file.write(struct.pack('>f', camera_cutscene.zooms["Zoom_start"]))
-        file.write(struct.pack('>f', camera_cutscene.zooms["Zoom_end"] - camera_cutscene.zooms["Zoom_start"]))
-
-        # Translations Z
-        file.write(struct.pack('>f', camera_cutscene.positions["Z_start"]))
-        file.write(struct.pack('>f', camera_cutscene.positions["Z_end"] - camera_cutscene.positions["Z_start"]))
-
-        # Camera speed (float values)
-        file.write(struct.pack('>f', camera_cutscene.camera_speed))
-
-        # Unknown value block 13
-        file.write(struct.pack('>f', camera_cutscene.unknown_block_13))
+        write_camera_cutscene_to_file(camera_cutscene, file)
 
 
 def import_camera(camera_cutscene, file):
-    # Get the pivots
-    camera_cutscene.pivots["pivot_1"] = int.from_bytes(file.read(1), byteorder='big')
-    camera_cutscene.pivots["pivot_2"] = int.from_bytes(file.read(1), byteorder='big')
-    camera_cutscene.pivots["pivot_3"] = int.from_bytes(file.read(1), byteorder='big')
-    camera_cutscene.pivots["pivot_4"] = int.from_bytes(file.read(1), byteorder='big')
 
-    # Rotations Z
-    camera_cutscene.rotations["Z_start"] = struct.unpack('>f', file.read(4))[0]
-    camera_cutscene.rotations["Z_end"] = camera_cutscene.rotations["Z_start"] + \
-        struct.unpack('>f', file.read(4))[0]
-
-    # Translations Y
-    camera_cutscene.positions["Y_start"] = struct.unpack('>f', file.read(4))[0]
-    camera_cutscene.positions["Y_end"] = camera_cutscene.positions["Y_start"] + \
-        struct.unpack('>f', file.read(4))[0]
-
-    # Rotations Y
-    camera_cutscene.rotations["Y_start"] = struct.unpack('>f', file.read(4))[0]
-    camera_cutscene.rotations["Y_end"] = camera_cutscene.rotations["Y_start"] + \
-        struct.unpack('>f', file.read(4))[0]
-
-    # Zoom
-    camera_cutscene.zooms["Zoom_start"] = struct.unpack('>f', file.read(4))[0]
-    camera_cutscene.zooms["Zoom_end"] = camera_cutscene.zooms["Zoom_start"] + \
-        struct.unpack('>f', file.read(4))[0]
-
-    # Translations Z
-    camera_cutscene.positions["Z_start"] = struct.unpack('>f', file.read(4))[0]
-    camera_cutscene.positions["Z_end"] = camera_cutscene.positions["Z_start"] + \
-        struct.unpack('>f', file.read(4))[0]
-
-    # Camera speed (float values)
-    camera_cutscene.camera_speed = struct.unpack('>f', file.read(4))[0]
-
-    # Unknown value block 13
-    camera_cutscene.unknown_block_13 = struct.unpack('>f', file.read(4))[0]
+    # Import camera to memory
+    store_camera_cutscene_from_file(camera_cutscene, file)
 
     # Set camera as modified
     camera_cutscene.modified = True
@@ -849,15 +713,13 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
 def export_blast(file_export_path, blast):
 
     with open(file_export_path, mode="wb") as file:
-
-        # Write all the data
-        file.write(blast.data)
+        write_blast_values_to_file(blast, file)
 
 
 def import_blast(blast, file):
 
     # Get the data
-    blast.data = file.read()
+    store_blast_values_from_file(blast, file)
 
     # Set blast as modified
     blast.modified = True

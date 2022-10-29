@@ -96,7 +96,7 @@ def action_export_all_camera_button_logic(main_window):
         msg = QMessageBox()
         msg.setWindowTitle("Message")
         msg.setWindowIcon(main_window.ico_image)
-        message = "The camera files weres exported in: <b>" + folder_export_path \
+        message = "The camera files were exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
 
@@ -334,6 +334,9 @@ def action_import_blast_button_logic(main_window):
             # Import blast values to memory
             IPF.import_blast(blast, file)
 
+            # Show the imported values in the tool
+            IPF.change_blast_values(main_window, blast)
+
         # Change old path
         main_window.old_path_file = file_export_path
 
@@ -374,7 +377,8 @@ def action_export_all_blast_button_logic(main_window):
 
 
 def action_import_all_blast_button_logic(main_window):
-    # Ask to the user from what file wants to open the camera files
+
+    # Ask to the user from what file wants to open the blast files
     folder_import = QFileDialog.getExistingDirectory(main_window, "Import blasts", main_window.old_path_file)
 
     blasts_files_error = []
@@ -382,6 +386,8 @@ def action_import_all_blast_button_logic(main_window):
     if folder_import:
 
         blasts_files = natsorted(os.listdir(folder_import), key=lambda y: y.lower())
+        found_current_blast_key = False
+
         # Get the filename of each blast
         for i in range(0, len(blasts_files)):
 
@@ -400,6 +406,13 @@ def action_import_all_blast_button_logic(main_window):
 
                     # Import blast to memory
                     IPF.import_blast(blast, file)
+
+                    if not found_current_blast_key and main_window.blast_key.currentIndex() == i:
+                        # We found the index of the blast value that the user has currently selected
+                        found_current_blast_key = True
+
+                        # Show the imported values in the tool
+                        IPF.change_blast_values(main_window, blast)
 
                 else:
                     blasts_files_error.append(blasts_files[i])
@@ -566,15 +579,6 @@ def on_zoom_end_value_changed(main_window):
         main_window.camera_type_key.currentData().modified = True
 
 
-def on_unk13_value_changed(main_window):
-
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
-        main_window.camera_type_key.currentData().unknowns["unknown_block_13"] = \
-            main_window.unk13_value.value()
-        main_window.camera_type_key.currentData().modified = True
-
-
 def on_background_color_trans_change(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
@@ -585,3 +589,10 @@ def on_background_color_trans_change(main_window):
             main_window.background_color_trans_value.\
             currentData().to_bytes(1, "big") + animation_effect.data[IPV.trans_effect_position_byte+1:]
         animation_effect.modified = True
+
+
+def on_blast_attack_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        IPF.change_blast_values(main_window, main_window.blast_key.currentData())

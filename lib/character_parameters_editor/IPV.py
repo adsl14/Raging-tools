@@ -26,7 +26,10 @@ class IPV:
     # Don't change the order, because the file has this order when we read the file
     camera_types_cutscene = ["Entry (1P)", "Entry (2P)", "Entry 2 (1P)", "Entry 2 (2P)", "Entry 3 (1P)",
                              "Entry 3 (2P)", "Victory", "Lose", "Transform in", "Transform result", "Return in",
-                             "Return out", "Transform in 2"]
+                             "Return out", "Transform in 2", "Blast Attack 0", "Blast Attack 1", "Blast Attack 2",
+                             "Blast Attack 3", "Blast Attack 4", "Blast Attack 5", "Blast Attack 6", "Blast Attack 7",
+                             "Blast Attack 8", "Blast Attack 9", "Blast Attack 10", "Blast Attack 11", "Blast Attack 12",
+                             "Blast Attack 13", "Unknown"]
     # position where the first camera cutscene starts
     position_camera_cutscene = 208
     size_each_camera_cutscene = 52
@@ -52,6 +55,17 @@ class IPV:
                         "Signature"]
     animations_extension = "spas"
     # Blast properties
+    glow_values = dict({"Disabled": 0, "0x01": 1, "0x02": 2, "0x03": 3, "0x04": 4, "0x06": 6, "0x07": 7, "0x08": 8, "0x09": 9, "0x0A": 10, "0x0C": 12,
+                        "0x0D": 13, "0x0E": 14, "0x0F": 15, "Enabled": 16})
+    stackable_skill = dict({"Infinite": 0, "3 times": 1, "Disabled": 2})
+    activation_skill = dict({"Nothing": 0, "0x02": 2, "0x04": 4, "0x05": 5, "0x08": 8, "0x0A": 10, "0x0C": 12, "0x0D": 13, "0x40": 64, "0x48": 72,
+                             "0x82": 130, "0x84": 132, "0x85": 133, "0x86": 134, "0x96": 150})
+    chargeable_boost = dict({"Nothing": 0, "0x02": 2, "0x08": 8, "0x10": 16, "0x12": 18, "0x14": 20, "0x32": 50, "0x31": 49, "0x35": 53, "0x36": 54,
+                             "0x50": 80, "0x71": 113, "0xB0": 176})
+    melee_power_up_properties = dict({"Nothing": 0, "Power up": 10, "Power up 2": 15})
+    defense_power_up_properties = dict({"Nothing": 0, "0x05": 5})
+    super_attack_power_up_properties = dict({"Nothing": 0, "0x1E": 30})
+    ki_power_up_properties = dict({"Nothing": 0, "Consumption reduced": 100})
     size_between_blast = 100
     blast_extension = "bla"
     # Transformation effect values

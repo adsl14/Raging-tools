@@ -7,5 +7,5 @@ class CameraCutscene:
         self.positions = dict({"Y_start": 0.0, "Y_end": 0.0, "Z_start": 0.0, "Z_end": 0.0})
         self.zooms = dict({"Zoom_start": 0, "Zoom_end": 0})
         self.camera_speed = 0.0
-        self.unknown_block_13 = 0.0
+        self.unknown_block_13 = b''
         self.modified = False
