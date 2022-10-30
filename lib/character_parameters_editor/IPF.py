@@ -1,5 +1,10 @@
+import functools
 import os
 
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel
+
+from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
@@ -12,13 +17,17 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     action_export_all_animation_button_logic, action_import_all_animation_button_logic, \
     action_export_blast_button_logic, action_import_blast_button_logic, action_export_all_blast_button_logic, \
     action_import_all_blast_button_logic, on_background_color_trans_change, \
-    action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic, on_blast_attack_changed
+    action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic, on_blast_attack_changed, \
+    on_glow_activation_changed, on_stackable_skill_changed, on_power_up_changed, on_effect_attack_changed, on_chargeable_changed, \
+    on_size_attack_value_changed, on_number_of_hits_value_changed, on_cost_blast_attack_value_changed, on_blast_attack_damage_value_changed, \
+    on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
     write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file
+from lib.design.select_chara.select_chara import Select_Chara
 from lib.packages import struct, QMessageBox
 
 
-def initialize_operate_character(main_window):
+def initialize_operate_character(main_window, qt_widgets):
 
     # Set the camera cutscene type
     main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
@@ -116,30 +125,6 @@ def initialize_operate_character(main_window):
     main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
     for i in range(0, 14):
         main_window.blast_key.addItem("Attack " + str(i))
-    # Set the glow values
-    for element in IPV.glow_values:
-        main_window.glow_activation_value.addItem(element, IPV.glow_values[element])
-    # Set the stackable skill values
-    for element in IPV.stackable_skill:
-        main_window.stackable_skill_value.addItem(element, IPV.stackable_skill[element])
-    # Set the melee values
-    for element in IPV.melee_power_up_properties:
-        main_window.melee_power_up_value.addItem(element, IPV.melee_power_up_properties[element])
-    # Set the defense values
-    for element in IPV.defense_power_up_properties:
-        main_window.defense_power_up_value.addItem(element, IPV.defense_power_up_properties[element])
-    # Set the super attack values
-    for element in IPV.super_attack_power_up_properties:
-        main_window.super_attack_power_up_value.addItem(element, IPV.super_attack_power_up_properties[element])
-    # Set the Ki values
-    for element in IPV.ki_power_up_properties:
-        main_window.ki_power_up_value.addItem(element, IPV.ki_power_up_properties[element])
-    # Set the activation skill values
-    for element in IPV.activation_skill:
-        main_window.effect_attack_value.addItem(element, IPV.activation_skill[element])
-    # Set the chargeable/boost skill values
-    for element in IPV.chargeable_boost:
-        main_window.chargeable_value.addItem(element, IPV.chargeable_boost[element])
     # Export blast button
     main_window.exportBlastButton.clicked.connect(lambda: action_export_blast_button_logic(main_window))
     # Import blast button
@@ -148,6 +133,92 @@ def initialize_operate_character(main_window):
     main_window.exportAllBlastButton.clicked.connect(lambda: action_export_all_blast_button_logic(main_window))
     # Import all blast button
     main_window.importAllBlastButton.clicked.connect(lambda: action_import_all_blast_button_logic(main_window))
+
+    # Set the glow values
+    main_window.glow_activation_value.currentIndexChanged.connect(lambda: on_glow_activation_changed(main_window))
+    for element in IPV.glow_values:
+        main_window.glow_activation_value.addItem(element, IPV.glow_values[element])
+
+    # Set the stackable skill values
+    main_window.stackable_skill_value.currentIndexChanged.connect(lambda: on_stackable_skill_changed(main_window))
+    for element in IPV.stackable_skill:
+        main_window.stackable_skill_value.addItem(element, IPV.stackable_skill[element])
+
+    # Set the melee values
+    main_window.melee_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.melee_power_up_value, "Melee"))
+    for element in IPV.melee_power_up_properties:
+        main_window.melee_power_up_value.addItem(element, IPV.melee_power_up_properties[element])
+
+    # Set the defense values
+    main_window.defense_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.defense_power_up_value,
+                                                                                               "Defense"))
+    for element in IPV.defense_power_up_properties:
+        main_window.defense_power_up_value.addItem(element, IPV.defense_power_up_properties[element])
+
+    # Set the super attack values
+    main_window.super_attack_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window,
+                                                                                                    main_window.super_attack_power_up_value,
+                                                                                                    "Super Attack"))
+    for element in IPV.super_attack_power_up_properties:
+        main_window.super_attack_power_up_value.addItem(element, IPV.super_attack_power_up_properties[element])
+
+    # Set the Ki values
+    main_window.ki_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.ki_power_up_value, "Ki"))
+    for element in IPV.ki_power_up_properties:
+        main_window.ki_power_up_value.addItem(element, IPV.ki_power_up_properties[element])
+
+    # Set the activation skill values
+    main_window.effect_attack_value.currentIndexChanged.connect(lambda: on_effect_attack_changed(main_window))
+    for element in IPV.activation_skill:
+        main_window.effect_attack_value.addItem(element, IPV.activation_skill[element])
+
+    # Set the chargeable/boost skill values
+    main_window.chargeable_value.currentIndexChanged.connect(lambda: on_chargeable_changed(main_window))
+    for element in IPV.chargeable_boost:
+        main_window.chargeable_value.addItem(element, IPV.chargeable_boost[element])
+
+    # Set reach attack
+    main_window.reach_attack_value.valueChanged.connect(lambda: on_reach_attack_value_changed(main_window))
+
+    # Set speed_attack_value
+    main_window.speed_attack_value.valueChanged.connect(lambda: on_speed_attack_value_changed(main_window))
+
+    # Set blast_attack_damage_value
+    main_window.blast_attack_damage_value.valueChanged.connect(lambda: on_blast_attack_damage_value_changed(main_window))
+
+    # Set cost_blast_attack_value
+    main_window.cost_blast_attack_value.valueChanged.connect(lambda: on_cost_blast_attack_value_changed(main_window))
+
+    # Set number_of_hits_value
+    main_window.number_of_hits_value.valueChanged.connect(lambda: on_number_of_hits_value_changed(main_window))
+
+    # Set size_attack_value
+    main_window.size_attack_value.valueChanged.connect(lambda: on_size_attack_value_changed(main_window))
+
+    # Set camera_blast_value
+    main_window.camera_blast_value_0.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 0, main_window.camera_blast_value_0))
+    main_window.camera_blast_value_1.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 1, main_window.camera_blast_value_1))
+    main_window.camera_blast_value_2.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 2, main_window.camera_blast_value_2))
+    main_window.camera_blast_value_3.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 3, main_window.camera_blast_value_3))
+
+    # Partner
+    # Load the Select Chara partner window
+    main_window.selectCharaPartnerWindow = qt_widgets.QDialog()
+    main_window.selectCharaPartnerUI = Select_Chara()
+    main_window.selectCharaPartnerUI.setupUi(main_window.selectCharaPartnerWindow)
+    mini_portraits_image_select_chara_roster_window = main_window.selectCharaPartnerUI.frame.findChildren(QLabel)
+    # Prepare each slot in the window
+    for i in range(0, len(mini_portraits_image_select_chara_roster_window)):
+        chara_id = int(mini_portraits_image_select_chara_roster_window[i].objectName().split("_")[-1])
+        mini_portraits_image_select_chara_roster_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_" +
+                                                                                          str(chara_id).zfill(3) + ".bmp")))
+        mini_portraits_image_select_chara_roster_window[i].mousePressEvent = functools.partial(action_modify_character, main_window=main_window,
+                                                                                               chara_id=chara_id)
+        mini_portraits_image_select_chara_roster_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+
+    # Prepare the partner slot
+    main_window.partner_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
+    main_window.partner_character_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
 
 
 def read_single_character_parameters(main_window):

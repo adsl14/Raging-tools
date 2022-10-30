@@ -102,6 +102,9 @@ def write_camera_cutscene_to_file(camera_cutscene, file):
 
 def change_camera_cutscene_values(main_window, camera_cutscene):
 
+    # Avoid combobox change the values
+    CPEV.change_character = True
+
     # Pivots
     main_window.pivot_value.setValue(camera_cutscene.pivots["pivot_1"])
     main_window.pivot_value_2.setValue(camera_cutscene.pivots["pivot_2"])
@@ -126,6 +129,9 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
 
     # Speed
     main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
+
+    # Enable combobox change the values
+    CPEV.change_character = False
 
 
 def store_blast_values_from_file(blast, file):
@@ -253,6 +259,9 @@ def write_blast_values_to_file(blast, file):
 
 def change_blast_values(main_window, blast_parameter):
 
+    # Avoid combobox change the values
+    CPEV.change_character = True
+
     # Glow
     main_window.glow_activation_value.setCurrentIndex(main_window.glow_activation_value.findData(blast_parameter.glow))
     '''print("Glow: " + str(blast_parameter.glow))'''
@@ -307,3 +316,6 @@ def change_blast_values(main_window, blast_parameter):
 
     # Size
     main_window.size_attack_value.setValue(blast_parameter.size_of_attack)
+
+    # Enable combobox change the values
+    CPEV.change_character = False

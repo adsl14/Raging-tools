@@ -7,7 +7,7 @@ def initialize_cpe(main_window, qt_widgets):
 
     initialize_operate_resident_param(main_window, qt_widgets)
 
-    initialize_operate_character(main_window)
+    initialize_operate_character(main_window, qt_widgets)
 
     initialize_cs_chip(main_window, qt_widgets)
 

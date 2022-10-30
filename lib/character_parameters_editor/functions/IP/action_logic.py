@@ -1,3 +1,6 @@
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QLabel
+
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
@@ -475,6 +478,43 @@ def action_import_signature_ki_blast_button_logic(main_window):
         main_window.old_path_file = file_export_path
 
 
+def action_change_character(event, main_window):
+
+    blast = main_window.blast_key.currentData()
+
+    # Check if the current partner is the same as the selected in the window, so we can clean the window
+    if IPV.old_selected_partner != blast.partner_id:
+        # Restore the color of the old selected character
+        select_chara_roster_window_label = main_window.selectCharaPartnerUI.frame.findChild(QLabel, "label_" + str(IPV.old_selected_partner))
+        select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+
+        # Store the current partner
+        IPV.old_selected_partner = blast.partner_id
+
+    # Change color for the selected character in chara roster window
+    select_chara_roster_window_label = main_window.selectCharaPartnerUI.frame.findChild(QLabel, "label_" + str(blast.partner_id))
+    select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSelectCharaRosterWindow)
+
+    # Show the select chara roster window
+    main_window.selectCharaPartnerWindow.show()
+
+
+def action_modify_character(event, main_window, chara_id):
+
+    # Get current blast
+    blast = main_window.blast_key.currentData()
+
+    # Change partner id
+    blast.partner_id = chara_id
+    blast.modified = True
+
+    # Change partner image
+    main_window.partner_character_value.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                       str(blast.partner_id).zfill(3) + ".png")))
+    # Close Window
+    main_window.selectCharaPartnerWindow.close()
+
+
 def on_camera_type_key_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
@@ -596,3 +636,123 @@ def on_blast_attack_changed(main_window):
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.change_character:
         IPF.change_blast_values(main_window, main_window.blast_key.currentData())
+
+
+def on_glow_activation_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the glow activation
+        blast = main_window.blast_key.currentData()
+        blast.glow = main_window.glow_activation_value.currentData()
+        blast.modified = True
+
+
+def on_stackable_skill_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the skill stackable
+        blast = main_window.blast_key.currentData()
+        blast.skill_stackable = main_window.stackable_skill_value.currentData()
+        blast.modified = True
+
+
+def on_power_up_changed(main_window, combobox, powerup_type):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the powerup activation
+        blast = main_window.blast_key.currentData()
+        blast.power_ups[powerup_type] = combobox.currentData()
+        blast.modified = True
+
+
+def on_effect_attack_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the activation skill
+        blast = main_window.blast_key.currentData()
+        blast.activation_skill = main_window.effect_attack_value.currentData()
+        blast.modified = True
+
+
+def on_chargeable_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the chargeable/boost value
+        blast = main_window.blast_key.currentData()
+        blast.chargeable_boost = main_window.chargeable_value.currentData()
+        blast.modified = True
+
+
+def on_reach_attack_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the reach attack value
+        blast = main_window.blast_key.currentData()
+        blast.reach_attack = main_window.reach_attack_value.value()
+        blast.modified = True
+
+
+def on_speed_attack_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the speed_of_attack
+        blast = main_window.blast_key.currentData()
+        blast.speed_of_attack = main_window.speed_attack_value.value()
+        blast.modified = True
+
+
+def on_blast_attack_damage_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the attack_damage
+        blast = main_window.blast_key.currentData()
+        blast.attack_damage = main_window.blast_attack_damage_value.value()
+        blast.modified = True
+
+
+def on_cost_blast_attack_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the cost_attack
+        blast = main_window.blast_key.currentData()
+        blast.cost_attack = main_window.cost_blast_attack_value.value()
+        blast.modified = True
+
+
+def on_number_of_hits_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the number_of_hits
+        blast = main_window.blast_key.currentData()
+        blast.number_of_hits = main_window.number_of_hits_value.value()
+        blast.modified = True
+
+
+def on_size_attack_value_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the size_of_attack
+        blast = main_window.blast_key.currentData()
+        blast.size_of_attack = main_window.size_attack_value.value()
+        blast.modified = True
+
+
+def on_camera_blast_value_changed(main_window, camera_index, spinbox):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.change_character:
+        # Change the camera value
+        blast = main_window.blast_key.currentData()
+        blast.camera[camera_index] = spinbox.value()
+        blast.modified = True

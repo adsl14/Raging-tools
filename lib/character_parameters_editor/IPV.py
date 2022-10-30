@@ -68,6 +68,8 @@ class IPV:
     ki_power_up_properties = dict({"Nothing": 0, "Consumption reduced": 100})
     size_between_blast = 100
     blast_extension = "bla"
+    # This var will be used to store the ID of the partner character so we can clean the Window
+    old_selected_partner = 0
     # Transformation effect values
     trans_effect_identification_file = b'<#\xd7\n'
     trans_effect_position_byte = 0
