@@ -510,7 +510,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # --- cs_chip ---
                             # If the user has opened the cs_chip tab and edited one character, we will save the file
-                            elif self.cs_chip and REV.slots_edited:
+                            elif self.cs_chip.isEnabled() and REV.slots_edited:
 
                                 # Ask to the user if is packing a vram or ioram file for Xbox
                                 separator, separator_size = ask_pack_structure(self)
