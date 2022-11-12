@@ -23,11 +23,10 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
     write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file
-from lib.design.select_chara.select_chara import Select_Chara
 from lib.packages import struct, QMessageBox
 
 
-def initialize_operate_character(main_window, qt_widgets):
+def initialize_operate_character(main_window):
 
     # Set the camera cutscene type
     main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
@@ -203,9 +202,6 @@ def initialize_operate_character(main_window, qt_widgets):
 
     # Partner
     # Load the Select Chara partner window
-    main_window.selectCharaPartnerWindow = qt_widgets.QDialog()
-    main_window.selectCharaPartnerUI = Select_Chara()
-    main_window.selectCharaPartnerUI.setupUi(main_window.selectCharaPartnerWindow)
     mini_portraits_image_select_chara_roster_window = main_window.selectCharaPartnerUI.frame.findChildren(QLabel)
     # Prepare each slot in the window
     for i in range(0, len(mini_portraits_image_select_chara_roster_window)):
@@ -221,7 +217,7 @@ def initialize_operate_character(main_window, qt_widgets):
     main_window.partner_character_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
 
 
-def read_single_character_parameters(main_window):
+def read_single_character_parameters(worker_PEF, start_progress, step_report, main_window):
 
     # character info
     IPV.character_i_path = main_window.listView_2.model().item(726, 0).text()
@@ -233,11 +229,19 @@ def read_single_character_parameters(main_window):
     IPV.signature_ki_blast.path = main_window.listView_2.model().item(745, 0).text()
 
     # Read all the animation values
-    read_animation_files(main_window, 0)
+    worker_PEF.progressText.emit("Loading animations")
+    # 5 tasks
+    sub_step_report = step_report / 5
+    start_progress = read_animation_files(worker_PEF, start_progress, sub_step_report, main_window, 0)
     main_window.animation_type_value.setCurrentIndex(0)
 
     # Read character info file
     with open(IPV.character_i_path, mode="rb") as file:
+
+        # Report progress
+        worker_PEF.progressText.emit("Reading character info")
+        start_progress += sub_step_report
+        worker_PEF.progressValue.emit(start_progress)
 
         # Speed of charging
         main_window.speed_of_charging_value.setValue(struct.unpack('>f', file.read(4))[0])
@@ -305,7 +309,17 @@ def read_single_character_parameters(main_window):
         # Move to position 208 where the first camera cutscene starts
         file.seek(IPV.position_camera_cutscene)
 
-        for i in range(0, len(IPV.camera_types_cutscene)):
+        # Get number of cameras
+        num_cameras = len(IPV.camera_types_cutscene)
+
+        sub_sub_step_report = sub_step_report / num_cameras
+        for i in range(0, num_cameras):
+
+            # Report progress
+            worker_PEF.progressText.emit("Reading camera info " + str(i+1))
+            start_progress += sub_sub_step_report
+            worker_PEF.progressValue.emit(start_progress)
+
             # Create an instance of cameraCutscene
             camera_cutscene = CameraCutscene()
 
@@ -322,7 +336,14 @@ def read_single_character_parameters(main_window):
     # Read blast info file
     with open(IPV.blast_i_path, mode="rb") as file:
 
+        sub_sub_step_report = sub_step_report / 14
         for i in range(0, 14):
+
+            # Report progress
+            worker_PEF.progressText.emit("Reading blast info " + str(i+1))
+            start_progress += sub_sub_step_report
+            worker_PEF.progressValue.emit(start_progress)
+
             # Create an instance of Blast
             blast = Blast()
 
@@ -337,18 +358,35 @@ def read_single_character_parameters(main_window):
         main_window.blast_key.setCurrentIndex(0)
 
     # Read signature info file
+    # Report progress
+    worker_PEF.progressText.emit("Reading signature info")
+    start_progress += sub_step_report
+    worker_PEF.progressValue.emit(start_progress)
     with open(IPV.signature_ki_blast.path, mode="rb") as file:
         IPV.signature_ki_blast.data = file.read()
     IPV.signature_ki_blast.modified = False
 
 
-def write_single_character_parameters(main_window):
+def write_single_character_parameters(worker_PEF, main_window, start_progress, step_progress):
+
+    # 5 is because the number of task in this function
+    sub_step_progress = step_progress / 5
 
     # Save all animation info (replace first the entire files)
-    for i in range(0, len(IPV.animations_types)):
+    num_animation_types = len(IPV.animations_types)
+    sub_sub_step_progress = sub_step_progress / num_animation_types
+    for i in range(0, num_animation_types):
         animation_files = main_window.animation_type_value.itemData(i)
 
-        for j in range(0, len(animation_files)):
+        num_animation_files = len(animation_files)
+        sub_sub_sub_step_progress = sub_sub_step_progress / num_animation_files
+        for j in range(0, num_animation_files):
+
+            # Report progress
+            worker_PEF.progressText.emit("Writting animation type " + str(i+1) + " (" + str(j+1) + "/" + str(num_animation_files) + ")")
+            start_progress += sub_sub_sub_step_progress
+            worker_PEF.progressValue.emit(start_progress)
+
             # Animation file
             if animation_files[j][0].modified:
                 with open(animation_files[j][0].path, mode="wb") as file:
@@ -361,6 +399,12 @@ def write_single_character_parameters(main_window):
 
     # Save all character info
     with open(IPV.character_i_path, mode="rb+") as file:
+
+        # Report progress
+        worker_PEF.progressText.emit("Writting character info")
+        start_progress += sub_step_progress
+        worker_PEF.progressValue.emit(start_progress)
+
         # Speed of charging
         file.write(struct.pack('>f', main_window.speed_of_charging_value.value()))
         file.write(struct.pack('>f', main_window.speed_of_charging_value_2.value()))
@@ -423,7 +467,14 @@ def write_single_character_parameters(main_window):
         # Move to position 208 where the first camera cutscene starts
         file.seek(IPV.position_camera_cutscene)
 
-        for i in range(0, len(IPV.camera_types_cutscene)):
+        num_cameras = len(IPV.camera_types_cutscene)
+        sub_sub_step_progress = sub_step_progress / num_cameras
+        for i in range(0, num_cameras):
+
+            # Report progress
+            worker_PEF.progressText.emit("Writting camera " + str(i+1))
+            start_progress += sub_sub_step_progress
+            worker_PEF.progressValue.emit(start_progress)
 
             camera_cutscene = main_window.camera_type_key.itemData(i)
 
@@ -438,7 +489,13 @@ def write_single_character_parameters(main_window):
     # Save all blast info
     with open(IPV.blast_i_path, mode="rb+") as file:
 
+        sub_sub_step_progress = sub_step_progress / 14
         for i in range(0, 14):
+
+            # Report progress
+            worker_PEF.progressText.emit("Writting blast " + str(i+1))
+            start_progress += sub_sub_step_progress
+            worker_PEF.progressValue.emit(start_progress)
 
             blast = main_window.blast_key.itemData(i)
 
@@ -452,16 +509,26 @@ def write_single_character_parameters(main_window):
                 file.seek(IPV.size_between_blast, 1)
 
     # Save all signature ki blast info
+    # Report progress
+    worker_PEF.progressText.emit("Writting signature")
+    start_progress += sub_step_progress
+    worker_PEF.progressValue.emit(start_progress)
     if IPV.signature_ki_blast.modified:
         with open(IPV.signature_ki_blast.path, mode="wb") as file:
             file.write(IPV.signature_ki_blast.data)
 
 
-def read_animation_file(main_window, index_list_view, combo_box_label, number_files_to_load,
+def read_animation_file(worker_PEF, start_progress, step_report, main_window, index_list_view, combo_box_label, number_files_to_load,
                         size_between_animation, size_between_animation_and_effects):
 
     item_data_animation = []
+    sub_step_report = step_report / number_files_to_load
     for i in range(0, number_files_to_load, size_between_animation):
+
+        # Report progress
+        worker_PEF.progressText.emit("Reading " + combo_box_label)
+        start_progress += (sub_step_report * size_between_animation)
+        worker_PEF.progressValue.emit(start_progress)
 
         # Animation instance
         animation = Animation()
@@ -489,115 +556,121 @@ def read_animation_file(main_window, index_list_view, combo_box_label, number_fi
     main_window.animation_type_value.setItemData(main_window.animation_type_value.findText(combo_box_label),
                                                  item_data_animation)
 
+    return start_progress
+
 
 # Read all the animation files
-def read_animation_files(main_window, offset_index):
+def read_animation_files(worker_PEF, start_progress, step_report, main_window, offset_index):
+
+    sub_step_report = step_report / IPV.animations_types.__len__()
 
     # Idle ground
-    read_animation_file(main_window, offset_index, "Idle ground", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, offset_index, "Idle ground", 1, 1, 363)
     # Idle fly
-    read_animation_file(main_window, 1 + offset_index, "Idle fly", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 1 + offset_index, "Idle fly", 1, 1, 363)
     # Charge (in, loop)
-    read_animation_file(main_window, 2 + offset_index, "Charge", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 2 + offset_index, "Charge", 2, 1, 363)
     # Charge max
-    read_animation_file(main_window, 4 + offset_index, "Charge max", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 4 + offset_index, "Charge max", 1, 1, 363)
     # Idle ground tired
-    read_animation_file(main_window, 5 + offset_index, "Idle ground tired", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 5 + offset_index, "Idle ground tired", 1, 1, 363)
     # Idle fly tired
-    read_animation_file(main_window, 6 + offset_index, "Idle fly tired", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 6 + offset_index, "Idle fly tired", 1, 1, 363)
     # Dash
-    read_animation_file(main_window, 52 + offset_index, "Dash", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 52 + offset_index, "Dash", 1, 1, 363)
     # Rush attack ground
-    read_animation_file(main_window, 66 + offset_index, "Rush attack ground", 1, 1, 363)
-    read_animation_file(main_window, 67 + offset_index, "Rush attack ground 2", 1, 1, 363)
-    read_animation_file(main_window, 68 + offset_index, "Rush attack ground 3", 1, 1, 363)
-    read_animation_file(main_window, 69 + offset_index, "Rush attack ground 4", 1, 1, 363)
-    read_animation_file(main_window, 70 + offset_index, "Rush attack ground 5", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 66 + offset_index, "Rush attack ground", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 67 + offset_index, "Rush attack ground 2", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 68 + offset_index, "Rush attack ground 3", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 69 + offset_index, "Rush attack ground 4", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 70 + offset_index, "Rush attack ground 5", 1, 1, 363)
     # Rush attack fly
-    read_animation_file(main_window, 71 + offset_index, "Rush attack fly", 1, 1, 363)
-    read_animation_file(main_window, 72 + offset_index, "Rush attack fly 2", 1, 1, 363)
-    read_animation_file(main_window, 73 + offset_index, "Rush attack fly 3", 1, 1, 363)
-    read_animation_file(main_window, 74 + offset_index, "Rush attack fly 4", 1, 1, 363)
-    read_animation_file(main_window, 75 + offset_index, "Rush attack fly 5", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 71 + offset_index, "Rush attack fly", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 72 + offset_index, "Rush attack fly 2", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 73 + offset_index, "Rush attack fly 3", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 74 + offset_index, "Rush attack fly 4", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 75 + offset_index, "Rush attack fly 5", 1, 1, 363)
     # Smash attack
-    read_animation_file(main_window, 76 + offset_index, "Smash attack left", 3, 1, 363)
-    read_animation_file(main_window, 79 + offset_index, "Smash attack right", 3, 1, 363)
-    read_animation_file(main_window, 82 + offset_index, "Smash attack 2", 3, 1, 363)
-    read_animation_file(main_window, 85 + offset_index, "Smash attack 3", 1, 1, 363)
-    read_animation_file(main_window, 86 + offset_index, "Smash attack 4", 3, 1, 363)
-    read_animation_file(main_window, 89 + offset_index, "Smash attack high", 3, 1, 363)
-    read_animation_file(main_window, 92 + offset_index, "Smash attack low", 3, 1, 363)
-    read_animation_file(main_window, 95 + offset_index, "Finish attack teleport", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 76 + offset_index, "Smash attack left", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 79 + offset_index, "Smash attack right", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 82 + offset_index, "Smash attack 2", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 85 + offset_index, "Smash attack 3", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 86 + offset_index, "Smash attack 4", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 89 + offset_index, "Smash attack high", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 92 + offset_index, "Smash attack low", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 95 + offset_index, "Finish attack teleport", 2, 1, 363)
     # Charge attack
-    read_animation_file(main_window, 97 + offset_index,  "Charge attack", 3, 1, 363)
-    read_animation_file(main_window, 100 + offset_index, "Charge attack high", 3, 1, 363)
-    read_animation_file(main_window, 103 + offset_index, "Charge attack low", 3, 1, 363)
-    read_animation_file(main_window, 106 + offset_index, "Charge attack left", 3, 1, 363)
-    read_animation_file(main_window, 109 + offset_index, "Charge attack right", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 97 + offset_index,  "Charge attack", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 100 + offset_index, "Charge attack high", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 103 + offset_index, "Charge attack low", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 106 + offset_index, "Charge attack left", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 109 + offset_index, "Charge attack right", 3, 1, 363)
     # Dash attack
-    read_animation_file(main_window, 112 + offset_index, "Dash attack", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 112 + offset_index, "Dash attack", 3, 1, 363)
     # Dash charge attack
-    read_animation_file(main_window, 115 + offset_index, "Dash charge attack", 3, 1, 363)
-    read_animation_file(main_window, 118 + offset_index, "Dash charge attack high", 3, 1, 363)
-    read_animation_file(main_window, 121 + offset_index, "Dash charge attack low", 3, 1, 363)
-    read_animation_file(main_window, 124 + offset_index, "Dash charge attack left", 3, 1, 363)
-    read_animation_file(main_window, 127 + offset_index, "Dash charge attack right", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 115 + offset_index, "Dash charge attack", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 118 + offset_index, "Dash charge attack high", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 121 + offset_index, "Dash charge attack low", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 124 + offset_index, "Dash charge attack left", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 127 + offset_index, "Dash charge attack right", 3, 1, 363)
     # Shot ki
-    read_animation_file(main_window, 130 + offset_index, "Shot Ki left hand", 3, 1, 363)
-    read_animation_file(main_window, 133 + offset_index, "Shot Ki right hand", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 130 + offset_index, "Shot Ki left hand", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 133 + offset_index, "Shot Ki right hand", 3, 1, 363)
     # Charge Shot ki
-    read_animation_file(main_window, 136 + offset_index, "Charge shot Ki", 3, 1, 363)
-    read_animation_file(main_window, 139 + offset_index, "Charge shot Ki high", 3, 1, 363)
-    read_animation_file(main_window, 142 + offset_index, "Charge shot Ki low", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 136 + offset_index, "Charge shot Ki", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 139 + offset_index, "Charge shot Ki high", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 142 + offset_index, "Charge shot Ki low", 3, 1, 363)
     # Shot ki while moving
-    read_animation_file(main_window, 145 + offset_index, "Shot Ki moving forward", 1, 1, 363)
-    read_animation_file(main_window, 146 + offset_index, "Shot Ki moving left", 1, 1, 363)
-    read_animation_file(main_window, 147 + offset_index, "Shot Ki moving right", 1, 1, 363)
-    read_animation_file(main_window, 148 + offset_index, "Shot Ki moving back", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 145 + offset_index, "Shot Ki moving forward", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 146 + offset_index, "Shot Ki moving left", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 147 + offset_index, "Shot Ki moving right", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 148 + offset_index, "Shot Ki moving back", 1, 1, 363)
     # Charged shot ki while moving
-    read_animation_file(main_window, 149 + offset_index, "Charged shot Ki moving forward", 3, 1, 363)
-    read_animation_file(main_window, 152 + offset_index, "Charged shot Ki moving left", 3, 1, 363)
-    read_animation_file(main_window, 155 + offset_index, "Charged shot Ki moving right", 3, 1, 363)
-    read_animation_file(main_window, 158 + offset_index, "Charged shot Ki moving back", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 149 + offset_index, "Charged shot Ki moving forward", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 152 + offset_index, "Charged shot Ki moving left", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 155 + offset_index, "Charged shot Ki moving right", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 158 + offset_index, "Charged shot Ki moving back", 3, 1, 363)
     # Jump attack
-    read_animation_file(main_window, 161 + offset_index, "Jump attack", 3, 1, 363)
-    read_animation_file(main_window, 164 + offset_index, "Jump Ki shot left", 1, 1, 363)
-    read_animation_file(main_window, 165 + offset_index, "Jump Ki shot right", 1, 1, 363)
-    read_animation_file(main_window, 166 + offset_index, "Jump charged Ki shot", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 161 + offset_index, "Jump attack", 3, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 164 + offset_index, "Jump Ki shot left", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 165 + offset_index, "Jump Ki shot right", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 166 + offset_index, "Jump charged Ki shot", 3, 1, 363)
     # Throw
-    read_animation_file(main_window, 169 + offset_index, "Throw catch", 1, 1, 363)
-    read_animation_file(main_window, 170 + offset_index, "Throw", 8, 1, 363)
-    read_animation_file(main_window, 178 + offset_index, "Throw wall", 5, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 169 + offset_index, "Throw catch", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 170 + offset_index, "Throw", 8, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 178 + offset_index, "Throw wall", 5, 1, 363)
     # Guard
-    read_animation_file(main_window, 267 + offset_index, "Guard", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 267 + offset_index, "Guard", 1, 1, 363)
     # Transformation
-    read_animation_file(main_window, 308 + offset_index, "Transformation in", 2, 1, 363)
-    read_animation_file(main_window, 310 + offset_index, "Transformation result", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 308 + offset_index, "Transformation in", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 310 + offset_index, "Transformation result", 1, 1, 363)
     # Return
-    read_animation_file(main_window, 311 + offset_index, "Return in", 2, 1, 363)
-    read_animation_file(main_window, 313 + offset_index, "Return out", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 311 + offset_index, "Return in", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 313 + offset_index, "Return out", 1, 1, 363)
     # Fusion
-    read_animation_file(main_window, 316 + offset_index, "Fusion in", 2, 1, 363)
-    read_animation_file(main_window, 318 + offset_index, "Fusion result", 1, 1, 363)
-    read_animation_file(main_window, 319 + offset_index, "Fusion demo", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 316 + offset_index, "Fusion in", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 318 + offset_index, "Fusion result", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 319 + offset_index, "Fusion demo", 2, 1, 363)
     # Potala
-    read_animation_file(main_window, 321 + offset_index, "Potara in", 2, 1, 363)
-    read_animation_file(main_window, 323 + offset_index, "Potara result", 1, 1, 363)
-    read_animation_file(main_window, 324 + offset_index, "Potara demo", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 321 + offset_index, "Potara in", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 323 + offset_index, "Potara result", 1, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 324 + offset_index, "Potara demo", 2, 1, 363)
     # Cutscenes
-    read_animation_file(main_window, 336 + offset_index, "Entry 1", 2, 1, 363)
-    read_animation_file(main_window, 338 + offset_index, "Entry 2", 2, 1, 363)
-    read_animation_file(main_window, 340 + offset_index, "Entry 3", 2, 1, 363)
-    read_animation_file(main_window, 342 + offset_index, "Victory", 2, 1, 363)
-    read_animation_file(main_window, 344 + offset_index, "Lose", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 336 + offset_index, "Entry 1", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 338 + offset_index, "Entry 2", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 340 + offset_index, "Entry 3", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 342 + offset_index, "Victory", 2, 1, 363)
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, 344 + offset_index, "Lose", 2, 1, 363)
 
     # Signature
     # Get the total number of signature spa and spae files that are inside the folder
     number_spa_signature_files = os.listdir(os.path.dirname(main_window.listView_2.model().
                                                             item(IPV.signature_folder_index_list_view,
                                                                  0).text())).__len__()
-    read_animation_file(main_window, IPV.signature_folder_index_list_view + offset_index, "Signature",
+    start_progress = read_animation_file(worker_PEF, start_progress, sub_step_report, main_window, IPV.signature_folder_index_list_view + offset_index, "Signature",
                         number_spa_signature_files, 2, 1)
+
+    return start_progress
 
 
 def export_camera(file_export_path, camera_cutscene):

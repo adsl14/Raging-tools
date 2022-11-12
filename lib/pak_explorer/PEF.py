@@ -1,19 +1,620 @@
+from PyQt5.QtCore import QObject, pyqtSignal
+
 from lib.character_parameters_editor.IPV import IPV
-from lib.character_parameters_editor.REF import read_cs_chip_file
-from lib.character_parameters_editor.IPF import read_single_character_parameters
+from lib.character_parameters_editor.REF import read_cs_chip_file, write_cs_chip_file
+from lib.character_parameters_editor.IPF import read_single_character_parameters, write_single_character_parameters
 from lib.character_parameters_editor.GPF import read_operate_resident_param, \
     open_select_chara_window, read_db_font_pad_ps3, enable_disable_operate_resident_param_values, \
-    enable_disable_db_font_pad_ps3_values, initialize_roster
+    enable_disable_db_font_pad_ps3_values, initialize_roster, write_db_font_pad_ps3, write_operate_resident_param
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.packages import rmtree, re, natsorted, move
-from lib.functions import del_rw
+from lib import functions
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
-from lib.packages import os, functools, stat, QPixmap, QLabel, QStandardItem, QStandardItemModel, QMessageBox
+from lib.packages import os, functools, stat, QPixmap, QLabel, QStandardItem, QStandardItemModel
 from lib.pak_explorer.PEV import PEV
 from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, \
     action_export_2_logic, action_import_2_logic, action_item_pak_explorer
+
+
+# Step 1: Create a worker class
+class WorkerPef(QObject):
+    finished = pyqtSignal()
+    progressValue = pyqtSignal(float)
+    progressText = pyqtSignal(str)
+
+    def load_data_to_pe_cpe(self, main_window):
+
+        # Unpack pak file (pak explorer)
+        # Prepare the list view 2 in order to add the names
+        model = QStandardItemModel()
+        main_window.listView_2.setModel(model)
+        IPV.signature_folder_index_list_view = None
+        PEV.number_files = 0
+
+        # Report progress
+        self.progressText.emit("Unpacking file...")
+        self.progressValue.emit(0.0)
+        unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
+               main_window.listView_2)
+        self.progressValue.emit(50.0)
+
+        main_window.listView_2.setCurrentIndex(main_window.listView_2.model().index(0, 0))
+        PEV.current_selected_subpak_file = main_window.listView_2.model().index(0, 0).row()
+        main_window.listView_2.selectionModel().currentChanged. \
+            connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
+        # Enable the pak explorer
+        main_window.pak_explorer.setEnabled(True)
+        # Add the title
+        main_window.fileNameText_2.setText(os.path.basename(PEV.pak_file_path_original))
+
+        # Read the pak file (character parameters editor)
+        pak_file = open(PEV.pak_file_path, mode="rb")
+
+        # Read the header (STPK)
+        pak_file.seek(32)
+        data = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
+        pak_file.close()
+
+        # Check if the file is the operate_resident_param.pak
+        if data == CPEV.operate_resident_param:
+
+            # reset the values
+            GPV.character_list_edited.clear()
+            GPV.character_list.clear()
+            GPV.chara_selected = 0  # Index of the char selected in the program
+            GPV.operate_resident_param_file = True
+
+            # Read all the data from the files
+            # character_info, transformer_i and skill.dat
+            GPV.resident_character_inf_path = main_window.listView_2.model().item(3, 0).text()
+            GPV.resident_transformer_i_path = main_window.listView_2.model().item(11, 0).text()
+            GPV.resident_skill_path = main_window.listView_2.model().item(16, 0).text()
+            subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
+            subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
+            subpak_file_skill = open(GPV.resident_skill_path, mode="rb")
+            # Moves to the position 4 in the skill file since there starts the information for the first character
+            subpak_file_skill.seek(4)
+
+            # Read the data from the files and store the parameters
+            start_progress = 50.0
+            step_progress = 50.0 / 100.0
+            for i in range(0, 100):
+
+                # Report progress
+                self.progressText.emit("Reading character " + str(i))
+                start_progress += step_progress
+                self.progressValue.emit(start_progress)
+
+                # Create a Character object
+                character = Character()
+
+                # Store the positions where the information is located
+                character.position_visual_parameters = i * GPV.sizeVisualParameters
+                character.position_trans = i * GPV.sizeTrans
+
+                # Store the information in the object and append to a list
+                read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i,
+                                            subpak_file_skill)
+                GPV.character_list.append(character)
+
+            # Close the files
+            subpak_file_character_inf.close()
+            subpak_file_transformer_i.close()
+            subpak_file_skill.close()
+
+            # We're changing the character in the main panel (avoid combo box code)
+            CPEV.change_character = True
+
+            # Initialize main roster
+            initialize_roster(main_window)
+
+            # Get the values for the fist character of the list
+            character_zero = GPV.character_list[0]
+
+            # Show the health
+            main_window.health_value.setValue(character_zero.health)
+
+            # Show the camera size
+            main_window.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
+            main_window.camera_size_idle_value.setValue(character_zero.camera_size[1])
+
+            # Show the hit box
+            main_window.hit_box_value.setValue(character_zero.hit_box)
+
+            # Show the aura size
+            main_window.aura_size_idle_value.setValue(character_zero.aura_size[0])
+            main_window.aura_size_dash_value.setValue(character_zero.aura_size[1])
+            main_window.aura_size_charge_value.setValue(character_zero.aura_size[2])
+
+            # Show the color lightnings parameter
+            main_window.color_lightning_value.setCurrentIndex(main_window.color_lightning_value.findData
+                                                              (character_zero.color_lightning))
+
+            # Show the glow/lightnings parameter
+            main_window.glow_lightning_value.setCurrentIndex(main_window.glow_lightning_value.findData
+                                                             (character_zero.glow_lightning))
+
+            # Show the transform panel
+            main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                       str(character_zero.transformations[0]).zfill(
+                                                                           3) + ".png")))
+            main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                            main_window=main_window,
+                                                                            index=character_zero.transformations[0],
+                                                                            trans_slot_panel_index=0)
+            main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                       str(character_zero.transformations[1]).zfill(
+                                                                           3) + ".png")))
+            main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                            main_window=main_window,
+                                                                            index=character_zero.transformations[1],
+                                                                            trans_slot_panel_index=1)
+            main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                       str(character_zero.transformations[2]).zfill(
+                                                                           3) + ".png")))
+            main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                            main_window=main_window,
+                                                                            index=character_zero.transformations[2],
+                                                                            trans_slot_panel_index=2)
+            main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                       str(character_zero.transformations[3]).zfill(
+                                                                           3) + ".png")))
+            main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                            main_window=main_window,
+                                                                            index=character_zero.transformations[3],
+                                                                            trans_slot_panel_index=3)
+
+            # Show the transformation parameter
+            main_window.transEffectValue.setCurrentIndex(main_window.transEffectValue.findData
+                                                         (character_zero.transformation_effect))
+
+            # Show the transformation partner
+            main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                         str(character_zero.transformation_partner).zfill(3)
+                                                                         + ".png")))
+            main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                              main_window=main_window,
+                                                                              index=character_zero.transformation_partner,
+                                                                              transformation_partner_flag=True)
+
+            # Show amount ki per transformation
+            main_window.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
+            main_window.amountKi_trans2_value.setValue(character_zero.amount_ki_transformations[1])
+            main_window.amountKi_trans3_value.setValue(character_zero.amount_ki_transformations[2])
+            main_window.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
+
+            # Show Animation per transformation
+            main_window.trans1_animation_value.setCurrentIndex(main_window.trans1_animation_value.findData
+                                                               (character_zero.transformations_animation[0]))
+            main_window.trans2_animation_value.setCurrentIndex(main_window.trans2_animation_value.findData
+                                                               (character_zero.transformations_animation[1]))
+            main_window.trans3_animation_value.setCurrentIndex(main_window.trans3_animation_value.findData
+                                                               (character_zero.transformations_animation[2]))
+            main_window.trans4_animation_value.setCurrentIndex(main_window.trans4_animation_value.findData
+                                                               (character_zero.transformations_animation[3]))
+
+            # Show the fusion panel
+            main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                      str(character_zero.fusions[0]).zfill(3) + ".png")))
+            main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                           main_window=main_window,
+                                                                           index=character_zero.fusions[0],
+                                                                           fusion_slot_panel_index=0)
+            main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                      str(character_zero.fusions[1]).zfill(3) + ".png")))
+            main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                           main_window=main_window,
+                                                                           index=character_zero.fusions[1],
+                                                                           fusion_slot_panel_index=1)
+            main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                      str(character_zero.fusions[2]).zfill(3) + ".png")))
+            main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                           main_window=main_window,
+                                                                           index=character_zero.fusions[2],
+                                                                           fusion_slot_panel_index=2)
+            main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                                                      str(character_zero.fusions[3]).zfill(3) + ".png")))
+            main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                           main_window=main_window,
+                                                                           index=character_zero.fusions[3],
+                                                                           fusion_slot_panel_index=3)
+
+            # Show the fusion partner (trigger)
+            main_window.fusionPartnerTrigger_value.setPixmap(
+                QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                     str(character_zero.fusion_partner[0]).zfill(3)
+                                     + ".png")))
+            main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                       main_window=main_window,
+                                                                                       index=character_zero.fusion_partner
+                                                                                       [0],
+                                                                                       fusion_partner_trigger_flag=True)
+
+            # Show fusion partner visual
+            main_window.fusionPartnerVisual_value.setPixmap(
+                QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
+                                     str(character_zero.fusion_partner[1]).zfill(3)
+                                     + ".png")))
+            main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+                                                                                      main_window=main_window,
+                                                                                      index=character_zero.
+                                                                                      fusion_partner[1],
+                                                                                      fusion_partner_visual_flag=True)
+
+            # Show amount ki per fusion
+            main_window.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
+            main_window.amountKi_fusion2_value.setValue(character_zero.amount_ki_fusions[1])
+            main_window.amountKi_fusion3_value.setValue(character_zero.amount_ki_fusions[2])
+            main_window.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
+
+            # Show Animation per transformation
+            main_window.fusion1_animation_value.setCurrentIndex(main_window.fusion1_animation_value.findData
+                                                                (character_zero.fusions_animation[0]))
+            main_window.fusion2_animation_value.setCurrentIndex(main_window.fusion2_animation_value.findData
+                                                                (character_zero.fusions_animation[1]))
+            main_window.fusion3_animation_value.setCurrentIndex(main_window.fusion3_animation_value.findData
+                                                                (character_zero.fusions_animation[2]))
+            main_window.fusion4_animation_value.setCurrentIndex(main_window.fusion4_animation_value.findData
+                                                                (character_zero.fusions_animation[3]))
+
+            # We're not changing the character in the main panel (play combo box code)
+            CPEV.change_character = False
+
+            # Open the tab (character parameters editor)
+            if main_window.tabWidget.currentIndex() != 2:
+                main_window.tabWidget.setCurrentIndex(2)
+
+            # Open the tab operate_resident_param
+            if main_window.tabWidget_2.currentIndex() != 0:
+                main_window.tabWidget_2.setCurrentIndex(0)
+
+            # Enable completely the tab character parameters editor
+            if not main_window.character_parameters_editor.isEnabled():
+                main_window.character_parameters_editor.setEnabled(True)
+
+            # Enable all the buttons (character parameters editor -> operate_resident_param)
+            if not main_window.health.isEnabled():
+                enable_disable_operate_resident_param_values(main_window, True)
+                enable_disable_db_font_pad_ps3_values(main_window, False)
+            if not main_window.operate_resident_param_frame.isEnabled():
+                main_window.operate_resident_param_frame.setEnabled(True)
+
+            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+            if main_window.operate_character_xyz_m_frame.isEnabled():
+                main_window.operate_character_xyz_m_frame.setEnabled(False)
+            # Disable all the buttons (character parameters editor -> cs_chip)
+            if main_window.cs_chip.isEnabled():
+                main_window.cs_chip.setEnabled(False)
+
+        # Check if the file is the db_font_pad_PS3_s.zpak or db_font_pad_X360_s.zpak
+        elif data == CPEV.db_font_pad_PS3_s_d or data == CPEV.db_font_pad_X360_s_d:
+
+            # reset the values
+            GPV.character_list_edited.clear()
+            GPV.character_list.clear()
+            GPV.chara_selected = 0  # Index of the char selected in the program
+            GPV.operate_resident_param_file = False
+
+            # Read all the data from the files
+            GPV.game_resident_character_param = main_window.listView_2.model().item(2, 0).text()
+            subpak_file_resident_character_param = open(GPV.game_resident_character_param, mode="rb")
+
+            # Read the data from the files and store the parameters
+            start_progress = 50.0
+            step_progress = 50.0 / 100.0
+            for i in range(0, 100):
+
+                # Report progress
+                self.progressText.emit("Reading character " + str(i))
+                start_progress += step_progress
+                self.progressValue.emit(start_progress)
+
+                # Create a Character object
+                character = Character()
+
+                # Store the positions where the information is located
+                character.position_resident_character_param = i * GPV.sizeCharacterParam
+
+                # Store the information in the object and append to a list
+                read_db_font_pad_ps3(character, subpak_file_resident_character_param)
+                GPV.character_list.append(character)
+
+            # Close the files
+            subpak_file_resident_character_param.close()
+
+            # We're changing the character in the main panel (avoid combo box code)
+            CPEV.change_character = True
+
+            # Initialize main roster
+            initialize_roster(main_window)
+
+            # Show the aura_type parameter
+            main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData(
+                GPV.character_list[0].aura_type))
+
+            # Show the blast attacks
+            main_window.ico_boost_stick_r_up_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Up"])
+            main_window.ico_boost_stick_r_r_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Right"])
+            main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Down"])
+            main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Left"])
+            main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Push"])
+
+            # Open the tab (character parameters editor)
+            if main_window.tabWidget.currentIndex() != 2:
+                main_window.tabWidget.setCurrentIndex(2)
+
+            # Open the tab operate_resident_param
+            if main_window.tabWidget_2.currentIndex() != 0:
+                main_window.tabWidget_2.setCurrentIndex(0)
+
+            # Enable completely the tab character parameters editor
+            if not main_window.character_parameters_editor.isEnabled():
+                main_window.character_parameters_editor.setEnabled(True)
+
+            # Enable all the buttons (db_font_pad_PS3_s -> game_resident_param)
+            if not main_window.aura_type.isEnabled():
+                enable_disable_operate_resident_param_values(main_window, False)
+                enable_disable_db_font_pad_ps3_values(main_window, True)
+            if not main_window.operate_resident_param_frame.isEnabled():
+                main_window.operate_resident_param_frame.setEnabled(True)
+
+            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+            if main_window.operate_character_xyz_m_frame.isEnabled():
+                main_window.operate_character_xyz_m_frame.setEnabled(False)
+            # Disable all the buttons (character parameters editor -> cs_chip)
+            if main_window.cs_chip.isEnabled():
+                main_window.cs_chip.setEnabled(False)
+
+            # We're not changing the character in the main panel (play combo box code)
+            CPEV.change_character = False
+
+        # Check if the file is an operate_character_xyz_m type
+        elif re.search(CPEV.operate_character_xyz_m_regex, data):
+
+            # Save the id of the character to the character parameters editor tab
+            CPEV.file_character_id = data.split("_")[2]
+
+            # We're changing the character (avoid combo box code)
+            CPEV.change_character = True
+
+            # Read all the data from the files and store it in the global_character from IPV.
+            read_single_character_parameters(self, 50.0, 50.0, main_window)
+
+            # We're not changing the character (play combo box code)
+            CPEV.change_character = False
+
+            # Open the tab (character parameters editor)
+            if main_window.tabWidget.currentIndex() != 2:
+                main_window.tabWidget.setCurrentIndex(2)
+
+            # Open the tab operate_character_XXX_m
+            if main_window.tabWidget_2.currentIndex() != 1:
+                main_window.tabWidget_2.setCurrentIndex(1)
+
+            # Enable completely the tab character parameters editor
+            if not main_window.character_parameters_editor.isEnabled():
+                main_window.character_parameters_editor.setEnabled(True)
+
+            # Disable all the buttons (character parameters editor -> operate_resident_param)
+            if main_window.operate_resident_param_frame.isEnabled():
+                main_window.operate_resident_param_frame.setEnabled(False)
+            # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
+            if not main_window.operate_character_xyz_m_frame.isEnabled():
+                main_window.operate_character_xyz_m_frame.setEnabled(True)
+            # Disable all the buttons (character parameters editor -> cs_chip)
+            if main_window.cs_chip.isEnabled():
+                main_window.cs_chip.setEnabled(False)
+
+        # Check if the file is cs_chip
+        elif data == CPEV.cs_chip:
+
+            # reset the values only if we activate again the roster editor tab
+            if not REV.roster_editor_first_activation:
+
+                # Get the slot of the selected character and the slot of the selected transformation
+                slot_chara = REV.slots_characters[REV.slot_chara_selected]
+                slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+                slot_trans = REV.slots_transformations[REV.slot_trans_selected]
+                slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+
+                # Reset only the background color for the slot that was selected before (selecting character in cyan, or
+                # selecting transformation in red)
+                if REV.selecting_character:
+                    # Reset slot in roster window
+                    select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                                       str(slot_chara.
+                                                                                                           chara_id))
+                    select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+                else:
+
+                    select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
+                                                                                                       str(slot_trans.
+                                                                                                           chara_id))
+                    select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+
+                # Reset the rest of the vars
+                main_window.portrait_2.setPixmap(QPixmap(""))
+                REV.slots_edited.clear()
+                for i in range(0, REV.num_slots_characters):
+                    slot = REV.slots_characters[i]
+                    slot.reset()
+                for i in range(0, REV.num_slots_transformations):
+                    slot = REV.slots_transformations[i]
+                    slot.reset()
+                    slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
+
+                REV.slot_chara_selected = -1
+                REV.slot_trans_selected = -1
+                REV.selecting_character = True
+            else:
+                REV.roster_editor_first_activation = False
+
+            # Read all the data from the files and store it in the global vars from REV.
+            read_cs_chip_file(self, 50.0, 50.0, main_window)
+
+            # We're not changing the character in the main panel (play combo box code)
+            CPEV.change_character = False
+
+            # Open the tab (character parameters editor)
+            if main_window.tabWidget.currentIndex() != 2:
+                main_window.tabWidget.setCurrentIndex(2)
+
+            # Open the tab operate_character_XXX_m
+            if main_window.tabWidget_2.currentIndex() != 2:
+                main_window.tabWidget_2.setCurrentIndex(2)
+
+            # Enable completely the tab character parameters editor
+            if not main_window.character_parameters_editor.isEnabled():
+                main_window.character_parameters_editor.setEnabled(True)
+
+            # Disable all the buttons (character parameters editor -> operate_resident_param)
+            if main_window.operate_resident_param_frame.isEnabled():
+                main_window.operate_resident_param_frame.setEnabled(False)
+            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+            if main_window.operate_character_xyz_m_frame.isEnabled():
+                main_window.operate_character_xyz_m_frame.setEnabled(False)
+            # Disable all the buttons (character parameters editor -> cs_chip)
+            if not main_window.cs_chip.isEnabled():
+                main_window.cs_chip.setEnabled(True)
+
+        # Generic pak file
+        else:
+
+            # Open the tab (pak explorer)
+            if main_window.tabWidget.currentIndex() != 1:
+                main_window.tabWidget.setCurrentIndex(1)
+
+            # Disable completely the tab character parameters editor
+            if main_window.character_parameters_editor.isEnabled():
+                main_window.character_parameters_editor.setEnabled(False)
+
+            self.progressText.emit("Unpacked")
+            self.progressValue.emit(100)
+
+        # The thread has finished
+        self.progressText.emit("Finished!")
+        self.finished.emit()
+
+    def save_operate_character_and_pack(self, main_window, path_output_file, separator, separator_size):
+
+        # Save all the info
+        print("Writing values in the file...")
+        write_single_character_parameters(self, main_window, 0.0, 50.0)
+
+        # Pack the files
+        self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
+
+    def save_cs_chip_and_pack(self, path_output_file, separator, separator_size):
+
+        # Save all the info
+        print("Writing values in the file...")
+        write_cs_chip_file(self, 0.0, 50.0)
+
+        # Pack the files
+        self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
+
+    def save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file, separator, separator_size):
+
+        # Values for the progress bar
+        start_progress = 0.0
+        step_progress = 50.0 / len(GPV.character_list_edited)
+        self.progressText.emit("Writting character...")
+
+        # --- operate_resident_param ---
+        if GPV.operate_resident_param_file:
+            # Open the files
+            subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
+            subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
+            subpak_file_skill = open(GPV.resident_skill_path, mode="rb+")
+            subpak_file_skill.seek(4)
+
+            print("Writing values in the file...")
+            # Change the transformations in the file
+            for character in GPV.character_list_edited:
+
+                # Report progress
+                start_progress += step_progress
+                self.progressValue.emit(start_progress)
+
+                # Save all the info for each character
+                write_operate_resident_param(character, subpak_file_character_inf,
+                                             subpak_file_transformer_i, subpak_file_skill)
+
+            # Close the files
+            subpak_file_character_inf.close()
+            subpak_file_transformer_i.close()
+            subpak_file_skill.close()
+
+        # --- db_font_pad_ps3 ---
+        else:
+
+            # Open the files
+            subpak_file_resident_character_param = open(GPV.game_resident_character_param,
+                                                        mode="rb+")
+            print("Writing values in the file...")
+            # Change the values in the file
+            for character in GPV.character_list_edited:
+
+                # Report progress
+                start_progress += step_progress
+                self.progressValue.emit(start_progress)
+
+                # Save all the info for each character
+                write_db_font_pad_ps3(character, subpak_file_resident_character_param)
+
+            # Close the files
+            subpak_file_resident_character_param.close()
+
+        # Pack the files
+        self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
+
+    def pack_and_save_file(self, start_progress, quanty_limit, path_output_file, separator, separator_size):
+
+        # 2 is because the number of tasks (pack and compressing)
+        step_progress = quanty_limit / 2
+
+        # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
+        # to the folder 'old_pak', so we can create a new packed file
+        old_pak_folder = ""
+        if PEV.stpz_file:
+            old_pak_folder = os.path.join(PEV.temp_folder, "old_pak")
+            if not os.path.exists(old_pak_folder):
+                os.mkdir(old_pak_folder)
+            move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
+
+        # Path where we'll save the stpk  packed file
+        path_output_packed_file = os.path.join(PEV.temp_folder,
+                                               os.path.basename(PEV.pak_file_path).split(".")[0])
+
+        # Get the list of files inside the folder unpacked in order to pak the folder
+        filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
+        num_filenames = len(filenames)
+        num_pak_files = int(filenames[-1].split(";")[0]) + 1
+        self.progressText.emit("Packing file...")
+        pack(path_output_packed_file, filenames, num_filenames, num_pak_files, separator_size, separator)
+        start_progress += step_progress
+        self.progressValue.emit(start_progress)
+
+        path_output_packed_file = path_output_packed_file + ".pak"
+
+        # Generate the final file for the game
+        self.progressText.emit("Compressing file...")
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" + path_output_file + "\""
+        os.system('cmd /c ' + args)
+        start_progress += step_progress
+        self.progressValue.emit(start_progress)
+        # Disable read only
+        os.chmod(path_output_file, stat.S_IWRITE)
+
+        # Remove the 'old_pak' folder
+        if PEV.stpz_file:
+            rmtree(old_pak_folder, onerror=functions.del_rw)
+
+        # Finished thread
+        self.progressText.emit("Finished!")
+        self.finished.emit()
 
 
 def initialize_pe(main_window):
@@ -32,450 +633,6 @@ def initialize_pe(main_window):
 
     # Disable pak explorer tab
     main_window.pak_explorer.setEnabled(False)
-
-
-def load_data_to_pe_cpe(main_window):
-
-    # Unpack pak file (pak explorer)
-    # Prepare the list view 2 in order to add the names
-    model = QStandardItemModel()
-    main_window.listView_2.setModel(model)
-    IPV.signature_folder_index_list_view = None
-    PEV.number_files = 0
-    unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
-           main_window.listView_2)
-    main_window.listView_2.setCurrentIndex(main_window.listView_2.model().index(0, 0))
-    PEV.current_selected_subpak_file = main_window.listView_2.model().index(0, 0).row()
-    main_window.listView_2.selectionModel().currentChanged.\
-        connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
-    # Enable the pak explorer
-    main_window.pak_explorer.setEnabled(True)
-    # Add the title
-    main_window.fileNameText_2.setText(os.path.basename(PEV.pak_file_path_original))
-    
-    # Read the pak file (character parameters editor)
-    pak_file = open(PEV.pak_file_path, mode="rb")
-    
-    # Read the header (STPK)
-    pak_file.seek(32)
-    data = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
-    pak_file.close()
-
-    # Check if the file is the operate_resident_param.pak
-    if data == CPEV.operate_resident_param:
-    
-        # reset the values
-        GPV.character_list_edited.clear()
-        GPV.character_list.clear()
-        GPV.chara_selected = 0  # Index of the char selected in the program
-        GPV.operate_resident_param_file = True
-    
-        # Read all the data from the files
-        # character_info, transformer_i and skill.dat
-        GPV.resident_character_inf_path = main_window.listView_2.model().item(3, 0).text()
-        GPV.resident_transformer_i_path = main_window.listView_2.model().item(11, 0).text()
-        GPV.resident_skill_path = main_window.listView_2.model().item(16, 0).text()
-        subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
-        subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
-        subpak_file_skill = open(GPV.resident_skill_path, mode="rb")
-        # Moves to the position 4 in the skill file since there starts the information for the first character
-        subpak_file_skill.seek(4)
-    
-        # Read the data from the files and store the parameters
-        for i in range(0, 100):
-            # Create a Character object
-            character = Character()
-    
-            # Store the positions where the information is located
-            character.position_visual_parameters = i * GPV.sizeVisualParameters
-            character.position_trans = i * GPV.sizeTrans
-    
-            # Store the information in the object and append to a list
-            read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i,
-                                        subpak_file_skill)
-            GPV.character_list.append(character)
-    
-        # Close the files
-        subpak_file_character_inf.close()
-        subpak_file_transformer_i.close()
-        subpak_file_skill.close()
-    
-        # We're changing the character in the main panel (avoid combo box code)
-        CPEV.change_character = True
-
-        # Initialize main roster
-        initialize_roster(main_window)
-    
-        # Get the values for the fist character of the list
-        character_zero = GPV.character_list[0]
-    
-        # Show the health
-        main_window.health_value.setValue(character_zero.health)
-    
-        # Show the camera size
-        main_window.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
-        main_window.camera_size_idle_value.setValue(character_zero.camera_size[1])
-    
-        # Show the hit box
-        main_window.hit_box_value.setValue(character_zero.hit_box)
-    
-        # Show the aura size
-        main_window.aura_size_idle_value.setValue(character_zero.aura_size[0])
-        main_window.aura_size_dash_value.setValue(character_zero.aura_size[1])
-        main_window.aura_size_charge_value.setValue(character_zero.aura_size[2])
-    
-        # Show the color lightnings parameter
-        main_window.color_lightning_value.setCurrentIndex(main_window.color_lightning_value.findData
-                                                          (character_zero.color_lightning))
-    
-        # Show the glow/lightnings parameter
-        main_window.glow_lightning_value.setCurrentIndex(main_window.glow_lightning_value.findData
-                                                         (character_zero.glow_lightning))
-    
-        # Show the transform panel
-        main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(character_zero.transformations[0]).zfill(
-                                                                    3) + ".png")))
-        main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                        main_window=main_window,
-                                                                        index=character_zero.transformations[0],
-                                                                        trans_slot_panel_index=0)
-        main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(character_zero.transformations[1]).zfill(
-                                                                    3) + ".png")))
-        main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                        main_window=main_window,
-                                                                        index=character_zero.transformations[1],
-                                                                        trans_slot_panel_index=1)
-        main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(character_zero.transformations[2]).zfill(
-                                                                    3) + ".png")))
-        main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                        main_window=main_window,
-                                                                        index=character_zero.transformations[2],
-                                                                        trans_slot_panel_index=2)
-        main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                   str(character_zero.transformations[3]).zfill(
-                                                                    3) + ".png")))
-        main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                        main_window=main_window,
-                                                                        index=character_zero.transformations[3],
-                                                                        trans_slot_panel_index=3)
-    
-        # Show the transformation parameter
-        main_window.transEffectValue.setCurrentIndex(main_window.transEffectValue.findData
-                                                     (character_zero.transformation_effect))
-    
-        # Show the transformation partner
-        main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                     str(character_zero.transformation_partner).zfill(3)
-                                                                     + ".png")))
-        main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window, 
-                                                                          main_window=main_window,
-                                                                          index=character_zero.transformation_partner,
-                                                                          transformation_partner_flag=True)
-    
-        # Show amount ki per transformation
-        main_window.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
-        main_window.amountKi_trans2_value.setValue(character_zero.amount_ki_transformations[1])
-        main_window.amountKi_trans3_value.setValue(character_zero.amount_ki_transformations[2])
-        main_window.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
-    
-        # Show Animation per transformation
-        main_window.trans1_animation_value.setCurrentIndex(main_window.trans1_animation_value.findData
-                                                           (character_zero.transformations_animation[0]))
-        main_window.trans2_animation_value.setCurrentIndex(main_window.trans2_animation_value.findData
-                                                           (character_zero.transformations_animation[1]))
-        main_window.trans3_animation_value.setCurrentIndex(main_window.trans3_animation_value.findData
-                                                           (character_zero.transformations_animation[2]))
-        main_window.trans4_animation_value.setCurrentIndex(main_window.trans4_animation_value.findData
-                                                           (character_zero.transformations_animation[3]))
-    
-        # Show the fusion panel
-        main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                  str(character_zero.fusions[0]).zfill(3) + ".png")))
-        main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                       main_window=main_window,
-                                                                       index=character_zero.fusions[0],
-                                                                       fusion_slot_panel_index=0)
-        main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                  str(character_zero.fusions[1]).zfill(3) + ".png")))
-        main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                       main_window=main_window,
-                                                                       index=character_zero.fusions[1],
-                                                                       fusion_slot_panel_index=1)
-        main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                  str(character_zero.fusions[2]).zfill(3) + ".png")))
-        main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                       main_window=main_window,
-                                                                       index=character_zero.fusions[2],
-                                                                       fusion_slot_panel_index=2)
-        main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                  str(character_zero.fusions[3]).zfill(3) + ".png")))
-        main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                       main_window=main_window,
-                                                                       index=character_zero.fusions[3],
-                                                                       fusion_slot_panel_index=3)
-    
-        # Show the fusion partner (trigger)
-        main_window.fusionPartnerTrigger_value.setPixmap(
-            QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                 str(character_zero.fusion_partner[0]).zfill(3)
-                                 + ".png")))
-        main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                   main_window=main_window,
-                                                                                   index=character_zero.fusion_partner
-                                                                                   [0],
-                                                                                   fusion_partner_trigger_flag=True)
-    
-        # Show fusion partner visual
-        main_window.fusionPartnerVisual_value.setPixmap(
-            QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                 str(character_zero.fusion_partner[1]).zfill(3)
-                                 + ".png")))
-        main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                  main_window=main_window,
-                                                                                  index=character_zero.
-                                                                                  fusion_partner[1],
-                                                                                  fusion_partner_visual_flag=True)
-    
-        # Show amount ki per fusion
-        main_window.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
-        main_window.amountKi_fusion2_value.setValue(character_zero.amount_ki_fusions[1])
-        main_window.amountKi_fusion3_value.setValue(character_zero.amount_ki_fusions[2])
-        main_window.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
-    
-        # Show Animation per transformation
-        main_window.fusion1_animation_value.setCurrentIndex(main_window.fusion1_animation_value.findData
-                                                            (character_zero.fusions_animation[0]))
-        main_window.fusion2_animation_value.setCurrentIndex(main_window.fusion2_animation_value.findData
-                                                            (character_zero.fusions_animation[1]))
-        main_window.fusion3_animation_value.setCurrentIndex(main_window.fusion3_animation_value.findData
-                                                            (character_zero.fusions_animation[2]))
-        main_window.fusion4_animation_value.setCurrentIndex(main_window.fusion4_animation_value.findData
-                                                            (character_zero.fusions_animation[3]))
-    
-        # We're not changing the character in the main panel (play combo box code)
-        CPEV.change_character = False
-
-        # Open the tab (character parameters editor)
-        if main_window.tabWidget.currentIndex() != 2:
-            main_window.tabWidget.setCurrentIndex(2)
-
-        # Open the tab operate_resident_param
-        if main_window.tabWidget_2.currentIndex() != 0:
-            main_window.tabWidget_2.setCurrentIndex(0)
-
-        # Enable completely the tab character parameters editor
-        if not main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(True)
-    
-        # Enable all the buttons (character parameters editor -> operate_resident_param)
-        if not main_window.health.isEnabled():
-            enable_disable_operate_resident_param_values(main_window, True)
-            enable_disable_db_font_pad_ps3_values(main_window, False)
-        if not main_window.operate_resident_param_frame.isEnabled():
-            main_window.operate_resident_param_frame.setEnabled(True)
-
-        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if main_window.operate_character_xyz_m_frame.isEnabled():
-            main_window.operate_character_xyz_m_frame.setEnabled(False)
-        # Disable all the buttons (character parameters editor -> cs_chip)
-        if main_window.cs_chip.isEnabled():
-            main_window.cs_chip.setEnabled(False)
-
-    # Check if the file is the db_font_pad_PS3_s.zpak or db_font_pad_X360_s.zpak
-    elif data == CPEV.db_font_pad_PS3_s_d or data == CPEV.db_font_pad_X360_s_d:
-
-        # reset the values
-        GPV.character_list_edited.clear()
-        GPV.character_list.clear()
-        GPV.chara_selected = 0  # Index of the char selected in the program
-        GPV.operate_resident_param_file = False
-
-        # Read all the data from the files
-        GPV.game_resident_character_param = main_window.listView_2.model().item(2, 0).text()
-        subpak_file_resident_character_param = open(GPV.game_resident_character_param, mode="rb")
-
-        # Read the data from the files and store the parameters
-        for i in range(0, 100):
-            # Create a Character object
-            character = Character()
-
-            # Store the positions where the information is located
-            character.position_resident_character_param = i * GPV.sizeCharacterParam
-
-            # Store the information in the object and append to a list
-            read_db_font_pad_ps3(character, subpak_file_resident_character_param)
-            GPV.character_list.append(character)
-
-        # Close the files
-        subpak_file_resident_character_param.close()
-
-        # We're changing the character in the main panel (avoid combo box code)
-        CPEV.change_character = True
-
-        # Initialize main roster
-        initialize_roster(main_window)
-
-        # Show the aura_type parameter
-        main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData(
-            GPV.character_list[0].aura_type))
-
-        # Show the blast attacks
-        main_window.ico_boost_stick_r_up_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Up"])
-        main_window.ico_boost_stick_r_r_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Right"])
-        main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Down"])
-        main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Left"])
-        main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Push"])
-
-        # Open the tab (character parameters editor)
-        if main_window.tabWidget.currentIndex() != 2:
-            main_window.tabWidget.setCurrentIndex(2)
-
-        # Open the tab operate_resident_param
-        if main_window.tabWidget_2.currentIndex() != 0:
-            main_window.tabWidget_2.setCurrentIndex(0)
-
-        # Enable completely the tab character parameters editor
-        if not main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(True)
-
-        # Enable all the buttons (db_font_pad_PS3_s -> game_resident_param)
-        if not main_window.aura_type.isEnabled():
-            enable_disable_operate_resident_param_values(main_window, False)
-            enable_disable_db_font_pad_ps3_values(main_window, True)
-        if not main_window.operate_resident_param_frame.isEnabled():
-            main_window.operate_resident_param_frame.setEnabled(True)
-
-        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if main_window.operate_character_xyz_m_frame.isEnabled():
-            main_window.operate_character_xyz_m_frame.setEnabled(False)
-        # Disable all the buttons (character parameters editor -> cs_chip)
-        if main_window.cs_chip.isEnabled():
-            main_window.cs_chip.setEnabled(False)
-
-        # We're not changing the character in the main panel (play combo box code)
-        CPEV.change_character = False
-
-    # Check if the file is an operate_character_xyz_m type
-    elif re.search(CPEV.operate_character_xyz_m_regex, data):
-
-        # Save the id of the character to the character parameters editor tab
-        CPEV.file_character_id = data.split("_")[2]
-
-        # We're changing the character (avoid combo box code)
-        CPEV.change_character = True
-
-        # Read all the data from the files and store it in the global_character from IPV.
-        read_single_character_parameters(main_window)
-
-        # We're not changing the character (play combo box code)
-        CPEV.change_character = False
-
-        # Open the tab (character parameters editor)
-        if main_window.tabWidget.currentIndex() != 2:
-            main_window.tabWidget.setCurrentIndex(2)
-
-        # Open the tab operate_character_XXX_m
-        if main_window.tabWidget_2.currentIndex() != 1:
-            main_window.tabWidget_2.setCurrentIndex(1)
-
-        # Enable completely the tab character parameters editor
-        if not main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(True)
-
-        # Disable all the buttons (character parameters editor -> operate_resident_param)
-        if main_window.operate_resident_param_frame.isEnabled():
-            main_window.operate_resident_param_frame.setEnabled(False)
-        # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if not main_window.operate_character_xyz_m_frame.isEnabled():
-            main_window.operate_character_xyz_m_frame.setEnabled(True)
-        # Disable all the buttons (character parameters editor -> cs_chip)
-        if main_window.cs_chip.isEnabled():
-            main_window.cs_chip.setEnabled(False)
-
-    # Check if the file is cs_chip
-    elif data == CPEV.cs_chip:
-
-        # reset the values only if we activate again the roster editor tab
-        if not REV.roster_editor_first_activation:
-
-            # Get the slot of the selected character and the slot of the selected transformation
-            slot_chara = REV.slots_characters[REV.slot_chara_selected]
-            slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
-            slot_trans = REV.slots_transformations[REV.slot_trans_selected]
-            slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
-
-            # Reset only the background color for the slot that was selected before (selecting character in cyan, or
-            # selecting transformation in red)
-            if REV.selecting_character:
-                # Reset slot in roster window
-                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                                   str(slot_chara.
-                                                                                                       chara_id))
-                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
-            else:
-
-                select_chara_roster_window_label = main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                                   str(slot_trans.
-                                                                                                       chara_id))
-                select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
-
-            # Reset the rest of the vars
-            main_window.portrait_2.setPixmap(QPixmap(""))
-            REV.slots_edited.clear()
-            for i in range(0, REV.num_slots_characters):
-                slot = REV.slots_characters[i]
-                slot.reset()
-            for i in range(0, REV.num_slots_transformations):
-                slot = REV.slots_transformations[i]
-                slot.reset()
-                slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
-            REV.slot_chara_selected = -1
-            REV.slot_trans_selected = -1
-            REV.selecting_character = True
-        else:
-            REV.roster_editor_first_activation = False
-
-        # Read all the data from the files and store it in the global vars from REV.
-        read_cs_chip_file(main_window)
-
-        # We're not changing the character in the main panel (play combo box code)
-        CPEV.change_character = False
-
-        # Open the tab (character parameters editor)
-        if main_window.tabWidget.currentIndex() != 2:
-            main_window.tabWidget.setCurrentIndex(2)
-
-        # Open the tab operate_character_XXX_m
-        if main_window.tabWidget_2.currentIndex() != 2:
-            main_window.tabWidget_2.setCurrentIndex(2)
-
-        # Enable completely the tab character parameters editor
-        if not main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(True)
-
-        # Disable all the buttons (character parameters editor -> operate_resident_param)
-        if main_window.operate_resident_param_frame.isEnabled():
-            main_window.operate_resident_param_frame.setEnabled(False)
-        # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-        if main_window.operate_character_xyz_m_frame.isEnabled():
-            main_window.operate_character_xyz_m_frame.setEnabled(False)
-        # Disable all the buttons (character parameters editor -> cs_chip)
-        if not main_window.cs_chip.isEnabled():
-            main_window.cs_chip.setEnabled(True)
-
-    # Generic pak file
-    else:
-
-        # Open the tab (pak explorer)
-        if main_window.tabWidget.currentIndex() != 1:
-            main_window.tabWidget.setCurrentIndex(1)
-    
-        # Disable completely the tab character parameters editor
-        if main_window.character_parameters_editor.isEnabled():
-            main_window.character_parameters_editor.setEnabled(False)
 
 
 def unpack(path_file, extension, main_temp_folder, list_view_2):
@@ -498,7 +655,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             folder_name = os.path.basename(path_file).split(".")[0]
             folder_path = os.path.join(path_file_without_basename, folder_name)
             if os.path.exists(folder_path):
-                rmtree(folder_path, onerror=del_rw)
+                rmtree(folder_path, onerror=functions.del_rw)
             os.mkdir(folder_path)
 
             # Get the number of subpak files that has the main pak file
@@ -642,50 +799,3 @@ def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, s
     # Write the new pak file in the folder
     with open(path_folder + ".pak", mode="wb") as output_file:
         output_file.write(pak_file)
-
-
-def pack_and_save_file(main_window, path_output_file, separator_size, separator):
-
-    # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
-    # to the folder 'old_pak', so we can create a new packed file
-    old_pak_folder = ""
-    if PEV.stpz_file:
-        old_pak_folder = os.path.join(PEV.temp_folder, "old_pak")
-        if not os.path.exists(old_pak_folder):
-            os.mkdir(old_pak_folder)
-        move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
-
-    # Path where we'll save the stpk  packed file
-    path_output_packed_file = os.path.join(PEV.temp_folder,
-                                           os.path.basename(PEV.pak_file_path).split(".")[0])
-
-    # Get the list of files inside the folder unpacked in order to pak the folder
-    filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
-    num_filenames = len(filenames)
-    num_pak_files = int(filenames[-1].split(";")[0]) + 1
-    pack(path_output_packed_file, filenames, num_filenames, num_pak_files, separator_size, separator)
-
-    path_output_packed_file = path_output_packed_file + ".pak"
-
-    # Generate the final file for the game
-    args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" \
-        + path_output_file + "\""
-    os.system('cmd /c ' + args)
-    # Disable read only
-    os.chmod(path_output_file, stat.S_IWRITE)
-
-    # Remove the 'old_pak' folder
-    if PEV.stpz_file:
-        rmtree(old_pak_folder, onerror=del_rw)
-
-    msg = QMessageBox()
-    msg.setWindowTitle("Message")
-    msg.setWindowIcon(main_window.ico_image)
-    message = "The file were saved and compressed in: <b>" + path_output_file \
-              + "</b><br><br> Do you wish to open the folder?"
-    message_open_saved_files = msg.question(main_window, '', message, msg.Yes | msg.No)
-
-    # If the users click on 'Yes', it will open the path where the files were saved
-    if message_open_saved_files == msg.Yes:
-        # Show the path folder to the user
-        os.system('explorer.exe ' + os.path.dirname(path_output_file).replace("/", "\\"))

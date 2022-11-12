@@ -1,6 +1,6 @@
+from PyQt5.QtCore import QObject, pyqtSignal
 from pyglet.gl import GLException
 
-from lib.design.material_children.material_children import Material_Child_Editor
 from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
@@ -26,7 +26,7 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_import_logic, action_remove_logic, action_export_logic, action_add_logic, action_material_val_changed, \
     action_layer_val_changed, action_type_val_changed, action_texture_val_changed, action_add_material_logic, \
     action_remove_material_logic, action_material_children_logic, action_model_part_val_changed, \
-    action_material_model_part_val_changed, action_item, action_rgb_changed_logic, action_cancel_material_logic, \
+    action_material_model_part_val_changed, show_texture, action_rgb_changed_logic, action_cancel_material_logic, \
     action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic, \
     action_material_export_all_logic, action_material_import_all_logic
 from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
@@ -35,7 +35,1117 @@ from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_fr
 from lib.vram_explorer.functions.xbox_swizzle import process
 
 
-def initialize_ve(main_window, qt_widgets):
+# Step 1: Create a worker class
+class WorkerVef(QObject):
+    finished = pyqtSignal()
+    progressValue = pyqtSignal(float)
+    progressText = pyqtSignal(str)
+
+    def load_spr_vram_file(self, main_window):
+
+        # Reset boolean values
+        VEV.enable_combo_box = False
+        # Reset integer values
+        VEV.unique_temp_name_offset = 0
+        VEV.DbzCharMtrl_offset = 0
+        # Reset combo box values
+        main_window.materialVal.clear()
+
+        main_window.typeVal.clear()
+        main_window.typeVal.addItem("", 0)
+        for layer_effect in VEV.layer_type_effects:
+            main_window.typeVal.addItem(layer_effect, 0)
+
+        main_window.effectVal.clear()
+        main_window.effectVal.addItem("", 0)
+        main_window.textureVal.clear()
+        main_window.textureVal.addItem("", 0)
+        main_window.modelPartVal.clear()
+        main_window.materialModelPartVal.clear()
+        main_window.materialModelPartVal.addItem("", 0)
+        # Reset model list view
+        main_window.listView.model().clear()
+
+        # Get basename from spr_file_path
+        basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
+
+        # Open spr and vram (2 tasks)
+        open_spr_file(self, 0.0, 50.0, main_window, main_window.listView.model(), VEV.spr_file_path)
+        open_vram_file(self, 50.0, 50.00, VEV.vram_file_path)
+
+        # Set the index of the list view to be always the first row when loading a new spr/vram file
+        # We show always the first texture
+        main_window.listView.setCurrentIndex(main_window.listView.model().index(0, 0))
+
+        # Enable the buttons
+        main_window.exportAllButton.setEnabled(True)
+        main_window.importAllButton.setEnabled(True)
+        main_window.importButton.setEnabled(True)
+        main_window.exportButton.setEnabled(True)
+        main_window.removeButton.setEnabled(True)
+        main_window.addButton.setEnabled(True)
+
+        # If the spr holds entries like pshd or vshd (used in maps), we won't enable the texture
+        # adding, removing and the material edition
+        if VEV.enable_spr_scratch:
+            main_window.addButton.setEnabled(True)
+            main_window.removeButton.setEnabled(True)
+        else:
+            main_window.addButton.setEnabled(False)
+            main_window.removeButton.setEnabled(False)
+            VEV.exists_mtrl = False
+
+        # Enable the buttons of material only if the spr holds mtrl section
+        if VEV.exists_mtrl:
+            main_window.materialVal.setEnabled(True)
+            main_window.layerVal.setEnabled(True)
+            main_window.typeVal.setEnabled(True)
+            main_window.effectVal.setEnabled(True)
+            main_window.textureVal.setEnabled(True)
+            main_window.exportMaterialButton.setEnabled(True)
+            main_window.importMaterialButton.setEnabled(True)
+            main_window.exportAllMaterialButton.setEnabled(True)
+            main_window.importAllMaterialButton.setEnabled(True)
+            main_window.addMaterialButton.setEnabled(True)
+            main_window.removeMaterialButton.setEnabled(True)
+            main_window.editMaterialChildrenButton.setEnabled(True)
+
+            main_window.modelPartVal.setEnabled(True)
+            main_window.materialModelPartVal.setEnabled(True)
+
+            # Enable combo box and set the values for the first layer of the first material
+            VEV.enable_combo_box = True
+            action_material_val_changed(main_window)
+            action_model_part_val_changed(main_window)
+
+        else:
+            main_window.materialVal.setEnabled(False)
+            main_window.layerVal.setEnabled(False)
+            main_window.typeVal.setEnabled(False)
+            main_window.effectVal.setEnabled(False)
+            main_window.textureVal.setEnabled(False)
+            main_window.exportMaterialButton.setEnabled(False)
+            main_window.importMaterialButton.setEnabled(False)
+            main_window.exportAllMaterialButton.setEnabled(False)
+            main_window.importAllMaterialButton.setEnabled(False)
+            main_window.addMaterialButton.setEnabled(False)
+            main_window.removeMaterialButton.setEnabled(False)
+            main_window.editMaterialChildrenButton.setEnabled(False)
+
+            main_window.modelPartVal.setEnabled(False)
+            main_window.materialModelPartVal.setEnabled(False)
+
+        # Show the text labels
+        main_window.fileNameText.setText(basename)
+        main_window.fileNameText.setVisible(True)
+        main_window.encodingImageText.setVisible(True)
+        main_window.mipMapsImageText.setVisible(True)
+        main_window.sizeImageText.setVisible(True)
+
+        # Open the tab
+        if main_window.tabWidget.currentIndex() != 0:
+            main_window.tabWidget.setCurrentIndex(0)
+
+        # The thread has finished
+        self.finished.emit()
+
+    def save_spr_vram_file(self, main_window, vram_separator, path_output_file):
+
+        # Default paths
+        spr_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.spr_file_path))
+        vram_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.vram_file_path))
+
+        # Vars used in order to create the spr from scratch
+        num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, vram_name_offset, \
+            vram_data_size = main_window.listView.model().rowCount(), 0, 0, 0, 0, 0, 0, 0
+        string_name_offset = 1
+        string_table_size, data_entry_size, data_offset, data_size = 0, 0, 0, 0
+        entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
+        # Vars used of the mtrl
+        num_material = 0
+        # Vars used for the txan
+        txan_name_offset_assigned = []
+        txan_entry = SprpTypeEntry()
+        # We will save in this class, some special name offsets
+        special_names_dict = {}
+
+        # It will generate the spr from scratch
+        if VEV.enable_spr_scratch:
+
+            # Calculate the step for the progress bar
+            step_report = 100.0 / len(VEV.sprp_file.type_entry)
+            start_progress = 0.0
+            # Get each type entry and write the data
+            for type_entry in VEV.sprp_file.type_entry:
+
+                # ------------------
+                # --- Write TX2D ---
+                # ------------------
+                if b'TX2D' == type_entry:
+                    start_progress, entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
+                        data_entry_size, data, data_size, data_offset, vram_data_size = \
+                        generate_tx2d_entry(self, start_progress, step_report, main_window, vram_file_path_modified, entry_info,
+                                            entry_info_size, entry_count, string_table,
+                                            string_table_size, string_name_offset, data_entry,
+                                            data_entry_size, data, data_size, data_offset,
+                                            vram_separator, num_textures)
+
+                # ------------------
+                # --- Write VSHD ---
+                # ------------------
+                if b'VSHD' == type_entry:
+                    # Get the type entry vshd
+                    vshd_type_entry = VEV.sprp_file.type_entry[b'VSHD']
+
+                    # Get each vshd data entry
+                    sub_step_report = step_report / vshd_type_entry.data_count
+                    for i in range(0, vshd_type_entry.data_count):
+                        # Get the data entry for the VSHD
+                        vshd_data_entry = vshd_type_entry.data_entry[i]
+
+                        # Get the data for the vshd
+                        vshd_data = vshd_data_entry.data_info.data
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + vshd_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each vshd
+                        vshd_data_entry.data_info.new_name_offset = string_name_offset
+                        string_table += b'\x00' + vshd_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(vshd_data_entry.data_info.name)
+
+                        # Write the data_entry for each vshd
+                        data_entry += vshd_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += (data_offset + vshd_data.data_size).to_bytes(4, 'big')
+                        data_entry += vshd_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += vshd_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each vshd
+                        data += vshd_data.data
+                        data += vshd_data.unk0x00
+                        data += vshd_data.data_size.to_bytes(4, 'big')
+                        data += vshd_data.unk0x10
+                        data_size += vshd_data.data_size + vshd_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if vshd_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               vshd_data_entry.data_info, b'VSHD',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'VSHD' + b'\x00\x00\x00\x08' + \
+                                  vshd_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write PSHD ---
+                # ------------------
+                if b'PSHD' == type_entry:
+                    # Get the type entry pshd
+                    pshd_type_entry = VEV.sprp_file.type_entry[b'PSHD']
+
+                    # Get each pshd data entry
+                    sub_step_report = step_report / pshd_type_entry.data_count
+                    for i in range(0, pshd_type_entry.data_count):
+                        # Get the data entry for the PSHD
+                        pshd_data_entry = pshd_type_entry.data_entry[i]
+
+                        # Get the data for the pshd
+                        pshd_data = pshd_data_entry.data_info.data
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + pshd_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each pshd
+                        pshd_data_entry.data_info.new_name_offset = string_name_offset
+                        string_table += b'\x00' + pshd_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(pshd_data_entry.data_info.name)
+
+                        # Write the data_entry for each pshd
+                        data_entry += pshd_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += (data_offset + pshd_data.data_size).to_bytes(4, 'big')
+                        data_entry += pshd_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += pshd_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each vshd
+                        data += pshd_data.data
+                        data += pshd_data.unk0x00
+                        data += pshd_data.data_size.to_bytes(4, 'big')
+                        data_size += pshd_data.data_size + pshd_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if pshd_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               pshd_data_entry.data_info, b'PSHD',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'PSHD' + b'\x00\x00\x00\x08' + \
+                                  pshd_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write MTRL ---
+                # ------------------
+                if b'MTRL' == type_entry:
+                    num_material = main_window.materialVal.count()
+
+                    # TXAN values (will be used to know if the txan entries name offset are
+                    # already added to the spr)
+                    if b'TXAN' in VEV.sprp_file.type_entry:
+                        txan_entry = VEV.sprp_file.type_entry[b"TXAN"]
+                        for _ in range(0, txan_entry.data_count):
+                            txan_name_offset_assigned.append(False)
+
+                    # Write each material
+                    sub_step_report = step_report / num_material
+                    for i in range(0, num_material):
+                        # Get the material from the tool
+                        mtrl_data_entry = main_window.materialVal.itemData(i)
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + mtrl_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each material
+                        mtrl_data_entry.data_info.new_name_offset = string_name_offset
+                        string_table += b'\x00' + mtrl_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(mtrl_data_entry.data_info.name)
+
+                        # Write the data_entry for each material
+                        data_entry += mtrl_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        mtrl_data_entry.data_info.new_name_offset = string_name_offset
+                        data_entry += mtrl_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += mtrl_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += mtrl_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # The child offset will be calculated later
+
+                        # Write the data for each material
+                        mtrl_info = mtrl_data_entry.data_info.data
+                        data += mtrl_info.unk_00
+                        for layer in mtrl_info.layers:
+
+                            # Assing to the spr, the layer type
+                            if layer.layer_name == "":
+                                data += b'\00\00\00\00'
+                            else:
+                                # The special name wasn't added to the string name, so the name
+                                # offset will be calculated
+                                if layer.layer_name not in special_names_dict:
+                                    # Write the name for the special name
+                                    special_names_dict[layer.layer_name] = 1 + string_table_size
+                                    string_table += b'\x00' + layer.layer_name.encode('utf-8')
+                                    string_table_size += 1 + len(layer.layer_name)
+
+                                data += special_names_dict[layer.layer_name].to_bytes(4, 'big')
+
+                            # Search for the texture assigned to the material
+                            if layer.source_name_offset == 0:
+                                data += b'\00\00\00\00'
+                            else:
+                                # Search the texture
+                                found, data = search_texture(main_window, data, layer.source_name_offset,
+                                                             num_textures)
+                                # Search in the TXAN entries
+                                if not found:
+                                    for j in range(0, txan_entry.data_count):
+                                        txan_data_entry = txan_entry.data_entry[j]
+                                        if txan_data_entry.data_info.name_offset == layer. \
+                                                source_name_offset:
+                                            # The TXAN wasn't added to the string name, so the name
+                                            # offset will be calculated
+                                            if not txan_name_offset_assigned[j]:
+                                                name = txan_data_entry.data_info.name + \
+                                                       ("." + txan_data_entry.data_info.extension
+                                                        if txan_data_entry.data_info.extension else "")
+                                                txan_data_entry.data_info.new_name_offset = \
+                                                    1 + string_table_size
+                                                string_table += b'\x00' + name.encode('utf-8')
+                                                string_table_size += 1 + len(name)
+                                                txan_name_offset_assigned[j] = True
+                                            data += txan_data_entry.data_info.new_name_offset. \
+                                                to_bytes(4, 'big')
+                                            found = True
+                                            break
+                                # If we didn't find anything, we add it to the special names var.
+                                if not found:
+                                    # The special name wasn't added to the string name, so the name
+                                    # offset will be calculated
+                                    if layer.source_name not in special_names_dict:
+                                        # Write the name for the special name
+                                        special_names_dict[layer.source_name] = 1 + string_table_size
+                                        string_table += b'\x00' + layer.source_name.encode('utf-8')
+                                        string_table_size += 1 + len(layer.source_name)
+
+                                    data += special_names_dict[layer.source_name].to_bytes(4, 'big')
+
+                        data_size += mtrl_data_entry.data_info.data_size
+
+                        # Write the children material (if any)
+                        if mtrl_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               mtrl_data_entry.data_info, b'MTRL',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\00\00\00\00'
+                        data_entry += b'\00\00\00\00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'MTRL' + b'\x00\x00\x00\x08' + num_material.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write SHAP ---
+                # ------------------
+                if b'SHAP' == type_entry:
+                    # Get the type entry shap
+                    shap_type_entry = VEV.sprp_file.type_entry[b'SHAP']
+
+                    # Get each shape data entry
+                    sub_step_report = step_report / shap_type_entry.data_count
+                    for i in range(0, shap_type_entry.data_count):
+                        # Get the data entry for the SHAP
+                        shap_data_entry = shap_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + shap_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each shape
+                        shap_data_entry.data_info.new_name_offset = string_name_offset
+                        string_table += b'\x00' + shap_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(shap_data_entry.data_info.name)
+
+                        # Write the data_entry for each shape
+                        data_entry += shap_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += shap_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += shap_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each shape
+                        shap_info = shap_data_entry.data_info.data
+                        data += shap_info.data
+                        data_size += shap_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if shap_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               shap_data_entry.data_info, b'SHAP',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'SHAP' + b'\x00\x00\x00\x05' + \
+                                  shap_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write VBUF ---
+                # ------------------
+                if b'VBUF' == type_entry:
+                    # Get the type entry vbuf
+                    vbuf_type_entry = VEV.sprp_file.type_entry[b'VBUF']
+
+                    # Get each vbuf data entry
+                    sub_step_report = step_report / vbuf_type_entry.data_count
+                    for i in range(0, vbuf_type_entry.data_count):
+                        # Get the data entry for the VBUF
+                        vbuf_data_entry = vbuf_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + vbuf_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each vbuf
+                        vbuf_data_entry.data_info.new_name_offset = string_name_offset
+                        string_table += b'\x00' + vbuf_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(vbuf_data_entry.data_info.name)
+
+                        # Write each vertexDecl first
+                        vbuf_info = vbuf_data_entry.data_info.data
+                        data_offset_vertex_decl = data_size
+                        for j in range(0, vbuf_info.decl_count_0):
+
+                            vertex_decl = vbuf_info.vertex_decl[j]
+
+                            # Read all the data
+                            data += vertex_decl.unk0x00
+
+                            # Search what effect is using the vertex declaration for the mesh
+                            # If we don't find anything, we write 0
+                            if vertex_decl.resource_name == "":
+                                data += b'\00\00\00\00'
+                            else:
+                                # The special name wasn't added to the string name, so the name
+                                # offset will be calculated
+                                if vertex_decl.resource_name not in special_names_dict:
+                                    # Write the name for the special name
+                                    special_names_dict[vertex_decl.resource_name] = 1 + \
+                                                                                    string_table_size
+                                    string_table += b'\x00' + vertex_decl.resource_name.encode('utf-8')
+                                    string_table_size += 1 + len(vertex_decl.resource_name)
+
+                                data += special_names_dict[vertex_decl.resource_name].to_bytes(4, 'big')
+
+                            data += vertex_decl.vertex_usage.to_bytes(2, 'big')
+                            data += vertex_decl.index.to_bytes(2, 'big')
+                            data += vertex_decl.vertex_format
+                            data += vertex_decl.stride.to_bytes(2, 'big')
+                            data += vertex_decl.offset.to_bytes(4, 'big')
+                            data_size += 20
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # If we check the size of the vbuf data due to Game Assets Converter
+                        # store the size as 'header + data' instead of 'header'. If the size is
+                        # different from 32, we modify the original size
+                        if vbuf_data_entry.data_info.data_size != 32:
+                            vbuf_data_entry.data_info.data_size = 32
+
+                        # Write the data_entry for each vbuf
+                        data_offset = data_size
+                        data_entry += vbuf_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += vbuf_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += vbuf_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each vbuf
+                        data += vbuf_info.unk0x00
+                        data += vbuf_info.unk0x04
+                        data += vbuf_info.data_offset.to_bytes(4, 'big')
+                        data += vbuf_info.data_size.to_bytes(4, 'big')
+                        data += vbuf_info.vertex_count.to_bytes(4, 'big')
+                        data += vbuf_info.unk0x14
+                        data += vbuf_info.unk0x16
+                        data += vbuf_info.decl_count_0.to_bytes(2, 'big')
+                        data += vbuf_info.decl_count_1.to_bytes(2, 'big')
+                        data += data_offset_vertex_decl.to_bytes(4, 'big')
+                        data_size += vbuf_data_entry.data_info.data_size
+
+                        # Child offset
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'VBUF' + b'\x00\x00\x00\x0A' + \
+                                  vbuf_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write SCNE ---
+                # ------------------
+                if b'SCNE' == type_entry:
+
+                    # Get the type entry scne
+                    scne_type_entry = VEV.sprp_file.type_entry[b'SCNE']
+
+                    # Get each SCNE entry
+                    sub_step_report = step_report / scne_type_entry.data_count
+                    for i in range(0, scne_type_entry.data_count):
+                        scne_data_entry = scne_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + scne_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write children (if any)
+                        if scne_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               scne_data_entry.data_info, b'SCNE',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Reset all the [NODES] children name offset calculated
+                            nodes = scne_data_entry.data_info.child_info[1].child_info
+                            for node in nodes:
+                                if node.name_offset_calculated:
+                                    node.name_offset_calculated = False
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                        # Write the name for the scne
+                        name = "scene_" + main_window.fileNameText.text() + ".mb"
+                        string_table += b'\x00' + name.encode('utf-8')
+                        string_table_size += 1 + len(name)
+
+                        # Write the data_entry
+                        data_entry += scne_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += scne_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += scne_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'SCNE' + b'\x00\x00\x00\x07' + \
+                                  scne_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write BONE ---
+                # ------------------
+                if b'BONE' == type_entry:
+                    # Get the type entry bone
+                    bone_type_entry = VEV.sprp_file.type_entry[b'BONE']
+
+                    # Get each bone data entry
+                    sub_step_report = step_report / bone_type_entry.data_count
+                    for i in range(0, bone_type_entry.data_count):
+                        # Get the data entry for the BONE
+                        bone_data_entry = bone_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + bone_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each bone
+                        string_table += b'\x00' + bone_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(bone_data_entry.data_info.name)
+
+                        # Write the data_entry for each bone
+                        data_entry += bone_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += bone_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += bone_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each bone
+                        data += bone_data_entry.data_info.data
+                        data_size += bone_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if bone_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                    data_child, data_child_size, data_offset = \
+                                    write_children(main_window, num_material, num_textures,
+                                                   bone_data_entry.data_info, b'BONE',
+                                                   string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'BONE' + b'\x00\x00\x00\x03' + \
+                                  bone_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write DRVN ---
+                # ------------------
+                if b'DRVN' == type_entry:
+                    # Get the type entry drvn
+                    drvn_type_entry = VEV.sprp_file.type_entry[b'DRVN']
+
+                    # Get each drvn data entry
+                    sub_step_report = step_report / drvn_type_entry.data_count
+                    for i in range(0, drvn_type_entry.data_count):
+                        # Get the data entry for the DRVN
+                        drvn_data_entry = drvn_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + drvn_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each drvn
+                        name = "driven_" + main_window.fileNameText.text() + ".mb"
+                        string_table += b'\x00' + name.encode('utf-8')
+                        string_table_size += 1 + len(name)
+
+                        # Write the data_entry for each devn
+                        data_entry += drvn_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += drvn_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += drvn_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each drvn
+                        data += drvn_data_entry.data_info.data
+                        data_size += drvn_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if drvn_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               drvn_data_entry.data_info, b'DRVN',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'DRVN' + b'\x00\x00\x00\x01' + \
+                                  drvn_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write TXAN ---
+                # ------------------
+                if b'TXAN' == type_entry:
+                    # Get the type entry txan
+                    txan_type_entry = VEV.sprp_file.type_entry[b'TXAN']
+
+                    # Get each txan data entry
+                    sub_step_report = step_report / txan_type_entry.data_count
+                    for i in range(0, txan_type_entry.data_count):
+                        # Get the data entry for the TXAN
+                        txan_data_entry = txan_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + txan_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the data_entry for each txan
+                        data_entry += txan_type_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+
+                        if txan_name_offset_assigned[i]:
+                            data_entry += txan_data_entry.data_info.new_name_offset.to_bytes(4, 'big')
+                        else:
+                            # Write the name for each txan
+                            string_table += b'\x00' + txan_data_entry.data_info.name.encode('utf-8')
+                            string_table_size += 1 + len(txan_data_entry.data_info.name)
+                            data_entry += string_name_offset.to_bytes(4, 'big')
+                            # Update offset for the string table
+                            string_name_offset = 1 + string_table_size
+
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += txan_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += txan_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each txan
+                        data += txan_data_entry.data_info.data
+                        data_size += txan_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if txan_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               txan_data_entry.data_info, b'TXAN',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'TXAN' + b'\x00\x00\x00\x01' + \
+                                  txan_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
+                # --- Write ANIM ---
+                # ------------------
+                if b'ANIM' == type_entry:
+                    # Get the type entry anim
+                    anim_type_entry = VEV.sprp_file.type_entry[b'ANIM']
+
+                    # Get each anim data entry
+                    sub_step_report = step_report / anim_type_entry.data_count
+                    for i in range(0, anim_type_entry.data_count):
+                        # Get the data entry for the ANIM
+                        anim_data_entry = anim_type_entry.data_entry[i]
+
+                        # Report progress
+                        start_progress += sub_step_report
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + anim_data_entry.data_info.name)
+                        self.progressValue.emit(start_progress)
+
+                        # Write the name for each anim
+                        string_table += b'\x00' + anim_data_entry.data_info.name.encode('utf-8')
+                        string_table_size += 1 + len(anim_data_entry.data_info.name)
+
+                        # Write the data_entry for each anim
+                        data_entry += anim_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += anim_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += anim_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each anim
+                        data += anim_data_entry.data_info.data
+                        data_size += anim_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if anim_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(main_window, num_material, num_textures,
+                                               anim_data_entry.data_info, b'ANIM',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'ANIM' + b'\x00\x00\x00\x03' + \
+                                  anim_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+            # Write the basename, ioram and vram offsets names
+            # If the spr doesn't have an ioram file, we won't write the name on it
+            if VEV.sprp_file.sprp_header.ioram_data_size > 0:
+
+                # Write the xmb extension
+                name_offset = 1 + string_table_size
+                name = main_window.fileNameText.text() + ".xmb"
+                string_table += b'\x00' + name.encode('utf-8')
+                string_table_size += 1 + len(name)
+
+                ioram_name_offset = 1 + string_table_size
+                ioram_data_size = VEV.sprp_file.sprp_header.ioram_data_size
+                name = main_window.fileNameText.text() + ".ioram"
+                string_table += b'\x00' + name.encode('utf-8')
+                string_table_size += 1 + len(name)
+            else:
+
+                # Write the spr extension
+                name_offset = 1 + string_table_size
+                name = main_window.fileNameText.text() + ".spr"
+                string_table += b'\x00' + name.encode('utf-8')
+                string_table_size += 1 + len(name)
+
+                ioram_name_offset = 0
+                ioram_data_size = 0
+            vram_name_offset = 1 + string_table_size
+            name = main_window.fileNameText.text() + ".vram"
+            string_table += b'\x00' + name.encode('utf-8')
+            string_table_size += 1 + len(name)
+
+            # Write the watermark
+            string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
+            string_table_size += 1 + len(VEV.watermark_message)
+
+            # Check if the entry_info, the module of 16 is 0
+            entry_info, entry_info_size, padding_size = check_entry_module(entry_info, entry_info_size,
+                                                                           16)
+
+            # Check if the string_table_size, the module of 16 is 0
+            string_table, string_table_size, padding_size = check_entry_module(string_table,
+                                                                               string_table_size, 16)
+
+            # Create the header
+            header = VEV.sprp_file.sprp_header.data_tag + b'\00\01\00\01' + \
+                entry_count.to_bytes(4, 'big') + b'\00\00\00\00' + name_offset.to_bytes(4, 'big') + \
+                entry_info_size.to_bytes(4, 'big') + \
+                string_table_size.to_bytes(4, 'big') + data_entry_size.to_bytes(4, 'big') + \
+                data_size.to_bytes(4, 'big') + ioram_name_offset.to_bytes(4, 'big') + \
+                ioram_data_size.to_bytes(4, 'big') + vram_name_offset.to_bytes(4, 'big') + \
+                vram_data_size.to_bytes(4, 'big') + b'\00\00\00\00\00\00\00\00\00\00\00\00'
+
+        # The spr output will be a copy from the original one, the difference will be only the
+        # tx2d entry
+        else:
+
+            with open(VEV.spr_file_path, mode='rb') as input_spr_file:
+
+                # Store the entry_info
+                input_spr_file.seek(64)
+                entry_info = input_spr_file.read(VEV.sprp_file.sprp_header.entry_info_size)
+
+                # Store the string table
+                string_table = input_spr_file.read(VEV.sprp_file.sprp_header.string_table_size)
+                string_table_size = VEV.sprp_file.sprp_header.string_table_size
+                # Write the watermark
+                string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
+                string_table_size += 1 + len(VEV.watermark_message)
+                # Check if the string_table_size, the module of 16 is 0
+                string_table, string_table_size, padding_size = check_entry_module(string_table,
+                                                                                   string_table_size,
+                                                                                   16)
+
+                # Calculate the step for the progress bar
+                # Write the data entry
+                # Write the TX2D entry only
+                null, null, null, null, null, null, null, null, null, data, null, null, vram_data_size = \
+                    generate_tx2d_entry(self, 0.0, 100.0, main_window, vram_file_path_modified, entry_info,
+                                        entry_info_size, entry_count, string_table,
+                                        string_table_size, string_name_offset, data_entry,
+                                        data_entry_size, data, data_size, data_offset, vram_separator,
+                                        num_textures)
+                data_entry = input_spr_file.read(VEV.sprp_file.sprp_header.data_info_size)
+
+                # Write the data
+                tx2d_data_size = 48 * num_textures
+                input_spr_file.seek(tx2d_data_size, os.SEEK_CUR)
+                data = data + input_spr_file.read()
+
+            # Write the header
+            header = VEV.sprp_file.sprp_header.data_tag + b'\00\01\00\01' + \
+                VEV.sprp_file.sprp_header.entry_count.to_bytes(4, 'big') + b'\00\00\00\00' + \
+                VEV.sprp_file.sprp_header.name_offset.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.entry_info_size.to_bytes(4, 'big') + \
+                string_table_size.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.data_info_size.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.data_block_size.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.ioram_name_offset.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.ioram_data_size.to_bytes(4, 'big') + \
+                VEV.sprp_file.sprp_header.vram_name_offset.to_bytes(4, 'big') + \
+                vram_data_size.to_bytes(4, 'big') + b'\00\00\00\00\00\00\00\00\00\00\00\00'
+
+        # Write the spr
+        with open(spr_file_path_modified, mode="wb") as output_spr_file:
+            output_spr_file.write(header + entry_info + string_table + data_entry + data)
+
+        # Finish the thread
+        self.finished.emit()
+
+
+def initialize_ve(main_window):
 
     # Buttons
     main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
@@ -93,16 +1203,13 @@ def initialize_ve(main_window, qt_widgets):
     # Create a model for the list view of textures
     model = QStandardItemModel()
     main_window.listView.setModel(model)
-    main_window.listView.selectionModel().currentChanged.connect(lambda: action_item(main_window.listView,
-                                                                 main_window.imageTexture,
-                                                                 main_window.encodingImageText,
-                                                                 main_window.mipMapsImageText,
-                                                                 main_window.sizeImageText))
+    main_window.listView.selectionModel().currentChanged.connect(lambda: show_texture(main_window.listView,
+                                                                                      main_window.imageTexture,
+                                                                                      main_window.encodingImageText,
+                                                                                      main_window.mipMapsImageText,
+                                                                                      main_window.sizeImageText))
 
     # Load the Material children editor window
-    main_window.MaterialChildEditorWindow = qt_widgets.QDialog()
-    main_window.MaterialChildEditorUI = Material_Child_Editor()
-    main_window.MaterialChildEditorUI.setupUi(main_window.MaterialChildEditorWindow)
     main_window.MaterialChildEditorUI.border_color_R_value.valueChanged\
         .connect(lambda: action_rgb_changed_logic(main_window))
     main_window.MaterialChildEditorUI.border_color_G_value.valueChanged\
@@ -117,134 +1224,7 @@ def initialize_ve(main_window, qt_widgets):
         connect(lambda: action_cancel_material_logic(main_window))
 
 
-def load_data_to_ve(main_window):
-
-    # Reset boolean values
-    VEV.enable_combo_box = False
-    # Reset integer values
-    VEV.unique_temp_name_offset = 0
-    VEV.DbzCharMtrl_offset = 0
-    # Reset combo box values
-    main_window.materialVal.clear()
-
-    main_window.typeVal.clear()
-    main_window.typeVal.addItem("", 0)
-    for layer_effect in VEV.layer_type_effects:
-        main_window.typeVal.addItem(layer_effect, 0)
-
-    main_window.effectVal.clear()
-    main_window.effectVal.addItem("", 0)
-    main_window.textureVal.clear()
-    main_window.textureVal.addItem("", 0)
-    main_window.modelPartVal.clear()
-    main_window.materialModelPartVal.clear()
-    main_window.materialModelPartVal.addItem("", 0)
-    # Reset model list view
-    main_window.listView.model().clear()
-
-    # Get basename from spr_file_path
-    basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
-
-    # Open spr and vram
-    open_spr_file(main_window, main_window.listView.model(), VEV.spr_file_path)
-    open_vram_file(VEV.vram_file_path)
-
-    # Set the index of the list view to be always the first row when loading a new spr/vram file
-    main_window.listView.setCurrentIndex(main_window.listView.model().index(0, 0))
-
-    # If the texture encoded is DXT1 or DXT5, we call the show dds function
-    data_entry_0 = VEV.sprp_file.type_entry[b'TX2D'].data_entry[0]
-    if data_entry_0.data_info.data.dxt_encoding != 0:
-        # Create the dds in disk and open it
-        # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
-        # we won't show anything in the tool view
-        if VEV.header_type_spr_file != b'SPR3' or data_entry_0.data_info.data.dxt_encoding != 32:
-            show_dds_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
-                           data_entry_0.data_info.data.width, data_entry_0.data_info.data.height)
-    else:
-        if data_entry_0.data_info.extension != "png":
-            show_bmp_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data,
-                           data_entry_0.data_info.data.width, data_entry_0.data_info.data.height)
-        else:
-            show_bmp_image(main_window.imageTexture, data_entry_0.data_info.data.tx2d_vram.data_unswizzle,
-                           data_entry_0.data_info.data.width, data_entry_0.data_info.data.height)
-
-    # Enable the buttons
-    main_window.exportAllButton.setEnabled(True)
-    main_window.importAllButton.setEnabled(True)
-    main_window.importButton.setEnabled(True)
-    main_window.exportButton.setEnabled(True)
-    main_window.removeButton.setEnabled(True)
-    main_window.addButton.setEnabled(True)
-
-    # If the spr holds entries like pshd or vshd (used in maps), we won't enable the texture
-    # adding, removing and the material edition
-    if VEV.enable_spr_scratch:
-        main_window.addButton.setEnabled(True)
-        main_window.removeButton.setEnabled(True)
-    else:
-        main_window.addButton.setEnabled(False)
-        main_window.removeButton.setEnabled(False)
-        VEV.exists_mtrl = False
-
-    # Enable the buttons of material only if the spr holds mtrl section
-    if VEV.exists_mtrl:
-        main_window.materialVal.setEnabled(True)
-        main_window.layerVal.setEnabled(True)
-        main_window.typeVal.setEnabled(True)
-        main_window.effectVal.setEnabled(True)
-        main_window.textureVal.setEnabled(True)
-        main_window.exportMaterialButton.setEnabled(True)
-        main_window.importMaterialButton.setEnabled(True)
-        main_window.exportAllMaterialButton.setEnabled(True)
-        main_window.importAllMaterialButton.setEnabled(True)
-        main_window.addMaterialButton.setEnabled(True)
-        main_window.removeMaterialButton.setEnabled(True)
-        main_window.editMaterialChildrenButton.setEnabled(True)
-
-        main_window.modelPartVal.setEnabled(True)
-        main_window.materialModelPartVal.setEnabled(True)
-
-        # Enable combo box and set the values for the first layer of the first material
-        VEV.enable_combo_box = True
-        action_material_val_changed(main_window)
-        action_model_part_val_changed(main_window)
-
-    else:
-        main_window.materialVal.setEnabled(False)
-        main_window.layerVal.setEnabled(False)
-        main_window.typeVal.setEnabled(False)
-        main_window.effectVal.setEnabled(False)
-        main_window.textureVal.setEnabled(False)
-        main_window.exportMaterialButton.setEnabled(False)
-        main_window.importMaterialButton.setEnabled(False)
-        main_window.exportAllMaterialButton.setEnabled(False)
-        main_window.importAllMaterialButton.setEnabled(False)
-        main_window.addMaterialButton.setEnabled(False)
-        main_window.removeMaterialButton.setEnabled(False)
-        main_window.editMaterialChildrenButton.setEnabled(False)
-
-        main_window.modelPartVal.setEnabled(False)
-        main_window.materialModelPartVal.setEnabled(False)
-
-    # Show the text labels
-    main_window.fileNameText.setText(basename)
-    main_window.fileNameText.setVisible(True)
-    main_window.encodingImageText.setText(
-        "Encoding: %s" % (get_encoding_name(data_entry_0.data_info.data.dxt_encoding)))
-    main_window.mipMapsImageText.setText("Mipmaps: %d" % data_entry_0.data_info.data.mip_maps)
-    main_window.sizeImageText.setText(
-        "Resolution: %dx%d" % (data_entry_0.data_info.data.width, data_entry_0.data_info.data.height))
-    main_window.encodingImageText.setVisible(True)
-    main_window.mipMapsImageText.setVisible(True)
-    main_window.sizeImageText.setVisible(True)
-
-    # Open the tab
-    if main_window.tabWidget.currentIndex() != 0:
-        main_window.tabWidget.setCurrentIndex(0)
-
-
-def open_spr_file(main_window, model, spr_path):
+def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window, model, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
@@ -278,7 +1258,10 @@ def open_spr_file(main_window, model, spr_path):
         # Create each SPRP_TYPE_ENTRY
         file.seek(VEV.sprp_file.entry_info_base)
         type_entry_offset = 0
+        step_report = quanty_limit_progress / VEV.sprp_file.sprp_header.entry_count
         for i in range(0, VEV.sprp_file.sprp_header.entry_count):
+
+            # Load each sprp_type_entry
             sprp_type_entry = SprpTypeEntry()
             sprp_type_entry.data_type = file.read(VEV.bytes2Read)
             file.seek(4, os.SEEK_CUR)
@@ -287,7 +1270,14 @@ def open_spr_file(main_window, model, spr_path):
             # Create each SPRP_DATA_ENTRY and under that, the SPRP_DATA_INFO
             aux_pointer_type_entry = file.tell()
             file.seek(VEV.sprp_file.data_info_base + type_entry_offset)
+            sub_step_report = step_report / sprp_type_entry.data_count
             for j in range(0, sprp_type_entry.data_count):
+
+                # Report progress
+                start_progress += sub_step_report
+                worker_vef.progressText.emit("Loading spr: reading " + sprp_type_entry.data_type.decode('utf-8') + " entry (" + str(j + 1) + "/" +
+                                             str(sprp_type_entry.data_count) + ")")
+                worker_vef.progressValue.emit(start_progress)
 
                 sprp_data_entry = SprpDataEntry()
                 sprp_data_entry.data_type = file.read(VEV.bytes2Read)
@@ -583,7 +1573,9 @@ def open_spr_file(main_window, model, spr_path):
         VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
 
 
-def open_vram_file(vram_path):
+def open_vram_file(worker_vef, start_progress, quanty_limit_progress, vram_path):
+
+    step_report = quanty_limit_progress / VEV.sprp_file.type_entry[b'TX2D'].data_count
 
     with open(vram_path, mode="rb") as file:
 
@@ -592,6 +1584,11 @@ def open_vram_file(vram_path):
         header_3_1 = "00000000"
         header_3_3 = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000020000000"
         for i in range(0, VEV.sprp_file.type_entry[b'TX2D'].data_count):
+
+            # Report progress
+            start_progress += step_report
+            worker_vef.progressText.emit("Loading vram: reading texture " + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.name)
+            worker_vef.progressValue.emit(start_progress)
 
             # Creating DXT5 and DXT1 heading
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding != 0:
@@ -699,13 +1696,14 @@ def open_vram_file(vram_path):
                       file.tell()))'''
 
 
-def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_size, entry_count, string_table,
-                        string_table_size, string_name_offset, data_entry, data_entry_size, data, data_size,
-                        data_offset, vram_separator, num_textures):
+def generate_tx2d_entry(worker_vef, start_progress, quanty_limit_progress, main_window, vram_path_modified, entry_info, entry_info_size, entry_count,
+                        string_table, string_table_size, string_name_offset, data_entry, data_entry_size, data, data_size, data_offset,
+                        vram_separator, num_textures):
 
     with open(vram_path_modified, mode="wb") as output_vram_file:
 
         # Get each data_entry (TX2D) and store the texture properties
+        step_report = quanty_limit_progress / num_textures
         for i in range(0, num_textures):
 
             # Get the texture from the tool
@@ -713,6 +1711,11 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
 
             # Get the tx2d info
             tx2d_info = tx2d_data_entry.data_info.data
+
+            # Report progress
+            start_progress += step_report
+            worker_vef.progressText.emit("Saving vram: writting texture " + tx2d_data_entry.data_info.name)
+            worker_vef.progressValue.emit(start_progress)
 
             # Store the offset where the texture will be located in vram
             texture_offset = output_vram_file.tell()
@@ -837,7 +1840,7 @@ def generate_tx2d_entry(main_window, vram_path_modified, entry_info, entry_info_
     entry_count += 1
     entry_info_size += 12
 
-    return entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
+    return start_progress, entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
         data_entry_size, data, data_size, data_offset, vram_data_size
 
 
@@ -1810,7 +2813,7 @@ def replace_texture_properties(main_window, data_entry, unk0x00, len_data, width
 # import_file_path -> path where the file is located
 # ask_user -> flag that will activate or deactive a pop up message when the imported texture has differences with
 # the original texture
-def import_texture(main_window, import_file_path, ask_user, show_texture, data_entry):
+def import_texture(main_window, import_file_path, ask_user, show_texture_flag, data_entry):
 
     with open(import_file_path, mode="rb") as file:
         header = file.read(4)
@@ -1885,7 +2888,7 @@ def import_texture(main_window, import_file_path, ask_user, show_texture, data_e
                                        dxt_encoding)
 
             # If the flag is activated, we show the texture
-            if show_texture:
+            if show_texture_flag:
                 try:
                     # Show texture in the program
                     # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
@@ -1977,7 +2980,7 @@ def import_texture(main_window, import_file_path, ask_user, show_texture, data_e
             replace_texture_properties(main_window, data_entry, 2, len_data, width, height, 1, 2804746880, 0)
 
             # If the flag is activated, we show the texture
-            if show_texture:
+            if show_texture_flag:
                 try:
                     # Show texture in the program
                     show_bmp_image(main_window.imageTexture, data, width, height)

@@ -9,7 +9,7 @@ from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.packages import QLabel, QPixmap, functools, os
 
 
-def initialize_cs_chip(main_window, qt_widgets):
+def initialize_cs_chip(main_window):
 
     # Load all the mini portraits (main panel)
     mini_portraits_image_2 = main_window.mainPanel_2.findChildren(QLabel)
@@ -48,9 +48,6 @@ def initialize_cs_chip(main_window, qt_widgets):
         REV.slots_characters.append(slot)
 
     # Load the Select Chara roster window
-    main_window.selectCharaRosterWindow = qt_widgets.QDialog()
-    main_window.selectCharaRosterUI = Select_Chara_Roster()
-    main_window.selectCharaRosterUI.setupUi(main_window.selectCharaRosterWindow)
     mini_portraits_image_select_chara_roster_window = main_window.selectCharaRosterUI.frame.findChildren(QLabel)
     for i in range(0, len(mini_portraits_image_select_chara_roster_window)):
         chara_id = int(mini_portraits_image_select_chara_roster_window[i].objectName().split("_")[-1])
@@ -64,7 +61,8 @@ def initialize_cs_chip(main_window, qt_widgets):
         mini_portraits_image_select_chara_roster_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
 
-def read_cs_chip_file(main_window):
+def read_cs_chip_file(worker_PEF, start_progress, step_report, main_window):
+
     # cs_chip
     REV.cs_chip_path = main_window.listView_2.model().item(0, 0).text()
     # cs_form
@@ -75,7 +73,13 @@ def read_cs_chip_file(main_window):
         with open(REV.cs_form_path, mode="rb") as file_cs_form:
 
             # Get what ID of character will be used in the main roster
+            sub_step_report = step_report / REV.num_slots_characters
             for i in range(0, REV.num_slots_characters):
+
+                # Report progress
+                start_progress += sub_step_report
+                worker_PEF.progressText.emit("Reading character ID: " + str(i))
+                worker_PEF.progressValue.emit(start_progress)
 
                 # get a slot object
                 slot_character = REV.slots_characters[i]
@@ -108,14 +112,20 @@ def read_cs_chip_file(main_window):
                 slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
 
 
-def write_cs_chip_file():
+def write_cs_chip_file(worker_PEF, start_progress, quanty_limit):
 
     # Write the slots that were edited
     with open(REV.cs_chip_path, mode="rb+") as file_cs_chip:
         with open(REV.cs_form_path, mode="rb+") as file_cs_form:
 
             # Get all the slots that were edited
+            step_progress = quanty_limit / len(REV.slots_edited)
+            worker_PEF.progressText.emit("Writing edited characters")
             for slot in REV.slots_edited:
+
+                # Report progress
+                start_progress += step_progress
+                worker_PEF.progressValue.emit(start_progress)
 
                 # Write in cs_chip
                 file_cs_chip.seek(slot.position_cs_chip)

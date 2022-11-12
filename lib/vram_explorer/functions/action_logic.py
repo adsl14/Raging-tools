@@ -9,9 +9,9 @@ from lib.vram_explorer.classes.SPRP.SprpDataInfo import SprpDataInfo
 from lib.vram_explorer.functions.auxiliary import get_encoding_name
 
 
-def action_item(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
+def show_texture(list_view, image_texture, encoding_image_text, mip_maps_image_text, size_image_text):
 
-    current_selected_index = list_view.selectionModel().currentIndex().row()
+    current_selected_index = list_view.currentIndex().row()
 
     # There is no texture to show if the index is negative
     if current_selected_index >= 0:
@@ -144,7 +144,7 @@ def action_import_all_logic(main_window):
         # Message to show
         message = ""
         # Flag that will be used to show the texture modified in the tool
-        show_texture = False
+        show_texture_flag = False
         # Get the current texture selected
         current_selected_texture = main_window.listView.selectionModel().currentIndex().row()
         # Get all the textures name from memory
@@ -155,9 +155,9 @@ def action_import_all_logic(main_window):
 
             # Check if is the texture that the user is currently selected, to show it in the tool
             if i == current_selected_texture:
-                show_texture = True
-            elif show_texture:
-                show_texture = False
+                show_texture_flag = True
+            elif show_texture_flag:
+                show_texture_flag = False
 
             # Get the output extension
             if data_entry.data_info.data.dxt_encoding != 0:
@@ -172,7 +172,7 @@ def action_import_all_logic(main_window):
             # If the tool finds errors, it won't import the texture and will add a message at the end with the errors
             path_file = os.path.join(folder_import_path, texture_name_extension)
             if os.path.exists(path_file):
-                message = message + VEF.import_texture(main_window, path_file, False, show_texture, data_entry)
+                message = message + VEF.import_texture(main_window, path_file, False, show_texture_flag, data_entry)
             else:
                 message = message + "<li>" + texture_name_extension + " not found!" + "</li>"
 

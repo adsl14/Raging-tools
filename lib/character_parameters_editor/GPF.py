@@ -7,11 +7,10 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
     on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic, action_export_signature_button_logic, \
     action_import_signature_button_logic
-from lib.design.select_chara.select_chara import Select_Chara
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
-def initialize_operate_resident_param(main_window, qt_widgets):
+def initialize_operate_resident_param(main_window):
 
     # Load all the mini portraits (main panel)
     GPV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
@@ -154,9 +153,6 @@ def initialize_operate_resident_param(main_window, qt_widgets):
     main_window.fusiPanelText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_fusion_US.png")))
 
     # Load the Select Chara window
-    main_window.selectCharaWindow = qt_widgets.QDialog()
-    main_window.selectCharaUI = Select_Chara()
-    main_window.selectCharaUI.setupUi(main_window.selectCharaWindow)
     GPV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)
     for i in range(0, len(GPV.mini_portraits_image_select_chara_window)):
         label_id_image = GPV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
