@@ -92,8 +92,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBarUI.label.setText(t)
 
     def reset_progress_bar(self):
-        self.thread.finished.connect(lambda: self.progressBarUI.progressBar.setValue(0))
-        self.thread.finished.connect(lambda: self.progressBarUI.label.setText(""))
+        self.thread.finished.connect(lambda: self.report_progress_value(0.0))
+        self.thread.finished.connect(lambda: self.report_progress_text(""))
         self.thread.finished.connect(lambda: self.progressBarWindow.close())
 
     def run_load_data_to_ve(self):

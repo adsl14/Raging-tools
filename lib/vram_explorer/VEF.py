@@ -146,7 +146,7 @@ class WorkerVef(QObject):
         if main_window.tabWidget.currentIndex() != 0:
             main_window.tabWidget.setCurrentIndex(0)
 
-        # The thread has finished
+        # Finish the thread
         self.finished.emit()
 
     def save_spr_vram_file(self, main_window, vram_separator, path_output_file):

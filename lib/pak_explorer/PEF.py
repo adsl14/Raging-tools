@@ -493,8 +493,7 @@ class WorkerPef(QObject):
             self.progressText.emit("Unpacked")
             self.progressValue.emit(100)
 
-        # The thread has finished
-        self.progressText.emit("Finished!")
+        # Finish the thread
         self.finished.emit()
 
     def save_operate_character_and_pack(self, main_window, path_output_file, separator, separator_size):
@@ -506,6 +505,9 @@ class WorkerPef(QObject):
         # Pack the files
         self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
 
+        # Finish the thread
+        self.finished.emit()
+
     def save_cs_chip_and_pack(self, path_output_file, separator, separator_size):
 
         # Save all the info
@@ -514,6 +516,9 @@ class WorkerPef(QObject):
 
         # Pack the files
         self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
+
+        # Finish the thread
+        self.finished.emit()
 
     def save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file, separator, separator_size):
 
@@ -570,6 +575,9 @@ class WorkerPef(QObject):
         # Pack the files
         self.pack_and_save_file(50.0, 50.0, path_output_file, separator, separator_size)
 
+        # Finish the thread
+        self.finished.emit()
+
     def pack_and_save_file(self, start_progress, quanty_limit, path_output_file, separator, separator_size):
 
         # 2 is because the number of tasks (pack and compressing)
@@ -612,8 +620,7 @@ class WorkerPef(QObject):
         if PEV.stpz_file:
             rmtree(old_pak_folder, onerror=functions.del_rw)
 
-        # Finished thread
-        self.progressText.emit("Finished!")
+        # Finish the thread
         self.finished.emit()
 
 
