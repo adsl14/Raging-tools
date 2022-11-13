@@ -1,11 +1,5 @@
-import threading
-
 from PyQt5.QtWidgets import QMessageBox
 
-from lib.character_parameters_editor.GPF import write_db_font_pad_ps3, write_operate_resident_param
-from lib.character_parameters_editor.GPV import GPV
-from lib.character_parameters_editor.IPF import write_single_character_parameters
-from lib.character_parameters_editor.REF import write_cs_chip_file
 from lib.packages import os, stat
 from lib.pak_explorer.PEV import PEV
 
