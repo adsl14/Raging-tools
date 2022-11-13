@@ -4,8 +4,6 @@ from lib.character_parameters_editor.classes.Slot import Slot
 from lib.character_parameters_editor.functions.RE.action_logic import action_change_transformation, \
     action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.RE.auxiliary import search_id
-
-from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.packages import QLabel, QPixmap, functools, os
 
 
