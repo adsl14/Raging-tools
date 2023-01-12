@@ -55,10 +55,12 @@ class WorkerPef(QObject):
         # Read the header (STPK)
         pak_file.seek(32)
         data = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
+        pak_file.seek(176)
+        data_2 = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
         pak_file.close()
 
-        # Check if the file is the operate_resident_param.pak
-        if data == CPEV.operate_resident_param:
+        # Check if the file is the operate_resident_param.pak and is from RB2 (effect_resident_m)
+        if data == CPEV.operate_resident_param and data_2 == CPEV.effect_resident_m:
 
             # reset the values
             GPV.character_list_edited.clear()
