@@ -2243,7 +2243,7 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                     # Update the material offset that the current scne is using
                     scne_material = data_info_child.child_info[0].data
                     for j in range(0, num_material):
-                        # Get the material from the tool
+                        # Search what material is currently using the actual scene node. We will use the materials that are stored from the tool
                         mtrl_data_entry = main_window.materialVal.itemData(j)
                         if mtrl_data_entry.data_info.name_offset == scne_material.name_offset:
 
@@ -2255,18 +2255,15 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                             scne_material.material_info = []
                             material_info_count = 0
                             for layer in mtrl_data_entry.data_info.data.layers:
-                                # We only add to the scene the layers that has a type added
-                                if layer.layer_name != "":
+                                # We only add to the scene the layers that has a name and type added
+                                if layer.layer_name != "" and layer.effect_name != "":
                                     scne_material_info = ScneMaterialInfo()
 
                                     # Get the new offset type for this layer
                                     scne_material_info.name_offset = special_names[layer.layer_name]
 
                                     # Get the new offset for this layer effect
-                                    if layer.effect_name != "":
-                                        scne_material_info.type_offset = special_names[layer.effect_name]
-                                    else:
-                                        scne_material_info.type_offset = 0
+                                    scne_material_info.type_offset = special_names[layer.effect_name]
 
                                     scne_material_info.unk08 = 0
                                     scne_material.material_info.append(scne_material_info)
