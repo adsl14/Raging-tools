@@ -4,12 +4,12 @@ from lib.packages import os
 class CPEV:
 
     # Allowed files
-    operate_resident_param = 'operate_resident_param.pak'
-    effect_resident_m = 'effect_resident_m.pak'
-    operate_character_xyz_m_regex = "operate_character_0[0-9][0-9]_m.pak"
-    cs_chip = "cs_chip.dat"
-    db_font_pad_PS3_s_d = "db_font_pad_PS3.spr"
-    db_font_pad_X360_s_d = "db_font_pad_X360.spr"
+    operate_resident_param = b'operate_resident_param.pak'
+    effect_resident_m = b'effect_resident_m.pak'
+    operate_character_xyz_m_regex = b"operate_character_0[0-9][0-9]_m.pak"
+    cs_chip = b"cs_chip.dat"
+    db_font_pad_PS3_s_d = b"db_font_pad_PS3.spr"
+    db_font_pad_X360_s_d = b"db_font_pad_X360.spr"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")

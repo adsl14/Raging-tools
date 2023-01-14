@@ -54,9 +54,9 @@ class WorkerPef(QObject):
 
         # Read the header (STPK)
         pak_file.seek(32)
-        data = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
+        data = pak_file.read(32).replace(b'\x00', b'')
         pak_file.seek(176)
-        data_2 = pak_file.read(32).replace(b'\x00', b'').decode('utf-8')
+        data_2 = pak_file.read(32).replace(b'\x00', b'')
         pak_file.close()
 
         # Check if the file is the operate_resident_param.pak and is from RB2 (effect_resident_m)
@@ -376,7 +376,7 @@ class WorkerPef(QObject):
         elif re.search(CPEV.operate_character_xyz_m_regex, data):
 
             # Save the id of the character to the character parameters editor tab
-            CPEV.file_character_id = data.split("_")[2]
+            CPEV.file_character_id = data.decode('utf-8').split("_")[2]
 
             # We're changing the character (avoid combo box code)
             CPEV.change_character = True
