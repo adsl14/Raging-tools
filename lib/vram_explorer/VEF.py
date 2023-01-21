@@ -53,11 +53,14 @@ class WorkerVef(QObject):
 
         main_window.typeVal.clear()
         main_window.typeVal.addItem("", 0)
-        for layer_effect in VEV.layer_type_effects:
-            main_window.typeVal.addItem(layer_effect, 0)
+        for layer_type in VEV.layer_type:
+            main_window.typeVal.addItem(layer_type, 0)
 
         main_window.effectVal.clear()
         main_window.effectVal.addItem("", 0)
+        for layer_effect in VEV.layer_effect:
+            main_window.effectVal.addItem(layer_effect, 0)
+
         main_window.textureVal.clear()
         main_window.textureVal.addItem("", 0)
         main_window.modelPartVal.clear()
@@ -1456,6 +1459,7 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
                         # Add the effect of the material in the combobox
                         if main_window.effectVal.findText(vertex_decl.resource_name) == -1:
                             main_window.effectVal.addItem(vertex_decl.resource_name, vertex_decl.resource_name_offset)
+
                         file.seek(aux_pointer_file_vertex)
 
                         # Store the vertex_decl in the array
@@ -1998,6 +2002,10 @@ def read_children(main_window, file, sprp_data_info, type_section):
                     scne_materia_info.type_name, nothing = get_name_from_spr(file,
                                                                              VEV.sprp_file.string_table_base +
                                                                              scne_materia_info.type_offset)
+                    # Add the effect of the material in the combobox. Some effects only can be found in the scene section
+                    if main_window.effectVal.findText(scne_materia_info.type_name) == -1:
+                        main_window.effectVal.addItem(scne_materia_info.type_name, scne_materia_info.type_offset)
+
                     file.seek(aux_pointer_file_scne)
 
                     # Assign to the layer from the material that this scne is using, the effect for that layer
@@ -2255,14 +2263,22 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
                             scne_material.material_info = []
                             material_info_count = 0
                             for layer in mtrl_data_entry.data_info.data.layers:
-                                # We only add to the scene the layers that has a name and type added
+                                # We only add to the scene the layers that has a name and effect added
                                 if layer.layer_name != "" and layer.effect_name != "":
                                     scne_material_info = ScneMaterialInfo()
 
                                     # Get the new offset type for this layer
                                     scne_material_info.name_offset = special_names[layer.layer_name]
 
-                                    # Get the new offset for this layer effect
+                                    # Get the new offset for this layer effect. Some layer effects could be only used in the scne section, so if the offset of the used effect is not calculated
+                                    # previously, we calculate it and add it to the string table
+                                    if layer.effect_name not in special_names:
+                                        special_names[layer.effect_name] = string_name_offset
+                                        string_table_child += b'\x00' + layer.effect_name.encode('utf-8')
+                                        string_name_size = 1 + len(layer.effect_name)
+                                        # Update the offset
+                                        string_table_child_size += string_name_size
+                                        string_name_offset += string_name_size
                                     scne_material_info.type_offset = special_names[layer.effect_name]
 
                                     scne_material_info.unk08 = 0
