@@ -21,7 +21,7 @@ compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</
   <li>To <b><a href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b> for his contributions.</li>
   <li>To <b><a href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b> for his contributions.</li>
   <li>To <b>316austin316</b> for his contributions.</li>
-  <li>To <b>SSJLVegeta</b> for his contributions.</li>
+  <li>To <b><a href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b> for his contributions.</li>
   <li>To <b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b> for his contributions.</li>
   <li>To the <a href=https://discord.gg/JpCvDCgpnb>Raging Blast Modding community</a>.</li>
 </ul>
