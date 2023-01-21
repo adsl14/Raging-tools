@@ -8,9 +8,9 @@ It gathers several tools that were made previously, like [Vram Explorer](https:/
 
 Compatibility list
 ```
-Dragon Ball Raging Blast (PS3 and Xbox 360) -> Only Vram and Pak Explorer
+Dragon Ball Raging Blast (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
 Dragon Ball Raging Blast 2 (PS3 and Xbox 360)
-Dragon Ball Z Ultimate Tenkaichi (PS3 and Xbox 360) -> Only Vram and Pak Explorer
+Dragon Ball Z Ultimate Tenkaichi (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
 ```
 
 Credits:
@@ -28,7 +28,8 @@ compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</
 
 ## Requisites
 
-If you want to run the <b>source code</b>, the required packages are the following:
+<ul> 
+  <li>If you want to run the <b>source code</b>, the required packages are the following:
 
 ```
 natsort 7.1.1
@@ -36,14 +37,12 @@ numpy 1.21.1
 pyglet 1.5.16
 pyqt5 5.15.4
 ```
-
-# IMPORTANT!
-
-<ul>
+  </li>
+  <li>A graphic card that is commpatible with OpenGL 4.0 or higher is required for <i>Vram Explorer</i>.
+  If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher. Otherwise, <i> Vram Explorer </i> will crash when it shows <i>dds</i> textures. You can update Intel drivers <b><a href=https://www.intel.la/content/www/xl/es/support/detect.html>here</a></b>.</li>
   <li>It is highly recomended to place the tool in <i>Program files</i> because when using <i>Pak Explorer</i>, 
-if the path in Windows is very long, the tool will <b>crash!</b>
-Windows has a limit for the path name, so run the tool in a place where the path is not too long.
-<li> If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher. Otherwise, <i> Vram Explorer </i> will crash when it shows <i>.dds</i> textures. You can update the drivers <b><a href=https://www.intel.la/content/www/xl/es/support/detect.html>here</a></b>.
+if the path in Windows is very large, the tool will <b>crash!</b>
+Windows has a limit for the path name, so run the tool in a place where the path is not too long.</li>
 </ul>
 
 ## Vram Explorer
