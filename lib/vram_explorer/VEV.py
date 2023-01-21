@@ -39,9 +39,10 @@ class VEV:
     # Sizes for the material
     rb2_material_child_size = 96
     material_values_size = 112
+    # Layer material types
+    layer_type = ["COLORMAP", "COLORMAP0", "COLORMAP1", "NORMALMAP", "REFLECTMAP", "TOONMAP", "INCANDESCENCEMAP_RAMP", "miScatterColor_RAMP"]
     # Layer material effects
-    layer_type_effects = ["COLORMAP", "COLORMAP0", "COLORMAP1", "NORMALMAP", "REFLECTMAP", "TOONMAP",
-                          "INCANDESCENCEMAP_RAMP", "miScatterColor_RAMP"]
+    layer_effect = ["map1", "damage", "eyeball", "normal"]
 
     # *** vars that need to be reseted when loading a new spr/vram file ***
     # --- SPR vars ---
