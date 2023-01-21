@@ -39,11 +39,12 @@ pyqt5 5.15.4
 
 # IMPORTANT!
 
-It is highly recomended to place the tool in <i>Program files</i> because when using <i>Pak Explorer</i>, 
+<ul>
+  <li>It is highly recomended to place the tool in <i>Program files</i> because when using <i>Pak Explorer</i>, 
 if the path in Windows is very long, the tool will <b>crash!</b>
-
-Windows has a limit for the path name, so run the tool in a place where the path is not too long 
-(<i>Program files</i> for example)
+Windows has a limit for the path name, so run the tool in a place where the path is not too long.
+<li> If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher. Otherwise, <i> Vram Explorer </i> will crash when it shows <i>.dds</i> textures.
+</ul>
 
 ## Vram Explorer
 
