@@ -393,7 +393,8 @@ def write_single_character_parameters(worker_pef, main_window, start_progress, s
             # Animation file
             if animation_files[j][0].modified:
                 with open(animation_files[j][0].path, mode="wb") as file:
-                    file.write(animation_files[j][0].data)
+                    data, size = write_spa_file(animation_files[j][0])
+                    file.write(data)
 
             # Animation effects file
             if animation_files[j][1].modified:
@@ -624,6 +625,7 @@ def read_spa_file(spa_path):
 def write_spa_file(spa_file):
 
     header_data = b''
+    header_size = 0
     bone_entry = b''
     bone_entry_size = 48 * spa_file.spa_header.bone_count
     bone_data = b''
@@ -632,112 +634,115 @@ def write_spa_file(spa_file):
     string_table = b''
     string_table_size = 0
 
-    # Write first all the data
-    for bone_entry_name in spa_file.bone_entries:
-        # Get the bone data
-        bone_entry_data = spa_file.bone_entries[bone_entry_name]
-
-        # Check if the data, the module of 16 is 0
-        bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
-
-        # Write frames
-        # Translation
-        # Update offset (only if there is data)
-        if bone_entry_data.translation_block_count > 0:
-            bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
-            for translation_frame in bone_entry_data.translation_frame_data:
-                bone_data = bone_data + struct.pack('>f', translation_frame)
-                bone_data_size += 4
+    # If there is data within in the spa_file instance, we create the output
+    if spa_file.size > 0:
+        # Write first all the data
+        for bone_entry_name in spa_file.bone_entries:
+            # Get the bone data
+            bone_entry_data = spa_file.bone_entries[bone_entry_name]
 
             # Check if the data, the module of 16 is 0
             bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
-        else:
-            bone_entry_data.translation_frame_offset = 0
 
-        # Rotations
-        # Update offset (only if there is data)
-        if bone_entry_data.rotation_block_count > 0:
-            bone_entry_data.rot_frame_offset = bone_data_start_offset + bone_data_size
-            for rotarion_frame in bone_entry_data.rot_frame_data:
-                bone_data = bone_data + struct.pack('>f', rotarion_frame)
-                bone_data_size += 4
+            # Write frames
+            # Translation
+            # Update offset (only if there is data)
+            if bone_entry_data.translation_block_count > 0:
+                bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
+                for translation_frame in bone_entry_data.translation_frame_data:
+                    bone_data = bone_data + struct.pack('>f', translation_frame)
+                    bone_data_size += 4
 
-            # Check if the data, the module of 16 is 0
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
-        else:
-            bone_entry_data.rot_frame_offset = 0
+                # Check if the data, the module of 16 is 0
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+            else:
+                bone_entry_data.translation_frame_offset = 0
 
-        # Write floats
-        # Translation
-        # Update offset (only if there is data)
-        if bone_entry_data.translation_block_count > 0:
-            bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
-            for translation_float in bone_entry_data.translation_float_data:
-                bone_data = bone_data + struct.pack('>f', translation_float['x'])
-                bone_data = bone_data + struct.pack('>f', translation_float['y'])
-                bone_data = bone_data + struct.pack('>f', translation_float['z'])
-                bone_data = bone_data + struct.pack('>f', translation_float['w'])
-                bone_data_size += 16
+            # Rotations
+            # Update offset (only if there is data)
+            if bone_entry_data.rotation_block_count > 0:
+                bone_entry_data.rot_frame_offset = bone_data_start_offset + bone_data_size
+                for rotarion_frame in bone_entry_data.rot_frame_data:
+                    bone_data = bone_data + struct.pack('>f', rotarion_frame)
+                    bone_data_size += 4
 
-            # Check if the data, the module of 16 is 0
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
-        else:
-            bone_entry_data.translation_float_offset = 0
+                # Check if the data, the module of 16 is 0
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+            else:
+                bone_entry_data.rot_frame_offset = 0
 
-        # Rotation
-        # Update offset (only if there is data)
-        if bone_entry_data.rotation_block_count > 0:
-            bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
-            for rotation_float in bone_entry_data.rot_float_data:
-                bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
-                bone_data_size += 8
-        else:
-            bone_entry_data.rotation_float_offset = 0
+            # Write floats
+            # Translation
+            # Update offset (only if there is data)
+            if bone_entry_data.translation_block_count > 0:
+                bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
+                for translation_float in bone_entry_data.translation_float_data:
+                    bone_data = bone_data + struct.pack('>f', translation_float['x'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['y'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['z'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['w'])
+                    bone_data_size += 16
 
-    # Write the name of the spa
-    string_table_start_offset = bone_data_start_offset + bone_data_size
-    name = spa_file.spa_header.name + "." + spa_file.spa_header.extension
-    string_table +=  name.encode('utf-8') + b'\x00'
-    string_table_size += 1 + len(name)
+                # Check if the data, the module of 16 is 0
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+            else:
+                bone_entry_data.translation_float_offset = 0
 
-    # Once the data is written and we know the size, we can create the spa entirely, We have to, again, loop all the bones
-    for bone_entry_name in spa_file.bone_entries:
-        # Get the bone data
-        bone_entry_data = spa_file.bone_entries[bone_entry_name]
+            # Rotation
+            # Update offset (only if there is data)
+            if bone_entry_data.rotation_block_count > 0:
+                bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
+                for rotation_float in bone_entry_data.rot_float_data:
+                    bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
+                    bone_data_size += 8
+            else:
+                bone_entry_data.rotation_float_offset = 0
 
-        # Write each bone entry
-        bone_entry += (string_table_start_offset + string_table_size).to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unk0x04
-        bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unk0x10
-        bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unk0x1C
-        bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
-        for unk0x28_value in bone_entry_data.unk0x28:
-            bone_entry += unk0x28_value
+        # Write the name of the spa
+        string_table_start_offset = bone_data_start_offset + bone_data_size
+        name = spa_file.spa_header.name + "." + spa_file.spa_header.extension
+        string_table += name.encode('utf-8') + b'\x00'
+        string_table_size += 1 + len(name)
 
-        # Write the name in the string table
-        string_table += bone_entry_name.encode('utf-8') + b'\x00'
-        string_table_size += len(bone_entry_name) + 1
+        # Once the data is written and we know the size, we can create the spa entirely, We have to, again, loop all the bones
+        for bone_entry_name in spa_file.bone_entries:
+            # Get the bone data
+            bone_entry_data = spa_file.bone_entries[bone_entry_name]
 
-    # Write finally the header
-    header_data += spa_file.spa_header.unk0x00
-    header_data += string_table_start_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.unk0x08
-    header_data += struct.pack('>f', spa_file.spa_header.frame_count)
-    header_data += spa_file.spa_header.bone_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.maybe_start_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.scene_nodes_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.scene_nodes_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.camera_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.camera_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.unk0x28
-    header_data += spa_file.spa_header.unk0x2c
+            # Write each bone entry
+            bone_entry += (string_table_start_offset + string_table_size).to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x04
+            bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x10
+            bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x1C
+            bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
+            for unk0x28_value in bone_entry_data.unk0x28:
+                bone_entry += unk0x28_value
 
-    return (header_data + bone_entry + bone_data + string_table), (48 + bone_entry_size + bone_data_size + string_table_size)
+            # Write the name in the string table
+            string_table += bone_entry_name.encode('utf-8') + b'\x00'
+            string_table_size += len(bone_entry_name) + 1
+
+        # Write finally the header
+        header_data += spa_file.spa_header.unk0x00
+        header_data += string_table_start_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.unk0x08
+        header_data += struct.pack('>f', spa_file.spa_header.frame_count)
+        header_data += spa_file.spa_header.bone_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.maybe_start_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.scene_nodes_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.scene_nodes_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.camera_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.camera_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.unk0x28
+        header_data += spa_file.spa_header.unk0x2c
+        header_size = 48
+
+    return (header_data + bone_entry + bone_data + string_table), (header_size + bone_entry_size + bone_data_size + string_table_size)
 
 
 # Read animation spa and spae files at the same time
@@ -907,13 +912,12 @@ def import_camera(camera_cutscene, file):
 
 
 def export_animation(animation_array, file_export_path, animation_type_index):
-    # Get the number of animations files
-    number_anim_files = len(animation_array)
 
-    # The header will have the 'SPAS', 'number of animation files', and the size of each
-    # of one in the same order
-    header_file = bytes(IPV.animations_extension.upper(), encoding='utf-8')
-    header_file = header_file + struct.pack('>I', number_anim_files)
+    # We will calculate the number of files that will be written. Some are stored in memory but they have 0 data inside
+    number_anim_files = 0
+
+    # Prepare all the output
+    header_file = b''
     data_file = b''
 
     # Get the sizes and data from each animation
@@ -925,13 +929,16 @@ def export_animation(animation_array, file_export_path, animation_type_index):
             data = animation_file[animation_type_index].data
             size = animation_file[animation_type_index].size
 
-        header_file = header_file + struct.pack('>I', size)
-        data_file = data_file + data
+        # We add the animation in the file only if there is data
+        if size > 0:
+            header_file = header_file + struct.pack('>I', size)
+            data_file = data_file + data
+            number_anim_files += 1
 
     # Write the header properties and then the data
     with open(file_export_path, mode="wb") as file:
-        # Write the header (SPAS, number of animation files, and sizes)
-        file.write(header_file)
+        # The header will have the 'SPAS', 'number of animation files', and the size of each animation
+        file.write(bytes(IPV.animations_extension.upper(), encoding='utf-8') + struct.pack('>I', number_anim_files) + header_file)
 
         # Write the data
         file.write(data_file)
@@ -961,29 +968,26 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                     return
             else:
 
-                # Get number of animations stored in memory
-                number_anim_memory = len(animation_array)
-
-                # Read the number of files
+                # Read the number of files that are written in the header
                 number_anim_files = int.from_bytes(file.read(4), "big")
 
-                # Get the sizes of each file. While reading we will sum all the sizes to check if the file has
-                # the same data size
+                # Get the sizes of each file in the header. While reading we will sum all the sizes to check if the sizes in the header are exactly the same as the size of
+                # the file data inside
                 sizes_number_of_files = []
-                total_size = 0
+                total_size_file_in_header = 0
 
                 # Read the size of each animation file
                 for _ in range(number_anim_files):
                     size = int.from_bytes(file.read(4), "big")
                     sizes_number_of_files.append(size)
-                    total_size += size
+                    total_size_file_in_header += size
 
-                # The rest of data in the file, is the animations (keyframes and effects) info
+                # The rest of data in the file, is the animations (keyframes and effects) info. We will store the actual size of the data in the file and we will compare them
                 data = file.read()
-                total_size_file = len(data)
+                total_size_file_in_data = len(data)
 
-                # Check if the sizes are the same
-                if total_size != total_size_file:
+                # Check if the sizes in the header of the file and in the rest of the data, is exactly the same
+                if total_size_file_in_header != total_size_file_in_data:
                     if animations_files_error is not None:
                         animations_files_error.append(name_file)
                         return
@@ -995,6 +999,9 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                         msg.setText("Invalid animation file.")
                         msg.exec()
                         return
+
+                # Get number of animations stored in memory
+                number_anim_memory = len(animation_array)
 
                 # If the modified file has a different number of files inside than the original,
                 # we refuse the modified file. With the exception that if the animation that we're modifying is the
@@ -1022,22 +1029,73 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                             # Get each animation file
                             for i in range(0, number_anim_files):
                                 data_index_end = data_index_start + sizes_number_of_files[i]
-                                animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
-                                animation_array[i][animation_type_index].size = sizes_number_of_files[i]
-                                animation_array[i][animation_type_index].modified = True
+
+                                # Spa file
+                                if animation_type_index == 0:
+                                    # We create a temp spa file output in order to reuse the method we created so we can make a spa_file instance
+                                    with open("temp_spa", mode="wb") as file_temp:
+                                        file_temp.write(data[data_index_start:data_index_end])
+                                    spa_file = read_spa_file("temp_spa")
+
+                                    # Modify the spa that is stored in the array memory
+                                    animation_array[i][animation_type_index].spa_header = spa_file.spa_header
+                                    animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].size = spa_file.size
+                                    animation_array[i][animation_type_index].modified = True
+
+                                    # We remove the temporal spa
+                                    os.remove("temp_spa")
+
+                                # spae file
+                                else:
+                                    data_index_end = data_index_start + sizes_number_of_files[i]
+                                    animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
+                                    animation_array[i][animation_type_index].size = sizes_number_of_files[i]
+                                    animation_array[i][animation_type_index].modified = True
+
                                 data_index_start = data_index_end
                             # Reset the rest of the animations
                             for i in range(number_anim_files, number_anim_memory):
-                                animation_array[i][animation_type_index].data = b''
-                                animation_array[i][animation_type_index].size = 0
-                                animation_array[i][animation_type_index].modified = True
+                                # Spa file
+                                if animation_type_index == 0:
+                                    spa_file = SPAFile()
+                                    # Modify the spa that is stored in the array memory
+                                    animation_array[i][animation_type_index].spa_header = spa_file.spa_header
+                                    animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].size = spa_file.size
+                                    animation_array[i][animation_type_index].modified = True
+                                else:
+                                    animation_array[i][animation_type_index].data = b''
+                                    animation_array[i][animation_type_index].size = 0
+                                    animation_array[i][animation_type_index].modified = True
                         else:
                             # Get each animation file
                             for i in range(0, number_anim_memory):
                                 data_index_end = data_index_start + sizes_number_of_files[i]
-                                animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
-                                animation_array[i][animation_type_index].size = sizes_number_of_files[i]
-                                animation_array[i][animation_type_index].modified = True
+
+                                # Spa file
+                                if animation_type_index == 0:
+                                    # We create a temp spa file output in order to reuse the method we created so we can make a spa_file instance
+                                    with open("temp_spa", mode="wb") as file_temp:
+                                        file_temp.write(data[data_index_start:data_index_end])
+                                    spa_file = read_spa_file("temp_spa")
+
+                                    # Modify the spa that is stored in the array memory
+                                    animation_array[i][animation_type_index].spa_header = spa_file.spa_header
+                                    animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].size = spa_file.size
+                                    animation_array[i][animation_type_index].modified = True
+
+                                    # We remove the temporal spa
+                                    os.remove("temp_spa")
+
+                                # spae file
+                                else:
+                                    data_index_end = data_index_start + sizes_number_of_files[i]
+                                    animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
+                                    animation_array[i][animation_type_index].size = sizes_number_of_files[i]
+                                    animation_array[i][animation_type_index].modified = True
+
                                 data_index_start = data_index_end
 
                             # Get a template basename for the brand new files in the signature
@@ -1050,33 +1108,64 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
 
                             # Append brand new animations slots
                             for i in range(number_anim_memory, number_anim_files):
-                                animation_spa = Animation()
-                                animation_spae = Animation()
-                                animation_spa.path = os.path.join(dirname, str(i * 2) + ";" +
-                                                                  template_basename + "TOK_" + str(i) + ".spa")
-                                animation_spae.path = os.path.join(dirname, str((i * 2) + 1) + ";" +
-                                                                   template_basename + "TOK_" + str(i) + ".spae")
                                 data_index_end = data_index_start + sizes_number_of_files[i]
+
+                                # Create empty instances
+                                spa_file = SPAFile()
+                                animation_spae = Animation()
+
                                 # Check if we're importing spa animation
                                 if animation_type_index == 0:
-                                    animation_spa.data = data[data_index_start:data_index_end]
-                                    animation_spa.size = sizes_number_of_files[i]
-                                    animation_spa.modified = True
+                                    # We create a temp spa file output in order to reuse the method we created so we can make a spa_file instance
+                                    with open("temp_spa", mode="wb") as file_temp:
+                                        file_temp.write(data[data_index_start:data_index_end])
+                                    spa_file = read_spa_file("temp_spa")
+
+                                    # Modify the spa that will be stored in the array memory
+                                    spa_file.modified = True
+                                    spa_file.path = os.path.join(dirname, str(i * 2) + ";" + template_basename + "TOK_" + str(i) + ".spa")
+
+                                    # We remove the temporal spa
+                                    os.remove("temp_spa")
                                 # Check if we're importing spae animation
                                 else:
+                                    animation_spae.path = os.path.join(dirname, str((i * 2) + 1) + ";" +
+                                                                       template_basename + "TOK_" + str(i) + ".spae")
                                     animation_spae.data = data[data_index_start:data_index_end]
                                     animation_spae.size = sizes_number_of_files[i]
                                     animation_spae.modified = True
                                 data_index_start = data_index_end
-                                animation_array.append([animation_spa, animation_spae])
+
+                                animation_array.append([spa_file, animation_spae])
                 else:
                     # Get each animation file
                     data_index_start = 0
                     for i in range(0, number_anim_memory):
                         data_index_end = data_index_start + sizes_number_of_files[i]
-                        animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
-                        animation_array[i][animation_type_index].size = sizes_number_of_files[i]
-                        animation_array[i][animation_type_index].modified = True
+
+                        # Spa file
+                        if animation_type_index == 0:
+                            # We create a temp spa file output in order to reuse the method we created so we can make a spa_file instance
+                            with open("temp_spa", mode="wb") as file_temp:
+                                file_temp.write(data[data_index_start:data_index_end])
+                            spa_file = read_spa_file("temp_spa")
+
+                            # Modify the spa that is stored in the array memory
+                            animation_array[i][animation_type_index].spa_header = spa_file.spa_header
+                            animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                            animation_array[i][animation_type_index].size = spa_file.size
+                            animation_array[i][animation_type_index].modified = True
+
+                            # We remove the temporal spa
+                            os.remove("temp_spa")
+
+                        # spae file
+                        else:
+                            data_index_end = data_index_start + sizes_number_of_files[i]
+                            animation_array[i][animation_type_index].data = data[data_index_start:data_index_end]
+                            animation_array[i][animation_type_index].size = sizes_number_of_files[i]
+                            animation_array[i][animation_type_index].modified = True
+
                         data_index_start = data_index_end
 
 
