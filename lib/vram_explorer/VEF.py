@@ -1,6 +1,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from pyglet.gl import GLException
 
+from lib.functions import check_entry_module, get_name_from_file
 from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
@@ -29,8 +30,8 @@ from lib.vram_explorer.functions.action_logic import action_export_all_logic, ac
     action_material_model_part_val_changed, show_texture, action_rgb_changed_logic, action_cancel_material_logic, \
     action_save_material_logic, action_effect_val_changed, action_material_export_logic, action_material_import_logic, \
     action_material_export_all_logic, action_material_import_all_logic
-from lib.vram_explorer.functions.auxiliary import get_encoding_name, get_name_from_spr, create_header, change_endian, \
-    get_dxt_value, fix_bmp_header_data, check_name_is_string_table, check_entry_module, write_separator_vram, \
+from lib.vram_explorer.functions.auxiliary import get_encoding_name, create_header, change_endian, \
+    get_dxt_value, fix_bmp_header_data, check_name_is_string_table, write_separator_vram, \
     search_texture
 from lib.vram_explorer.functions.xbox_swizzle import process
 
@@ -1300,7 +1301,7 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
                 # Everything that is not SPR in the header, has names for each data
                 if VEV.sprp_file.sprp_header.data_tag != b"SPR\x00":
                     sprp_data_entry.data_info.name,  sprp_data_entry.data_info.extension = \
-                        get_name_from_spr(file, VEV.sprp_file.string_table_base + sprp_data_entry.data_info.name_offset)
+                        get_name_from_file(file, VEV.sprp_file.string_table_base + sprp_data_entry.data_info.name_offset)
                     base_name_size = len(sprp_data_entry.data_info.name)
                     extension_size = len(sprp_data_entry.data_info.extension)
                     sprp_data_entry.data_info.name_size = base_name_size + (1 + extension_size
@@ -1370,8 +1371,8 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
                         # Store the name of the layer
                         if mtrl_layer.layer_name_offset != 0:
                             aux_pointer_mtrl_layer = file.tell()
-                            mtrl_layer.layer_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                               mtrl_layer.layer_name_offset)
+                            mtrl_layer.layer_name, nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                                mtrl_layer.layer_name_offset)
 
                             # We have added all the type material in the combobox,
                             # but just in case we find another one that we didn't
@@ -1384,8 +1385,8 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
                         # Store the name of the source
                         if mtrl_layer.source_name_offset != 0:
                             aux_pointer_mtrl_layer = file.tell()
-                            mtrl_layer.source_name, nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                                mtrl_layer.source_name_offset)
+                            mtrl_layer.source_name, nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                                 mtrl_layer.source_name_offset)
                             file.seek(aux_pointer_mtrl_layer)
 
                         # Store the layer in the actual material
@@ -1454,8 +1455,8 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
 
                         # Store the name
                         aux_pointer_file_vertex = file.tell()
-                        vertex_decl.resource_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
-                                                                               + vertex_decl.resource_name_offset)
+                        vertex_decl.resource_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base
+                                                                                + vertex_decl.resource_name_offset)
                         # Add the effect of the material in the combobox
                         if main_window.effectVal.findText(vertex_decl.resource_name) == -1:
                             main_window.effectVal.addItem(vertex_decl.resource_name, vertex_decl.resource_name_offset)
@@ -1864,7 +1865,7 @@ def read_children(main_window, file, sprp_data_info, type_section):
         # Get the name for the data_info
         aux_pointer_file = file.tell()
         sprp_data_info_child.name, sprp_data_info_child.extension = \
-            get_name_from_spr(file, VEV.sprp_file.string_table_base + sprp_data_info_child.name_offset)
+            get_name_from_file(file, VEV.sprp_file.string_table_base + sprp_data_info_child.name_offset)
         base_name_size = len(sprp_data_info_child.name)
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
@@ -1925,8 +1926,8 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 # Store the names
                 aux_pointer_file_shap = file.tell()
-                shap_info.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base
-                                                                 + shap_info.type_offset)
+                shap_info.type_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base
+                                                                  + shap_info.type_offset)
                 # Add the effect of the material in the combobox
                 if main_window.effectVal.findText(shap_info.type_name) == -1:
                     main_window.effectVal.addItem(shap_info.type_name, shap_info.type_offset)
@@ -1957,14 +1958,14 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                 # Store the names
                 aux_pointer_file_scne = file.tell()
-                scne_model.type_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                  scne_model.type_offset)
-                scne_model.name_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                  scne_model.name_offset)
-                scne_model.layer_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                   scne_model.layer_offset)
-                scne_model.parent_name, Nothing = get_name_from_spr(file, VEV.sprp_file.string_table_base +
-                                                                    scne_model.parent_offset)
+                scne_model.type_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                   scne_model.type_offset)
+                scne_model.name_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                   scne_model.name_offset)
+                scne_model.layer_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                    scne_model.layer_offset)
+                scne_model.parent_name, Nothing = get_name_from_file(file, VEV.sprp_file.string_table_base +
+                                                                     scne_model.parent_offset)
                 file.seek(aux_pointer_file_scne)
 
                 sprp_data_info_child.data = scne_model
@@ -1999,9 +2000,9 @@ def read_children(main_window, file, sprp_data_info, type_section):
 
                     # Store the name of the type
                     aux_pointer_file_scne = file.tell()
-                    scne_materia_info.type_name, nothing = get_name_from_spr(file,
-                                                                             VEV.sprp_file.string_table_base +
-                                                                             scne_materia_info.type_offset)
+                    scne_materia_info.type_name, nothing = get_name_from_file(file,
+                                                                              VEV.sprp_file.string_table_base +
+                                                                              scne_materia_info.type_offset)
                     # Add the effect of the material in the combobox. Some effects only can be found in the scene section
                     if main_window.effectVal.findText(scne_materia_info.type_name) == -1:
                         main_window.effectVal.addItem(scne_materia_info.type_name, scne_materia_info.type_offset)

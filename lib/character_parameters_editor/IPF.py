@@ -6,9 +6,11 @@ from PyQt5.QtWidgets import QLabel
 
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
+from lib.character_parameters_editor.classes.BONE.BoneEntry import BoneEntry
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.Animation import Animation
+from lib.character_parameters_editor.classes.SPA.SPAFile import SPAFile
 from lib.character_parameters_editor.functions.IP.action_logic import on_camera_type_key_changed, \
     action_export_camera_button_logic, action_import_camera_button_logic, action_export_all_camera_button_logic, \
     action_import_all_camera_button_logic, on_pivot_value_changed, on_translations_changed, on_rotations_changed, \
@@ -23,6 +25,7 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
     write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file
+from lib.functions import check_entry_module, get_name_from_file
 from lib.packages import struct, QMessageBox
 
 
@@ -518,6 +521,226 @@ def write_single_character_parameters(worker_pef, main_window, start_progress, s
             file.write(IPV.signature_ki_blast.data)
 
 
+def read_spa_file(spa_path):
+
+    # Create the instance for the spa
+    spa_file = SPAFile()
+
+    # Store the path
+    spa_file.path = spa_path
+
+    # Read the data of the spa
+    with open(spa_path, mode="rb") as file:
+        spa_file.spa_header.unk0x00 = file.read(4)
+
+        # If there is data in the first 4 bytes, we continue reading
+        if spa_file.spa_header.unk0x00 != b'':
+
+            # Read the name and restore the pointer to continue reading the following bytes
+            aux_pointer = file.tell()
+            spa_file.spa_header.name, spa_file.spa_header.extension = get_name_from_file(file, int.from_bytes(file.read(4), "big"))
+            file.seek(aux_pointer + 4)
+
+            # Read header
+            spa_file.spa_header.unk0x08 = file.read(4)
+            spa_file.spa_header.frame_count = struct.unpack('>f', file.read(4))[0]
+            spa_file.spa_header.bone_count = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.maybe_start_offset = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.scene_nodes_count = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.scene_nodes_offset = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.camera_count = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.camera_offset = int.from_bytes(file.read(4), "big")
+            spa_file.spa_header.unk0x28 = file.read(4)
+            spa_file.spa_header.unk0x2c = file.read(4)
+
+            # Read bones
+            for _ in range(0, spa_file.spa_header.bone_count):
+                # Create bone instance
+                bone_entry = BoneEntry()
+
+                # Read the name and restore the pointer to continue reading the following bytes
+                aux_pointer = file.tell()
+                bone_entry.name, _ = get_name_from_file(file, int.from_bytes(file.read(4), "big"))
+                file.seek(aux_pointer + 4)
+
+                # Meta data
+                bone_entry.unk0x04 = file.read(4)
+                bone_entry.translation_block_count = int.from_bytes(file.read(4), "big")
+                bone_entry.rotation_block_count = int.from_bytes(file.read(4), "big")
+                bone_entry.unk0x10 = file.read(4)
+                bone_entry.translation_frame_offset = int.from_bytes(file.read(4), "big")
+                bone_entry.rotation_frame_offset = int.from_bytes(file.read(4), "big")
+                bone_entry.unk0x1C = file.read(4)
+                bone_entry.translation_float_offset = int.from_bytes(file.read(4), "big")
+                bone_entry.rotation_float_offset = int.from_bytes(file.read(4), "big")
+                bone_entry.unk0x28[0] = file.read(4)
+                bone_entry.unk0x28[1] = file.read(4)
+
+                # Data
+                aux_pointer = file.tell()
+                # Read translations
+                file.seek(bone_entry.translation_frame_offset)
+                for i in range(0, bone_entry.translation_block_count):
+                    # Read frame
+                    bone_entry.translation_frame_data.append(struct.unpack('>f', file.read(4))[0])
+
+                    # Read float (x, y, z, w)
+                    aux_translation_pointer = file.tell()
+                    file.seek(bone_entry.translation_float_offset + (i * 16))
+                    bone_entry.translation_float_data.append(dict({"x": struct.unpack('>f', file.read(4))[0], "y": struct.unpack('>f', file.read(4))[0], "z": struct.unpack('>f', file.read(4))[0],
+                                                                   "w": struct.unpack('>f', file.read(4))[0]}))
+                    # Return to the next frame translation
+                    file.seek(aux_translation_pointer)
+
+                # Read rotations
+                file.seek(bone_entry.rotation_frame_offset)
+                for i in range(0, bone_entry.rotation_block_count):
+                    # Read frame
+                    bone_entry.rot_frame_data.append(struct.unpack('>f', file.read(4))[0])
+
+                    # Read float
+                    aux_rotation_pointer = file.tell()
+                    file.seek(bone_entry.rotation_float_offset + (i * 8))
+                    rot = int.from_bytes(file.read(8), "big")
+                    x = ((((rot & 0x0fffffffffffffff) >> 40) / 0x7ffff) * 90) - 90
+                    y = ((((rot & 0x000000ffffffffff) >> 20) / 0x7ffff) * 90) - 90
+                    z = (((rot & 0x00000000000fffff) / 0x7ffff) * 90) - 90
+                    bone_entry.rot_float_data.append(dict({"rot": rot, "x": x, "y": y, "z": z}))
+                    # Return to the next frame rotation
+                    file.seek(aux_rotation_pointer)
+
+                # Restore pointer
+                file.seek(aux_pointer)
+
+                # Store everything in the dict
+                spa_file.bone_entries[bone_entry.name] = bone_entry
+
+        # Store the size of the file
+        spa_file.size = file.tell()
+
+    return spa_file
+
+
+def write_spa_file(spa_file):
+
+    header_data = b''
+    bone_entry = b''
+    bone_entry_size = 48 * spa_file.spa_header.bone_count
+    bone_data = b''
+    bone_data_start_offset = spa_file.spa_header.maybe_start_offset + bone_entry_size
+    bone_data_size = 0
+    string_table = b''
+    string_table_size = 0
+
+    # Write first all the data
+    for bone_entry_name in spa_file.bone_entries:
+        # Get the bone data
+        bone_entry_data = spa_file.bone_entries[bone_entry_name]
+
+        # Check if the data, the module of 16 is 0
+        bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
+        # Write frames
+        # Translation
+        # Update offset (only if there is data)
+        if bone_entry_data.translation_block_count > 0:
+            bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
+            for translation_frame in bone_entry_data.translation_frame_data:
+                bone_data = bone_data + struct.pack('>f', translation_frame)
+                bone_data_size += 4
+
+            # Check if the data, the module of 16 is 0
+            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+        else:
+            bone_entry_data.translation_frame_offset = 0
+
+        # Rotations
+        # Update offset (only if there is data)
+        if bone_entry_data.rotation_block_count > 0:
+            bone_entry_data.rot_frame_offset = bone_data_start_offset + bone_data_size
+            for rotarion_frame in bone_entry_data.rot_frame_data:
+                bone_data = bone_data + struct.pack('>f', rotarion_frame)
+                bone_data_size += 4
+
+            # Check if the data, the module of 16 is 0
+            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+        else:
+            bone_entry_data.rot_frame_offset = 0
+
+        # Write floats
+        # Translation
+        # Update offset (only if there is data)
+        if bone_entry_data.translation_block_count > 0:
+            bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
+            for translation_float in bone_entry_data.translation_float_data:
+                bone_data = bone_data + struct.pack('>f', translation_float['x'])
+                bone_data = bone_data + struct.pack('>f', translation_float['y'])
+                bone_data = bone_data + struct.pack('>f', translation_float['z'])
+                bone_data = bone_data + struct.pack('>f', translation_float['w'])
+                bone_data_size += 16
+
+            # Check if the data, the module of 16 is 0
+            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+        else:
+            bone_entry_data.translation_float_offset = 0
+
+        # Rotation
+        # Update offset (only if there is data)
+        if bone_entry_data.rotation_block_count > 0:
+            bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
+            for rotation_float in bone_entry_data.rot_float_data:
+                bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
+                bone_data_size += 8
+        else:
+            bone_entry_data.rotation_float_offset = 0
+
+    # Write the name of the spa
+    string_table_start_offset = bone_data_start_offset + bone_data_size
+    name = spa_file.spa_header.name + "." + spa_file.spa_header.extension
+    string_table +=  name.encode('utf-8') + b'\x00'
+    string_table_size += 1 + len(name)
+
+    # Once the data is written and we know the size, we can create the spa entirely, We have to, again, loop all the bones
+    for bone_entry_name in spa_file.bone_entries:
+        # Get the bone data
+        bone_entry_data = spa_file.bone_entries[bone_entry_name]
+
+        # Write each bone entry
+        bone_entry += (string_table_start_offset + string_table_size).to_bytes(4, 'big')
+        bone_entry += bone_entry_data.unk0x04
+        bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
+        bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
+        bone_entry += bone_entry_data.unk0x10
+        bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
+        bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
+        bone_entry += bone_entry_data.unk0x1C
+        bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
+        bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
+        for unk0x28_value in bone_entry_data.unk0x28:
+            bone_entry += unk0x28_value
+
+        # Write the name in the string table
+        string_table += bone_entry_name.encode('utf-8') + b'\x00'
+        string_table_size += len(bone_entry_name) + 1
+
+    # Write finally the header
+    header_data += spa_file.spa_header.unk0x00
+    header_data += string_table_start_offset.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.unk0x08
+    header_data += struct.pack('>f', spa_file.spa_header.frame_count)
+    header_data += spa_file.spa_header.bone_count.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.maybe_start_offset.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.scene_nodes_count.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.scene_nodes_offset.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.camera_count.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.camera_offset.to_bytes(4, 'big')
+    header_data += spa_file.spa_header.unk0x28
+    header_data += spa_file.spa_header.unk0x2c
+
+    return (header_data + bone_entry + bone_data + string_table), (48 + bone_entry_size + bone_data_size + string_table_size)
+
+
+# Read animation spa and spae files at the same time
 def read_animation_file(worker_pef, start_progress, step_report, main_window, index_list_view, combo_box_label, number_files_to_load,
                         size_between_animation, size_between_animation_and_effects):
 
@@ -530,12 +753,8 @@ def read_animation_file(worker_pef, start_progress, step_report, main_window, in
         start_progress += (sub_step_report * size_between_animation)
         worker_pef.progressValue.emit(start_progress)
 
-        # Animation instance
-        animation = Animation()
-        animation.path = main_window.listView_2.model().item(index_list_view + i, 0).text()
-        with open(animation.path, mode="rb") as file:
-            animation.data = file.read()
-        animation.size = len(animation.data)
+        # Animation instance (detailed version)
+        spa_file = read_spa_file(main_window.listView_2.model().item(index_list_view + i, 0).text())
 
         # Animation effect instance
         animation_effect = Animation()
@@ -550,7 +769,7 @@ def read_animation_file(worker_pef, start_progress, step_report, main_window, in
             read_transformation_effect(main_window, animation_effect)
 
         # Add all the instances to an array
-        item_data_animation.append([animation, animation_effect])
+        item_data_animation.append([spa_file, animation_effect])
 
     # Add the array of Animation instances to the combo box
     main_window.animation_type_value.setItemData(main_window.animation_type_value.findText(combo_box_label),
@@ -699,8 +918,15 @@ def export_animation(animation_array, file_export_path, animation_type_index):
 
     # Get the sizes and data from each animation
     for animation_file in animation_array:
-        header_file = header_file + struct.pack('>I', animation_file[animation_type_index].size)
-        data_file = data_file + animation_file[animation_type_index].data
+        # Since we've readed the spa storing each bone, we have to create the file output from scratch
+        if animation_type_index == 0:
+            data, size = write_spa_file(animation_file[animation_type_index])
+        else:
+            data = animation_file[animation_type_index].data
+            size = animation_file[animation_type_index].size
+
+        header_file = header_file + struct.pack('>I', size)
+        data_file = data_file + data
 
     # Write the header properties and then the data
     with open(file_export_path, mode="wb") as file:
