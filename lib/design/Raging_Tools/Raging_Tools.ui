@@ -5033,7 +5033,7 @@
                <rect>
                 <x>0</x>
                 <y>360</y>
-                <width>641</width>
+                <width>951</width>
                 <height>141</height>
                </rect>
               </property>
@@ -5065,8 +5065,8 @@
               <widget class="QPushButton" name="exportAllAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>430</x>
-                 <y>30</y>
+                 <x>230</x>
+                 <y>60</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5078,8 +5078,8 @@
               <widget class="QPushButton" name="importAllAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>520</x>
-                 <y>30</y>
+                 <x>320</x>
+                 <y>60</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5091,8 +5091,8 @@
               <widget class="QPushButton" name="importAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>340</x>
-                 <y>30</y>
+                 <x>140</x>
+                 <y>60</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5104,8 +5104,8 @@
               <widget class="QComboBox" name="animation_type_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
-                 <y>60</y>
+                 <x>50</x>
+                 <y>30</y>
                  <width>221</width>
                  <height>21</height>
                 </rect>
@@ -5114,8 +5114,8 @@
               <widget class="QPushButton" name="exportAnimationButton">
                <property name="geometry">
                 <rect>
-                 <x>250</x>
-                 <y>30</y>
+                 <x>50</x>
+                 <y>60</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5127,9 +5127,9 @@
               <widget class="QLabel" name="animation_text">
                <property name="geometry">
                 <rect>
-                 <x>390</x>
-                 <y>10</y>
-                 <width>91</width>
+                 <x>10</x>
+                 <y>60</y>
+                 <width>41</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -5137,14 +5137,14 @@
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds the frames of the animation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
-                <string>Special animation</string>
+                <string>SPA:</string>
                </property>
               </widget>
               <widget class="QPushButton" name="importAllAnimationEffectsButton">
                <property name="geometry">
                 <rect>
-                 <x>520</x>
-                 <y>90</y>
+                 <x>320</x>
+                 <y>100</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5156,8 +5156,8 @@
               <widget class="QPushButton" name="exportAnimationEffectsButton">
                <property name="geometry">
                 <rect>
-                 <x>250</x>
-                 <y>90</y>
+                 <x>50</x>
+                 <y>100</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5169,9 +5169,9 @@
               <widget class="QLabel" name="animation_text_2">
                <property name="geometry">
                 <rect>
-                 <x>370</x>
-                 <y>70</y>
-                 <width>121</width>
+                 <x>10</x>
+                 <y>100</y>
+                 <width>41</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -5179,14 +5179,14 @@
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Holds the effects and keyframes for the animations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
-                <string>Special animation effects</string>
+                <string>SPAE:</string>
                </property>
               </widget>
               <widget class="QPushButton" name="exportAllAnimationEffectsButton">
                <property name="geometry">
                 <rect>
-                 <x>430</x>
-                 <y>90</y>
+                 <x>230</x>
+                 <y>100</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5198,8 +5198,8 @@
               <widget class="QPushButton" name="importAnimationEffectsButton">
                <property name="geometry">
                 <rect>
-                 <x>340</x>
-                 <y>90</y>
+                 <x>140</x>
+                 <y>100</y>
                  <width>81</width>
                  <height>23</height>
                 </rect>
@@ -5211,15 +5211,448 @@
               <widget class="QLabel" name="animation_type_2">
                <property name="geometry">
                 <rect>
-                 <x>120</x>
-                 <y>40</y>
-                 <width>47</width>
-                 <height>13</height>
+                 <x>10</x>
+                 <y>30</y>
+                 <width>41</width>
+                 <height>16</height>
                 </rect>
                </property>
                <property name="text">
-                <string>Type</string>
+                <string>Type:</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+              <widget class="QFrame" name="bones_frame_section">
+               <property name="geometry">
+                <rect>
+                 <x>410</x>
+                 <y>9</y>
+                 <width>531</width>
+                 <height>121</height>
+                </rect>
+               </property>
+               <property name="frameShape">
+                <enum>QFrame::WinPanel</enum>
+               </property>
+               <property name="frameShadow">
+                <enum>QFrame::Sunken</enum>
+               </property>
+               <widget class="QLabel" name="animation_bone_rotation_text">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>95</y>
+                  <width>61</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Rotation:</string>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_W_text">
+                <property name="geometry">
+                 <rect>
+                  <x>430</x>
+                  <y>50</y>
+                  <width>91</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>W</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="animation_import_bone">
+                <property name="geometry">
+                 <rect>
+                  <x>300</x>
+                  <y>20</y>
+                  <width>61</width>
+                  <height>23</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Import...</string>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="animation_export_bone">
+                <property name="geometry">
+                 <rect>
+                  <x>230</x>
+                  <y>20</y>
+                  <width>61</width>
+                  <height>23</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Export...</string>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_translation_Y_value">
+                <property name="geometry">
+                 <rect>
+                  <x>230</x>
+                  <y>65</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_block_text">
+                <property name="geometry">
+                 <rect>
+                  <x>80</x>
+                  <y>50</y>
+                  <width>41</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each translation and rotation, has a unique number of blocks each of one. Select the block you want to edit in order to edit the values of that block (related to frames probably, but not sure since each translation and rotation has a unique number of blocks)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Block</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_spas_layer_text">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>51</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Since this tools makes a mix of spa files into one single file (spas), this option will let you select the spa animation you want to edit in the spas file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Layer</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="animation_bone_rotation_block_value">
+                <property name="geometry">
+                 <rect>
+                  <x>80</x>
+                  <y>95</y>
+                  <width>41</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_translation_text">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>65</y>
+                  <width>71</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Translation:</string>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="animation_spas_layer_value">
+                <property name="geometry">
+                 <rect>
+                  <x>10</x>
+                  <y>20</y>
+                  <width>31</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="animation_export_all_bone">
+                <property name="geometry">
+                 <rect>
+                  <x>370</x>
+                  <y>20</y>
+                  <width>71</width>
+                  <height>23</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Export all...</string>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_Z_text">
+                <property name="geometry">
+                 <rect>
+                  <x>330</x>
+                  <y>50</y>
+                  <width>91</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Z</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_translation_W_value">
+                <property name="geometry">
+                 <rect>
+                  <x>430</x>
+                  <y>65</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_translation_Z_value">
+                <property name="geometry">
+                 <rect>
+                  <x>330</x>
+                  <y>65</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_rotation_X_value">
+                <property name="geometry">
+                 <rect>
+                  <x>130</x>
+                  <y>95</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="animation_import_all_bone">
+                <property name="geometry">
+                 <rect>
+                  <x>450</x>
+                  <y>20</y>
+                  <width>71</width>
+                  <height>23</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Import all...</string>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_rotation_Y_value">
+                <property name="geometry">
+                 <rect>
+                  <x>230</x>
+                  <y>95</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_text">
+                <property name="geometry">
+                 <rect>
+                  <x>50</x>
+                  <y>0</y>
+                  <width>171</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The bone of the animation you want to edit&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>Bone</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_rotation_Z_value">
+                <property name="geometry">
+                 <rect>
+                  <x>330</x>
+                  <y>95</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_X_text">
+                <property name="geometry">
+                 <rect>
+                  <x>130</x>
+                  <y>50</y>
+                  <width>91</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>X</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="animation_bone_value">
+                <property name="geometry">
+                 <rect>
+                  <x>50</x>
+                  <y>20</y>
+                  <width>171</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+               </widget>
+               <widget class="QComboBox" name="animation_bone_translation_block_value">
+                <property name="geometry">
+                 <rect>
+                  <x>80</x>
+                  <y>65</y>
+                  <width>41</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+               </widget>
+               <widget class="QLabel" name="animation_bone_Y_text">
+                <property name="geometry">
+                 <rect>
+                  <x>230</x>
+                  <y>50</y>
+                  <width>91</width>
+                  <height>16</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Y</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+               <widget class="QDoubleSpinBox" name="animation_bone_translation_X_value">
+                <property name="geometry">
+                 <rect>
+                  <x>130</x>
+                  <y>65</y>
+                  <width>91</width>
+                  <height>22</height>
+                 </rect>
+                </property>
+                <property name="decimals">
+                 <number>6</number>
+                </property>
+                <property name="minimum">
+                 <double>-999.999999000000003</double>
+                </property>
+                <property name="maximum">
+                 <double>999.999999000000003</double>
+                </property>
+                <property name="singleStep">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>0.000000000000000</double>
+                </property>
+               </widget>
               </widget>
              </widget>
              <widget class="QFrame" name="camera_values">
@@ -5227,7 +5660,7 @@
                <rect>
                 <x>0</x>
                 <y>10</y>
-                <width>921</width>
+                <width>951</width>
                 <height>201</height>
                </rect>
               </property>
@@ -6145,9 +6578,9 @@
               <property name="geometry">
                <rect>
                 <x>650</x>
-                <y>220</y>
-                <width>271</width>
-                <height>181</height>
+                <y>510</y>
+                <width>301</width>
+                <height>191</height>
                </rect>
               </property>
               <property name="frameShape">
@@ -6175,7 +6608,7 @@
               <widget class="QSpinBox" name="defense_value">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>150</x>
                  <y>50</y>
                  <width>81</width>
                  <height>22</height>
@@ -6203,9 +6636,9 @@
               <widget class="QLabel" name="defense_text">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>150</x>
                  <y>30</y>
-                 <width>71</width>
+                 <width>81</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -6215,13 +6648,16 @@
                <property name="text">
                 <string>Defense (%)</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
               <widget class="QLabel" name="attack_text">
                <property name="geometry">
                 <rect>
-                 <x>30</x>
+                 <x>40</x>
                  <y>30</y>
-                 <width>41</width>
+                 <width>81</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -6231,11 +6667,14 @@
                <property name="text">
                 <string>Attack</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
               <widget class="QSpinBox" name="attack_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>40</x>
                  <y>50</y>
                  <width>81</width>
                  <height>22</height>
@@ -6257,7 +6696,7 @@
               <widget class="QLabel" name="type_fighting_text">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>40</x>
                  <y>80</y>
                  <width>91</width>
                  <height>16</height>
@@ -6269,11 +6708,14 @@
                <property name="text">
                 <string>Type of fighting</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
               <widget class="QComboBox" name="type_fighting_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>40</x>
                  <y>100</y>
                  <width>81</width>
                  <height>21</height>
@@ -6283,7 +6725,7 @@
               <widget class="QLabel" name="direction_last_hit_combo_text">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>150</x>
                  <y>77</y>
                  <width>91</width>
                  <height>16</height>
@@ -6299,8 +6741,8 @@
               <widget class="QComboBox" name="background_color_combo_value">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
-                 <y>153</y>
+                 <x>150</x>
+                 <y>150</y>
                  <width>121</width>
                  <height>22</height>
                 </rect>
@@ -6309,9 +6751,9 @@
               <widget class="QLabel" name="background_color_combo_text">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>150</x>
                  <y>130</y>
-                 <width>101</width>
+                 <width>121</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -6321,11 +6763,14 @@
                <property name="text">
                 <string>Background color</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
               <widget class="QComboBox" name="direction_last_hit_combo_value">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>150</x>
                  <y>100</y>
                  <width>81</width>
                  <height>21</height>
@@ -6335,9 +6780,9 @@
               <widget class="QLabel" name="cancel_set_text">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>40</x>
                  <y>130</y>
-                 <width>81</width>
+                 <width>91</width>
                  <height>16</height>
                 </rect>
                </property>
@@ -6347,11 +6792,14 @@
                <property name="text">
                 <string>Cancel set</string>
                </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
               </widget>
               <widget class="QComboBox" name="cancel_set_value">
                <property name="geometry">
                 <rect>
-                 <x>20</x>
+                 <x>40</x>
                  <y>150</y>
                  <width>91</width>
                  <height>22</height>
@@ -7296,8 +7744,8 @@
               <property name="geometry">
                <rect>
                 <x>650</x>
-                <y>410</y>
-                <width>271</width>
+                <y>220</y>
+                <width>301</width>
                 <height>61</height>
                </rect>
               </property>
@@ -7326,7 +7774,7 @@
               <widget class="QComboBox" name="background_color_trans_value">
                <property name="geometry">
                 <rect>
-                 <x>130</x>
+                 <x>120</x>
                  <y>30</y>
                  <width>101</width>
                  <height>22</height>
@@ -7354,9 +7802,9 @@
               <property name="geometry">
                <rect>
                 <x>650</x>
-                <y>480</y>
-                <width>271</width>
-                <height>41</height>
+                <y>290</y>
+                <width>301</width>
+                <height>61</height>
                </rect>
               </property>
               <property name="frameShape">
@@ -7368,8 +7816,8 @@
               <widget class="QLabel" name="signature_ki_blast_text">
                <property name="geometry">
                 <rect>
-                 <x>10</x>
-                 <y>10</y>
+                 <x>20</x>
+                 <y>20</y>
                  <width>91</width>
                  <height>16</height>
                 </rect>
@@ -7384,8 +7832,8 @@
               <widget class="QPushButton" name="signature_ki_blast_export">
                <property name="geometry">
                 <rect>
-                 <x>100</x>
-                 <y>10</y>
+                 <x>120</x>
+                 <y>20</y>
                  <width>75</width>
                  <height>23</height>
                 </rect>
@@ -7397,8 +7845,8 @@
               <widget class="QPushButton" name="signature_ki_blast_import">
                <property name="geometry">
                 <rect>
-                 <x>180</x>
-                 <y>10</y>
+                 <x>200</x>
+                 <y>20</y>
                  <width>75</width>
                  <height>23</height>
                 </rect>

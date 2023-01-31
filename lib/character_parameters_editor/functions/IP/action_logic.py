@@ -1,7 +1,8 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
-from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect
+from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, change_animation_bones_section, change_animation_layer_spas, change_animation_bone, \
+    change_animation_bone_translation_block, change_animation_bone_rotations_block
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
 from lib.character_parameters_editor import IPF
@@ -518,14 +519,14 @@ def action_modify_character(event, main_window, chara_id):
 def on_camera_type_key_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         IPF.change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
 
 
 def on_pivot_value_changed(main_window, pivot_index):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         if pivot_index == 0:
             main_window.camera_type_key.currentData().pivots["pivot_1"] = \
                 main_window.pivot_value.value()
@@ -546,7 +547,7 @@ def on_pivot_value_changed(main_window, pivot_index):
 
 def on_translations_changed(main_window, y, z):
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         if y >= 0:
             if y == 0:
                 main_window.camera_type_key.currentData().positions["Y_start"] =\
@@ -570,7 +571,7 @@ def on_translations_changed(main_window, y, z):
 def on_rotations_changed(main_window, y, z):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         if y >= 0:
             if y == 0:
                 main_window.camera_type_key.currentData().rotations["Y_start"] =\
@@ -595,7 +596,7 @@ def on_rotations_changed(main_window, y, z):
 def on_speed_camera_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         main_window.camera_type_key.currentData().camera_speed = \
             main_window.speed_camera_value.value()
         main_window.camera_type_key.currentData().modified = True
@@ -604,7 +605,7 @@ def on_speed_camera_changed(main_window):
 def on_zoom_start_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         main_window.camera_type_key.currentData().zooms["Zoom_start"] = \
             main_window.zoom_start_value.value()
         main_window.camera_type_key.currentData().modified = True
@@ -613,7 +614,7 @@ def on_zoom_start_value_changed(main_window):
 def on_zoom_end_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         main_window.camera_type_key.currentData().zooms["Zoom_end"] = \
             main_window.zoom_end_value.value()
         main_window.camera_type_key.currentData().modified = True
@@ -622,7 +623,7 @@ def on_zoom_end_value_changed(main_window):
 def on_background_color_trans_change(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the color of the background when we change the combo box background color transformation
         animation_effect = main_window.animation_type_value.itemData(57)[0][1]
         animation_effect.data = animation_effect.data[:IPV.trans_effect_position_byte] + \
@@ -631,17 +632,62 @@ def on_background_color_trans_change(main_window):
         animation_effect.modified = True
 
 
+def on_animation_type_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        animation_array = main_window.animation_type_value.currentData()
+        change_animation_bones_section(main_window, animation_array)
+
+
+def on_animation_layer_spas_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        change_animation_layer_spas(main_window, spa_file)
+
+
+def on_animation_bone_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+        change_animation_bone(main_window, bone_entry)
+
+
+def on_animation_bone_translation_block_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+        translations_float_data = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
+        change_animation_bone_translation_block(main_window, translations_float_data)
+
+
+def on_animation_bone_rotations_block_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+        rotations_float_data = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
+        change_animation_bone_rotations_block(main_window, rotations_float_data)
+
+
 def on_blast_attack_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         IPF.change_blast_values(main_window, main_window.blast_key.currentData())
 
 
 def on_glow_activation_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the glow activation
         blast = main_window.blast_key.currentData()
         blast.glow = main_window.glow_activation_value.currentData()
@@ -651,7 +697,7 @@ def on_glow_activation_changed(main_window):
 def on_stackable_skill_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the skill stackable
         blast = main_window.blast_key.currentData()
         blast.skill_stackable = main_window.stackable_skill_value.currentData()
@@ -661,7 +707,7 @@ def on_stackable_skill_changed(main_window):
 def on_power_up_changed(main_window, combobox, powerup_type):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the powerup activation
         blast = main_window.blast_key.currentData()
         blast.power_ups[powerup_type] = combobox.currentData()
@@ -671,7 +717,7 @@ def on_power_up_changed(main_window, combobox, powerup_type):
 def on_effect_attack_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the activation skill
         blast = main_window.blast_key.currentData()
         blast.activation_skill = main_window.effect_attack_value.currentData()
@@ -681,7 +727,7 @@ def on_effect_attack_changed(main_window):
 def on_chargeable_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the chargeable/boost value
         blast = main_window.blast_key.currentData()
         blast.chargeable_boost = main_window.chargeable_value.currentData()
@@ -691,7 +737,7 @@ def on_chargeable_changed(main_window):
 def on_reach_attack_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the reach attack value
         blast = main_window.blast_key.currentData()
         blast.reach_attack = main_window.reach_attack_value.value()
@@ -701,7 +747,7 @@ def on_reach_attack_value_changed(main_window):
 def on_speed_attack_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the speed_of_attack
         blast = main_window.blast_key.currentData()
         blast.speed_of_attack = main_window.speed_attack_value.value()
@@ -711,7 +757,7 @@ def on_speed_attack_value_changed(main_window):
 def on_blast_attack_damage_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the attack_damage
         blast = main_window.blast_key.currentData()
         blast.attack_damage = main_window.blast_attack_damage_value.value()
@@ -721,7 +767,7 @@ def on_blast_attack_damage_value_changed(main_window):
 def on_cost_blast_attack_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the cost_attack
         blast = main_window.blast_key.currentData()
         blast.cost_attack = main_window.cost_blast_attack_value.value()
@@ -731,7 +777,7 @@ def on_cost_blast_attack_value_changed(main_window):
 def on_number_of_hits_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the number_of_hits
         blast = main_window.blast_key.currentData()
         blast.number_of_hits = main_window.number_of_hits_value.value()
@@ -741,7 +787,7 @@ def on_number_of_hits_value_changed(main_window):
 def on_size_attack_value_changed(main_window):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the size_of_attack
         blast = main_window.blast_key.currentData()
         blast.size_of_attack = main_window.size_attack_value.value()
@@ -751,7 +797,7 @@ def on_size_attack_value_changed(main_window):
 def on_camera_blast_value_changed(main_window, camera_index, spinbox):
 
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         # Change the camera value
         blast = main_window.blast_key.currentData()
         blast.camera[camera_index] = spinbox.value()

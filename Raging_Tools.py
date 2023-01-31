@@ -81,7 +81,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         initialize_pe(self)
 
         # --- character parameters editor ---
-        CPEV.change_character = True  # Starting the tool (avoid combo box code)
+        CPEV.disable_logic_events_combobox = True  # Starting the tool (avoid combo box code)
         initialize_cpe(self)
 
     def report_progress_value(self, n):

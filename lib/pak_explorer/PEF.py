@@ -107,7 +107,7 @@ class WorkerPef(QObject):
             subpak_file_skill.close()
 
             # We're changing the character in the main panel (avoid combo box code)
-            CPEV.change_character = True
+            CPEV.disable_logic_events_combobox = True
 
             # Initialize main roster
             initialize_roster(main_window)
@@ -262,7 +262,7 @@ class WorkerPef(QObject):
                                                                 (character_zero.fusions_animation[3]))
 
             # We're not changing the character in the main panel (play combo box code)
-            CPEV.change_character = False
+            CPEV.disable_logic_events_combobox = False
 
             # Open the tab (character parameters editor)
             if main_window.tabWidget.currentIndex() != 2:
@@ -327,7 +327,7 @@ class WorkerPef(QObject):
             subpak_file_resident_character_param.close()
 
             # We're changing the character in the main panel (avoid combo box code)
-            CPEV.change_character = True
+            CPEV.disable_logic_events_combobox = True
 
             # Initialize main roster
             initialize_roster(main_window)
@@ -370,7 +370,7 @@ class WorkerPef(QObject):
                 main_window.cs_chip.setEnabled(False)
 
             # We're not changing the character in the main panel (play combo box code)
-            CPEV.change_character = False
+            CPEV.disable_logic_events_combobox = False
 
         # Check if the file is an operate_character_xyz_m type
         elif re.search(CPEV.operate_character_xyz_m_regex, data):
@@ -379,13 +379,13 @@ class WorkerPef(QObject):
             CPEV.file_character_id = data.decode('utf-8').split("_")[2]
 
             # We're changing the character (avoid combo box code)
-            CPEV.change_character = True
+            CPEV.disable_logic_events_combobox = True
 
             # Read all the data from the files and store it in the global_character from IPV.
             read_single_character_parameters(self, 50.0, 50.0, main_window)
 
             # We're not changing the character (play combo box code)
-            CPEV.change_character = False
+            CPEV.disable_logic_events_combobox = False
 
             # Open the tab (character parameters editor)
             if main_window.tabWidget.currentIndex() != 2:
@@ -457,7 +457,7 @@ class WorkerPef(QObject):
             read_cs_chip_file(self, 50.0, 50.0, main_window)
 
             # We're not changing the character in the main panel (play combo box code)
-            CPEV.change_character = False
+            CPEV.disable_logic_events_combobox = False
 
             # Open the tab (character parameters editor)
             if main_window.tabWidget.currentIndex() != 2:

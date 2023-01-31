@@ -103,7 +103,7 @@ def write_camera_cutscene_to_file(camera_cutscene, file):
 def change_camera_cutscene_values(main_window, camera_cutscene):
 
     # Avoid combobox change the values
-    CPEV.change_character = True
+    CPEV.disable_logic_events_combobox = True
 
     # Pivots
     main_window.pivot_value.setValue(camera_cutscene.pivots["pivot_1"])
@@ -131,7 +131,132 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
     main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
 
     # Enable combobox change the values
-    CPEV.change_character = False
+    CPEV.disable_logic_events_combobox = False
+
+
+def change_animation_bones_section(main_window, animation_array):
+
+    # Avoid combobox change the values
+    CPEV.disable_logic_events_combobox = True
+
+    # Get the first bone entry
+    spa_file = animation_array[0][0]
+
+    # If there is data in the actual spa_file, we'll show it in the tool
+    if spa_file.size > 0:
+
+        # Enable the bones section entirely
+        if not main_window.bones_frame_section.isEnabled():
+            main_window.bones_frame_section.setEnabled(True)
+
+        # Layer
+        main_window.animation_spas_layer_value.clear()
+        for i in range(0, len(animation_array)):
+            main_window.animation_spas_layer_value.addItem(str(i), i)
+        main_window.animation_spas_layer_value.setCurrentIndex(0)
+
+        change_animation_layer_spas(main_window, spa_file)
+
+    else:
+        # Disable the bones section entirely
+        if main_window.bones_frame_section.isEnabled():
+            main_window.bones_frame_section.setEnabled(False)
+
+    # Enable combobox change the values
+    CPEV.disable_logic_events_combobox = False
+
+
+def change_animation_layer_spas(main_window, spa_file):
+
+    # Avoid combobox change the values
+    CPEV.disable_logic_events_combobox = True
+
+    bone_entry = list(spa_file.bone_entries.values())[0]
+
+    # Bones
+    main_window.animation_bone_value.clear()
+    for bone_name in spa_file.bone_entries:
+        main_window.animation_bone_value.addItem(bone_name)
+    main_window.animation_bone_value.setCurrentIndex(0)
+
+    change_animation_bone(main_window, bone_entry)
+
+    # Enable combobox change the values
+    CPEV.disable_logic_events_combobox = False
+
+
+def change_animation_bone(main_window, bone_entry):
+
+    # Avoid combobox change the values
+    CPEV.disable_logic_events_combobox = True
+
+    # Blocks
+    # Translations
+    if bone_entry.translation_block_count > 0:
+
+        if not main_window.animation_bone_translation_block_value.isEnabled():
+            main_window.animation_bone_translation_block_value.setEnabled(True)
+            main_window.animation_bone_translation_X_value.setEnabled(True)
+            main_window.animation_bone_translation_Y_value.setEnabled(True)
+            main_window.animation_bone_translation_Z_value.setEnabled(True)
+            main_window.animation_bone_translation_W_value.setEnabled(True)
+
+        main_window.animation_bone_translation_block_value.clear()
+        for i in range(0, bone_entry.translation_block_count):
+            main_window.animation_bone_translation_block_value.addItem(str(i), i)
+        main_window.animation_bone_translation_block_value.setCurrentIndex(0)
+        change_animation_bone_translation_block(main_window, bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()])
+
+    else:
+        if main_window.animation_bone_translation_block_value.isEnabled():
+            main_window.animation_bone_translation_block_value.setEnabled(False)
+            main_window.animation_bone_translation_X_value.setEnabled(False)
+            main_window.animation_bone_translation_Y_value.setEnabled(False)
+            main_window.animation_bone_translation_Z_value.setEnabled(False)
+            main_window.animation_bone_translation_W_value.setEnabled(False)
+
+    # Rotations
+    if bone_entry.rotation_block_count > 0:
+
+        if not main_window.animation_bone_rotation_block_value.isEnabled():
+            main_window.animation_bone_rotation_block_value.setEnabled(True)
+            main_window.animation_bone_rotation_X_value.setEnabled(True)
+            main_window.animation_bone_rotation_Y_value.setEnabled(True)
+            main_window.animation_bone_rotation_Z_value.setEnabled(True)
+
+        main_window.animation_bone_rotation_block_value.clear()
+        for i in range(0, bone_entry.rotation_block_count):
+            main_window.animation_bone_rotation_block_value.addItem(str(i), i)
+        main_window.animation_bone_rotation_block_value.setCurrentIndex(0)
+        # Rotations
+        change_animation_bone_rotations_block(main_window, bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()])
+
+    else:
+        if main_window.animation_bone_rotation_block_value.isEnabled():
+            main_window.animation_bone_rotation_block_value.setEnabled(False)
+            main_window.animation_bone_rotation_X_value.setEnabled(False)
+            main_window.animation_bone_rotation_Y_value.setEnabled(False)
+            main_window.animation_bone_rotation_Z_value.setEnabled(False)
+
+    # Enable combobox change the values
+    CPEV.disable_logic_events_combobox = False
+
+
+def change_animation_bone_translation_block(main_window, translations_float_data):
+
+    # Translations
+    main_window.animation_bone_translation_X_value.setValue(translations_float_data["x"])
+    main_window.animation_bone_translation_Y_value.setValue(translations_float_data["y"])
+    main_window.animation_bone_translation_Z_value.setValue(translations_float_data["z"])
+    main_window.animation_bone_translation_W_value.setValue(translations_float_data["w"])
+
+
+def change_animation_bone_rotations_block(main_window, rotations_float_data):
+
+    # Rotations
+    main_window.animation_bone_rotation_X_value.setValue(rotations_float_data["x"])
+    main_window.animation_bone_rotation_Y_value.setValue(rotations_float_data["y"])
+    main_window.animation_bone_rotation_Z_value.setValue(rotations_float_data["z"])
 
 
 def store_blast_values_from_file(blast, file):
@@ -260,7 +385,7 @@ def write_blast_values_to_file(blast, file):
 def change_blast_values(main_window, blast_parameter):
 
     # Avoid combobox change the values
-    CPEV.change_character = True
+    CPEV.disable_logic_events_combobox = True
 
     # Glow
     main_window.glow_activation_value.setCurrentIndex(main_window.glow_activation_value.findData(blast_parameter.glow))
@@ -318,4 +443,4 @@ def change_blast_values(main_window, blast_parameter):
     main_window.size_attack_value.setValue(blast_parameter.size_of_attack)
 
     # Enable combobox change the values
-    CPEV.change_character = False
+    CPEV.disable_logic_events_combobox = False

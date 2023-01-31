@@ -31,4 +31,4 @@ class CPEV:
     file_character_id = ""
 
     # Flag that will tell us if the character has been changed in the main panel (avoid combo box)
-    change_character = False
+    disable_logic_events_combobox = False

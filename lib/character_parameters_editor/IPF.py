@@ -22,9 +22,10 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     action_export_signature_ki_blast_button_logic, action_import_signature_ki_blast_button_logic, on_blast_attack_changed, \
     on_glow_activation_changed, on_stackable_skill_changed, on_power_up_changed, on_effect_attack_changed, on_chargeable_changed, \
     on_size_attack_value_changed, on_number_of_hits_value_changed, on_cost_blast_attack_value_changed, on_blast_attack_damage_value_changed, \
-    on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character
+    on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character, on_animation_type_changed, \
+    on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
-    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file
+    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file, change_animation_bones_section
 from lib.functions import check_entry_module, get_name_from_file
 from lib.packages import struct, QMessageBox
 
@@ -98,6 +99,7 @@ def initialize_operate_character(main_window):
     # Set animations
     for element in IPV.animations_types:
         main_window.animation_type_value.addItem(element)
+    main_window.animation_type_value.currentIndexChanged.connect(lambda: on_animation_type_changed(main_window))
     # Export animation button
     main_window.exportAnimationButton.clicked.connect(
         lambda: action_export_animation_button_logic(main_window, 0))
@@ -122,6 +124,11 @@ def initialize_operate_character(main_window):
     # Import all animation properties button
     main_window.importAllAnimationEffectsButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, 1))
+    # Bones section
+    main_window.animation_spas_layer_value.currentIndexChanged.connect(lambda: on_animation_layer_spas_changed(main_window))
+    main_window.animation_bone_value.currentIndexChanged.connect(lambda: on_animation_bone_changed(main_window))
+    main_window.animation_bone_translation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_translation_block_changed(main_window))
+    main_window.animation_bone_rotation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_rotations_block_changed(main_window))
 
     # Set the blast type
     main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
@@ -236,6 +243,7 @@ def read_single_character_parameters(worker_pef, start_progress, step_report, ma
     # 5 tasks
     sub_step_report = step_report / 5
     start_progress = read_animation_files(worker_pef, start_progress, sub_step_report, main_window, 0)
+    change_animation_bones_section(main_window, main_window.animation_type_value.itemData(0))
     main_window.animation_type_value.setCurrentIndex(0)
 
     # Read character info file

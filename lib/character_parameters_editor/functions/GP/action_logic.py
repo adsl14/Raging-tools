@@ -11,7 +11,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
     if GPV.chara_selected != index:
 
         # We're changing the character in the main panel (avoid combo box code)
-        CPEV.change_character = True
+        CPEV.disable_logic_events_combobox = True
 
         # The user has opened the file operate_character_parameters
         if GPV.operate_resident_param_file:
@@ -306,7 +306,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
         GPV.chara_selected = index
 
         # We're not changing the character in the main panel (play combo box code)
-        CPEV.change_character = False
+        CPEV.disable_logic_events_combobox = False
 
 
 def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
@@ -518,7 +518,7 @@ def action_import_signature_button_logic(main_window):
 
 def on_color_lightning_changed(main_window):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].color_lightning = main_window.color_lightning_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
@@ -528,7 +528,7 @@ def on_color_lightning_changed(main_window):
 
 def on_glow_lightning_changed(main_window):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].glow_lightning = main_window.glow_lightning_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
@@ -538,7 +538,7 @@ def on_glow_lightning_changed(main_window):
 
 def on_transformation_ki_effect_changed(main_window):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[
             GPV.chara_selected].transformation_effect = main_window.transEffectValue.currentData()
 
@@ -549,7 +549,7 @@ def on_transformation_ki_effect_changed(main_window):
 
 def on_amount_ki_trans_changed(main_window, amount_ki_trans_index):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         # Change the slot of amount ki
         if amount_ki_trans_index == 0:
@@ -572,7 +572,7 @@ def on_amount_ki_trans_changed(main_window, amount_ki_trans_index):
 
 def on_animation_per_transformation_changed(main_window, animation_per_transformation):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         if animation_per_transformation == 0:
             GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
                 main_window.trans1_animation_value.currentData()
@@ -593,7 +593,7 @@ def on_animation_per_transformation_changed(main_window, animation_per_transform
 
 def on_amount_ki_fusion_changed(main_window, amount_ki_fusion_index):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         # Change the slot of amount ki
         if amount_ki_fusion_index == 0:
@@ -616,7 +616,7 @@ def on_amount_ki_fusion_changed(main_window, amount_ki_fusion_index):
 
 def on_animation_per_fusion_changed(main_window, animation_per_fusion):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         if animation_per_fusion == 0:
             GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
                 main_window.fusion1_animation_value.currentData()
@@ -637,7 +637,7 @@ def on_animation_per_fusion_changed(main_window, animation_per_fusion):
 
 def on_aura_size_changed(main_window, aura_index):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         if aura_index == 0:
             # Change the slot of aura idle size
@@ -656,7 +656,7 @@ def on_aura_size_changed(main_window, aura_index):
 
 def on_health_changed(main_window):
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         # Change the slot of health
         GPV.character_list[GPV.chara_selected].health = int(main_window.health_value.value())
@@ -668,7 +668,7 @@ def on_health_changed(main_window):
 
 def on_camera_size_changed(main_window, camera_index):
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         if camera_index == 0:
             # Change the slot of camera cutscene size
@@ -685,7 +685,7 @@ def on_camera_size_changed(main_window, camera_index):
 
 def on_hit_box_changed(main_window):
     # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
 
         # Change the slot of health
         GPV.character_list[GPV.chara_selected].hit_box = main_window.hit_box_value.value()
@@ -698,7 +698,7 @@ def on_hit_box_changed(main_window):
 def on_aura_type_changed(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].aura_type = main_window.aura_type_value.currentData()
 
         # If the character was edited before, we won't append the index to our array of characters edited once
@@ -709,7 +709,7 @@ def on_aura_type_changed(main_window):
 def on_up_blast_attack_logic(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].blast_attacks["Up"] = main_window.\
             ico_boost_stick_r_up_value.currentIndex()
 
@@ -721,7 +721,7 @@ def on_up_blast_attack_logic(main_window):
 def on_r_blast_attack_logic(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].blast_attacks["Right"] = main_window.\
             ico_boost_stick_r_r_value.currentIndex()
 
@@ -733,7 +733,7 @@ def on_r_blast_attack_logic(main_window):
 def on_d_blast_attack_logic(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].blast_attacks["Down"] = main_window.\
             ico_boost_stick_r_d_value.currentIndex()
 
@@ -745,7 +745,7 @@ def on_d_blast_attack_logic(main_window):
 def on_l_blast_attack_logic(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].blast_attacks["Left"] = main_window.\
             ico_boost_stick_r_l_value.currentIndex()
 
@@ -757,7 +757,7 @@ def on_l_blast_attack_logic(main_window):
 def on_p_blast_attack_logic(main_window):
 
     # Avoid trigger the combo box at starting
-    if not CPEV.change_character:
+    if not CPEV.disable_logic_events_combobox:
         GPV.character_list[GPV.chara_selected].blast_attacks["Push"] = main_window.\
             ico_boost_stick_r_push_value.currentIndex()
 
