@@ -23,9 +23,9 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     on_glow_activation_changed, on_stackable_skill_changed, on_power_up_changed, on_effect_attack_changed, on_chargeable_changed, \
     on_size_attack_value_changed, on_number_of_hits_value_changed, on_cost_blast_attack_value_changed, on_blast_attack_damage_value_changed, \
     on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character, on_animation_type_changed, \
-    on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed
+    on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed, on_animation_bone_unknown_block_changed
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
-    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file, change_animation_bones_section
+    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file, change_animation_bones_section, get_rotation
 from lib.functions import check_entry_module, get_name_from_file
 from lib.packages import struct, QMessageBox
 
@@ -129,6 +129,7 @@ def initialize_operate_character(main_window):
     main_window.animation_bone_value.currentIndexChanged.connect(lambda: on_animation_bone_changed(main_window))
     main_window.animation_bone_translation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_translation_block_changed(main_window))
     main_window.animation_bone_rotation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_rotations_block_changed(main_window))
+    main_window.animation_bone_unknown_block_value.currentIndexChanged.connect(lambda: on_animation_bone_unknown_block_changed(main_window))
 
     # Set the blast type
     main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
@@ -576,14 +577,14 @@ def read_spa_file(spa_path):
                 bone_entry.unk0x04 = file.read(4)
                 bone_entry.translation_block_count = int.from_bytes(file.read(4), "big")
                 bone_entry.rotation_block_count = int.from_bytes(file.read(4), "big")
-                bone_entry.unk0x10 = file.read(4)
+                bone_entry.unknown_block_count = int.from_bytes(file.read(4), "big")
                 bone_entry.translation_frame_offset = int.from_bytes(file.read(4), "big")
                 bone_entry.rotation_frame_offset = int.from_bytes(file.read(4), "big")
-                bone_entry.unk0x1C = file.read(4)
+                bone_entry.unknown_frame_offset = int.from_bytes(file.read(4), "big")
                 bone_entry.translation_float_offset = int.from_bytes(file.read(4), "big")
                 bone_entry.rotation_float_offset = int.from_bytes(file.read(4), "big")
-                bone_entry.unk0x28[0] = file.read(4)
-                bone_entry.unk0x28[1] = file.read(4)
+                bone_entry.unknown_float_offset = int.from_bytes(file.read(4), "big")
+                bone_entry.unk0x2c = file.read(4)
 
                 # Data
                 aux_pointer = file.tell()
@@ -618,6 +619,20 @@ def read_spa_file(spa_path):
                     # Return to the next frame rotation
                     file.seek(aux_rotation_pointer)
 
+                # Read unknown
+                file.seek(bone_entry.unknown_frame_offset)
+                for i in range(0, bone_entry.unknown_block_count):
+                    # Read frame
+                    bone_entry.unknown_frame_data.append(struct.unpack('>f', file.read(4))[0])
+
+                    # Read float (x, y, z, w)
+                    aux_unknown_pointer = file.tell()
+                    file.seek(bone_entry.unknown_float_offset + (i * 16))
+                    bone_entry.unknown_float_data.append(dict({"x": struct.unpack('>f', file.read(4))[0], "y": struct.unpack('>f', file.read(4))[0], "z": struct.unpack('>f', file.read(4))[0],
+                                                                   "w": struct.unpack('>f', file.read(4))[0]}))
+                    # Return to the next frame translation
+                    file.seek(aux_unknown_pointer)
+
                 # Restore pointer
                 file.seek(aux_pointer)
 
@@ -649,40 +664,57 @@ def write_spa_file(spa_file):
             # Get the bone data
             bone_entry_data = spa_file.bone_entries[bone_entry_name]
 
-            # Check if the data, the module of 16 is 0
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
-
             # Write frames
             # Translation
             # Update offset (only if there is data)
             if bone_entry_data.translation_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
                 bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
                 for translation_frame in bone_entry_data.translation_frame_data:
                     bone_data = bone_data + struct.pack('>f', translation_frame)
                     bone_data_size += 4
-
-                # Check if the data, the module of 16 is 0
-                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
             else:
                 bone_entry_data.translation_frame_offset = 0
 
             # Rotations
             # Update offset (only if there is data)
             if bone_entry_data.rotation_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
                 bone_entry_data.rot_frame_offset = bone_data_start_offset + bone_data_size
                 for rotarion_frame in bone_entry_data.rot_frame_data:
                     bone_data = bone_data + struct.pack('>f', rotarion_frame)
                     bone_data_size += 4
-
-                # Check if the data, the module of 16 is 0
-                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
             else:
                 bone_entry_data.rot_frame_offset = 0
+
+            # Unknown
+            # Update offset (only if there is data)
+            if bone_entry_data.unknown_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
+                bone_entry_data.unknown_frame_offset = bone_data_start_offset + bone_data_size
+                for unknown_frame in bone_entry_data.unknown_frame_data:
+                    bone_data = bone_data + struct.pack('>f', unknown_frame)
+                    bone_data_size += 4
+            else:
+                bone_entry_data.unknown_frame_offset = 0
 
             # Write floats
             # Translation
             # Update offset (only if there is data)
             if bone_entry_data.translation_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
                 bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
                 for translation_float in bone_entry_data.translation_float_data:
                     bone_data = bone_data + struct.pack('>f', translation_float['x'])
@@ -691,20 +723,46 @@ def write_spa_file(spa_file):
                     bone_data = bone_data + struct.pack('>f', translation_float['w'])
                     bone_data_size += 16
 
-                # Check if the data, the module of 16 is 0
-                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
             else:
                 bone_entry_data.translation_float_offset = 0
 
             # Rotation
             # Update offset (only if there is data)
             if bone_entry_data.rotation_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
                 bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
                 for rotation_float in bone_entry_data.rot_float_data:
+                    # Convert each axis rotation in order to write the 'rot' value propertly. It needs more research since some bones has a wrong rot when is calculated from x,y,z
+                    '''rot_x = get_rotation(rotation_float['x']) << 40
+                    rot_y = get_rotation(rotation_float['y']) << 20
+                    rot_z = get_rotation(rotation_float['z'])
+                    rot = 0x3000000000000000 | (rot_x | rot_y | rot_z)
+                    bone_data = bone_data + rot.to_bytes(8, 'big')'''
                     bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
                     bone_data_size += 8
             else:
                 bone_entry_data.rotation_float_offset = 0
+
+            # Unknown
+            # Update offset (only if there is data)
+            if bone_entry_data.unknown_block_count > 0:
+
+                # Check if the data, the module of 16 is 0 before writting
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+
+                bone_entry_data.unknown_float_offset = bone_data_start_offset + bone_data_size
+                for unknown_float in bone_entry_data.unknown_float_data:
+                    bone_data = bone_data + struct.pack('>f', unknown_float['x'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['y'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['z'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['w'])
+                    bone_data_size += 16
+
+            else:
+                bone_entry_data.unknown_float_offset = 0
 
         # Write the name of the spa
         string_table_start_offset = bone_data_start_offset + bone_data_size
@@ -722,14 +780,14 @@ def write_spa_file(spa_file):
             bone_entry += bone_entry_data.unk0x04
             bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
             bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
-            bone_entry += bone_entry_data.unk0x10
+            bone_entry += bone_entry_data.unknown_block_count.to_bytes(4, 'big')
             bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
             bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
-            bone_entry += bone_entry_data.unk0x1C
+            bone_entry += bone_entry_data.unknown_frame_offset.to_bytes(4, 'big')
             bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
             bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
-            for unk0x28_value in bone_entry_data.unk0x28:
-                bone_entry += unk0x28_value
+            bone_entry += bone_entry_data.unknown_float_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x2c
 
             # Write the name in the string table
             string_table += bone_entry_name.encode('utf-8') + b'\x00'
@@ -937,11 +995,11 @@ def export_animation(animation_array, file_export_path, animation_type_index):
             data = animation_file[animation_type_index].data
             size = animation_file[animation_type_index].size
 
-        # We add the animation in the file only if there is data
+        # We add the animation in the file only if there is data. If there is no data, we add only in the header, the total number of animation files and the size (it will be 0)
+        header_file = header_file + struct.pack('>I', size)
         if size > 0:
-            header_file = header_file + struct.pack('>I', size)
             data_file = data_file + data
-            number_anim_files += 1
+        number_anim_files += 1
 
     # Write the header properties and then the data
     with open(file_export_path, mode="wb") as file:

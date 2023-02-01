@@ -171,72 +171,100 @@ def change_animation_layer_spas(main_window, spa_file):
     # Avoid combobox change the values
     CPEV.disable_logic_events_combobox = True
 
-    bone_entry = list(spa_file.bone_entries.values())[0]
+    if spa_file.size > 0:
 
-    # Bones
-    main_window.animation_bone_value.clear()
-    for bone_name in spa_file.bone_entries:
-        main_window.animation_bone_value.addItem(bone_name)
-    main_window.animation_bone_value.setCurrentIndex(0)
+        if not main_window.animation_bone_value.isEnabled():
+            main_window.animation_bone_value.setEnabled(True)
 
-    change_animation_bone(main_window, bone_entry)
+        bone_entry = list(spa_file.bone_entries.values())[0]
+
+        # Bones
+        main_window.animation_bone_value.clear()
+        for bone_name in spa_file.bone_entries:
+            main_window.animation_bone_value.addItem(bone_name)
+        main_window.animation_bone_value.setCurrentIndex(0)
+
+        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+    else:
+        if main_window.animation_bone_value.isEnabled():
+            main_window.animation_bone_value.setEnabled(False)
+
+        change_animation_bone(main_window, None, 0, 0, 0)
 
     # Enable combobox change the values
     CPEV.disable_logic_events_combobox = False
 
 
-def change_animation_bone(main_window, bone_entry):
+def change_animation_bone(main_window, bone_entry, translation_block_count, rotation_block_count, unknown_block_count):
 
     # Avoid combobox change the values
     CPEV.disable_logic_events_combobox = True
 
     # Blocks
     # Translations
-    if bone_entry.translation_block_count > 0:
+    if translation_block_count > 0:
 
-        if not main_window.animation_bone_translation_block_value.isEnabled():
-            main_window.animation_bone_translation_block_value.setEnabled(True)
-            main_window.animation_bone_translation_X_value.setEnabled(True)
-            main_window.animation_bone_translation_Y_value.setEnabled(True)
-            main_window.animation_bone_translation_Z_value.setEnabled(True)
-            main_window.animation_bone_translation_W_value.setEnabled(True)
+        main_window.animation_bone_translation_block_value.setEnabled(True)
+        main_window.animation_bone_translation_X_value.setEnabled(True)
+        main_window.animation_bone_translation_Y_value.setEnabled(True)
+        main_window.animation_bone_translation_Z_value.setEnabled(True)
+        main_window.animation_bone_translation_W_value.setEnabled(True)
 
         main_window.animation_bone_translation_block_value.clear()
-        for i in range(0, bone_entry.translation_block_count):
+        for i in range(0, translation_block_count):
             main_window.animation_bone_translation_block_value.addItem(str(i), i)
         main_window.animation_bone_translation_block_value.setCurrentIndex(0)
         change_animation_bone_translation_block(main_window, bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()])
 
     else:
-        if main_window.animation_bone_translation_block_value.isEnabled():
-            main_window.animation_bone_translation_block_value.setEnabled(False)
-            main_window.animation_bone_translation_X_value.setEnabled(False)
-            main_window.animation_bone_translation_Y_value.setEnabled(False)
-            main_window.animation_bone_translation_Z_value.setEnabled(False)
-            main_window.animation_bone_translation_W_value.setEnabled(False)
+        main_window.animation_bone_translation_block_value.setEnabled(False)
+        main_window.animation_bone_translation_X_value.setEnabled(False)
+        main_window.animation_bone_translation_Y_value.setEnabled(False)
+        main_window.animation_bone_translation_Z_value.setEnabled(False)
+        main_window.animation_bone_translation_W_value.setEnabled(False)
 
     # Rotations
-    if bone_entry.rotation_block_count > 0:
+    if rotation_block_count > 0:
 
-        if not main_window.animation_bone_rotation_block_value.isEnabled():
-            main_window.animation_bone_rotation_block_value.setEnabled(True)
-            main_window.animation_bone_rotation_X_value.setEnabled(True)
-            main_window.animation_bone_rotation_Y_value.setEnabled(True)
-            main_window.animation_bone_rotation_Z_value.setEnabled(True)
+        main_window.animation_bone_rotation_block_value.setEnabled(True)
+        main_window.animation_bone_rotation_X_value.setEnabled(True)
+        main_window.animation_bone_rotation_Y_value.setEnabled(True)
+        main_window.animation_bone_rotation_Z_value.setEnabled(True)
 
         main_window.animation_bone_rotation_block_value.clear()
-        for i in range(0, bone_entry.rotation_block_count):
+        for i in range(0, rotation_block_count):
             main_window.animation_bone_rotation_block_value.addItem(str(i), i)
         main_window.animation_bone_rotation_block_value.setCurrentIndex(0)
         # Rotations
         change_animation_bone_rotations_block(main_window, bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()])
 
     else:
-        if main_window.animation_bone_rotation_block_value.isEnabled():
-            main_window.animation_bone_rotation_block_value.setEnabled(False)
-            main_window.animation_bone_rotation_X_value.setEnabled(False)
-            main_window.animation_bone_rotation_Y_value.setEnabled(False)
-            main_window.animation_bone_rotation_Z_value.setEnabled(False)
+        main_window.animation_bone_rotation_block_value.setEnabled(False)
+        main_window.animation_bone_rotation_X_value.setEnabled(False)
+        main_window.animation_bone_rotation_Y_value.setEnabled(False)
+        main_window.animation_bone_rotation_Z_value.setEnabled(False)
+
+    # Unknowns
+    if unknown_block_count > 0:
+
+        main_window.animation_bone_unknown_block_value.setEnabled(True)
+        main_window.animation_bone_unknown_X_value.setEnabled(True)
+        main_window.animation_bone_unknown_Y_value.setEnabled(True)
+        main_window.animation_bone_unknown_Z_value.setEnabled(True)
+        main_window.animation_bone_unknown_W_value.setEnabled(True)
+
+        main_window.animation_bone_unknown_block_value.clear()
+        for i in range(0, unknown_block_count):
+            main_window.animation_bone_unknown_block_value.addItem(str(i), i)
+        main_window.animation_bone_unknown_block_value.setCurrentIndex(0)
+        change_animation_bone_unknown_block(main_window, bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()])
+
+    else:
+        main_window.animation_bone_unknown_block_value.setEnabled(False)
+        main_window.animation_bone_unknown_X_value.setEnabled(False)
+        main_window.animation_bone_unknown_Y_value.setEnabled(False)
+        main_window.animation_bone_unknown_Z_value.setEnabled(False)
+        main_window.animation_bone_unknown_W_value.setEnabled(False)
 
     # Enable combobox change the values
     CPEV.disable_logic_events_combobox = False
@@ -257,6 +285,20 @@ def change_animation_bone_rotations_block(main_window, rotations_float_data):
     main_window.animation_bone_rotation_X_value.setValue(rotations_float_data["x"])
     main_window.animation_bone_rotation_Y_value.setValue(rotations_float_data["y"])
     main_window.animation_bone_rotation_Z_value.setValue(rotations_float_data["z"])
+
+
+def change_animation_bone_unknown_block(main_window, unknown_float_data):
+
+    # Unknown values. Needs more reseach
+    main_window.animation_bone_unknown_X_value.setValue(unknown_float_data["x"])
+    main_window.animation_bone_unknown_Y_value.setValue(unknown_float_data["y"])
+    main_window.animation_bone_unknown_Z_value.setValue(unknown_float_data["z"])
+    main_window.animation_bone_unknown_W_value.setValue(unknown_float_data["w"])
+
+
+def get_rotation(v):
+
+    return int(((v + 90) * 0x7ffff) / 90)
 
 
 def store_blast_values_from_file(blast, file):

@@ -2,7 +2,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, change_animation_bones_section, change_animation_layer_spas, change_animation_bone, \
-    change_animation_bone_translation_block, change_animation_bone_rotations_block
+    change_animation_bone_translation_block, change_animation_bone_rotations_block, change_animation_bone_unknown_block
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
 from lib.character_parameters_editor import IPF
@@ -654,7 +654,7 @@ def on_animation_bone_changed(main_window):
     if not CPEV.disable_logic_events_combobox:
         spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
         bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-        change_animation_bone(main_window, bone_entry)
+        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
 
 
 def on_animation_bone_translation_block_changed(main_window):
@@ -675,6 +675,16 @@ def on_animation_bone_rotations_block_changed(main_window):
         bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
         rotations_float_data = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
         change_animation_bone_rotations_block(main_window, rotations_float_data)
+
+
+def on_animation_bone_unknown_block_changed(main_window):
+
+    # Avoid change the values when the program is changing the character from the main panel and starting
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+        unknowns_float_data = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
+        change_animation_bone_unknown_block(main_window, unknowns_float_data)
 
 
 def on_blast_attack_changed(main_window):
