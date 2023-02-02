@@ -298,7 +298,7 @@ def change_animation_bone_unknown_block(main_window, unknown_float_data):
 
 def get_rotation(v):
 
-    return int(((v + 90) * 0x7ffff) / 90)
+    return int(((v + 90) / 90) * 0x7ffff)
 
 
 def store_blast_values_from_file(blast, file):

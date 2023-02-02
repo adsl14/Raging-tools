@@ -608,7 +608,7 @@ def read_spa_file(spa_path):
                     # Read frame
                     bone_entry.rot_frame_data.append(struct.unpack('>f', file.read(4))[0])
 
-                    # Read float
+                    # Read float (the calculation of x, y and z, needs more research. When we create the rot value from x, y and z, we don't get the same result as the input)
                     aux_rotation_pointer = file.tell()
                     file.seek(bone_entry.rotation_float_offset + (i * 8))
                     rot = int.from_bytes(file.read(8), "big")
@@ -735,11 +735,11 @@ def write_spa_file(spa_file):
 
                 bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
                 for rotation_float in bone_entry_data.rot_float_data:
-                    # Convert each axis rotation in order to write the 'rot' value propertly. It needs more research since some bones has a wrong rot when is calculated from x,y,z
+                    # Convert each axis rotation in order to write the 'rot' value propertly. It needs more research since the rot calculated is not the same from the original
                     '''rot_x = get_rotation(rotation_float['x']) << 40
                     rot_y = get_rotation(rotation_float['y']) << 20
                     rot_z = get_rotation(rotation_float['z'])
-                    rot = 0x3000000000000000 | (rot_x | rot_y | rot_z)
+                    rot = 0x3000000000000000 | rot_x | rot_y | rot_z
                     bone_data = bone_data + rot.to_bytes(8, 'big')'''
                     bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
                     bone_data_size += 8
