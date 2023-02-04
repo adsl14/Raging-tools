@@ -1,5 +1,6 @@
 import functools
 import os
+import json
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
@@ -23,7 +24,9 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     on_glow_activation_changed, on_stackable_skill_changed, on_power_up_changed, on_effect_attack_changed, on_chargeable_changed, \
     on_size_attack_value_changed, on_number_of_hits_value_changed, on_cost_blast_attack_value_changed, on_blast_attack_damage_value_changed, \
     on_speed_attack_value_changed, on_reach_attack_value_changed, on_camera_blast_value_changed, action_change_character, action_modify_character, on_animation_type_changed, \
-    on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed, on_animation_bone_unknown_block_changed
+    on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed, on_animation_bone_unknown_block_changed, \
+    action_export_animation_bone_button_logic, action_export_all_animation_bone_button_logic, action_import_animation_bone_button_logic, action_import_all_animation_bone_button_logic, \
+    action_remove_animation_bone
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
     write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file, change_animation_bones_section, get_rotation
 from lib.functions import check_entry_module, get_name_from_file
@@ -130,6 +133,14 @@ def initialize_operate_character(main_window):
     main_window.animation_bone_translation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_translation_block_changed(main_window))
     main_window.animation_bone_rotation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_rotations_block_changed(main_window))
     main_window.animation_bone_unknown_block_value.currentIndexChanged.connect(lambda: on_animation_bone_unknown_block_changed(main_window))
+    # Export bone
+    main_window.animation_export_bone.clicked.connect(lambda: action_export_animation_bone_button_logic(main_window))
+    main_window.animation_export_all_bone.clicked.connect(lambda: action_export_all_animation_bone_button_logic(main_window))
+    # Import bone
+    main_window.animation_import_bone.clicked.connect(lambda: action_import_animation_bone_button_logic(main_window))
+    main_window.animation_import_all_bone.clicked.connect(lambda: action_import_all_animation_bone_button_logic(main_window))
+    # Remove bone
+    main_window.animation_remove_bone.clicked.connect(lambda: action_remove_animation_bone(main_window))
 
     # Set the blast type
     main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
@@ -612,10 +623,10 @@ def read_spa_file(spa_path):
                     aux_rotation_pointer = file.tell()
                     file.seek(bone_entry.rotation_float_offset + (i * 8))
                     rot = int.from_bytes(file.read(8), "big")
-                    x = ((((rot & 0x0fffffffffffffff) >> 40) / 0x7ffff) * 90) - 90
+                    ''''x = ((((rot & 0x0fffffffffffffff) >> 40) / 0x7ffff) * 90) - 90
                     y = ((((rot & 0x000000ffffffffff) >> 20) / 0x7ffff) * 90) - 90
-                    z = (((rot & 0x00000000000fffff) / 0x7ffff) * 90) - 90
-                    bone_entry.rot_float_data.append(dict({"rot": rot, "x": x, "y": y, "z": z}))
+                    z = (((rot & 0x00000000000fffff) / 0x7ffff) * 90) - 90'''
+                    bone_entry.rot_float_data.append(dict({"rot": rot, "x": 0, "y": 0, "z": 0}))
                     # Return to the next frame rotation
                     file.seek(aux_rotation_pointer)
 
@@ -686,12 +697,12 @@ def write_spa_file(spa_file):
                 # Check if the data, the module of 16 is 0 before writting
                 bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-                bone_entry_data.rot_frame_offset = bone_data_start_offset + bone_data_size
+                bone_entry_data.rotation_frame_offset = bone_data_start_offset + bone_data_size
                 for rotarion_frame in bone_entry_data.rot_frame_data:
                     bone_data = bone_data + struct.pack('>f', rotarion_frame)
                     bone_data_size += 4
             else:
-                bone_entry_data.rot_frame_offset = 0
+                bone_entry_data.rotation_frame_offset = 0
 
             # Unknown
             # Update offset (only if there is data)
@@ -809,6 +820,163 @@ def write_spa_file(spa_file):
         header_size = 48
 
     return (header_data + bone_entry + bone_data + string_table), (header_size + bone_entry_size + bone_data_size + string_table_size)
+
+
+def read_json_bone_file(file_import_path):
+
+    spa_file = SPAFile()
+    # Open the json file
+    with open(file_import_path, mode='r') as input_file:
+
+        # Check if is a valid json file
+        try:
+            # return a json object
+            data = json.load(input_file)
+
+            # Read header
+            spa_file.spa_header.unk0x00 = data['unk0x00'].to_bytes(4, 'big')
+            spa_file.spa_header.name = data['name']
+            spa_file.spa_header.unk0x08 = data['unk0x08'].to_bytes(4, 'big')
+            spa_file.spa_header.frame_count = data['frame_count']
+            spa_file.spa_header.scene_nodes_count = data['scene_nodes_count']
+            spa_file.spa_header.camera_count = data['camera_count']
+            spa_file.spa_header.unk0x28 = data['unk0x28'].to_bytes(4, 'big')
+            spa_file.spa_header.unk0x28 = data['unk0x28'].to_bytes(4, 'big')
+            spa_file.spa_header.unk0x2c = data['unk0x2c'].to_bytes(4, 'big')
+
+            # Read each bone from json
+            for bone_entry_json in data['bones']:
+
+                # Count the number of bones in json file
+                spa_file.spa_header.bone_count += 1
+
+                # Create bone instance
+                bone_entry = BoneEntry()
+
+                bone_entry.name = bone_entry_json['name']
+
+                # Meta data
+                bone_entry.unk0x04 = bone_entry_json['unk0x04'].to_bytes(4, 'big')
+                bone_entry.translation_block_count = bone_entry_json['translation_block_count']
+                bone_entry.rotation_block_count = bone_entry_json['rotation_block_count']
+                bone_entry.unknown_block_count = bone_entry_json['unknown_block_count']
+                bone_entry.unk0x2c = bone_entry_json['unk0x2c'].to_bytes(4, 'big')
+
+                # Data
+                # Read translations
+                for i in range(0, bone_entry.translation_block_count):
+                    # Read frame
+                    bone_entry.translation_frame_data.append(bone_entry_json['translation_frame_data'][i])
+
+                    # Read float (x, y, z, w)
+                    bone_entry.translation_float_data.append(bone_entry_json['translation_float_data'][i])
+
+                # Read rotations
+                for i in range(0, bone_entry.rotation_block_count):
+                    # Read frame
+                    bone_entry.rot_frame_data.append(bone_entry_json['rot_frame_data'][i])
+
+                    # Read float
+                    bone_entry.rot_float_data.append(bone_entry_json['rot_float_data'][i])
+
+                # Read unknown
+                for i in range(0, bone_entry.unknown_block_count):
+                    # Read frame
+                    bone_entry.unknown_frame_data.append(bone_entry_json['unknown_frame_data'][i])
+
+                    # Read float (x, y, z, w)
+                    bone_entry.unknown_float_data.append(bone_entry_json['unknown_float_data'][i])
+
+                # Store everything in the dict
+                spa_file.bone_entries[bone_entry.name] = bone_entry
+        except BaseException:
+            print("ERROR -> Wrong json file.")
+
+        return spa_file
+
+
+def write_json_bone_file(file_export_path, spa_header, bone_entries):
+
+    header_text = ""
+    bone_text = ""
+    with open(file_export_path, mode='w') as output_file:
+
+        # Header (before bone count)
+        header_text += "\t\"unk0x00\": " + str(int.from_bytes(spa_header.unk0x00, "big")) + ",\n"
+        header_text += "\t\"name\": \"" + spa_header.name + "\",\n"
+        header_text += "\t\"unk0x08\": " + str(int.from_bytes(spa_header.unk0x08, "big")) + ",\n"
+        header_text += "\t\"frame_count\": " + str(spa_header.frame_count) + ",\n"
+
+        # Bones
+        bone_text += "\t\"bones\": \n\t\t\t[\n"
+        for bone_entry_name in bone_entries:
+            bone_entry_data = bone_entries[bone_entry_name]
+            bone_text += "\t\t\t\t{"
+            bone_text += "\"name\": " + "\"" + bone_entry_data.name + "\", "
+            bone_text += "\"unk0x04\": " + str(int.from_bytes(bone_entry_data.unk0x04, "big")) + ", "
+            bone_text += "\"translation_block_count\": " + str(bone_entry_data.translation_block_count) + ", "
+            bone_text += "\"rotation_block_count\": " + str(bone_entry_data.rotation_block_count) + ", "
+            bone_text += "\"unknown_block_count\": " + str(bone_entry_data.unknown_block_count) + ", "
+            bone_text += "\"unk0x2c\": " + str(int.from_bytes(bone_entry_data.unk0x2c, "big")) + ",\n"
+
+            bone_text += "\t\t\t\t\t\"translation_frame_data\": ["
+            text_write = ""
+            for translation_frame in bone_entry_data.translation_frame_data:
+                text_write += str(translation_frame) + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]" + ",\n"
+
+            bone_text += "\t\t\t\t\t\"translation_float_data\": ["
+            text_write = ""
+            for translation_float in bone_entry_data.translation_float_data:
+                text_write += "{\"x\": " + str(translation_float['x']) + ", " + "\"y\": " + str(translation_float['y']) + ", " + "\"z\": " + str(translation_float['z']) + ", " + \
+                              "\"w\": " + str(translation_float['w']) + "}" + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]" + ",\n"
+
+            bone_text += "\t\t\t\t\t\"rot_frame_data\": ["
+            text_write = ""
+            for rot_frame in bone_entry_data.rot_frame_data:
+                text_write += str(rot_frame) + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]" + ",\n"
+
+            bone_text += "\t\t\t\t\t\"rot_float_data\": ["
+            text_write = ""
+            for rot_float in bone_entry_data.rot_float_data:
+                text_write += "{\"rot\": " + str(rot_float['rot']) + "}" + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]" + ",\n"
+
+            bone_text += "\t\t\t\t\t\"unknown_frame_data\": ["
+            text_write = ""
+            for unknown_frame in bone_entry_data.unknown_frame_data:
+                text_write += str(unknown_frame) + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]" + ",\n"
+
+            bone_text += "\t\t\t\t\t\"unknown_float_data\": ["
+            text_write = ""
+            for unknown_float in bone_entry_data.unknown_float_data:
+                text_write += "{\"x\": " + str(unknown_float['x']) + ", " + "\"y\": " + str(unknown_float['y']) + ", " + "\"z\": " + str(unknown_float['z']) + ", " + \
+                              "\"w\": " + str(unknown_float['w']) + "}" + ", "
+            bone_text += text_write[:-2]
+            bone_text += "]"
+
+            bone_text += "\n\t\t\t\t}" + "," + "\n"
+        bone_text = bone_text[:-2] + "\n\t\t\t]\n"
+
+        # Rest of header (after bone count)
+        header_text += "\t\"scene_nodes_count\": " + str(spa_header.scene_nodes_count) + ",\n"
+        header_text += "\t\"camera_count\": " + str(spa_header.camera_count) + ",\n"
+        header_text += "\t\"unk0x28\": " + str(int.from_bytes(spa_header.unk0x28, "big")) + ",\n"
+        header_text += "\t\"unk0x2c\": " + str(int.from_bytes(spa_header.unk0x2c, "big")) + ",\n"
+
+        # Write json
+        output_file.write("{\n")
+        output_file.write(header_text)
+        output_file.write(bone_text)
+        output_file.write("}")
 
 
 # Read animation spa and spae files at the same time

@@ -173,22 +173,18 @@ def change_animation_layer_spas(main_window, spa_file):
 
     if spa_file.size > 0:
 
-        if not main_window.animation_bone_value.isEnabled():
-            main_window.animation_bone_value.setEnabled(True)
-
-        bone_entry = list(spa_file.bone_entries.values())[0]
-
         # Bones
         main_window.animation_bone_value.clear()
-        for bone_name in spa_file.bone_entries:
-            main_window.animation_bone_value.addItem(bone_name)
-        main_window.animation_bone_value.setCurrentIndex(0)
+        if spa_file.spa_header.bone_count > 1:
+            bone_entry = list(spa_file.bone_entries.values())[0]
+            for bone_name in spa_file.bone_entries:
+                main_window.animation_bone_value.addItem(bone_name)
+            main_window.animation_bone_value.setCurrentIndex(0)
 
-        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+            change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+        else:
+            change_animation_bone(main_window, None, 0, 0, 0)
     else:
-        if main_window.animation_bone_value.isEnabled():
-            main_window.animation_bone_value.setEnabled(False)
-
         change_animation_bone(main_window, None, 0, 0, 0)
 
     # Enable combobox change the values
@@ -199,6 +195,27 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
 
     # Avoid combobox change the values
     CPEV.disable_logic_events_combobox = True
+
+    # Bone entry has data
+    if bone_entry is not None:
+
+        # Enable buttons
+        if not main_window.animation_remove_bone.isEnabled():
+            main_window.animation_bone_value.setEnabled(True)
+            main_window.animation_export_bone.setEnabled(True)
+            main_window.animation_export_all_bone.setEnabled(True)
+            main_window.animation_import_bone.setEnabled(True)
+            main_window.animation_import_all_bone.setEnabled(True)
+            main_window.animation_remove_bone.setEnabled(True)
+    else:
+        # Disable buttons
+        if main_window.animation_remove_bone.isEnabled():
+            main_window.animation_bone_value.setEnabled(False)
+            main_window.animation_export_bone.setEnabled(False)
+            main_window.animation_export_all_bone.setEnabled(False)
+            main_window.animation_import_bone.setEnabled(False)
+            main_window.animation_import_all_bone.setEnabled(False)
+            main_window.animation_remove_bone.setEnabled(False)
 
     # Blocks
     # Translations
@@ -227,9 +244,10 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
     if rotation_block_count > 0:
 
         main_window.animation_bone_rotation_block_value.setEnabled(True)
-        main_window.animation_bone_rotation_X_value.setEnabled(True)
-        main_window.animation_bone_rotation_Y_value.setEnabled(True)
-        main_window.animation_bone_rotation_Z_value.setEnabled(True)
+        # main_window.animation_bone_rotation_X_value.setEnabled(True)
+        # main_window.animation_bone_rotation_Y_value.setEnabled(True)
+        # main_window.animation_bone_rotation_Z_value.setEnabled(True)
+        main_window.animation_bone_rotation_XYZ_value.setEnabled(True)
 
         main_window.animation_bone_rotation_block_value.clear()
         for i in range(0, rotation_block_count):
@@ -240,9 +258,10 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
 
     else:
         main_window.animation_bone_rotation_block_value.setEnabled(False)
-        main_window.animation_bone_rotation_X_value.setEnabled(False)
-        main_window.animation_bone_rotation_Y_value.setEnabled(False)
-        main_window.animation_bone_rotation_Z_value.setEnabled(False)
+        # main_window.animation_bone_rotation_X_value.setEnabled(False)
+        # main_window.animation_bone_rotation_Y_value.setEnabled(False)
+        # main_window.animation_bone_rotation_Z_value.setEnabled(False)
+        main_window.animation_bone_rotation_XYZ_value.setEnabled(False)
 
     # Unknowns
     if unknown_block_count > 0:
@@ -282,9 +301,10 @@ def change_animation_bone_translation_block(main_window, translations_float_data
 def change_animation_bone_rotations_block(main_window, rotations_float_data):
 
     # Rotations
-    main_window.animation_bone_rotation_X_value.setValue(rotations_float_data["x"])
-    main_window.animation_bone_rotation_Y_value.setValue(rotations_float_data["y"])
-    main_window.animation_bone_rotation_Z_value.setValue(rotations_float_data["z"])
+    # main_window.animation_bone_rotation_X_value.setValue(rotations_float_data["x"])
+    # main_window.animation_bone_rotation_Y_value.setValue(rotations_float_data["y"])
+    # main_window.animation_bone_rotation_Z_value.setValue(rotations_float_data["z"])
+    main_window.animation_bone_rotation_XYZ_value.setValue(rotations_float_data["rot"])
 
 
 def change_animation_bone_unknown_block(main_window, unknown_float_data):

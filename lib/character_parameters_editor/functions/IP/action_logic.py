@@ -240,6 +240,9 @@ def action_import_animation_button_logic(main_window, animation_type_index):
         # Change old path
         main_window.old_path_file = file_import_path
 
+        # Show visual change
+        change_animation_bones_section(main_window, animation_array)
+
 
 def action_import_all_animation_button_logic(main_window, animation_type_index):
     # Ask to the user from what file wants to open the camera files
@@ -265,6 +268,12 @@ def action_import_all_animation_button_logic(main_window, animation_type_index):
             elif i == 57:
                 read_transformation_effect(main_window, animation_array[0][1])
 
+            # We change the visual when the animation we're currently modifying, is the actual animation that the user is viewing and the importation of the actual
+            # animation has been done propertly
+            if main_window.animation_type_value.currentIndex() == i and animation_files[i] not in animations_files_error:
+                # Show visual change
+                change_animation_bones_section(main_window, animation_array)
+
         # We show a message with the animations files that couldn't get imported
         if animations_files_error:
 
@@ -279,6 +288,177 @@ def action_import_all_animation_button_logic(main_window, animation_type_index):
             msg.setWindowIcon(main_window.ico_image)
             msg.setText(message)
             msg.exec()
+
+
+def action_export_animation_bone_button_logic(main_window):
+
+    # Ask to the user the file output
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "_" + \
+                main_window.animation_bone_value.currentText() + "." + IPV.animation_bone_extension
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation bone",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    # The user has selected an output
+    if file_export_path:
+
+        # Get from the combo box, the bone of the animation
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = dict({main_window.animation_bone_value.currentText(): spa_file.bone_entries[main_window.animation_bone_value.currentText()]})
+
+        # Write in a json file, the bone
+        IPF.write_json_bone_file(file_export_path, spa_file.spa_header, bone_entry)
+
+
+def action_export_all_animation_bone_button_logic(main_window):
+
+    # Ask to the user the file output
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "." + IPV.animation_bone_extension
+    file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation bones",
+                                                   os.path.join(main_window.old_path_file, name_file), "")[0]
+
+    # The user has selected an output
+    if file_export_path:
+
+        # Get from the combo box, all bones
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+
+        # Write in a json file, the bones
+        IPF.write_json_bone_file(file_export_path, spa_file.spa_header, spa_file.bone_entries)
+
+
+def action_import_animation_bone_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the bone file
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "_" + \
+                main_window.animation_bone_value.currentText() + "." + IPV.animation_bone_extension
+    file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation bone",
+                                                   os.path.join(main_window.old_path_file, name_file),
+                                                   "Json file "
+                                                   "(*.json)")[0]
+
+    if os.path.exists(file_import_path):
+        # Read json first
+        spa_file_json = IPF.read_json_bone_file(file_import_path)
+
+        # Check if the opened json, has only one bone
+        if spa_file_json.spa_header.bone_count < 1:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("The opened json file doesn't have any bone data!")
+            msg.exec()
+        elif spa_file_json.spa_header.bone_count == 1:
+            # Get current spa_file from memory
+            spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+
+            # Replace spa_file bone from memory, with spa_file from json
+            current_bone_text = main_window.animation_bone_value.currentText()
+            # Get the first bone from json
+            bone_entry_json = next(iter(spa_file_json.bone_entries.values()))
+            bone_entry_json.name = current_bone_text
+            spa_file.bone_entries[current_bone_text] = bone_entry_json
+            bone_entry = spa_file.bone_entries[current_bone_text]
+
+            # Update changes in the visual
+            change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+
+            # Enable flag that this spa_file has been modified
+            spa_file.modified = True
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("The opened json file has multiple bones within. Please, open a json file with only one bone data.")
+            msg.exec()
+
+
+def action_import_all_animation_bone_button_logic(main_window):
+
+    # Ask to the user from what file wants to open the bone file
+    name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
+                main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "." + IPV.animation_bone_extension
+    file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation bones",
+                                                   os.path.join(main_window.old_path_file, name_file),
+                                                   "Json file "
+                                                   "(*.json)")[0]
+
+    if os.path.exists(file_import_path):
+
+        new_bones_dict = {}
+        new_bones_names = ""
+
+        # Read json first
+        spa_file_json = IPF.read_json_bone_file(file_import_path)
+
+        # Check if there is, at least, one bone data in the json file
+        if spa_file_json.spa_header.bone_count >= 1:
+
+            # Get current spa_file from memory
+            spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+
+            # Replace spa_file bone from memory, with spa_file from json
+            for bone_name_json in spa_file_json.bone_entries:
+                try:
+                    if spa_file.bone_entries[bone_name_json]:
+                        spa_file.bone_entries[bone_name_json] = spa_file_json.bone_entries[bone_name_json]
+                except KeyError:
+                    # Add the new bones to the dict
+                    new_bones_dict[bone_name_json] = spa_file_json.bone_entries[bone_name_json]
+                    new_bones_names += "<li>" + bone_name_json + "</li>"
+
+            if new_bones_dict:
+                # Ask to the user to add the new bones
+                msg = QMessageBox()
+                msg.setWindowTitle("Message")
+                msg.setWindowIcon(main_window.ico_image)
+                message = IPV.message_bone_import_doesnt_exists + "<ul>" + new_bones_names + "</ul>\n" + "Do you want to add them?"
+                answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+                # Add the new bones
+                if answer == msg.Yes:
+                    spa_file.spa_header.bone_count += len(new_bones_dict)
+                    spa_file.bone_entries.update(new_bones_dict)
+                    change_animation_layer_spas(main_window, spa_file)
+            # Update changes in the visual
+            change_animation_layer_spas(main_window, spa_file)
+
+            # Enable flag that this spa_file has been modified
+            spa_file.modified = True
+        else:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setWindowIcon(main_window.ico_image)
+            msg.setText("The opened json file doesn't have any bone data!")
+            msg.exec()
+
+
+def action_remove_animation_bone(main_window):
+
+    # Ask to the user if is sure to remove the texture
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
+    message = "The bone will be removed. Are you sure to continue?"
+    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+    # Check if the user has selected something
+    if answer:
+
+        # The user wants to remove the selected bone
+        if answer == msg.Yes:
+
+            # Get current spa file
+            spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+
+            # Removes bone from memory
+            spa_file.spa_header.bone_count -= 1
+            del spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+
+            # Removes bone from visual
+            main_window.animation_bone_value.removeItem(main_window.animation_bone_value.currentIndex())
 
 
 def action_export_blast_button_logic(main_window):
@@ -653,8 +833,11 @@ def on_animation_bone_changed(main_window):
     # Avoid change the values when the program is changing the character from the main panel and starting
     if not CPEV.disable_logic_events_combobox:
         spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+        try:
+            bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+            change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+        except BaseException:
+            change_animation_bone(main_window, None, 0, 0, 0)
 
 
 def on_animation_bone_translation_block_changed(main_window):

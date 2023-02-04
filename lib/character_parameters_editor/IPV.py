@@ -7,6 +7,8 @@ class IPV:
     character_i_path = ""
     camera_i_path = ""
     blast_i_path = ""
+    # Warning base message when importing a bone that doesn't exists in memory
+    message_bone_import_doesnt_exists = "The following bones are new for the current animation:"
     # Indexes
     signature_folder_index_list_view = None
     # Regex values
@@ -54,6 +56,7 @@ class IPV:
                         "Potara in", "Potara result", "Potara demo", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose",
                         "Signature"]
     animations_extension = "spas"
+    animation_bone_extension = "json"
     # Blast properties
     glow_values = dict({"Disabled": 0, "0x01": 1, "0x02": 2, "0x03": 3, "0x04": 4, "0x06": 6, "0x07": 7, "0x08": 8, "0x09": 9, "0x0A": 10, "0x0C": 12,
                         "0x0D": 13, "0x0E": 14, "0x0F": 15, "Enabled": 16})
