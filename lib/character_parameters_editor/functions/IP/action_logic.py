@@ -1,6 +1,7 @@
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QLabel
 
+import lib.functions
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, change_animation_bones_section, change_animation_layer_spas, change_animation_bone, \
     change_animation_bone_translation_block, change_animation_bone_rotations_block, change_animation_bone_unknown_block
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
@@ -307,7 +308,7 @@ def action_export_animation_bone_button_logic(main_window):
         bone_entry = dict({main_window.animation_bone_value.currentText(): spa_file.bone_entries[main_window.animation_bone_value.currentText()]})
 
         # Write in a json file, the bone
-        IPF.write_json_bone_file(file_export_path, spa_file.spa_header, bone_entry)
+        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, bone_entry)
 
 
 def action_export_all_animation_bone_button_logic(main_window):
@@ -325,7 +326,7 @@ def action_export_all_animation_bone_button_logic(main_window):
         spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
 
         # Write in a json file, the bones
-        IPF.write_json_bone_file(file_export_path, spa_file.spa_header, spa_file.bone_entries)
+        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, spa_file.bone_entries)
 
 
 def action_import_animation_bone_button_logic(main_window):
@@ -341,7 +342,7 @@ def action_import_animation_bone_button_logic(main_window):
 
     if os.path.exists(file_import_path):
         # Read json first
-        spa_file_json = IPF.read_json_bone_file(file_import_path)
+        spa_file_json = lib.functions.read_json_bone_file(file_import_path)
 
         # Check if the opened json, has only one bone
         if spa_file_json.spa_header.bone_count < 1:
@@ -391,7 +392,7 @@ def action_import_all_animation_bone_button_logic(main_window):
         new_bones_names = ""
 
         # Read json first
-        spa_file_json = IPF.read_json_bone_file(file_import_path)
+        spa_file_json = lib.functions.read_json_bone_file(file_import_path)
 
         # Check if there is, at least, one bone data in the json file
         if spa_file_json.spa_header.bone_count >= 1:

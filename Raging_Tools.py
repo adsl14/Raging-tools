@@ -1,6 +1,7 @@
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import QInputDialog
 
+from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.design.Raging_Tools.Raging_Tools import *
@@ -8,8 +9,8 @@ from lib.design.material_children.material_children import Material_Child_Editor
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
-from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat
-from lib.functions import del_rw, ask_pack_structure
+from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, time
+from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import WorkerVef
@@ -22,6 +23,54 @@ from lib.pak_explorer.PEV import PEV
 # character parameters editor
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.CPEF import initialize_cpe
+
+
+# Worker class
+class WorkerMainWindow(QObject):
+
+    finished = pyqtSignal()
+    progressValue = pyqtSignal(float)
+    progressText = pyqtSignal(str)
+
+    def convert_SPA_to_JSON(self, path_file):
+
+        # Convert spa and store it to memory
+        # Report progress
+        self.progressText.emit("Loading spa file")
+        spa_file = read_spa_file(path_file)
+        self.progressValue.emit(50)
+
+        # Create the new output
+        output_path = os.path.join(os.path.dirname(path_file), os.path.basename(path_file).split(".")[0] + "." + IPV.animation_bone_extension)
+
+        # Write the output
+        self.progressText.emit("Creating json file")
+        write_json_bone_file(output_path, spa_file.spa_header, spa_file.bone_entries)
+        self.progressValue.emit(100)
+
+        # Finish the thread
+        self.finished.emit()
+
+    def convert_JSON_to_SPA(self, path_file):
+
+        # Convert spa and store it to memory
+        # Report progress
+        self.progressText.emit("Loading json file")
+        spa_file = read_json_bone_file(path_file)
+        self.progressValue.emit(50)
+
+        # Create the new output
+        output_path = os.path.join(os.path.dirname(path_file), os.path.basename(path_file).split(".")[0] + "." + IPV.animation_extension)
+
+        # Write the output
+        self.progressText.emit("Creating spa file")
+        data, _ = write_spa_file(spa_file)
+        with open(output_path, mode="wb") as output_file:
+            output_file.write(data)
+        self.progressValue.emit(100)
+
+        # Finish the thread
+        self.finished.emit()
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -47,6 +96,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionOpen.triggered.connect(self.action_open_logic)
         self.actionSave.triggered.connect(self.action_save_logic)
         self.actionClose.triggered.connect(self.close)
+
+        # Utilities tab
+        self.actionto_JSON.triggered.connect(self.action_SPA_to_JSON_logic)
+        self.actionto_SPA.triggered.connect(self.action_JSON_to_SPA_logic)
 
         # About tab
         self.actionAuthor.triggered.connect(self.action_author_logic)
@@ -547,6 +600,58 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msg.setWindowIcon(self.ico_image)
                     msg.setText("No pak file has been loaded.")
                     msg.exec()
+
+    def action_SPA_to_JSON_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self, "Open spa file", MainWindow.old_path_file, "Special animation file (*.spa)")[0]
+
+        if os.path.exists(path_file):
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.thread.started.connect(lambda: self.worker.convert_SPA_to_JSON(path_file))
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_JSON_to_SPA_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self, "Open json file", MainWindow.old_path_file, "Json file (*.json)")[0]
+
+        if os.path.exists(path_file):
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.thread.started.connect(lambda: self.worker.convert_JSON_to_SPA(path_file))
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
 
     def closeEvent(self, event):
         if os.path.exists(PEV.temp_folder):

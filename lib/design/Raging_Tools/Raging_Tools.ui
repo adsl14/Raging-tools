@@ -9626,7 +9626,33 @@
     <addaction name="actionAuthor"/>
     <addaction name="actionCredits"/>
    </widget>
+   <widget class="QMenu" name="menuUtilities">
+    <property name="title">
+     <string>Utilities</string>
+    </property>
+    <widget class="QMenu" name="menuConverter">
+     <property name="title">
+      <string>Converter</string>
+     </property>
+     <widget class="QMenu" name="menuSPA">
+      <property name="title">
+       <string>SPA</string>
+      </property>
+      <addaction name="actionto_JSON"/>
+     </widget>
+     <widget class="QMenu" name="menuJSON">
+      <property name="title">
+       <string>JSON</string>
+      </property>
+      <addaction name="actionto_SPA"/>
+     </widget>
+     <addaction name="menuSPA"/>
+     <addaction name="menuJSON"/>
+    </widget>
+    <addaction name="menuConverter"/>
+   </widget>
    <addaction name="menuFIle"/>
+   <addaction name="menuUtilities"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
@@ -9679,6 +9705,16 @@
   <action name="actionSavePAK">
    <property name="text">
     <string>Save pak...</string>
+   </property>
+  </action>
+  <action name="actionto_JSON">
+   <property name="text">
+    <string>to JSON</string>
+   </property>
+  </action>
+  <action name="actionto_SPA">
+   <property name="text">
+    <string>to SPA</string>
    </property>
   </action>
  </widget>

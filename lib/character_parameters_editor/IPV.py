@@ -56,6 +56,7 @@ class IPV:
                         "Potara in", "Potara result", "Potara demo", "Entry 1", "Entry 2", "Entry 3", "Victory", "Lose",
                         "Signature"]
     animations_extension = "spas"
+    animation_extension = "spa"
     animation_bone_extension = "json"
     # Blast properties
     glow_values = dict({"Disabled": 0, "0x01": 1, "0x02": 2, "0x03": 3, "0x04": 4, "0x06": 6, "0x07": 7, "0x08": 8, "0x09": 9, "0x0A": 10, "0x0C": 12,
