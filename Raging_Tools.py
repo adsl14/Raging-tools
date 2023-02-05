@@ -278,7 +278,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             if header_type == b'STPZ':
 
                 # Create a folder where we store the necessary files (always for pak explorer). If already exists,
-                # we remove every files in it
+                # we remove every file's in it
                 if os.path.exists(PEV.temp_folder):
                     rmtree(PEV.temp_folder, onerror=del_rw)
                 os.mkdir(PEV.temp_folder)
@@ -311,7 +311,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             elif header_type == b'STPK':
 
                 # Create a folder where we store the necessary files (always for pak explorer). If already exists,
-                # we remove every files in it
+                # we remove every file's in it
                 if os.path.exists(PEV.temp_folder):
                     rmtree(PEV.temp_folder, onerror=del_rw)
                 os.mkdir(PEV.temp_folder)
@@ -414,7 +414,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_save_logic(self):
 
-        # Ask to the user where to save the file
+        # Ask the user where to save the file
         path_output_file = os.path.splitext(MainWindow.old_path_file)[0].split(".")[0]
 
         # If the current tab that the user is seeing is the vram explorer, when saving the default extension will be
@@ -443,7 +443,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msg.exec()
                 else:
 
-                    # Ask to the user the format for the vram file (only when is saving a vram and spr for PS3)
+                    # Ask the user the format for the vram file (only when is saving a vram and spr for PS3)
                     # If is for Xbox, by default we won't add any vram separator between textures. We're saving
                     # it with Raging Blast compatibility instead
                     if VEV.header_type_spr_file != b'SPR3':
@@ -472,7 +472,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():
 
-                    # Ask to the user if the tool saves also the modified values from character parameters editor
+                    # Ask the user if the tool saves also the modified values from character parameters editor
                     msg = QMessageBox()
                     msg.setWindowTitle("Message")
                     msg.setWindowIcon(self.ico_image)
@@ -491,7 +491,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # The user has opened the operate_character tab
                             if self.operate_character_xyz_m_frame.isEnabled():
 
-                                # Ask to the user if is packing a vram or ioram file for Xbox
+                                # Ask the user if it is packing a vram or ioram file for Xbox
                                 separator, separator_size = ask_pack_structure(self)
 
                                 # Save all the info
@@ -502,7 +502,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # If the user has opened the operate resident or db_font_pad and edited one character, we will save the file
                             elif self.operate_resident_param_frame.isEnabled() and GPV.character_list_edited:
 
-                                # Ask to the user if is packing a vram or ioram file for Xbox
+                                # Ask the user if it is packing a vram or ioram file for Xbox
                                 separator, separator_size = ask_pack_structure(self)
 
                                 # pack file
@@ -512,7 +512,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # If the user has opened the cs_chip tab and edited one character, we will save the file
                             elif self.cs_chip.isEnabled() and REV.slots_edited:
 
-                                # Ask to the user if is packing a vram or ioram file for Xbox
+                                # Ask the user if it is packing a vram or ioram file for Xbox
                                 separator, separator_size = ask_pack_structure(self)
 
                                 # Save all the info
@@ -528,7 +528,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # The user wants to save the values only from the 'pak explorer'
                         elif answer == msg.No:
-                            # Ask to the user if is packing a vram or ioram file for Xbox
+                            # Ask the user if it is packing a vram or ioram file for Xbox
                             separator, separator_size = ask_pack_structure(self)
 
                             # pack file
@@ -536,7 +536,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # We save the data from the 'pak explorer' tab
                 elif self.pak_explorer.isEnabled():
-                    # Ask to the user if is packing a vram or ioram file for Xbox
+                    # Ask the user if it is packing a vram or ioram file for Xbox
                     separator, separator_size = ask_pack_structure(self)
 
                     # pack file

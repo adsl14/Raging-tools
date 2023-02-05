@@ -8066,7 +8066,10 @@
                 <number>0</number>
                </property>
                <property name="maximum">
-                <double>1000000000000000048346692115553659057528394845890514255872.000000000000000</double>
+                <double>18446744073709551616.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>1000000000000000000.000000000000000</double>
                </property>
                <property name="value">
                 <double>0.000000000000000</double>

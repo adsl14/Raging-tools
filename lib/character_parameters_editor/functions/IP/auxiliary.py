@@ -309,7 +309,7 @@ def change_animation_bone_rotations_block(main_window, rotations_float_data):
 
 def change_animation_bone_unknown_block(main_window, unknown_float_data):
 
-    # Unknown values. Needs more reseach
+    # Unknown values. Needs more research
     main_window.animation_bone_unknown_X_value.setValue(unknown_float_data["x"])
     main_window.animation_bone_unknown_Y_value.setValue(unknown_float_data["y"])
     main_window.animation_bone_unknown_Z_value.setValue(unknown_float_data["z"])
@@ -357,7 +357,7 @@ def store_blast_values_from_file(blast, file):
     blast.power_ups["Ki"] = int.from_bytes(file.read(1), byteorder='big')
     # Read unk data
     blast.unk0x2A = file.read(8)
-    # Skill stackeable
+    # Skill stackable
     blast.skill_stackable = int.from_bytes(file.read(1), byteorder='big')
     # Read unk data
     blast.unk0x33 = file.read(21)
@@ -419,7 +419,7 @@ def write_blast_values_to_file(blast, file):
     file.write(blast.power_ups["Ki"].to_bytes(1, 'big'))
     # Write unk data
     file.write(blast.unk0x2A)
-    # Skill stackeable
+    # Skill stackable
     file.write(blast.skill_stackable.to_bytes(1, 'big'))
     # Write unk data
     file.write(blast.unk0x33)

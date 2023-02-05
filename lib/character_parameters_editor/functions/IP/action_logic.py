@@ -11,7 +11,7 @@ from lib.character_parameters_editor.CPEV import CPEV
 
 
 def action_export_camera_button_logic(main_window):
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
                 main_window.camera_type_key.currentText().replace(" ", "_") + "." + IPV.camera_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export camera",
@@ -38,7 +38,7 @@ def action_export_camera_button_logic(main_window):
 
 def action_import_camera_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     name_file = CPEV.file_character_id + "_" + str(main_window.camera_type_key.currentIndex()) + "_" + \
                 main_window.camera_type_key.currentText().replace(" ", "_") + "." + IPV.camera_extension
     file_export_path = QFileDialog.getOpenFileName(main_window, "Import camera",
@@ -76,7 +76,7 @@ def action_import_camera_button_logic(main_window):
 
 
 def action_export_all_camera_button_logic(main_window):
-    # Ask to the user the folder output
+    # Ask the user the folder output
     name_folder = CPEV.file_character_id + "_cameras"
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export cameras",
                                                      os.path.join(main_window.old_path_file, name_folder), "")[0]
@@ -111,7 +111,7 @@ def action_export_all_camera_button_logic(main_window):
 
 
 def action_import_all_camera_button_logic(main_window):
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     folder_import = QFileDialog.getExistingDirectory(main_window, "Import cameras", main_window.old_path_file)
 
     cameras_files_error = []
@@ -162,7 +162,7 @@ def action_import_all_camera_button_logic(main_window):
 
 
 def action_export_animation_button_logic(main_window, animation_type_index, properties_text=""):
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + properties_text + "." + \
                 IPV.animations_extension
@@ -179,7 +179,7 @@ def action_export_animation_button_logic(main_window, animation_type_index, prop
 
 
 def action_export_all_animation_button_logic(main_window, animation_type_index, properties_text=""):
-    # Ask to the user the folder output
+    # Ask the user the folder output
     name_folder = CPEV.file_character_id + "_animations" + properties_text
     folder_export_path = QFileDialog.getSaveFileName(main_window,
                                                      "Export animations" + properties_text,
@@ -205,7 +205,7 @@ def action_export_all_animation_button_logic(main_window, animation_type_index, 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
         msg.setWindowIcon(main_window.ico_image)
-        message = "The animation files weres exported in: <b>" + folder_export_path \
+        message = "The animation files where exported in: <b>" + folder_export_path \
                   + "</b><br><br> Do you wish to open the path?"
         message_open_exported_files = msg.question(main_window, '', message, msg.Yes | msg.No)
 
@@ -216,7 +216,7 @@ def action_export_all_animation_button_logic(main_window, animation_type_index, 
 
 
 def action_import_animation_button_logic(main_window, animation_type_index):
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + "." + IPV.animations_extension
     file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation",
@@ -245,7 +245,7 @@ def action_import_animation_button_logic(main_window, animation_type_index):
 
 
 def action_import_all_animation_button_logic(main_window, animation_type_index):
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     folder_import = QFileDialog.getExistingDirectory(main_window, "Import animations", main_window.old_path_file)
 
     animations_files_error = []
@@ -292,7 +292,7 @@ def action_import_all_animation_button_logic(main_window, animation_type_index):
 
 def action_export_animation_bone_button_logic(main_window):
 
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "_" + \
                 main_window.animation_bone_value.currentText() + "." + IPV.animation_bone_extension
@@ -312,7 +312,7 @@ def action_export_animation_bone_button_logic(main_window):
 
 def action_export_all_animation_bone_button_logic(main_window):
 
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "." + IPV.animation_bone_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export animation bones",
@@ -330,7 +330,7 @@ def action_export_all_animation_bone_button_logic(main_window):
 
 def action_import_animation_bone_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the bone file
+    # Ask the user from what file wants to open the bone file
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "_" + \
                 main_window.animation_bone_value.currentText() + "." + IPV.animation_bone_extension
@@ -377,7 +377,7 @@ def action_import_animation_bone_button_logic(main_window):
 
 def action_import_all_animation_bone_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the bone file
+    # Ask the user from what file wants to open the bone file
     name_file = CPEV.file_character_id + "_" + str(main_window.animation_type_value.currentIndex()) + "_" + \
                 main_window.animation_type_value.currentText().replace(" ", "_") + "_" + main_window.animation_spas_layer_value.currentText() + "." + IPV.animation_bone_extension
     file_import_path = QFileDialog.getOpenFileName(main_window, "Import animation bones",
@@ -410,7 +410,7 @@ def action_import_all_animation_bone_button_logic(main_window):
                     new_bones_names += "<li>" + bone_name_json + "</li>"
 
             if new_bones_dict:
-                # Ask to the user to add the new bones
+                # Ask the user to add the new bones
                 msg = QMessageBox()
                 msg.setWindowTitle("Message")
                 msg.setWindowIcon(main_window.ico_image)
@@ -437,7 +437,7 @@ def action_import_all_animation_bone_button_logic(main_window):
 
 def action_remove_animation_bone(main_window):
 
-    # Ask to the user if is sure to remove the texture
+    # Ask the user if is sure to remove the texture
     msg = QMessageBox()
     msg.setWindowTitle("Message")
     msg.setWindowIcon(main_window.ico_image)
@@ -462,7 +462,7 @@ def action_remove_animation_bone(main_window):
 
 
 def action_export_blast_button_logic(main_window):
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + main_window.blast_key.currentText().replace(" ", "_") + "." + \
                 IPV.blast_extension
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export blast",
@@ -488,7 +488,7 @@ def action_export_blast_button_logic(main_window):
 
 
 def action_import_blast_button_logic(main_window):
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     name_file = CPEV.file_character_id + "_" + main_window.blast_key.currentText().replace(" ", "_") + "." + \
                 IPV.blast_extension
     file_export_path = QFileDialog.getOpenFileName(main_window, "Import blast",
@@ -526,7 +526,7 @@ def action_import_blast_button_logic(main_window):
 
 
 def action_export_all_blast_button_logic(main_window):
-    # Ask to the user the folder output
+    # Ask the user the folder output
     name_folder = CPEV.file_character_id + "_blasts"
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export blasts",
                                                      os.path.join(main_window.old_path_file, name_folder), "")[0]
@@ -562,7 +562,7 @@ def action_export_all_blast_button_logic(main_window):
 
 def action_import_all_blast_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the blast files
+    # Ask the user from what file wants to open the blast files
     folder_import = QFileDialog.getExistingDirectory(main_window, "Import blasts", main_window.old_path_file)
 
     blasts_files_error = []
@@ -619,15 +619,15 @@ def action_import_all_blast_button_logic(main_window):
 
 def action_export_signature_ki_blast_button_logic(main_window):
 
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = CPEV.file_character_id + "_" + "Signature_ki_blast_properties"
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export signature ki blast",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
 
     if file_export_path:
 
-        with open(file_export_path, mode="wb") as outputfile:
-            outputfile.write(IPV.signature_ki_blast.data)
+        with open(file_export_path, mode="wb") as outfile:
+            outfile.write(IPV.signature_ki_blast.data)
 
         msg = QMessageBox()
         msg.setWindowTitle("Message")
@@ -644,7 +644,7 @@ def action_export_signature_ki_blast_button_logic(main_window):
 
 def action_import_signature_ki_blast_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the signature ki blast file
+    # Ask the user from what file wants to open the signature ki blast file
     name_file = CPEV.file_character_id + "_" + "Signature_ki_blast_properties"
     file_export_path = QFileDialog.getOpenFileName(main_window, "Import signature ki blast",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
@@ -836,7 +836,7 @@ def on_animation_bone_changed(main_window):
         try:
             bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
             change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
-        except BaseException:
+        except KeyError:
             change_animation_bone(main_window, None, 0, 0, 0)
 
 
@@ -995,3 +995,48 @@ def on_camera_blast_value_changed(main_window, camera_index, spinbox):
         blast = main_window.blast_key.currentData()
         blast.camera[camera_index] = spinbox.value()
         blast.modified = True
+
+
+def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
+
+    if not CPEV.disable_logic_events_combobox:
+        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+
+        # Translation
+        if type == 0:
+            translations = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
+            # X
+            if axis == 0:
+                translations['x'] = main_window.animation_bone_translation_X_value.value()
+            # Y
+            elif axis == 1:
+                translations['y'] = main_window.animation_bone_translation_Y_value.value()
+            # Z
+            elif axis == 2:
+                translations['z'] = main_window.animation_bone_translation_Z_value.value()
+            # W
+            else:
+                translations['w'] = main_window.animation_bone_translation_W_value.value()
+        # Rotation
+        elif type == 1:
+            rotations = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
+            rotations['rot'] = main_window.animation_bone_rotation_XYZ_value.value()
+        # Unknown
+        else:
+            unknowns = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
+            # X
+            if axis == 0:
+                unknowns['x'] = main_window.animation_bone_unknown_X_value.value()
+            # Y
+            elif axis == 1:
+                unknowns['y'] = main_window.animation_bone_unknown_Y_value.value()
+            # Z
+            elif axis == 2:
+                unknowns['z'] = main_window.animation_bone_unknown_Z_value.value()
+            # W
+            else:
+                unknowns['w'] = main_window.animation_bone_unknown_W_value.value()
+
+
+        spa_file.modified = True
