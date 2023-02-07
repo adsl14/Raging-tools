@@ -202,7 +202,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.load_spr_vram_file(self))
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.worker.main_window = self
+        self.thread.started.connect(self.worker.load_spr_vram_file)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -224,7 +227,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.save_spr_vram_file(self, vram_separator, path_output_file))
+        self.worker.main_window = self
+        self.worker.vram_separator = vram_separator
+        self.worker.path_output_file = path_output_file
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.save_spr_vram_file)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -246,7 +254,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.load_data_to_pe_cpe(self))
+        self.worker.main_window = self
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.load_data_to_pe_cpe)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -268,7 +279,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.save_operate_character_and_pack(self, path_output_file, separator, separator_size))
+        self.worker.main_window = self
+        self.worker.path_output_file = path_output_file
+        self.worker.separator = separator
+        self.worker.separator_size = separator_size
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.save_operate_character_and_pack)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)

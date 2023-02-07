@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QObject, pyqtSignal
 from pyglet.gl import GLException
 
-from lib.functions import check_entry_module, get_name_from_file
+from lib.functions import check_entry_module, get_name_from_file, show_progress_value
 from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
@@ -42,7 +42,13 @@ class WorkerVef(QObject):
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
 
-    def load_spr_vram_file(self, main_window):
+    main_window = None
+    vram_separator = b''
+    path_output_file = ""
+    start_progress = 0.0
+    end_progress = 100.0
+
+    def load_spr_vram_file(self):
 
         # Reset boolean values
         VEV.enable_combo_box = False
@@ -50,118 +56,119 @@ class WorkerVef(QObject):
         VEV.unique_temp_name_offset = 0
         VEV.DbzCharMtrl_offset = 0
         # Reset combo box values
-        main_window.materialVal.clear()
+        self.main_window.materialVal.clear()
 
-        main_window.typeVal.clear()
-        main_window.typeVal.addItem("", 0)
+        self.main_window.typeVal.clear()
+        self.main_window.typeVal.addItem("", 0)
         for layer_type in VEV.layer_type:
-            main_window.typeVal.addItem(layer_type, 0)
+            self.main_window.typeVal.addItem(layer_type, 0)
 
-        main_window.effectVal.clear()
-        main_window.effectVal.addItem("", 0)
+        self.main_window.effectVal.clear()
+        self.main_window.effectVal.addItem("", 0)
         for layer_effect in VEV.layer_effect:
-            main_window.effectVal.addItem(layer_effect, 0)
+            self.main_window.effectVal.addItem(layer_effect, 0)
 
-        main_window.textureVal.clear()
-        main_window.textureVal.addItem("", 0)
-        main_window.modelPartVal.clear()
-        main_window.materialModelPartVal.clear()
-        main_window.materialModelPartVal.addItem("", 0)
+        self.main_window.textureVal.clear()
+        self.main_window.textureVal.addItem("", 0)
+        self.main_window.modelPartVal.clear()
+        self.main_window.materialModelPartVal.clear()
+        self.main_window.materialModelPartVal.addItem("", 0)
         # Reset model list view
-        main_window.listView.model().clear()
+        self.main_window.listView.model().clear()
 
         # Get basename from spr_file_path
         basename = os.path.basename(os.path.splitext(VEV.spr_file_path)[0])
 
         # Open spr and vram (2 tasks)
-        open_spr_file(self, 0.0, 50.0, main_window, main_window.listView.model(), VEV.spr_file_path)
-        open_vram_file(self, 50.0, 50.00, VEV.vram_file_path)
+        step_progress = self.end_progress / 2
+        open_spr_file(self, step_progress, self.main_window, self.main_window.listView.model(), VEV.spr_file_path)
+        open_vram_file(self, step_progress, VEV.vram_file_path)
 
         # Set the index of the list view to be always the first row when loading a new spr/vram file
         # We show always the first texture
-        main_window.listView.setCurrentIndex(main_window.listView.model().index(0, 0))
+        self.main_window.listView.setCurrentIndex(self.main_window.listView.model().index(0, 0))
 
         # Enable the buttons
-        main_window.exportAllButton.setEnabled(True)
-        main_window.importAllButton.setEnabled(True)
-        main_window.importButton.setEnabled(True)
-        main_window.exportButton.setEnabled(True)
-        main_window.removeButton.setEnabled(True)
-        main_window.addButton.setEnabled(True)
+        self.main_window.exportAllButton.setEnabled(True)
+        self.main_window.importAllButton.setEnabled(True)
+        self.main_window.importButton.setEnabled(True)
+        self.main_window.exportButton.setEnabled(True)
+        self.main_window.removeButton.setEnabled(True)
+        self.main_window.addButton.setEnabled(True)
 
         # If the spr holds entries like pshd or vshd (used in maps), we won't enable the texture
         # adding, removing and the material edition
         if VEV.enable_spr_scratch:
-            main_window.addButton.setEnabled(True)
-            main_window.removeButton.setEnabled(True)
+            self.main_window.addButton.setEnabled(True)
+            self.main_window.removeButton.setEnabled(True)
         else:
-            main_window.addButton.setEnabled(False)
-            main_window.removeButton.setEnabled(False)
+            self.main_window.addButton.setEnabled(False)
+            self.main_window.removeButton.setEnabled(False)
             VEV.exists_mtrl = False
 
         # Enable the buttons of material only if the spr holds mtrl section
         if VEV.exists_mtrl:
-            main_window.materialVal.setEnabled(True)
-            main_window.layerVal.setEnabled(True)
-            main_window.typeVal.setEnabled(True)
-            main_window.effectVal.setEnabled(True)
-            main_window.textureVal.setEnabled(True)
-            main_window.exportMaterialButton.setEnabled(True)
-            main_window.importMaterialButton.setEnabled(True)
-            main_window.exportAllMaterialButton.setEnabled(True)
-            main_window.importAllMaterialButton.setEnabled(True)
-            main_window.addMaterialButton.setEnabled(True)
-            main_window.removeMaterialButton.setEnabled(True)
-            main_window.editMaterialChildrenButton.setEnabled(True)
+            self.main_window.materialVal.setEnabled(True)
+            self.main_window.layerVal.setEnabled(True)
+            self.main_window.typeVal.setEnabled(True)
+            self.main_window.effectVal.setEnabled(True)
+            self.main_window.textureVal.setEnabled(True)
+            self.main_window.exportMaterialButton.setEnabled(True)
+            self.main_window.importMaterialButton.setEnabled(True)
+            self.main_window.exportAllMaterialButton.setEnabled(True)
+            self.main_window.importAllMaterialButton.setEnabled(True)
+            self.main_window.addMaterialButton.setEnabled(True)
+            self.main_window.removeMaterialButton.setEnabled(True)
+            self.main_window.editMaterialChildrenButton.setEnabled(True)
 
-            main_window.modelPartVal.setEnabled(True)
-            main_window.materialModelPartVal.setEnabled(True)
+            self.main_window.modelPartVal.setEnabled(True)
+            self.main_window.materialModelPartVal.setEnabled(True)
 
             # Enable combo box and set the values for the first layer of the first material
             VEV.enable_combo_box = True
-            action_material_val_changed(main_window)
-            action_model_part_val_changed(main_window)
+            self.main_window.materialVal.setCurrentIndex(0)
+            action_model_part_val_changed(self.main_window)
 
         else:
-            main_window.materialVal.setEnabled(False)
-            main_window.layerVal.setEnabled(False)
-            main_window.typeVal.setEnabled(False)
-            main_window.effectVal.setEnabled(False)
-            main_window.textureVal.setEnabled(False)
-            main_window.exportMaterialButton.setEnabled(False)
-            main_window.importMaterialButton.setEnabled(False)
-            main_window.exportAllMaterialButton.setEnabled(False)
-            main_window.importAllMaterialButton.setEnabled(False)
-            main_window.addMaterialButton.setEnabled(False)
-            main_window.removeMaterialButton.setEnabled(False)
-            main_window.editMaterialChildrenButton.setEnabled(False)
+            self.main_window.materialVal.setEnabled(False)
+            self.main_window.layerVal.setEnabled(False)
+            self.main_window.typeVal.setEnabled(False)
+            self.main_window.effectVal.setEnabled(False)
+            self.main_window.textureVal.setEnabled(False)
+            self.main_window.exportMaterialButton.setEnabled(False)
+            self.main_window.importMaterialButton.setEnabled(False)
+            self.main_window.exportAllMaterialButton.setEnabled(False)
+            self.main_window.importAllMaterialButton.setEnabled(False)
+            self.main_window.addMaterialButton.setEnabled(False)
+            self.main_window.removeMaterialButton.setEnabled(False)
+            self.main_window.editMaterialChildrenButton.setEnabled(False)
 
-            main_window.modelPartVal.setEnabled(False)
-            main_window.materialModelPartVal.setEnabled(False)
+            self.main_window.modelPartVal.setEnabled(False)
+            self.main_window.materialModelPartVal.setEnabled(False)
 
         # Show the text labels
-        main_window.fileNameText.setText(basename)
-        main_window.fileNameText.setVisible(True)
-        main_window.encodingImageText.setVisible(True)
-        main_window.mipMapsImageText.setVisible(True)
-        main_window.sizeImageText.setVisible(True)
+        self.main_window.fileNameText.setText(basename)
+        self.main_window.fileNameText.setVisible(True)
+        self.main_window.encodingImageText.setVisible(True)
+        self.main_window.mipMapsImageText.setVisible(True)
+        self.main_window.sizeImageText.setVisible(True)
 
         # Open the tab
-        if main_window.tabWidget.currentIndex() != 0:
-            main_window.tabWidget.setCurrentIndex(0)
+        if self.main_window.tabWidget.currentIndex() != 0:
+            self.main_window.tabWidget.setCurrentIndex(0)
 
         # Finish the thread
         self.finished.emit()
 
-    def save_spr_vram_file(self, main_window, vram_separator, path_output_file):
+    def save_spr_vram_file(self):
 
         # Default paths
-        spr_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.spr_file_path))
-        vram_file_path_modified = os.path.join(path_output_file, os.path.basename(VEV.vram_file_path))
+        spr_file_path_modified = os.path.join(self.path_output_file, os.path.basename(VEV.spr_file_path))
+        vram_file_path_modified = os.path.join(self.path_output_file, os.path.basename(VEV.vram_file_path))
 
         # Vars used in order to create the spr from scratch
         num_textures, entry_count, name_offset, entry_info_size, ioram_name_offset, ioram_data_size, vram_name_offset, \
-            vram_data_size = main_window.listView.model().rowCount(), 0, 0, 0, 0, 0, 0, 0
+            vram_data_size = self.main_window.listView.model().rowCount(), 0, 0, 0, 0, 0, 0, 0
         string_name_offset = 1
         string_table_size, data_entry_size, data_offset, data_size = 0, 0, 0, 0
         entry_info, header, string_table, data_entry, data = b'', b'', b'', b'', b''
@@ -177,8 +184,7 @@ class WorkerVef(QObject):
         if VEV.enable_spr_scratch:
 
             # Calculate the step for the progress bar
-            step_report = 100.0 / len(VEV.sprp_file.type_entry)
-            start_progress = 0.0
+            step_report = self.end_progress / len(VEV.sprp_file.type_entry)
             # Get each type entry and write the data
             for type_entry in VEV.sprp_file.type_entry:
 
@@ -186,13 +192,13 @@ class WorkerVef(QObject):
                 # --- Write TX2D ---
                 # ------------------
                 if b'TX2D' == type_entry:
-                    start_progress, entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
+                    entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
                         data_entry_size, data, data_size, data_offset, vram_data_size = \
-                        generate_tx2d_entry(self, start_progress, step_report, main_window, vram_file_path_modified, entry_info,
+                        generate_tx2d_entry(self, step_report, self.main_window, vram_file_path_modified, entry_info,
                                             entry_info_size, entry_count, string_table,
                                             string_table_size, string_name_offset, data_entry,
                                             data_entry_size, data, data_size, data_offset,
-                                            vram_separator, num_textures)
+                                            self.vram_separator, num_textures)
 
                 # ------------------
                 # --- Write VSHD ---
@@ -211,9 +217,8 @@ class WorkerVef(QObject):
                         vshd_data = vshd_data_entry.data_info.data
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + vshd_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each vshd
                         vshd_data_entry.data_info.new_name_offset = string_name_offset
@@ -240,7 +245,7 @@ class WorkerVef(QObject):
                         if vshd_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                vshd_data_entry.data_info, b'VSHD',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -291,9 +296,8 @@ class WorkerVef(QObject):
                         pshd_data = pshd_data_entry.data_info.data
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + pshd_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each pshd
                         pshd_data_entry.data_info.new_name_offset = string_name_offset
@@ -319,7 +323,7 @@ class WorkerVef(QObject):
                         if pshd_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                pshd_data_entry.data_info, b'PSHD',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -357,7 +361,7 @@ class WorkerVef(QObject):
                 # --- Write MTRL ---
                 # ------------------
                 if b'MTRL' == type_entry:
-                    num_material = main_window.materialVal.count()
+                    num_material = self.main_window.materialVal.count()
 
                     # TXAN values (will be used to know if the txan entries name offset are
                     # already added to the spr)
@@ -370,12 +374,11 @@ class WorkerVef(QObject):
                     sub_step_report = step_report / num_material
                     for i in range(0, num_material):
                         # Get the material from the tool
-                        mtrl_data_entry = main_window.materialVal.itemData(i)
+                        mtrl_data_entry = self.main_window.materialVal.itemData(i)
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + mtrl_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each material
                         mtrl_data_entry.data_info.new_name_offset = string_name_offset
@@ -416,7 +419,7 @@ class WorkerVef(QObject):
                                 data += b'\00\00\00\00'
                             else:
                                 # Search the texture
-                                found, data = search_texture(main_window, data, layer.source_name_offset,
+                                found, data = search_texture(self.main_window, data, layer.source_name_offset,
                                                              num_textures)
                                 # Search in the TXAN entries
                                 if not found:
@@ -457,7 +460,7 @@ class WorkerVef(QObject):
                         if mtrl_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                mtrl_data_entry.data_info, b'MTRL',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -504,9 +507,8 @@ class WorkerVef(QObject):
                         shap_data_entry = shap_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + shap_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each shape
                         shap_data_entry.data_info.new_name_offset = string_name_offset
@@ -531,7 +533,7 @@ class WorkerVef(QObject):
                         if shap_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                shap_data_entry.data_info, b'SHAP',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -579,9 +581,8 @@ class WorkerVef(QObject):
                         vbuf_data_entry = vbuf_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + vbuf_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each vbuf
                         vbuf_data_entry.data_info.new_name_offset = string_name_offset
@@ -686,15 +687,14 @@ class WorkerVef(QObject):
                         scne_data_entry = scne_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + scne_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write children (if any)
                         if scne_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                scne_data_entry.data_info, b'SCNE',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -713,7 +713,7 @@ class WorkerVef(QObject):
                             data_size += data_child_size
 
                         # Write the name for the scne
-                        name = "scene_" + main_window.fileNameText.text() + ".mb"
+                        name = "scene_" + self.main_window.fileNameText.text() + ".mb"
                         string_table += b'\x00' + name.encode('utf-8')
                         string_table_size += 1 + len(name)
 
@@ -756,9 +756,8 @@ class WorkerVef(QObject):
                         bone_data_entry = bone_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + bone_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each bone
                         string_table += b'\x00' + bone_data_entry.data_info.name.encode('utf-8')
@@ -781,7 +780,7 @@ class WorkerVef(QObject):
                         if bone_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                     data_child, data_child_size, data_offset = \
-                                    write_children(main_window, num_material, num_textures,
+                                    write_children(self.main_window, num_material, num_textures,
                                                    bone_data_entry.data_info, b'BONE',
                                                    string_table_size + 1, data_size, special_names_dict)
 
@@ -829,12 +828,11 @@ class WorkerVef(QObject):
                         drvn_data_entry = drvn_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + drvn_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each drvn
-                        name = "driven_" + main_window.fileNameText.text() + ".mb"
+                        name = "driven_" + self.main_window.fileNameText.text() + ".mb"
                         string_table += b'\x00' + name.encode('utf-8')
                         string_table_size += 1 + len(name)
 
@@ -855,7 +853,7 @@ class WorkerVef(QObject):
                         if drvn_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                drvn_data_entry.data_info, b'DRVN',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -903,9 +901,8 @@ class WorkerVef(QObject):
                         txan_data_entry = txan_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + txan_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the data_entry for each txan
                         data_entry += txan_type_entry.data_type
@@ -934,7 +931,7 @@ class WorkerVef(QObject):
                         if txan_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                txan_data_entry.data_info, b'TXAN',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -981,9 +978,8 @@ class WorkerVef(QObject):
                         anim_data_entry = anim_type_entry.data_entry[i]
 
                         # Report progress
-                        start_progress += sub_step_report
                         self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + anim_data_entry.data_info.name)
-                        self.progressValue.emit(start_progress)
+                        show_progress_value(self, sub_step_report)
 
                         # Write the name for each anim
                         string_table += b'\x00' + anim_data_entry.data_info.name.encode('utf-8')
@@ -1006,7 +1002,7 @@ class WorkerVef(QObject):
                         if anim_data_entry.data_info.child_count > 0:
                             string_table_child, string_table_child_size, string_name_offset, \
                                 data_child, data_child_size, data_offset = \
-                                write_children(main_window, num_material, num_textures,
+                                write_children(self.main_window, num_material, num_textures,
                                                anim_data_entry.data_info, b'ANIM',
                                                string_table_size + 1, data_size, special_names_dict)
 
@@ -1046,27 +1042,27 @@ class WorkerVef(QObject):
 
                 # Write the xmb extension
                 name_offset = 1 + string_table_size
-                name = main_window.fileNameText.text() + ".xmb"
+                name = self.main_window.fileNameText.text() + ".xmb"
                 string_table += b'\x00' + name.encode('utf-8')
                 string_table_size += 1 + len(name)
 
                 ioram_name_offset = 1 + string_table_size
                 ioram_data_size = VEV.sprp_file.sprp_header.ioram_data_size
-                name = main_window.fileNameText.text() + ".ioram"
+                name = self.main_window.fileNameText.text() + ".ioram"
                 string_table += b'\x00' + name.encode('utf-8')
                 string_table_size += 1 + len(name)
             else:
 
                 # Write the spr extension
                 name_offset = 1 + string_table_size
-                name = main_window.fileNameText.text() + ".spr"
+                name = self.main_window.fileNameText.text() + ".spr"
                 string_table += b'\x00' + name.encode('utf-8')
                 string_table_size += 1 + len(name)
 
                 ioram_name_offset = 0
                 ioram_data_size = 0
             vram_name_offset = 1 + string_table_size
-            name = main_window.fileNameText.text() + ".vram"
+            name = self.main_window.fileNameText.text() + ".vram"
             string_table += b'\x00' + name.encode('utf-8')
             string_table_size += 1 + len(name)
 
@@ -1115,11 +1111,11 @@ class WorkerVef(QObject):
                 # Calculate the step for the progress bar
                 # Write the data entry
                 # Write the TX2D entry only
-                null, null, null, null, null, null, null, null, null, data, null, null, vram_data_size = \
-                    generate_tx2d_entry(self, 0.0, 100.0, main_window, vram_file_path_modified, entry_info,
+                null, null, null, null, null, null, null, null, data, null, null, vram_data_size = \
+                    generate_tx2d_entry(self, self.end_progress, self.main_window, vram_file_path_modified, entry_info,
                                         entry_info_size, entry_count, string_table,
                                         string_table_size, string_name_offset, data_entry,
-                                        data_entry_size, data, data_size, data_offset, vram_separator,
+                                        data_entry_size, data, data_size, data_offset, self.vram_separator,
                                         num_textures)
                 data_entry = input_spr_file.read(VEV.sprp_file.sprp_header.data_info_size)
 
@@ -1228,7 +1224,7 @@ def initialize_ve(main_window):
         connect(lambda: action_cancel_material_logic(main_window))
 
 
-def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window, model, spr_path):
+def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):
 
     # Clean vars
     VEV.sprp_file = SprpFile()
@@ -1262,7 +1258,7 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
         # Create each SPRP_TYPE_ENTRY
         file.seek(VEV.sprp_file.entry_info_base)
         type_entry_offset = 0
-        step_report = quanty_limit_progress / VEV.sprp_file.sprp_header.entry_count
+        sub_end_progress = end_progress / VEV.sprp_file.sprp_header.entry_count
         for i in range(0, VEV.sprp_file.sprp_header.entry_count):
 
             # Load each sprp_type_entry
@@ -1274,14 +1270,13 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
             # Create each SPRP_DATA_ENTRY and under that, the SPRP_DATA_INFO
             aux_pointer_type_entry = file.tell()
             file.seek(VEV.sprp_file.data_info_base + type_entry_offset)
-            sub_step_report = step_report / sprp_type_entry.data_count
+            sub_sub_end_progress = sub_end_progress / sprp_type_entry.data_count
             for j in range(0, sprp_type_entry.data_count):
 
                 # Report progress
-                start_progress += sub_step_report
                 worker_vef.progressText.emit("Loading spr: reading " + sprp_type_entry.data_type.decode('utf-8') + " entry (" + str(j + 1) + "/" +
                                              str(sprp_type_entry.data_count) + ")")
-                worker_vef.progressValue.emit(start_progress)
+                show_progress_value(worker_vef, sub_sub_end_progress)
 
                 sprp_data_entry = SprpDataEntry()
                 sprp_data_entry.data_type = file.read(VEV.bytes2Read)
@@ -1578,9 +1573,9 @@ def open_spr_file(worker_vef, start_progress, quanty_limit_progress, main_window
         VEV.unique_temp_name_offset = VEV.sprp_file.sprp_header.string_table_size
 
 
-def open_vram_file(worker_vef, start_progress, quanty_limit_progress, vram_path):
+def open_vram_file(worker_vef, end_progress, vram_path):
 
-    step_report = quanty_limit_progress / VEV.sprp_file.type_entry[b'TX2D'].data_count
+    sub_end_progress = end_progress / VEV.sprp_file.type_entry[b'TX2D'].data_count
 
     with open(vram_path, mode="rb") as file:
 
@@ -1591,9 +1586,8 @@ def open_vram_file(worker_vef, start_progress, quanty_limit_progress, vram_path)
         for i in range(0, VEV.sprp_file.type_entry[b'TX2D'].data_count):
 
             # Report progress
-            start_progress += step_report
             worker_vef.progressText.emit("Loading vram: reading texture " + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.name)
-            worker_vef.progressValue.emit(start_progress)
+            show_progress_value(worker_vef, sub_end_progress)
 
             # Creating DXT5 and DXT1 heading
             if VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding != 0:
@@ -1684,31 +1678,15 @@ def open_vram_file(worker_vef, start_progress, quanty_limit_progress, vram_path)
                         .tx2d_vram.data_unswizzle = header + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info\
                         .data.tx2d_vram.data_unswizzle
 
-            '''print("--------------------------------------------")
-            print("UNK0x00 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x00))
-            print("dataOffset " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_offset))
-            print("UNK0x08 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x08))
-            print("DataSize " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.data_size))
-            print("Width " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.width))
-            print("Height " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.height))
-            print("UNK0x14 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x14))
-            print("Mipmaps " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.mip_maps))
-            print("UNK0x18 " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x18))
-            print("UNK0x1C " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.unk0x1c))
-            print("DXT_ENCODING " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.dxt_encoding))
-            if i < VEV.sprp_file.type_entry[b'TX2D'].data_count - 1:
-                print("Separator: " + str(VEV.sprp_file.type_entry[b'TX2D'].data_entry[i+1].data_info.data.data_offset -
-                      file.tell()))'''
 
-
-def generate_tx2d_entry(worker_vef, start_progress, quanty_limit_progress, main_window, vram_path_modified, entry_info, entry_info_size, entry_count,
+def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified, entry_info, entry_info_size, entry_count,
                         string_table, string_table_size, string_name_offset, data_entry, data_entry_size, data, data_size, data_offset,
                         vram_separator, num_textures):
 
     with open(vram_path_modified, mode="wb") as output_vram_file:
 
         # Get each data_entry (TX2D) and store the texture properties
-        step_report = quanty_limit_progress / num_textures
+        sub_step_report = step_report / num_textures
         for i in range(0, num_textures):
 
             # Get the texture from the tool
@@ -1718,9 +1696,8 @@ def generate_tx2d_entry(worker_vef, start_progress, quanty_limit_progress, main_
             tx2d_info = tx2d_data_entry.data_info.data
 
             # Report progress
-            start_progress += step_report
             worker_vef.progressText.emit("Saving vram: writting texture " + tx2d_data_entry.data_info.name)
-            worker_vef.progressValue.emit(start_progress)
+            show_progress_value(worker_vef, sub_step_report)
 
             # Store the offset where the texture will be located in vram
             texture_offset = output_vram_file.tell()
@@ -1845,7 +1822,7 @@ def generate_tx2d_entry(worker_vef, start_progress, quanty_limit_progress, main_
     entry_count += 1
     entry_info_size += 12
 
-    return start_progress, entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
+    return entry_info, entry_info_size, entry_count, string_table, string_table_size, string_name_offset, data_entry, \
         data_entry_size, data, data_size, data_offset, vram_data_size
 
 
