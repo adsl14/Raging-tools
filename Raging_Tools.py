@@ -42,7 +42,7 @@ class WorkerMainWindow(QObject):
         step_progress = self.end_progress / 2
 
         # Show text
-        self.progressText.emit("Loading spa file")
+        self.progressText.emit("Loading " + os.path.basename(self.path_file))
 
         # Convert spa and store it to memory
         spa_file = read_spa_file(self.path_file)
@@ -54,7 +54,7 @@ class WorkerMainWindow(QObject):
         output_path = os.path.join(os.path.dirname(self.path_file), os.path.basename(self.path_file).split(".")[0] + "." + IPV.animation_bone_extension)
 
         # Show text
-        self.progressText.emit("Writting json file")
+        self.progressText.emit("Writting " + os.path.basename(output_path))
 
         # Write the output
         write_json_bone_file(output_path, spa_file.spa_header, spa_file.bone_entries)
