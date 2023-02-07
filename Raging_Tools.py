@@ -10,7 +10,7 @@ from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, time
-from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file
+from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.VEF import WorkerVef
@@ -31,46 +31,88 @@ class WorkerMainWindow(QObject):
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
+    path_file = ""
+    folder_path = ""
+    start_progress = 0.0
+    end_progress = 0.0
 
-    def convert_SPA_to_JSON(self, path_file):
+    def convert_SPA_to_JSON(self):
+
+        # 2 main tasks
+        step_progress = self.end_progress / 2
+
+        # Show text
+        self.progressText.emit("Loading spa file")
 
         # Convert spa and store it to memory
-        # Report progress
-        self.progressText.emit("Loading spa file")
-        spa_file = read_spa_file(path_file)
-        self.progressValue.emit(50)
+        spa_file = read_spa_file(self.path_file)
+
+        # Show progress
+        show_progress_value(self, step_progress)
 
         # Create the new output
-        output_path = os.path.join(os.path.dirname(path_file), os.path.basename(path_file).split(".")[0] + "." + IPV.animation_bone_extension)
+        output_path = os.path.join(os.path.dirname(self.path_file), os.path.basename(self.path_file).split(".")[0] + "." + IPV.animation_bone_extension)
+
+        # Show text
+        self.progressText.emit("Writting json file")
 
         # Write the output
-        self.progressText.emit("Creating json file")
         write_json_bone_file(output_path, spa_file.spa_header, spa_file.bone_entries)
-        self.progressValue.emit(100)
+
+        # Show progress
+        show_progress_value(self, step_progress)
 
         # Finish the thread
         self.finished.emit()
 
-    def convert_JSON_to_SPA(self, path_file):
+    def convert_JSON_to_SPA(self):
+
+        # 2 main tasks
+        step_progress = self.end_progress / 2
+
+        # Show text
+        self.progressText.emit("Loading json file")
 
         # Convert spa and store it to memory
-        # Report progress
-        self.progressText.emit("Loading json file")
-        spa_file = read_json_bone_file(path_file)
-        self.progressValue.emit(50)
+        spa_file = read_json_bone_file(self.path_file)
+
+        # Show progress
+        show_progress_value(self, step_progress)
 
         # Create the new output
-        output_path = os.path.join(os.path.dirname(path_file), os.path.basename(path_file).split(".")[0] + "." + IPV.animation_extension)
+        output_path = os.path.join(os.path.dirname(self.path_file), os.path.basename(self.path_file).split(".")[0] + "." + IPV.animation_extension)
 
-        # Write the output
+        # Show text
         self.progressText.emit("Creating spa file")
+        # Write the output
         data, _ = write_spa_file(spa_file)
         with open(output_path, mode="wb") as output_file:
             output_file.write(data)
-        self.progressValue.emit(100)
+
+        # Show progress
+        show_progress_value(self, step_progress)
 
         # Finish the thread
         self.finished.emit()
+
+    def convert_multiple_SPA_to_multiple_JSON(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        end_progress = 100 / total_files
+        start_progress = 0.0
+        for i in range(0, total_files):
+            self.start_progress = start_progress
+            self.end_progress = end_progress
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+            self.convert_SPA_to_JSON()
+            start_progress += end_progress
+
+        self.finished.emit()
+
+    def convert_multiple_JSON_to_multiple_SPA(self):
+
+        print("WIP")
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -100,6 +142,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Utilities tab
         self.actionto_JSON.triggered.connect(self.action_SPA_to_JSON_logic)
         self.actionto_SPA.triggered.connect(self.action_JSON_to_SPA_logic)
+        self.actionto_multiple_JSON.triggered.connect(self.action_multiple_SPA_to_multiple_JSON_logic)
+        self.actionto_multiple_SPA.triggered.connect(self.action_multiple_JSON_to_multiple_SPA_logic)
 
         # About tab
         self.actionAuthor.triggered.connect(self.action_author_logic)
@@ -614,7 +658,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Step 4: Move worker to the thread
             self.worker.moveToThread(self.thread)
             # Step 5: Connect signals and slots
-            self.thread.started.connect(lambda: self.worker.convert_SPA_to_JSON(path_file))
+            self.worker.path_file = path_file
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_SPA_to_JSON)
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)
@@ -640,7 +687,63 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Step 4: Move worker to the thread
             self.worker.moveToThread(self.thread)
             # Step 5: Connect signals and slots
-            self.thread.started.connect(lambda: self.worker.convert_JSON_to_SPA(path_file))
+            self.worker.path_file = path_file
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_JSON_to_SPA)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_SPA_to_multiple_JSON_logic(self):
+
+        # Ask to the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where spa files are located")
+
+        if folder_import_path:
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.thread.started.connect(self.worker.convert_multiple_SPA_to_multiple_JSON)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_JSON_to_multiple_SPA_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self, "Open json file", MainWindow.old_path_file, "Json file (*.json)")[0]
+
+        if os.path.exists(path_file):
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.thread.started.connect(self.worker.convert_multiple_JSON_to_multiple_SPA)
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)

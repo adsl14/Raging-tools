@@ -2973,6 +2973,10 @@ class Ui_MainWindow(object):
         self.actionto_JSON.setObjectName("actionto_JSON")
         self.actionto_SPA = QtWidgets.QAction(MainWindow)
         self.actionto_SPA.setObjectName("actionto_SPA")
+        self.actionto_multiple_JSON = QtWidgets.QAction(MainWindow)
+        self.actionto_multiple_JSON.setObjectName("actionto_multiple_JSON")
+        self.actionto_multiple_SPA = QtWidgets.QAction(MainWindow)
+        self.actionto_multiple_SPA.setObjectName("actionto_multiple_SPA")
         self.menuFIle.addAction(self.actionOpen)
         self.menuFIle.addAction(self.actionSave)
         self.menuFIle.addSeparator()
@@ -2981,7 +2985,9 @@ class Ui_MainWindow(object):
         self.menuAbout.addAction(self.actionAuthor)
         self.menuAbout.addAction(self.actionCredits)
         self.menuSPA.addAction(self.actionto_JSON)
+        self.menuSPA.addAction(self.actionto_multiple_JSON)
         self.menuJSON.addAction(self.actionto_SPA)
+        self.menuJSON.addAction(self.actionto_multiple_SPA)
         self.menuConverter.addAction(self.menuSPA.menuAction())
         self.menuConverter.addAction(self.menuJSON.menuAction())
         self.menuUtilities.addAction(self.menuConverter.menuAction())
@@ -3400,6 +3406,8 @@ class Ui_MainWindow(object):
         self.actionSavePAK.setText(_translate("MainWindow", "Save pak..."))
         self.actionto_JSON.setText(_translate("MainWindow", "to JSON"))
         self.actionto_SPA.setText(_translate("MainWindow", "to SPA"))
+        self.actionto_multiple_JSON.setText(_translate("MainWindow", "to multiple JSON"))
+        self.actionto_multiple_SPA.setText(_translate("MainWindow", "to multiple SPA"))
 
 
 if __name__ == "__main__":

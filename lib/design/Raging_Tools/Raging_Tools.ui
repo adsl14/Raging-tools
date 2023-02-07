@@ -9639,12 +9639,14 @@
        <string>SPA</string>
       </property>
       <addaction name="actionto_JSON"/>
+      <addaction name="actionto_multiple_JSON"/>
      </widget>
      <widget class="QMenu" name="menuJSON">
       <property name="title">
        <string>JSON</string>
       </property>
       <addaction name="actionto_SPA"/>
+      <addaction name="actionto_multiple_SPA"/>
      </widget>
      <addaction name="menuSPA"/>
      <addaction name="menuJSON"/>
@@ -9715,6 +9717,16 @@
   <action name="actionto_SPA">
    <property name="text">
     <string>to SPA</string>
+   </property>
+  </action>
+  <action name="actionto_multiple_JSON">
+   <property name="text">
+    <string>to multiple JSON</string>
+   </property>
+  </action>
+  <action name="actionto_multiple_SPA">
+   <property name="text">
+    <string>to multiple SPA</string>
    </property>
   </action>
  </widget>

@@ -550,3 +550,20 @@ def write_json_bone_file(file_export_path, spa_header, bone_entries):
         output_file.write(header_text)
         output_file.write(bone_text)
         output_file.write("}")
+
+
+def show_progress_value(worker, step_progress):
+
+    i = worker.start_progress
+    end_progress = i + step_progress
+
+    # Calculate each step (10 steps)
+    step_loop = (end_progress - i) / 10
+
+    # Show progress
+    while i <= end_progress:
+        worker.progressValue.emit(i)
+        i += step_loop
+
+    # Update start progress
+    worker.start_progress = end_progress
