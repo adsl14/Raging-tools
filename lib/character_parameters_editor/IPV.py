@@ -8,7 +8,7 @@ class IPV:
     camera_i_path = ""
     blast_i_path = ""
     # Warning base message when importing a bone that doesn't exists in memory
-    message_bone_import_doesnt_exists = "The following bones are new for the current animation:"
+    message_bone_import_doesnt_exists = "The following bones are new for the current animation: "
     # Indexes
     signature_folder_index_list_view = None
     # Regex values
