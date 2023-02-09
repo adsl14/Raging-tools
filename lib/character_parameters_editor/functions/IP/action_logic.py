@@ -1022,7 +1022,7 @@ def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
         # Rotation
         elif type == 1:
             rotations = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
-            rotations['rot'] = main_window.animation_bone_rotation_XYZ_value.value()
+            rotations['rot'] = int(main_window.animation_bone_rotation_XYZ_value.value())
         # Unknown
         else:
             unknowns = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
@@ -1038,6 +1038,5 @@ def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
             # W
             else:
                 unknowns['w'] = main_window.animation_bone_unknown_W_value.value()
-
 
         spa_file.modified = True
