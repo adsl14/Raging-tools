@@ -142,25 +142,13 @@ def change_animation_bones_section(main_window, animation_array):
     # Get the first bone entry
     spa_file = animation_array[0][0]
 
-    # If there is data in the actual spa_file, we'll show it in the tool
-    if spa_file.size > 0:
+    # Layer
+    main_window.animation_spas_layer_value.clear()
+    for i in range(0, len(animation_array)):
+        main_window.animation_spas_layer_value.addItem(str(i), i)
+    main_window.animation_spas_layer_value.setCurrentIndex(0)
 
-        # Enable the bones section entirely
-        if not main_window.bones_frame_section.isEnabled():
-            main_window.bones_frame_section.setEnabled(True)
-
-        # Layer
-        main_window.animation_spas_layer_value.clear()
-        for i in range(0, len(animation_array)):
-            main_window.animation_spas_layer_value.addItem(str(i), i)
-        main_window.animation_spas_layer_value.setCurrentIndex(0)
-
-        change_animation_layer_spas(main_window, spa_file)
-
-    else:
-        # Disable the bones section entirely
-        if main_window.bones_frame_section.isEnabled():
-            main_window.bones_frame_section.setEnabled(False)
+    change_animation_layer_spas(main_window, spa_file)
 
     # Enable combobox change the values
     CPEV.disable_logic_events_combobox = False
@@ -171,19 +159,18 @@ def change_animation_layer_spas(main_window, spa_file):
     # Avoid combobox change the values
     CPEV.disable_logic_events_combobox = True
 
-    if spa_file.size > 0:
+    # Clear all the bones in combobox
+    main_window.animation_bone_value.clear()
+
+    if spa_file.spa_header.bone_count > 0:
 
         # Bones
-        main_window.animation_bone_value.clear()
-        if spa_file.spa_header.bone_count > 1:
-            bone_entry = list(spa_file.bone_entries.values())[0]
-            for bone_name in spa_file.bone_entries:
-                main_window.animation_bone_value.addItem(bone_name)
-            main_window.animation_bone_value.setCurrentIndex(0)
+        bone_entry = list(spa_file.bone_entries.values())[0]
+        for bone_name in spa_file.bone_entries:
+            main_window.animation_bone_value.addItem(bone_name)
+        main_window.animation_bone_value.setCurrentIndex(0)
 
-            change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
-        else:
-            change_animation_bone(main_window, None, 0, 0, 0)
+        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
     else:
         change_animation_bone(main_window, None, 0, 0, 0)
 
@@ -205,7 +192,6 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
             main_window.animation_export_bone.setEnabled(True)
             main_window.animation_export_all_bone.setEnabled(True)
             main_window.animation_import_bone.setEnabled(True)
-            main_window.animation_import_all_bone.setEnabled(True)
             main_window.animation_remove_bone.setEnabled(True)
     else:
         # Disable buttons
@@ -214,7 +200,6 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
             main_window.animation_export_bone.setEnabled(False)
             main_window.animation_export_all_bone.setEnabled(False)
             main_window.animation_import_bone.setEnabled(False)
-            main_window.animation_import_all_bone.setEnabled(False)
             main_window.animation_remove_bone.setEnabled(False)
 
     # Blocks
