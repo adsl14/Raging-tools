@@ -19,8 +19,8 @@ def del_rw(name_method, path, error):
 
 def ask_pack_structure(main_window):
 
-    # Ask to the user if is packing a vram or ioram file for Xbox. If is for Xbox,
-    # we have to change the separator size that is written between header and data. Otherwise
+    # Ask the user if it is packing a vram or ioram file for Xbox. If is for Xbox,
+    # we have to change the separator size that is written between header and data. Otherwise,
     # will crash or make an output with bugs and errors
     msg = QMessageBox()
     msg.setWindowTitle("Message")
@@ -91,7 +91,7 @@ def get_name_from_file(file, offset):
             tam_name_splitted = len(name_splitted)
             name = ""
 
-            # Get the name and extension separatelly
+            # Get the name and extension separately
             if tam_name_splitted > 1:
                 for i in range(0, tam_name_splitted - 1):
                     name += name_splitted[i] + ("." if i < tam_name_splitted - 2 else "")

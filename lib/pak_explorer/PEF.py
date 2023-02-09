@@ -21,7 +21,6 @@ from lib.pak_explorer.functions.action_logic import action_open_temp_folder_butt
 
 # Step 1: Create a worker class
 class WorkerPef(QObject):
-
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
@@ -31,6 +30,7 @@ class WorkerPef(QObject):
     separator = b''
     separator_size = 0
     start_progress = 0.0
+    step_progress_pack = 0.0
     end_progress = 100.0
 
     def load_data_to_pe_cpe(self):
@@ -93,7 +93,6 @@ class WorkerPef(QObject):
             # Read the data from the files and store the parameters
             sub_step_progress = step_progress / 100
             for i in range(0, 100):
-
                 # Report progress
                 self.progressText.emit("Reading character " + str(i))
                 show_progress_value(self, sub_step_progress)
@@ -141,54 +140,54 @@ class WorkerPef(QObject):
 
             # Show the color lightnings parameter
             self.main_window.color_lightning_value.setCurrentIndex(self.main_window.color_lightning_value.findData
-                                                              (character_zero.color_lightning))
+                                                                   (character_zero.color_lightning))
 
             # Show the glow/lightnings parameter
             self.main_window.glow_lightning_value.setCurrentIndex(self.main_window.glow_lightning_value.findData
-                                                             (character_zero.glow_lightning))
+                                                                  (character_zero.glow_lightning))
 
             # Show the transform panel
             self.main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(character_zero.transformations[0]).zfill(
-                                                                           3) + ".png")))
+                                                                            str(character_zero.transformations[0]).zfill(
+                                                                                3) + ".png")))
             self.main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=self.main_window,
-                                                                            index=character_zero.transformations[0],
-                                                                            trans_slot_panel_index=0)
+                                                                                 main_window=self.main_window,
+                                                                                 index=character_zero.transformations[0],
+                                                                                 trans_slot_panel_index=0)
             self.main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(character_zero.transformations[1]).zfill(
-                                                                           3) + ".png")))
+                                                                            str(character_zero.transformations[1]).zfill(
+                                                                                3) + ".png")))
             self.main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=self.main_window,
-                                                                            index=character_zero.transformations[1],
-                                                                            trans_slot_panel_index=1)
+                                                                                 main_window=self.main_window,
+                                                                                 index=character_zero.transformations[1],
+                                                                                 trans_slot_panel_index=1)
             self.main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(character_zero.transformations[2]).zfill(
-                                                                           3) + ".png")))
+                                                                            str(character_zero.transformations[2]).zfill(
+                                                                                3) + ".png")))
             self.main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=self.main_window,
-                                                                            index=character_zero.transformations[2],
-                                                                            trans_slot_panel_index=2)
+                                                                                 main_window=self.main_window,
+                                                                                 index=character_zero.transformations[2],
+                                                                                 trans_slot_panel_index=2)
             self.main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                       str(character_zero.transformations[3]).zfill(
-                                                                           3) + ".png")))
+                                                                            str(character_zero.transformations[3]).zfill(
+                                                                                3) + ".png")))
             self.main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                            main_window=self.main_window,
-                                                                            index=character_zero.transformations[3],
-                                                                            trans_slot_panel_index=3)
+                                                                                 main_window=self.main_window,
+                                                                                 index=character_zero.transformations[3],
+                                                                                 trans_slot_panel_index=3)
 
             # Show the transformation parameter
             self.main_window.transEffectValue.setCurrentIndex(self.main_window.transEffectValue.findData
-                                                         (character_zero.transformation_effect))
+                                                              (character_zero.transformation_effect))
 
             # Show the transformation partner
             self.main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                         str(character_zero.transformation_partner).zfill(3)
-                                                                         + ".png")))
+                                                                              str(character_zero.transformation_partner).zfill(3)
+                                                                              + ".png")))
             self.main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                              main_window=self.main_window,
-                                                                              index=character_zero.transformation_partner,
-                                                                              transformation_partner_flag=True)
+                                                                                   main_window=self.main_window,
+                                                                                   index=character_zero.transformation_partner,
+                                                                                   transformation_partner_flag=True)
 
             # Show amount ki per transformation
             self.main_window.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
@@ -198,39 +197,39 @@ class WorkerPef(QObject):
 
             # Show Animation per transformation
             self.main_window.trans1_animation_value.setCurrentIndex(self.main_window.trans1_animation_value.findData
-                                                               (character_zero.transformations_animation[0]))
+                                                                    (character_zero.transformations_animation[0]))
             self.main_window.trans2_animation_value.setCurrentIndex(self.main_window.trans2_animation_value.findData
-                                                               (character_zero.transformations_animation[1]))
+                                                                    (character_zero.transformations_animation[1]))
             self.main_window.trans3_animation_value.setCurrentIndex(self.main_window.trans3_animation_value.findData
-                                                               (character_zero.transformations_animation[2]))
+                                                                    (character_zero.transformations_animation[2]))
             self.main_window.trans4_animation_value.setCurrentIndex(self.main_window.trans4_animation_value.findData
-                                                               (character_zero.transformations_animation[3]))
+                                                                    (character_zero.transformations_animation[3]))
 
             # Show the fusion panel
             self.main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                      str(character_zero.fusions[0]).zfill(3) + ".png")))
+                                                                           str(character_zero.fusions[0]).zfill(3) + ".png")))
             self.main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                           main_window=self.main_window,
-                                                                           index=character_zero.fusions[0],
-                                                                           fusion_slot_panel_index=0)
+                                                                                main_window=self.main_window,
+                                                                                index=character_zero.fusions[0],
+                                                                                fusion_slot_panel_index=0)
             self.main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                      str(character_zero.fusions[1]).zfill(3) + ".png")))
+                                                                           str(character_zero.fusions[1]).zfill(3) + ".png")))
             self.main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                           main_window=self.main_window,
-                                                                           index=character_zero.fusions[1],
-                                                                           fusion_slot_panel_index=1)
+                                                                                main_window=self.main_window,
+                                                                                index=character_zero.fusions[1],
+                                                                                fusion_slot_panel_index=1)
             self.main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                      str(character_zero.fusions[2]).zfill(3) + ".png")))
+                                                                           str(character_zero.fusions[2]).zfill(3) + ".png")))
             self.main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                           main_window=self.main_window,
-                                                                           index=character_zero.fusions[2],
-                                                                           fusion_slot_panel_index=2)
+                                                                                main_window=self.main_window,
+                                                                                index=character_zero.fusions[2],
+                                                                                fusion_slot_panel_index=2)
             self.main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                      str(character_zero.fusions[3]).zfill(3) + ".png")))
+                                                                           str(character_zero.fusions[3]).zfill(3) + ".png")))
             self.main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                           main_window=self.main_window,
-                                                                           index=character_zero.fusions[3],
-                                                                           fusion_slot_panel_index=3)
+                                                                                main_window=self.main_window,
+                                                                                index=character_zero.fusions[3],
+                                                                                fusion_slot_panel_index=3)
 
             # Show the fusion partner (trigger)
             self.main_window.fusionPartnerTrigger_value.setPixmap(
@@ -238,10 +237,10 @@ class WorkerPef(QObject):
                                      str(character_zero.fusion_partner[0]).zfill(3)
                                      + ".png")))
             self.main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                       main_window=self.main_window,
-                                                                                       index=character_zero.fusion_partner
-                                                                                       [0],
-                                                                                       fusion_partner_trigger_flag=True)
+                                                                                            main_window=self.main_window,
+                                                                                            index=character_zero.fusion_partner
+                                                                                            [0],
+                                                                                            fusion_partner_trigger_flag=True)
 
             # Show fusion partner visual
             self.main_window.fusionPartnerVisual_value.setPixmap(
@@ -249,10 +248,10 @@ class WorkerPef(QObject):
                                      str(character_zero.fusion_partner[1]).zfill(3)
                                      + ".png")))
             self.main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                      main_window=self.main_window,
-                                                                                      index=character_zero.
-                                                                                      fusion_partner[1],
-                                                                                      fusion_partner_visual_flag=True)
+                                                                                           main_window=self.main_window,
+                                                                                           index=character_zero.
+                                                                                           fusion_partner[1],
+                                                                                           fusion_partner_visual_flag=True)
 
             # Show amount ki per fusion
             self.main_window.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
@@ -262,13 +261,13 @@ class WorkerPef(QObject):
 
             # Show Animation per transformation
             self.main_window.fusion1_animation_value.setCurrentIndex(self.main_window.fusion1_animation_value.findData
-                                                                (character_zero.fusions_animation[0]))
+                                                                     (character_zero.fusions_animation[0]))
             self.main_window.fusion2_animation_value.setCurrentIndex(self.main_window.fusion2_animation_value.findData
-                                                                (character_zero.fusions_animation[1]))
+                                                                     (character_zero.fusions_animation[1]))
             self.main_window.fusion3_animation_value.setCurrentIndex(self.main_window.fusion3_animation_value.findData
-                                                                (character_zero.fusions_animation[2]))
+                                                                     (character_zero.fusions_animation[2]))
             self.main_window.fusion4_animation_value.setCurrentIndex(self.main_window.fusion4_animation_value.findData
-                                                                (character_zero.fusions_animation[3]))
+                                                                     (character_zero.fusions_animation[3]))
 
             # We're not changing the character in the main panel (play combo box code)
             CPEV.disable_logic_events_combobox = False
@@ -313,14 +312,11 @@ class WorkerPef(QObject):
             subpak_file_resident_character_param = open(GPV.game_resident_character_param, mode="rb")
 
             # Read the data from the files and store the parameters
-            start_progress = 50.0
-            step_progress = 50.0 / 100.0
+            sub_step_progress = step_progress / 100.0
             for i in range(0, 100):
-
                 # Report progress
                 self.progressText.emit("Reading character " + str(i))
-                start_progress += step_progress
-                self.progressValue.emit(start_progress)
+                show_progress_value(self, sub_step_progress)
 
                 # Create a Character object
                 character = Character()
@@ -391,7 +387,7 @@ class WorkerPef(QObject):
             CPEV.disable_logic_events_combobox = True
 
             # Read all the data from the files and store it in the global_character from IPV.
-            read_single_character_parameters(self, 50.0, 50.0, self.main_window)
+            read_single_character_parameters(self, step_progress, self.main_window)
 
             # We're not changing the character (play combo box code)
             CPEV.disable_logic_events_combobox = False
@@ -435,14 +431,14 @@ class WorkerPef(QObject):
                 if REV.selecting_character:
                     # Reset slot in roster window
                     select_chara_roster_window_label = self.main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                                       str(slot_chara.
-                                                                                                           chara_id))
+                                                                                                            str(slot_chara.
+                                                                                                                chara_id))
                     select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
                 else:
 
                     select_chara_roster_window_label = self.main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
-                                                                                                       str(slot_trans.
-                                                                                                           chara_id))
+                                                                                                            str(slot_trans.
+                                                                                                                chara_id))
                     select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
                 # Reset the rest of the vars
@@ -462,11 +458,11 @@ class WorkerPef(QObject):
             else:
                 REV.roster_editor_first_activation = False
 
-            # Read all the data from the files and store it in the global vars from REV.
-            read_cs_chip_file(self, 50.0, 50.0, self.main_window)
+            # Disable combobox events
+            CPEV.disable_logic_events_combobox = True
 
-            # We're not changing the character in the main panel (play combo box code)
-            CPEV.disable_logic_events_combobox = False
+            # Read all the data from the files and store it in the global vars from REV.
+            read_cs_chip_file(self, step_progress, self.main_window)
 
             # Open the tab (character parameters editor)
             if self.main_window.tabWidget.currentIndex() != 2:
@@ -490,6 +486,9 @@ class WorkerPef(QObject):
             if not self.main_window.cs_chip.isEnabled():
                 self.main_window.cs_chip.setEnabled(True)
 
+            # We're not changing the character in the main panel (play combo box code)
+            CPEV.disable_logic_events_combobox = False
+
         # Generic pak file
         else:
 
@@ -502,7 +501,7 @@ class WorkerPef(QObject):
                 self.main_window.character_parameters_editor.setEnabled(False)
 
             self.progressText.emit("Unpacked")
-            self.progressValue.emit(100)
+            show_progress_value(self, step_progress)
 
         # Finish the thread
         self.finished.emit()
@@ -517,31 +516,34 @@ class WorkerPef(QObject):
         write_single_character_parameters(self, self.main_window, step_progress)
 
         # Pack the files
-        self.pack_and_save_file(step_progress, self.path_output_file, self.separator, self.separator_size)
+        self.step_progress_pack = step_progress
+        self.pack_and_save_file()
 
         # Finish the thread
         self.finished.emit()
 
-    def save_cs_chip_and_pack(self, path_output_file, separator, separator_size):
+    def save_cs_chip_and_pack(self):
 
         # 2 main tasks
         step_progress = self.end_progress / 2
 
         # Save all the info
         print("Writing values in the file...")
-        write_cs_chip_file(self, 0.0, 50.0)
+        write_cs_chip_file(self, step_progress)
 
         # Pack the files
-        self.pack_and_save_file(step_progress, self.path_output_file, self.separator, self.separator_size)
+        self.step_progress_pack = step_progress
+        self.pack_and_save_file()
 
         # Finish the thread
         self.finished.emit()
 
-    def save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file, separator, separator_size):
+    def save_operate_resident_param_db_font_pad_ps3_and_pack(self):
 
         # Values for the progress bar
-        start_progress = 0.0
-        step_progress = 50.0 / len(GPV.character_list_edited)
+        # 2 main tasks
+        step_progress = self.end_progress / 2
+        sub_step_progress = step_progress / len(GPV.character_list_edited)
         self.progressText.emit("Writting character...")
 
         # --- operate_resident_param ---
@@ -555,10 +557,8 @@ class WorkerPef(QObject):
             print("Writing values in the file...")
             # Change the transformations in the file
             for character in GPV.character_list_edited:
-
                 # Report progress
-                start_progress += step_progress
-                self.progressValue.emit(start_progress)
+                show_progress_value(self, sub_step_progress)
 
                 # Save all the info for each character
                 write_operate_resident_param(character, subpak_file_character_inf,
@@ -578,10 +578,8 @@ class WorkerPef(QObject):
             print("Writing values in the file...")
             # Change the values in the file
             for character in GPV.character_list_edited:
-
                 # Report progress
-                start_progress += step_progress
-                self.progressValue.emit(start_progress)
+                show_progress_value(self, sub_step_progress)
 
                 # Save all the info for each character
                 write_db_font_pad_ps3(character, subpak_file_resident_character_param)
@@ -590,15 +588,16 @@ class WorkerPef(QObject):
             subpak_file_resident_character_param.close()
 
         # Pack the files
-        self.pack_and_save_file(step_progress, self.path_output_file, self.separator, self.separator_size)
+        self.step_progress_pack = step_progress
+        self.pack_and_save_file()
 
         # Finish the thread
         self.finished.emit()
 
-    def pack_and_save_file(self, step_progress, path_output_file, separator, separator_size):
+    def pack_and_save_file(self):
 
         # 2 is because the number of tasks (pack and compressing)
-        sub_step_progress = step_progress / 2
+        sub_step_progress = self.step_progress_pack / 2
 
         # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
         # to the folder 'old_pak', so we can create a new packed file
@@ -618,18 +617,18 @@ class WorkerPef(QObject):
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
         self.progressText.emit("Packing file...")
-        pack(path_output_packed_file, filenames, num_filenames, num_pak_files, separator_size, separator)
+        pack(path_output_packed_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
         show_progress_value(self, sub_step_progress)
 
         path_output_packed_file = path_output_packed_file + ".pak"
 
         # Generate the final file for the game
         self.progressText.emit("Compressing file...")
-        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" + path_output_file + "\""
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" + self.path_output_file + "\""
         os.system('cmd /c ' + args)
         show_progress_value(self, sub_step_progress)
         # Disable read only
-        os.chmod(path_output_file, stat.S_IWRITE)
+        os.chmod(self.path_output_file, stat.S_IWRITE)
 
         # Remove the 'old_pak' folder
         if PEV.stpz_file:
@@ -640,7 +639,6 @@ class WorkerPef(QObject):
 
 
 def initialize_pe(main_window):
-
     # Open temp folder button
     main_window.openTempFolderButton.clicked.connect(action_open_temp_folder_button_logic)
 
@@ -658,7 +656,6 @@ def initialize_pe(main_window):
 
 
 def unpack(path_file, extension, main_temp_folder, list_view_2):
-
     # Open the file
     with open(path_file, mode="rb") as file:
 
@@ -688,7 +685,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             # Write each subpak file
             for i in range(0, num_files):
 
-                # Get the properties of the subpak file thas is inside of the main pak file
+                # Get the properties of the subpak file thas is inside the main pak file
                 offset = int.from_bytes(file.read(4), byteorder="big")
                 size = int.from_bytes(file.read(4), byteorder="big")
                 file.seek(8, 1)
@@ -696,7 +693,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
                 name_splitted = name.split(".")
                 name = name_splitted[0] + ".pak"
                 new_file_path = os.path.join(folder_path, str(i) + ";" + name)
-                # There are some files that doesn't have extension, so we add a empty value
+                # There are some files that doesn't have extension, so we add an empty value
                 if len(name_splitted) == 1:
                     name_splitted.append("")
 
@@ -742,7 +739,6 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
 
 
 def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, separator):
-
     # Create the headers and data vars
     header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
     header = b''

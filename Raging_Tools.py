@@ -54,7 +54,7 @@ class WorkerMainWindow(QObject):
         output_path = os.path.join(os.path.dirname(self.path_file), os.path.basename(self.path_file).split(".")[0] + "." + IPV.animation_bone_extension)
 
         # Show text
-        self.progressText.emit("Writting " + os.path.basename(output_path))
+        self.progressText.emit("Writing " + os.path.basename(output_path))
 
         # Write the output
         write_json_bone_file(output_path, spa_file.spa_header, spa_file.bone_entries)
@@ -307,7 +307,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.save_cs_chip_and_pack(path_output_file, separator, separator_size))
+        self.worker.main_window = self
+        self.worker.path_output_file = path_output_file
+        self.worker.separator = separator
+        self.worker.separator_size = separator_size
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.save_cs_chip_and_pack)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -329,8 +335,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.save_operate_resident_param_db_font_pad_ps3_and_pack(path_output_file, separator,
-                                                                                                             separator_size))
+        self.worker.path_output_file = path_output_file
+        self.worker.separator = separator
+        self.worker.separator_size = separator_size
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.save_operate_resident_param_db_font_pad_ps3_and_pack)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -352,7 +362,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
-        self.thread.started.connect(lambda: self.worker.pack_and_save_file(0.0, 100.0, path_output_file, separator, separator_size))
+        self.worker.path_output_file = path_output_file
+        self.worker.separator = separator
+        self.worker.separator_size = separator_size
+        self.worker.start_progress = 0.0
+        self.worker.step_progress_pack = 100.0
+        self.thread.started.connect(self.worker.pack_and_save_file)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)

@@ -4,6 +4,7 @@ from lib.character_parameters_editor.classes.Slot import Slot
 from lib.character_parameters_editor.functions.RE.action_logic import action_change_transformation, \
     action_change_character, action_modify_character
 from lib.character_parameters_editor.functions.RE.auxiliary import search_id
+from lib.functions import show_progress_value
 from lib.packages import QLabel, QPixmap, functools, os
 
 
@@ -59,7 +60,7 @@ def initialize_cs_chip(main_window):
         mini_portraits_image_select_chara_roster_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
 
-def read_cs_chip_file(worker_PEF, start_progress, step_report, main_window):
+def read_cs_chip_file(worker_pef, step_progress, main_window):
 
     # cs_chip
     REV.cs_chip_path = main_window.listView_2.model().item(0, 0).text()
@@ -71,13 +72,12 @@ def read_cs_chip_file(worker_PEF, start_progress, step_report, main_window):
         with open(REV.cs_form_path, mode="rb") as file_cs_form:
 
             # Get what ID of character will be used in the main roster
-            sub_step_report = step_report / REV.num_slots_characters
+            sub_step_progress = step_progress / REV.num_slots_characters
             for i in range(0, REV.num_slots_characters):
 
                 # Report progress
-                start_progress += sub_step_report
-                worker_PEF.progressText.emit("Reading character ID: " + str(i))
-                worker_PEF.progressValue.emit(start_progress)
+                worker_pef.progressText.emit("Reading character ID: " + str(i))
+                show_progress_value(worker_pef, sub_step_progress)
 
                 # get a slot object
                 slot_character = REV.slots_characters[i]
@@ -98,7 +98,7 @@ def read_cs_chip_file(worker_PEF, start_progress, step_report, main_window):
 
                 # null slots in main roster
                 else:
-                    # Desactivate the null slot image
+                    # Deactivate the null slot image
                     image_name = ""
                     slot_character.qlabel_object.setStyleSheet("QLabel {}")
                     slot_character.qlabel_object.mousePressEvent = None
@@ -110,20 +110,19 @@ def read_cs_chip_file(worker_PEF, start_progress, step_report, main_window):
                 slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
 
 
-def write_cs_chip_file(worker_PEF, start_progress, quanty_limit):
+def write_cs_chip_file(worker_pef, step_progress):
 
     # Write the slots that were edited
     with open(REV.cs_chip_path, mode="rb+") as file_cs_chip:
         with open(REV.cs_form_path, mode="rb+") as file_cs_form:
 
             # Get all the slots that were edited
-            step_progress = quanty_limit / len(REV.slots_edited)
-            worker_PEF.progressText.emit("Writing edited characters")
+            sub_step_progress = step_progress / len(REV.slots_edited)
+            worker_pef.progressText.emit("Writing edited characters")
             for slot in REV.slots_edited:
 
                 # Report progress
-                start_progress += step_progress
-                worker_PEF.progressValue.emit(start_progress)
+                show_progress_value(worker_pef, sub_step_progress)
 
                 # Write in cs_chip
                 file_cs_chip.seek(slot.position_cs_chip)
