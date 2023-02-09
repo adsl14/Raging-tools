@@ -123,8 +123,8 @@ def read_spa_file(spa_path):
     with open(spa_path, mode="rb") as file:
         spa_file.spa_header.unk0x00 = file.read(4)
 
-        # If there is data in the first 4 bytes, we continue reading
-        if spa_file.spa_header.unk0x00 != b'':
+        # If there is data in the first 4 bytes, and it starts with b'\x00\x00\x00\x00, we continue reading
+        if spa_file.spa_header.unk0x00 == b'\x00\x00\x00\x00':
 
             # Read the name and restore the pointer to continue reading the following bytes
             aux_pointer = file.tell()
@@ -228,6 +228,7 @@ def read_spa_file(spa_path):
 def write_spa_file(spa_file):
 
     header_data = b''
+    header_size = 0
     bone_entry = b''
     bone_entry_size = 48 * spa_file.spa_header.bone_count
     bone_data = b''
@@ -236,154 +237,156 @@ def write_spa_file(spa_file):
     string_table = b''
     string_table_size = 0
 
-    # Write first all the data
-    for bone_entry_name in spa_file.bone_entries:
-        # Get the bone data
-        bone_entry_data = spa_file.bone_entries[bone_entry_name]
+    # If there are bones data, we create the spa. Otherwise, will be empty
+    if spa_file.bone_entries:
+        # Write first all the data
+        for bone_entry_name in spa_file.bone_entries:
+            # Get the bone data
+            bone_entry_data = spa_file.bone_entries[bone_entry_name]
 
-        # Write frames
-        # Translation
-        # Update offset (only if there is data)
-        if bone_entry_data.translation_block_count > 0:
+            # Write frames
+            # Translation
+            # Update offset (only if there is data)
+            if bone_entry_data.translation_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
-            for translation_frame in bone_entry_data.translation_frame_data:
-                bone_data = bone_data + struct.pack('>f', translation_frame)
-                bone_data_size += 4
-        else:
-            bone_entry_data.translation_frame_offset = 0
+                bone_entry_data.translation_frame_offset = bone_data_start_offset + bone_data_size
+                for translation_frame in bone_entry_data.translation_frame_data:
+                    bone_data = bone_data + struct.pack('>f', translation_frame)
+                    bone_data_size += 4
+            else:
+                bone_entry_data.translation_frame_offset = 0
 
-        # Rotations
-        # Update offset (only if there is data)
-        if bone_entry_data.rotation_block_count > 0:
+            # Rotations
+            # Update offset (only if there is data)
+            if bone_entry_data.rotation_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.rotation_frame_offset = bone_data_start_offset + bone_data_size
-            for rotation_frame in bone_entry_data.rot_frame_data:
-                bone_data = bone_data + struct.pack('>f', rotation_frame)
-                bone_data_size += 4
-        else:
-            bone_entry_data.rotation_frame_offset = 0
+                bone_entry_data.rotation_frame_offset = bone_data_start_offset + bone_data_size
+                for rotation_frame in bone_entry_data.rot_frame_data:
+                    bone_data = bone_data + struct.pack('>f', rotation_frame)
+                    bone_data_size += 4
+            else:
+                bone_entry_data.rotation_frame_offset = 0
 
-        # Unknown
-        # Update offset (only if there is data)
-        if bone_entry_data.unknown_block_count > 0:
+            # Unknown
+            # Update offset (only if there is data)
+            if bone_entry_data.unknown_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.unknown_frame_offset = bone_data_start_offset + bone_data_size
-            for unknown_frame in bone_entry_data.unknown_frame_data:
-                bone_data = bone_data + struct.pack('>f', unknown_frame)
-                bone_data_size += 4
-        else:
-            bone_entry_data.unknown_frame_offset = 0
+                bone_entry_data.unknown_frame_offset = bone_data_start_offset + bone_data_size
+                for unknown_frame in bone_entry_data.unknown_frame_data:
+                    bone_data = bone_data + struct.pack('>f', unknown_frame)
+                    bone_data_size += 4
+            else:
+                bone_entry_data.unknown_frame_offset = 0
 
-        # Write floats
-        # Translation
-        # Update offset (only if there is data)
-        if bone_entry_data.translation_block_count > 0:
+            # Write floats
+            # Translation
+            # Update offset (only if there is data)
+            if bone_entry_data.translation_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
-            for translation_float in bone_entry_data.translation_float_data:
-                bone_data = bone_data + struct.pack('>f', translation_float['x'])
-                bone_data = bone_data + struct.pack('>f', translation_float['y'])
-                bone_data = bone_data + struct.pack('>f', translation_float['z'])
-                bone_data = bone_data + struct.pack('>f', translation_float['w'])
-                bone_data_size += 16
+                bone_entry_data.translation_float_offset = bone_data_start_offset + bone_data_size
+                for translation_float in bone_entry_data.translation_float_data:
+                    bone_data = bone_data + struct.pack('>f', translation_float['x'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['y'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['z'])
+                    bone_data = bone_data + struct.pack('>f', translation_float['w'])
+                    bone_data_size += 16
 
-        else:
-            bone_entry_data.translation_float_offset = 0
+            else:
+                bone_entry_data.translation_float_offset = 0
 
-        # Rotation
-        # Update offset (only if there is data)
-        if bone_entry_data.rotation_block_count > 0:
+            # Rotation
+            # Update offset (only if there is data)
+            if bone_entry_data.rotation_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
-            for rotation_float in bone_entry_data.rot_float_data:
-                # Convert each axis rotation in order to write the 'rot' value propertly. It needs more research since the rot calculated is not the same from the original
-                '''rot_x = get_rotation(rotation_float['x']) << 40
-                rot_y = get_rotation(rotation_float['y']) << 20
-                rot_z = get_rotation(rotation_float['z'])
-                rot = 0x3000000000000000 | rot_x | rot_y | rot_z
-                bone_data = bone_data + rot.to_bytes(8, 'big')'''
-                bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
-                bone_data_size += 8
-        else:
-            bone_entry_data.rotation_float_offset = 0
+                bone_entry_data.rotation_float_offset = bone_data_start_offset + bone_data_size
+                for rotation_float in bone_entry_data.rot_float_data:
+                    # Convert each axis rotation in order to write the 'rot' value propertly. It needs more research since the rot calculated is not the same from the original
+                    '''rot_x = get_rotation(rotation_float['x']) << 40
+                    rot_y = get_rotation(rotation_float['y']) << 20
+                    rot_z = get_rotation(rotation_float['z'])
+                    rot = 0x3000000000000000 | rot_x | rot_y | rot_z
+                    bone_data = bone_data + rot.to_bytes(8, 'big')'''
+                    bone_data = bone_data + rotation_float['rot'].to_bytes(8, 'big')
+                    bone_data_size += 8
+            else:
+                bone_entry_data.rotation_float_offset = 0
 
-        # Unknown
-        # Update offset (only if there is data)
-        if bone_entry_data.unknown_block_count > 0:
+            # Unknown
+            # Update offset (only if there is data)
+            if bone_entry_data.unknown_block_count > 0:
 
-            # Check if the data, the module of 16 is 0 before writing
-            bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
+                # Check if the data, the module of 16 is 0 before writing
+                bone_data, bone_data_size, _ = check_entry_module(bone_data, bone_data_size, 16)
 
-            bone_entry_data.unknown_float_offset = bone_data_start_offset + bone_data_size
-            for unknown_float in bone_entry_data.unknown_float_data:
-                bone_data = bone_data + struct.pack('>f', unknown_float['x'])
-                bone_data = bone_data + struct.pack('>f', unknown_float['y'])
-                bone_data = bone_data + struct.pack('>f', unknown_float['z'])
-                bone_data = bone_data + struct.pack('>f', unknown_float['w'])
-                bone_data_size += 16
+                bone_entry_data.unknown_float_offset = bone_data_start_offset + bone_data_size
+                for unknown_float in bone_entry_data.unknown_float_data:
+                    bone_data = bone_data + struct.pack('>f', unknown_float['x'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['y'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['z'])
+                    bone_data = bone_data + struct.pack('>f', unknown_float['w'])
+                    bone_data_size += 16
 
-        else:
-            bone_entry_data.unknown_float_offset = 0
+            else:
+                bone_entry_data.unknown_float_offset = 0
 
-    # Write the name of the spa
-    string_table_start_offset = bone_data_start_offset + bone_data_size
-    name = spa_file.spa_header.name + "." + spa_file.spa_header.extension
-    string_table += name.encode('utf-8') + b'\x00'
-    string_table_size += 1 + len(name)
+        # Write the name of the spa
+        string_table_start_offset = bone_data_start_offset + bone_data_size
+        name = spa_file.spa_header.name + "." + spa_file.spa_header.extension
+        string_table += name.encode('utf-8') + b'\x00'
+        string_table_size += 1 + len(name)
 
-    # Once the data is written, and we know the size, we can create the spa entirely, We have to, again, loop all the bones
-    for bone_entry_name in spa_file.bone_entries:
-        # Get the bone data
-        bone_entry_data = spa_file.bone_entries[bone_entry_name]
+        # Once the data is written, and we know the size, we can create the spa entirely, We have to, again, loop all the bones
+        for bone_entry_name in spa_file.bone_entries:
+            # Get the bone data
+            bone_entry_data = spa_file.bone_entries[bone_entry_name]
 
-        # Write each bone entry
-        bone_entry += (string_table_start_offset + string_table_size).to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unk0x04
-        bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unknown_block_count.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unknown_frame_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unknown_float_offset.to_bytes(4, 'big')
-        bone_entry += bone_entry_data.unk0x2c
+            # Write each bone entry
+            bone_entry += (string_table_start_offset + string_table_size).to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x04
+            bone_entry += bone_entry_data.translation_block_count.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_block_count.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unknown_block_count.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.translation_frame_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_frame_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unknown_frame_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.translation_float_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.rotation_float_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unknown_float_offset.to_bytes(4, 'big')
+            bone_entry += bone_entry_data.unk0x2c
 
-        # Write the name in the string table
-        string_table += bone_entry_name.encode('utf-8') + b'\x00'
-        string_table_size += len(bone_entry_name) + 1
+            # Write the name in the string table
+            string_table += bone_entry_name.encode('utf-8') + b'\x00'
+            string_table_size += len(bone_entry_name) + 1
 
-    # Write finally the header
-    header_data += spa_file.spa_header.unk0x00
-    header_data += string_table_start_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.unk0x08
-    header_data += struct.pack('>f', spa_file.spa_header.frame_count)
-    header_data += spa_file.spa_header.bone_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.maybe_start_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.scene_nodes_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.scene_nodes_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.camera_count.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.camera_offset.to_bytes(4, 'big')
-    header_data += spa_file.spa_header.unk0x28
-    header_data += spa_file.spa_header.unk0x2c
-    header_size = 48
+        # Write finally the header
+        header_data += spa_file.spa_header.unk0x00
+        header_data += string_table_start_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.unk0x08
+        header_data += struct.pack('>f', spa_file.spa_header.frame_count)
+        header_data += spa_file.spa_header.bone_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.maybe_start_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.scene_nodes_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.scene_nodes_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.camera_count.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.camera_offset.to_bytes(4, 'big')
+        header_data += spa_file.spa_header.unk0x28
+        header_data += spa_file.spa_header.unk0x2c
+        header_size = 48
 
     return (header_data + bone_entry + bone_data + string_table), (header_size + bone_entry_size + bone_data_size + string_table_size)
 
@@ -459,8 +462,10 @@ def read_json_bone_file(file_import_path):
 
                 # Store everything in the dict
                 spa_file.bone_entries[bone_entry.name] = bone_entry
-        except BaseException:
-            print("ERROR -> Wrong json file.")
+        except UnicodeDecodeError:
+            pass
+        except json.decoder.JSONDecodeError:
+            pass
 
         return spa_file
 
@@ -534,7 +539,12 @@ def write_json_bone_file(file_export_path, spa_header, bone_entries):
             bone_text += "]"
 
             bone_text += "\n\t\t\t\t}" + "," + "\n"
-        bone_text = bone_text[:-2] + "\n\t\t\t]\n"
+
+        # If there is bones, we remove the last two chars
+        if bone_entries:
+            bone_text = bone_text[:-2] + "\n\t\t\t]\n"
+        else:
+            bone_text = bone_text + "\n\t\t\t]\n"
 
         # Rest of header (after bone count)
         header_text += "\t\"maybe_start_offset\": " + str(spa_header.maybe_start_offset) + ",\n"
