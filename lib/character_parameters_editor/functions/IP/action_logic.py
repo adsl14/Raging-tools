@@ -408,21 +408,21 @@ def action_import_all_animation_bone_button_logic(main_window):
                 except KeyError:
                     # Add the new bones to the dict
                     new_bones_dict[bone_name_json] = spa_file_json.bone_entries[bone_name_json]
-                    new_bones_names += "<li>" + bone_name_json + "</li>"
+                    new_bones_names += "<b>" + bone_name_json + "</b>" + ", "
 
             if new_bones_dict:
                 # Ask the user to add the new bones
                 msg = QMessageBox()
                 msg.setWindowTitle("Message")
                 msg.setWindowIcon(main_window.ico_image)
-                message = IPV.message_bone_import_doesnt_exists + "<ul>" + new_bones_names + "</ul>\n" + "Do you want to add them?"
+                message = IPV.message_bone_import_doesnt_exists + "<br><br>" + new_bones_names[:-2] + "<br><br>" + "Do you want to add them?"
                 answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
 
                 # Add the new bones
                 if answer == msg.Yes:
                     spa_file.spa_header.bone_count += len(new_bones_dict)
                     spa_file.bone_entries.update(new_bones_dict)
-                    change_animation_layer_spas(main_window, spa_file)
+
             # Update changes in the visual
             change_animation_layer_spas(main_window, spa_file)
 
