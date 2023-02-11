@@ -9651,6 +9651,42 @@
      <addaction name="menuSPA"/>
      <addaction name="menuJSON"/>
     </widget>
+    <widget class="QMenu" name="menuPacker">
+     <property name="title">
+      <string>Packer</string>
+     </property>
+     <widget class="QMenu" name="menuUnpack">
+      <property name="title">
+       <string>Unpack</string>
+      </property>
+      <addaction name="actionSingle_unpack"/>
+      <addaction name="actionAll_unpack"/>
+     </widget>
+     <widget class="QMenu" name="menuPack">
+      <property name="title">
+       <string>Pack</string>
+      </property>
+      <addaction name="actionSingle_pack"/>
+      <addaction name="actionAll_pack"/>
+     </widget>
+     <addaction name="menuUnpack"/>
+     <addaction name="menuPack"/>
+    </widget>
+    <widget class="QMenu" name="menuCompressor">
+     <property name="title">
+      <string>Compressor</string>
+     </property>
+     <widget class="QMenu" name="menuDecrypt">
+      <property name="title">
+       <string>Encrypt/Decrypt</string>
+      </property>
+      <addaction name="actionSingle_encrypt_decrypt"/>
+      <addaction name="actionAll_encrypt_decrypt"/>
+     </widget>
+     <addaction name="menuDecrypt"/>
+    </widget>
+    <addaction name="menuCompressor"/>
+    <addaction name="menuPacker"/>
     <addaction name="menuConverter"/>
    </widget>
    <addaction name="menuFIle"/>
@@ -9727,6 +9763,46 @@
   <action name="actionto_multiple_SPA">
    <property name="text">
     <string>to multiple SPA</string>
+   </property>
+  </action>
+  <action name="actionSingle_unpack">
+   <property name="text">
+    <string>Single</string>
+   </property>
+  </action>
+  <action name="actionAll_unpack">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionSingle_pack">
+   <property name="text">
+    <string>Single</string>
+   </property>
+  </action>
+  <action name="actionAll_pack">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionSingle_encrypt_decrypt">
+   <property name="text">
+    <string>Single</string>
+   </property>
+  </action>
+  <action name="actionAll_encrypt_decrypt">
+   <property name="text">
+    <string>All</string>
+   </property>
+  </action>
+  <action name="actionSingle_encrypt">
+   <property name="text">
+    <string>Single</string>
+   </property>
+  </action>
+  <action name="actionAll_encrypt">
+   <property name="text">
+    <string>All</string>
    </property>
   </action>
  </widget>

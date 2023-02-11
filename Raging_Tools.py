@@ -9,7 +9,7 @@ from lib.design.material_children.material_children import Material_Child_Editor
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
-from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil
+from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
 from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
 # vram explorer
 from lib.vram_explorer.VEV import VEV
@@ -17,7 +17,7 @@ from lib.vram_explorer.VEF import WorkerVef
 from lib.vram_explorer.VEF import initialize_ve
 
 # pak explorer
-from lib.pak_explorer.PEF import initialize_pe, WorkerPef
+from lib.pak_explorer.PEF import initialize_pe, WorkerPef, unpack, pack
 from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
@@ -33,8 +33,11 @@ class WorkerMainWindow(QObject):
     progressText = pyqtSignal(str)
     path_file = ""
     path_output_file = ""
+    extension_file = ""
     folder_path = ""
     folder_output_path = ""
+    separator = b''
+    separator_size = 0
     start_progress = 0.0
     end_progress = 0.0
 
@@ -123,6 +126,117 @@ class WorkerMainWindow(QObject):
 
         self.finished.emit()
 
+    def single_unpack_file(self):
+
+        # Only 1 task
+        step_progress = self.end_progress
+
+        # Show text
+        self.progressText.emit("Unpacking file " + os.path.basename(self.path_file))
+
+        unpack(self.path_file, "", self.path_output_file, None)
+
+        show_progress_value(self, step_progress)
+
+        self.finished.emit()
+
+    def multiple_unpack_file(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        sub_step_progress = self.end_progress / total_files
+        self.end_progress = sub_step_progress
+        for i in range(0, total_files):
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+            self.path_output_file = os.path.join(self.folder_output_path, os.path.dirname(path_files[i]))
+            self.single_unpack_file()
+
+        self.finished.emit()
+
+    def single_pack_file(self):
+
+        # Only 1 task
+        step_progress = self.end_progress
+
+        # Show text
+        self.progressText.emit("Packing folder " + os.path.basename(self.path_file))
+
+        # Get the list of files inside the folder unpacked in order to pak the folder
+        filenames = natsorted(os.listdir(self.path_file), key=lambda y: y.lower())
+        num_filenames = len(filenames)
+        num_pak_files = int(filenames[-1].split(";")[0]) + 1
+        pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
+
+        show_progress_value(self, step_progress)
+
+        self.finished.emit()
+
+    def multiple_pack_file(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        sub_step_progress = self.end_progress / total_files
+        self.end_progress = sub_step_progress
+        for i in range(0, total_files):
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+            self.path_output_file = os.path.join(self.folder_output_path, path_files[i] + ".pak")
+            self.single_pack_file()
+
+        self.finished.emit()
+
+    def encrypt_decrypt_file(self):
+
+        # Only 1 task
+        step_progress = self.end_progress
+
+        # Show text
+        if self.extension_file == "zpak":
+            message = "Decrypting"
+        elif self.extension_file == "pak":
+            message = "Encrypting"
+        else:
+            message = "Encrypting or Decrypting"
+        self.progressText.emit(message + " " + os.path.basename(self.path_file))
+
+        # Execute the script in a command line for the encrypted file
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + self.path_file + "\" \"" + self.path_output_file + "\""
+        os.system('cmd /c ' + args)
+        # Disable read only
+        try:
+            os.chmod(self.path_output_file, stat.S_IWRITE)
+        except FileNotFoundError:
+            pass
+
+        show_progress_value(self, step_progress)
+
+        self.finished.emit()
+
+    def convert_multiple_encrypted_decrypted_files(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        sub_step_progress = self.end_progress / total_files
+        self.end_progress = sub_step_progress
+        for i in range(0, total_files):
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+
+            basename_splited = path_files[i].split(".")
+            extension = ""
+            if len(basename_splited) > 1:
+                if basename_splited[1] == "zpak":
+                    extension = "pak"
+                else:
+                    extension = "zpak"
+                basename = basename_splited[0] + "." + extension
+            else:
+                basename = path_files[i]
+            self.extension_file = extension
+            self.path_output_file = os.path.join(self.folder_output_path, basename)
+
+            self.encrypt_decrypt_file()
+
+        self.finished.emit()
+
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
@@ -149,10 +263,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionClose.triggered.connect(self.close)
 
         # Utilities tab
+        # Converter
         self.actionto_JSON.triggered.connect(self.action_SPA_to_JSON_logic)
         self.actionto_SPA.triggered.connect(self.action_JSON_to_SPA_logic)
         self.actionto_multiple_JSON.triggered.connect(self.action_multiple_SPA_to_multiple_JSON_logic)
         self.actionto_multiple_SPA.triggered.connect(self.action_multiple_JSON_to_multiple_SPA_logic)
+        # Packer
+        self.actionSingle_pack.triggered.connect(self.action_single_pack_logic)
+        self.actionAll_pack.triggered.connect(self.action_multiple_pack_logic)
+        self.actionSingle_unpack.triggered.connect(self.action_single_unpack_logic)
+        self.actionAll_unpack.triggered.connect(self.action_multiple_unpack_logic)
+        # Compressor
+        self.actionSingle_encrypt_decrypt.triggered.connect(self.action_single_encrypt_decrypt_logic)
+        self.actionAll_encrypt_decrypt.triggered.connect(self.action_multiple_encrypt_decrypt_logic)
 
         # About tab
         self.actionAuthor.triggered.connect(self.action_author_logic)
@@ -692,6 +815,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         path_file = QFileDialog.getOpenFileName(self, "Open spa file", MainWindow.old_path_file, "Special animation file (*.spa)")[0]
 
         if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
             # Step 2: Create a QThread object
             self.thread = QThread()
             # Step 3: Create a worker object
@@ -722,6 +849,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         path_file = QFileDialog.getOpenFileName(self, "Open json file", MainWindow.old_path_file, "Json file (*.json)")[0]
 
         if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
             # Step 2: Create a QThread object
             self.thread = QThread()
             # Step 3: Create a worker object
@@ -809,6 +940,241 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.worker.start_progress = 0.0
             self.worker.end_progress = 100.0
             self.thread.started.connect(self.worker.convert_multiple_JSON_to_multiple_SPA)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_single_unpack_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self,
+                                                "Open packed file", MainWindow.old_path_file,
+                                                "Packed file "
+                                                "(*.pak)")[0]
+        if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = path_file
+            self.worker.path_output_file = os.path.dirname(path_file)
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.single_unpack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_unpack_logic(self):
+
+        # Ask to the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where unpacked files are located")
+
+        if folder_import_path:
+
+            # Create output folder
+            folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.multiple_unpack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_single_pack_logic(self):
+
+        # Ask to the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where files are located")
+
+        if folder_import_path:
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = folder_import_path
+            self.worker.path_output_file = folder_import_path + ".pak"
+            # Ask the user if it is packing a vram or ioram file for Xbox
+            self.worker.separator, self.worker.separator_size = ask_pack_structure(self)
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.single_pack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_pack_logic(self):
+
+        # Ask to the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where there are folders with files are located")
+
+        if folder_import_path:
+
+            # Ask the user if it is packing a vram or ioram file for Xbox
+            self.worker.separator, self.worker.separator_size = ask_pack_structure(self)
+
+            # Create output folder
+            folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.multiple_pack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_single_encrypt_decrypt_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self,
+                                                "Open encrypted or decrypted file", MainWindow.old_path_file,
+                                                "Encrypted or decrypted file "
+                                                "(*.zpak *.pak)")[0]
+        if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = path_file
+
+            basename = os.path.basename(path_file)
+            basename_splited = basename.split(".")
+            extension = ""
+            if len(basename_splited) > 1:
+                if basename_splited[1] == "zpak":
+                    extension = "pak"
+                else:
+                    extension = "zpak"
+                basename = basename_splited[0] + "." + extension
+            else:
+                basename = basename + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+            self.worker.extension_file = extension
+            self.worker.path_output_file = os.path.join(os.path.dirname(path_file), basename)
+
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.encrypt_decrypt_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_encrypt_decrypt_logic(self):
+
+        # Ask to the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where encrypted or decrypted files are located")
+
+        if folder_import_path:
+
+            # Create output folder
+            folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_multiple_encrypted_decrypted_files)
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)
