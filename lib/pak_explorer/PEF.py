@@ -608,23 +608,21 @@ class WorkerPef(QObject):
                 os.mkdir(old_pak_folder)
             move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
 
-        # Path where we'll save the stpk  packed file
-        path_output_packed_file = os.path.join(PEV.temp_folder,
-                                               os.path.basename(PEV.pak_file_path).split(".")[0])
+        # Path where the folder with files are located
+        folder_input = os.path.join(PEV.temp_folder, os.path.basename(PEV.pak_file_path).split(".")[0])
 
         # Get the list of files inside the folder unpacked in order to pak the folder
-        filenames = natsorted(os.listdir(path_output_packed_file), key=lambda y: y.lower())
+        filenames = natsorted(os.listdir(folder_input), key=lambda y: y.lower())
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
+        path_output_file = folder_input + ".pak"
         self.progressText.emit("Packing file...")
-        pack(path_output_packed_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
+        pack(folder_input, path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
         show_progress_value(self, sub_step_progress)
-
-        path_output_packed_file = path_output_packed_file + ".pak"
 
         # Generate the final file for the game
         self.progressText.emit("Compressing file...")
-        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_packed_file + "\" \"" + self.path_output_file + "\""
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_file + "\" \"" + self.path_output_file + "\""
         os.system('cmd /c ' + args)
         show_progress_value(self, sub_step_progress)
         # Disable read only
@@ -722,11 +720,12 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             new_file_path = os.path.join(dir_name, base_name.split(".")[0] + "." + extension)
             os.rename(path_file, new_file_path)
 
-            # Add to the listView_2
-            item = QStandardItem(new_file_path)
-            item.setData(os.path.basename(new_file_path).split(";")[1])
-            item.setEditable(False)
-            list_view_2.model().appendRow(item)
+            # Add to the listView_2, each time. If is None, we won't add anything. We just only unpack the packed file
+            if list_view_2 is not None:
+                item = QStandardItem(new_file_path)
+                item.setData(os.path.basename(new_file_path).split(";")[1])
+                item.setEditable(False)
+                list_view_2.model().appendRow(item)
 
             # Check if we find a folder that is the signature one in order to store the index of the listView
             dir_name_splited = dir_name.split(";")
@@ -738,7 +737,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             PEV.number_files += 1
 
 
-def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, separator):
+def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator):
     # Create the headers and data vars
     header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
     header = b''
@@ -765,8 +764,9 @@ def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, s
             sub_filenames = natsorted(os.listdir(sub_folder_path), key=lambda y: y.lower())
             num_sub_filenames = len(sub_filenames)
             num_subpak_files = int(sub_filenames[-1].split(";")[0]) + 1
+            sub_path_output_file = sub_folder_path + ".pak"
 
-            pack(sub_folder_path, sub_filenames, num_sub_filenames, num_subpak_files, separator_size, separator)
+            pack(sub_folder_path, sub_path_output_file, sub_filenames, num_sub_filenames, num_subpak_files, separator_size, separator)
 
         else:
             with open(os.path.join(path_folder, filename), mode="rb") as file_pointer:
@@ -815,5 +815,5 @@ def pack(path_folder, filenames, num_filenames, num_pak_files, separator_size, s
     pak_file = header_0 + header + separator + pak_file + data
 
     # Write the new pak file in the folder
-    with open(path_folder + ".pak", mode="wb") as output_file:
+    with open(path_output_file, mode="wb") as output_file:
         output_file.write(pak_file)
