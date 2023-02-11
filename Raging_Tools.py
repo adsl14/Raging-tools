@@ -1224,7 +1224,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     '<li>To <b><a href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b> for his contributions.</li>'
                     '<li>To <b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>'
                     ' for his contributions.</li>'
-                    '<li>To the <a href=https://discord.gg/JpCvDCgpnb>Raging Blast Modding community</a>.</li>'
+                    '<li>To the <a href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()
 

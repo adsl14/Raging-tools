@@ -45,6 +45,73 @@ if the path in Windows is very large, the tool will <b>crash!</b>
 Windows has a limit for the path name, so run the tool in a place where the path is not too long.</li>
 </ul>
 
+## Description
+
+This tool has several options, distributed in tabs. Each of one will be explained in the following sections. 
+We will explain first the ones that are on the top of the tool and, after that, the ones that are below.
+
+## File
+
+You can open a file, save it, or close the application. Moreover, for each task, you have a keyboard shortcut.
+The type of file you can open or save, will be explained in the following sections.
+
+<img src="images/file_tab.jpg" alt="file_tab_image" width="20%">
+
+## Utilities
+
+Utilities has some individual tasks you can use. The utilities are <i>Compressor</i>, <i>Packer</i> and
+<i>Converter</i>
+
+<img src="images/utilities_tab.jpg" alt="file_tab_image" width="20%">
+
+### Compressor
+
+<i>Compressor</i> will use the <i>dbrb_compressor.exe</i> made by <b>revelation (revel8n)</b>. In this option, you can
+encrypt or decrypt a single file, or multiple files. The supported files are <i>.zpak</i> <b>(STPZ)</b> and <i>.pak</i>
+<b>(STPK)</b> files.
+The <i>dbrb_compressor.exe</i> will detect if the input file needs
+an encryption or decryption, so there is no need to specify what you need to do.
+
+For the single file option, the tool will generate the output in the same path where the input is located. If is a decryption,
+the output file will be <i>.pak</i>. If is a encryption, the output file will be <i>.zpak</i>
+
+For the multiple files option, the tool will ask you the path of the 
+folder where the files you want to encrypt or decrypt. The tool will create a folder with the output files, in the same
+path where the folder input is located. The name of the output folder will be the same as the input folder, but with the
+datetime of creation.
+
+<img src="images/utilities_tab_compressor.jpg" alt="utilities_tab_compressor" width="40%">
+
+### Packer
+
+<i>Packer</i> will unpack the files that are packed as a <i>.pak</i>, or pack a folder with files, creating a output
+as a <i>.pak</i> file.
+
+Like the previous task, you can unpack or pack, a file or folder respectively, a single one or massivelly.
+
+<img src="images/utilities_tab_packer_unpack.jpg" alt="utilities_tab_packer_unpack" width="40%">
+<img src="images/utilities_tab_packer_pack.jpg" alt="utilities_tab_packer_unpack" width="36%">
+
+### Converter
+
+In this tab, you can convert the files to another format. The options are <i>SPA</i> and <i>JSON</i>
+
+You can convert a single <i>SPA</i> to a <JSON> file, or select a folder with some <i>SPA</i> files
+and convert all of them, to the <i>JSON</i> format. The same goes if you want to convert from <i>JSON</i>
+to <i>SPA</i>
+
+<img src="images/utilities_tab_converter_spa.jpg" alt="utilities_tab_converter_spa" width="40%">
+<img src="images/utilities_tab_converter_json.jpg" alt="utilities_tab_converter_json" width="34%">
+
+### About
+
+In this tab you can check the author of the tool, go to the <i>GitHub</i> repository where is explained how to use
+the tool, and the people that contribuited in the development of this tool. There is also a link to the <b>Discord</b>
+server of the **Raging Blast modding community** where you can join and stay tunned about the news in the modding of
+this series.
+
+<img src="images/about_tab.jpg" alt="about_tab" width="30%">
+
 ## Vram Explorer
 
 <img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
@@ -148,6 +215,14 @@ properties to the character you want to change the background color.
 
 The signature can also be swapped too. However, if you're trying to incorporate a signature that triggers a Ki blast,
 you need to change the <i>Signature Ki blast</i> values in order to execute the signature propertly.
+
+For the animations, you can export the bones to the <i>.json</i> format and mix the bones in that output file. Then,
+you can import the <i>.json</i> file.
+Moreover, in the bones section, there is a option called <i>Layer</i>. Since this tool when
+opens this kind of files, some <i>spa</i> files are mixed into a custom <i>spas</i> file, that have several <i>spa</i>
+data inside, the layer option will let you select, from the _spas_  file, which <i>spa</i> file you want to edit.
+Also, for each _rotation_, _translation_ and _unknown_ (this one needs more research. Some <i>spa</i> files has those values),
+there is a <i>block</i> section which is related (I think), to the frames of the animation.
 
 In order to use this tab, you have open the <i>operate_character_XYZ_m.zpak</i> (Where XYZ are generic numbers) 
 located in <i>st_pack_battle_character_pt_ps3.afs and st_pack_battle_character_pt_x360.afs (Raging Blast 2)</i>.
