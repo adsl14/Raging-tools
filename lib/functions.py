@@ -567,8 +567,8 @@ def show_progress_value(worker, step_progress):
     i = worker.start_progress
     end_progress = i + step_progress
 
-    # Calculate each step (10 steps)
-    step_loop = (end_progress - i) / 10
+    # Calculate each step
+    step_loop = (end_progress - i)
 
     # Show progress
     while i <= end_progress:
