@@ -114,7 +114,7 @@ this series.
 
 ## Vram Explorer
 
-<img src="images/vram_explorer_main.jpg" alt="vram_explorer_image_alt" width="50%">
+<img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
 
 <i>Vram Explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and 
 <i>.vram</i> file, the textures will be loaded.
