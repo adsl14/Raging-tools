@@ -114,7 +114,7 @@ this series.
 
 ## Vram Explorer
 
-<img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
+<img src="https://i.imgur.com/z8N3uoh.jpg" alt="vram_explorer_image" width="50%">
 
 <i>Vram Explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and 
 <i>.vram</i> file, the textures will be loaded.
@@ -154,7 +154,7 @@ for now.
 
 ## Pak Explorer
 
-<img src="images/pak_explorer_main.jpg" alt="pak_explorer_image" width="50%">
+<img src="https://i.imgur.com/HlReleO.jpg" alt="pak_explorer_image" width="50%">
 
 <i>Pak Explorer</i> is a tool that will unpack the files that has the extension <i>.zpak</i> (encrypted pak file) or 
 <i>.pak</i> (decrypted pak file). It uses a <i>Depth-first search</i> since the information in those files are stored 
@@ -190,20 +190,20 @@ In order to use this tab, and deppeding on what you need to edit, you have to op
   <li>
     <i>operate_resident_param.zpak</i> located in 
 <i>st_pack_battle_others_pt_ps3.afs and st_pack_battle_others_pt_x360.afs (Raging Blast 2)</i>.<br>
-    <img src="images/character_parameters_editor_general_parameters_1.jpg" 
+    <img src="https://i.imgur.com/qlOhRTV.jpg" 
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
   <li>
     <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs</i> and
     <i>db_font_pad_X360_s.zpak</i> located in <i>st_pack_boot_pt_x360.afs (Raging Blast 2)</i>.<br>
-    <img src="images/character_parameters_editor_general_parameters_2.jpg" 
+    <img src="https://i.imgur.com/6mAfOvK.jpg.jpg" 
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
 </ul>   
 
 ### Individual Parameters
 
-<img src="images/character_parameters_editor_individual_parameters.jpg" alt="character_parameters_editor_individual_parameters" width="50%">
+<img src="https://i.imgur.com/2EFyfTy.jpg" alt="character_parameters_editor_individual_parameters" width="50%">
 
 This tab holds the individual parameters of one character. This parameters are the camera values, movement speed, 
 animations, melee values, signature, etc.
@@ -229,7 +229,7 @@ located in <i>st_pack_battle_character_pt_ps3.afs and st_pack_battle_character_p
 
 ### Roster Editor
 
-<img src="images/character_parameters_editor_roster_editor.jpg" alt="character_parameters_editor_roster_editor" width="50%">
+<img src="https://i.imgur.com/br8MBxJ.jpg" alt="character_parameters_editor_roster_editor" width="50%">
 
 In this tab you can edit the roster, by adding, removing or swapping characters or transformations.
 
