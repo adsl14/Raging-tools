@@ -15,8 +15,7 @@ from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
 from lib.packages import os, functools, stat, QPixmap, QLabel, QStandardItem, QStandardItemModel
 from lib.pak_explorer.PEV import PEV
-from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, \
-    action_export_2_logic, action_import_2_logic, action_item_pak_explorer
+from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic
 
 
 # Step 1: Create a worker class
@@ -38,10 +37,10 @@ class WorkerPef(QObject):
         # 2 main tasks
         step_progress = self.end_progress / 2
 
+        # Reset model list view
+        self.main_window.listView_2.model().clear()
+
         # Unpack pak file (pak explorer)
-        # Prepare the list view 2 in order to add the names
-        model = QStandardItemModel()
-        self.main_window.listView_2.setModel(model)
         IPV.signature_folder_index_list_view = None
         PEV.number_files = 0
 
@@ -51,10 +50,9 @@ class WorkerPef(QObject):
                self.main_window.listView_2)
         show_progress_value(self, step_progress)
 
+        # Assign the first entry to the list view
         self.main_window.listView_2.setCurrentIndex(self.main_window.listView_2.model().index(0, 0))
-        PEV.current_selected_subpak_file = self.main_window.listView_2.model().index(0, 0).row()
-        self.main_window.listView_2.selectionModel().currentChanged. \
-            connect(lambda q_model_idx: action_item_pak_explorer(q_model_idx))
+
         # Enable the pak explorer
         self.main_window.pak_explorer.setEnabled(True)
         # Add the title
@@ -637,6 +635,11 @@ class WorkerPef(QObject):
 
 
 def initialize_pe(main_window):
+
+    # Prepare the list view 2 in order to add the names
+    model = QStandardItemModel()
+    main_window.listView_2.setModel(model)
+
     # Open temp folder button
     main_window.openTempFolderButton.clicked.connect(action_open_temp_folder_button_logic)
 

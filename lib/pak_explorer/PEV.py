@@ -28,7 +28,5 @@ class PEV:
     # resources path
     dbrb_compressor_path = os.path.join("lib", "resources", "dbrb_compressor.exe")
 
-    # Index of the current selected file
-    current_selected_subpak_file = 0
     # Total number of files in pak_explorer
     number_files = 0
