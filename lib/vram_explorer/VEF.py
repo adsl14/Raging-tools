@@ -50,8 +50,6 @@ class WorkerVef(QObject):
 
     def load_spr_vram_file(self):
 
-        # Reset boolean values
-        VEV.enable_combo_box = False
         # Reset integer values
         VEV.unique_temp_name_offset = 0
         VEV.DbzCharMtrl_offset = 0
@@ -125,8 +123,9 @@ class WorkerVef(QObject):
             self.main_window.materialModelPartVal.setEnabled(True)
 
             # Enable combo box and set the values for the first layer of the first material
-            VEV.enable_combo_box = True
             self.main_window.materialVal.setCurrentIndex(0)
+            self.main_window.modelPartVal.setCurrentIndex(0)
+            action_material_val_changed(self.main_window)
             action_model_part_val_changed(self.main_window)
 
         else:
@@ -1148,12 +1147,6 @@ class WorkerVef(QObject):
 def initialize_ve(main_window):
 
     # Buttons
-    main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
-    main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
-    main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
-    main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
-    main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
-    main_window.addButton.clicked.connect(lambda: action_add_logic(main_window))
     main_window.exportAllButton.setEnabled(False)
     main_window.importAllButton.setEnabled(False)
     main_window.exportButton.setEnabled(False)
@@ -1162,18 +1155,6 @@ def initialize_ve(main_window):
     main_window.addButton.setEnabled(False)
 
     # Material
-    main_window.materialVal.currentIndexChanged.connect(lambda: action_material_val_changed(main_window))
-    main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
-    main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
-    main_window.effectVal.currentIndexChanged.connect(lambda: action_effect_val_changed(main_window))
-    main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
-    main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
-    main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
-    main_window.exportAllMaterialButton.clicked.connect(lambda: action_material_export_all_logic(main_window))
-    main_window.importAllMaterialButton.clicked.connect(lambda: action_material_import_all_logic(main_window))
-    main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
-    main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
-    main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
@@ -1188,9 +1169,6 @@ def initialize_ve(main_window):
     main_window.editMaterialChildrenButton.setEnabled(False)
 
     # Model part
-    main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
-    main_window.materialModelPartVal.currentIndexChanged.connect(lambda:
-                                                                 action_material_model_part_val_changed(main_window))
     main_window.modelPartVal.setEnabled(False)
     main_window.materialModelPartVal.setEnabled(False)
 
@@ -1203,25 +1181,98 @@ def initialize_ve(main_window):
     # Create a model for the list view of textures
     model = QStandardItemModel()
     main_window.listView.setModel(model)
-    main_window.listView.selectionModel().currentChanged.connect(lambda: show_texture(main_window.listView,
-                                                                                      main_window.imageTexture,
-                                                                                      main_window.encodingImageText,
-                                                                                      main_window.mipMapsImageText,
-                                                                                      main_window.sizeImageText))
 
-    # Load the Material children editor window
-    main_window.MaterialChildEditorUI.border_color_R_value.valueChanged\
-        .connect(lambda: action_rgb_changed_logic(main_window))
-    main_window.MaterialChildEditorUI.border_color_G_value.valueChanged\
-        .connect(lambda: action_rgb_changed_logic(main_window))
-    main_window.MaterialChildEditorUI.border_color_B_value.valueChanged\
-        .connect(lambda: action_rgb_changed_logic(main_window))
-    main_window.MaterialChildEditorUI.border_color_A_value.valueChanged\
-        .connect(lambda: action_rgb_changed_logic(main_window))
-    main_window.MaterialChildEditorUI.save_material_button.clicked\
-        .connect(lambda: action_save_material_logic(main_window))
-    main_window.MaterialChildEditorUI.cancel_material_button.clicked.\
-        connect(lambda: action_cancel_material_logic(main_window))
+
+def listen_events_logic(main_window, flag):
+
+    if flag:
+
+        # Buttons
+        main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
+        main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
+        main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
+        main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
+        main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
+        main_window.addButton.clicked.connect(lambda: action_add_logic(main_window))
+
+        # Material
+        main_window.materialVal.currentIndexChanged.connect(lambda: action_material_val_changed(main_window))
+        main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
+        main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
+        main_window.effectVal.currentIndexChanged.connect(lambda: action_effect_val_changed(main_window))
+        main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
+        main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
+        main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
+        main_window.exportAllMaterialButton.clicked.connect(lambda: action_material_export_all_logic(main_window))
+        main_window.importAllMaterialButton.clicked.connect(lambda: action_material_import_all_logic(main_window))
+        main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
+        main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
+        main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
+
+        # Model part
+        main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
+        main_window.materialModelPartVal.currentIndexChanged.connect(lambda:
+                                                                     action_material_model_part_val_changed(main_window))
+
+        # Create a model for the list view of textures
+        main_window.listView.selectionModel().currentChanged.connect(lambda: show_texture(main_window.listView,
+                                                                                          main_window.imageTexture,
+                                                                                          main_window.encodingImageText,
+                                                                                          main_window.mipMapsImageText,
+                                                                                          main_window.sizeImageText))
+
+        # Load the Material children editor window
+        main_window.MaterialChildEditorUI.border_color_R_value.valueChanged \
+            .connect(lambda: action_rgb_changed_logic(main_window))
+        main_window.MaterialChildEditorUI.border_color_G_value.valueChanged \
+            .connect(lambda: action_rgb_changed_logic(main_window))
+        main_window.MaterialChildEditorUI.border_color_B_value.valueChanged \
+            .connect(lambda: action_rgb_changed_logic(main_window))
+        main_window.MaterialChildEditorUI.border_color_A_value.valueChanged \
+            .connect(lambda: action_rgb_changed_logic(main_window))
+        main_window.MaterialChildEditorUI.save_material_button.clicked \
+            .connect(lambda: action_save_material_logic(main_window))
+        main_window.MaterialChildEditorUI.cancel_material_button.clicked. \
+            connect(lambda: action_cancel_material_logic(main_window))
+
+    else:
+
+        # Buttons
+        main_window.exportAllButton.disconnect()
+        main_window.importAllButton.disconnect()
+        main_window.exportButton.disconnect()
+        main_window.importButton.disconnect()
+        main_window.removeButton.disconnect()
+        main_window.addButton.disconnect()
+
+        # Material
+        main_window.materialVal.disconnect()
+        main_window.layerVal.disconnect()
+        main_window.typeVal.disconnect()
+        main_window.effectVal.disconnect()
+        main_window.textureVal.disconnect()
+        main_window.exportMaterialButton.disconnect()
+        main_window.importMaterialButton.disconnect()
+        main_window.exportAllMaterialButton.disconnect()
+        main_window.importAllMaterialButton.disconnect()
+        main_window.editMaterialChildrenButton.disconnect()
+        main_window.addMaterialButton.disconnect()
+        main_window.removeMaterialButton.disconnect()
+
+        # Model part
+        main_window.modelPartVal.disconnect()
+        main_window.materialModelPartVal.disconnect()
+
+        # Create a model for the list view of textures
+        main_window.listView.selectionModel().currentChanged.disconnect()
+
+        # Load the Material children editor window
+        main_window.MaterialChildEditorUI.border_color_R_value.disconnect()
+        main_window.MaterialChildEditorUI.border_color_G_value.disconnect()
+        main_window.MaterialChildEditorUI.border_color_B_value.disconnect()
+        main_window.MaterialChildEditorUI.border_color_A_value.disconnect()
+        main_window.MaterialChildEditorUI.save_material_button.disconnect()
+        main_window.MaterialChildEditorUI.cancel_material_button.disconnect()
 
 
 def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):
@@ -2688,9 +2739,8 @@ def show_dds_image(image_texture, texture_data, width, height, texture_path="tem
 
         if texture_data is not None:
             # Create the dds in disk and open it
-            file = open(texture_path, mode="wb")
-            file.write(texture_data)
-            file.close()
+            with open(texture_path, mode="wb") as output:
+                output.write(texture_data)
 
         img = read_dds_file(texture_path)
 
@@ -3015,9 +3065,9 @@ def prepare_sprp_data_entry(main_window, import_file_path, sprp_data_entry):
     main_window.listView.model().appendRow(item)
 
     # Append to the array of textures in the material section
-    VEV.enable_combo_box = False
+    listen_events_logic(main_window, False)
     main_window.textureVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
-    VEV.enable_combo_box = True
+    listen_events_logic(main_window, True)
 
 
 # Will add a new texture to the list view, creating a new sprp_data_entry

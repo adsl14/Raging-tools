@@ -60,8 +60,6 @@ class VEV:
     enable_spr_scratch = True
 
     # --- GENERAL vars ---
-    # Enable or disable combo box onchange
-    enable_combo_box = False
     # Unique offset that will be used when adding a new material/texture
     unique_temp_name_offset = 0
     # List of the Raging Blast series games that we will use it to ask to the user for the vram format

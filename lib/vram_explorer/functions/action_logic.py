@@ -226,7 +226,7 @@ def action_remove_logic(main_window):
             main_window.listView.model().removeRow(current_index_list_view)
 
             # Remove from the array of textures in the material section
-            VEV.enable_combo_box = False
+            VEF.listen_events_logic(main_window, False)
             current_index_material_texture_index = current_index_list_view + 1
 
             # Search the material layer that is using the texture removed to assing the empty offset one
@@ -245,7 +245,7 @@ def action_remove_logic(main_window):
             if main_window.textureVal.currentIndex() == current_index_material_texture_index:
                 main_window.textureVal.setCurrentIndex(0)
             main_window.textureVal.removeItem(current_index_material_texture_index)
-            VEV.enable_combo_box = True
+            VEF.listen_events_logic(main_window, True)
 
             # Disable some the buttons if there won't be any more texture
             if main_window.listView.model().rowCount() == 0 and main_window.removeButton.isEnabled():
@@ -280,112 +280,106 @@ def action_add_logic(main_window):
 
 def action_material_val_changed(main_window):
 
-    if VEV.enable_combo_box:
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-        mtrl_data = mtrl_data_entry.data_info.data
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
 
-        # Get the layer index
-        layer = mtrl_data.layers[0]
+    # Get the layer index
+    layer = mtrl_data.layers[0]
 
-        # Get the index to 0. This will call the other methods
-        if main_window.layerVal.currentIndex() != 0:
-            main_window.layerVal.setCurrentIndex(0)
-        # If the index is 0, we call by ourselfs the methods of the type and texture material
+    # Get the index to 0. This will call the other methods
+    if main_window.layerVal.currentIndex() != 0:
+        main_window.layerVal.setCurrentIndex(0)
+    # If the index is 0, we call by ourselfs the methods of the type and texture material
+    else:
+        # Get the type of layer (index 0)
+        main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
+
+        # Get the effect of layer (index 0)
+        main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
+
+        # Get the texture for the layer (index 0)
+        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
+
+    # Change the material children (if any)
+    if mtrl_data_entry.data_info.child_count > 0:
+
+        # Get the material children
+        mtrl_child = mtrl_data_entry.data_info.child_info[0]
+
+        # Raging Blast 2 material children
+        if mtrl_child.data_size == 96:
+            if not main_window.editMaterialChildrenButton.isEnabled():
+                main_window.editMaterialChildrenButton.setEnabled(True)
+            # Load the material children to the window
+            VEF.load_material_children_to_window(main_window, mtrl_child.data)
         else:
-            # Get the type of layer (index 0)
-            main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
-
-            # Get the effect of layer (index 0)
-            main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
-
-            # Get the texture for the layer (index 0)
-            main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
-
-        # Change the material children (if any)
-        if mtrl_data_entry.data_info.child_count > 0:
-
-            # Get the material children
-            mtrl_child = mtrl_data_entry.data_info.child_info[0]
-
-            # Raging Blast 2 material children
-            if mtrl_child.data_size == 96:
-                if not main_window.editMaterialChildrenButton.isEnabled():
-                    main_window.editMaterialChildrenButton.setEnabled(True)
-                # Load the material children to the window
-                VEF.load_material_children_to_window(main_window, mtrl_child.data)
-            else:
-                if main_window.editMaterialChildrenButton.isEnabled():
-                    main_window.editMaterialChildrenButton.setEnabled(False)
-
-        else:
-            # Close material children window and disable button for material children edition
             if main_window.editMaterialChildrenButton.isEnabled():
                 main_window.editMaterialChildrenButton.setEnabled(False)
-                main_window.MaterialChildEditorWindow.close()
+
+    else:
+        # Close material children window and disable button for material children edition
+        if main_window.editMaterialChildrenButton.isEnabled():
+            main_window.editMaterialChildrenButton.setEnabled(False)
+            main_window.MaterialChildEditorWindow.close()
 
 
 def action_layer_val_changed(main_window):
 
-    if VEV.enable_combo_box:
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
 
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-        mtrl_data = mtrl_data_entry.data_info.data
+    # Get the layer index
+    layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
-        # Get the layer index
-        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
+    # Get the type of layer
+    main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
 
-        # Get the type of layer
-        main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
+    # Get the effect of layer
+    main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
 
-        # Get the effect of layer
-        main_window.effectVal.setCurrentIndex(main_window.effectVal.findText(layer.effect_name))
-
-        # Get the texture for the layer
-        main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
+    # Get the texture for the layer
+    main_window.textureVal.setCurrentIndex(main_window.textureVal.findData(layer.source_name_offset))
 
 
 def action_type_val_changed(main_window):
 
-    if VEV.enable_combo_box:
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-        mtrl_data = mtrl_data_entry.data_info.data
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
 
-        # Get the layer index
-        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
+    # Get the layer index
+    layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
-        # Store the selected type of layer
-        layer.layer_name = main_window.typeVal.itemText(main_window.typeVal.currentIndex())
+    # Store the selected type of layer
+    layer.layer_name = main_window.typeVal.itemText(main_window.typeVal.currentIndex())
 
 
 def action_effect_val_changed(main_window):
 
-    if VEV.enable_combo_box:
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-        mtrl_data = mtrl_data_entry.data_info.data
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
 
-        # Get the layer index
-        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
+    # Get the layer index
+    layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
-        # Store the selected effect of layer
-        layer.effect_name = main_window.effectVal.itemText(main_window.effectVal.currentIndex())
+    # Store the selected effect of layer
+    layer.effect_name = main_window.effectVal.itemText(main_window.effectVal.currentIndex())
 
 
 def action_texture_val_changed(main_window):
 
-    if VEV.enable_combo_box:
-        # Get the mtrl entry
-        mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
-        mtrl_data = mtrl_data_entry.data_info.data
+    # Get the mtrl entry
+    mtrl_data_entry = main_window.materialVal.itemData(main_window.materialVal.currentIndex())
+    mtrl_data = mtrl_data_entry.data_info.data
 
-        # Get the layer index
-        layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
+    # Get the layer index
+    layer = mtrl_data.layers[main_window.layerVal.currentIndex()]
 
-        # Store the texture for the layer
-        layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
+    # Store the texture for the layer
+    layer.source_name_offset = main_window.textureVal.itemData(main_window.textureVal.currentIndex())
 
 
 def action_add_material_logic(main_window):
@@ -462,10 +456,10 @@ def action_add_material_logic(main_window):
         sprp_data_entry.data_info.child_info.append(sprp_data_info_children)
 
         # Add the material to the combo box
-        VEV.enable_combo_box = False
+        VEF.listen_events_logic(main_window, False)
         main_window.materialVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry)
         main_window.materialModelPartVal.addItem(sprp_data_entry.data_info.name, sprp_data_entry.data_info.name_offset)
-        VEV.enable_combo_box = True
+        VEF.listen_events_logic(main_window, True)
 
 
 def action_remove_material_logic(main_window):
@@ -489,7 +483,7 @@ def action_remove_material_logic(main_window):
             main_window.materialVal.removeItem(current_index_material_model)
 
             # Search the model part that is using the material removed to assing the empty offset one
-            VEV.enable_combo_box = False
+            VEF.listen_events_logic(main_window, False)
             for i in range(0, main_window.modelPartVal.count()):
                 data_info_children = main_window.modelPartVal.itemData(i)
                 if data_info_children.data.name_offset == material_name_offset:
@@ -503,7 +497,7 @@ def action_remove_material_logic(main_window):
 
             main_window.materialModelPartVal.removeItem(current_index_material_model + 1)
 
-            VEV.enable_combo_box = True
+            VEF.listen_events_logic(main_window, True)
 
 
 def action_material_export_logic(main_window):
@@ -629,41 +623,33 @@ def action_material_children_logic(main_window):
 
 def action_model_part_val_changed(main_window):
 
-    if VEV.enable_combo_box:
+    # Get the scene data info
+    scene_data_info = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
 
-        # Get the scene data info
-        scene_data_info = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
-
-        # Get the material that the model is using by searching the name offset
-        main_window.materialModelPartVal.setCurrentIndex(main_window.materialModelPartVal.
-                                                         findData(scene_data_info.data.name_offset))
+    # Get the material that the model is using by searching the name offset
+    main_window.materialModelPartVal.setCurrentIndex(main_window.materialModelPartVal.findData(scene_data_info.data.name_offset))
 
 
 def action_material_model_part_val_changed(main_window):
 
-    if VEV.enable_combo_box:
+    # Get the scene data info children
+    data_info_children = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
 
-        # Get the scene data info children
-        data_info_children = main_window.modelPartVal.itemData(main_window.modelPartVal.currentIndex())
-
-        # Change the material that is using the model
-        data_info_children.data.name_offset = main_window.materialModelPartVal.\
-            itemData(main_window.materialModelPartVal.currentIndex())
+    # Change the material that is using the model
+    data_info_children.data.name_offset = main_window.materialModelPartVal.itemData(main_window.materialModelPartVal.currentIndex())
 
 
 def action_rgb_changed_logic(main_window):
 
-    if VEV.enable_combo_box:
-        # Get each value RGBA
-        border_rgba = ""
-        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_R_value.value()) + ","
-        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_G_value.value()) + ","
-        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_B_value.value()) + ","
-        border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_A_value.value())
+    # Get each value RGBA
+    border_rgba = ""
+    border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_R_value.value()) + ","
+    border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_G_value.value()) + ","
+    border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_B_value.value()) + ","
+    border_rgba = border_rgba + str(main_window.MaterialChildEditorUI.border_color_A_value.value())
 
-        # Change the color
-        main_window.MaterialChildEditorUI.border_color_color\
-            .setStyleSheet("background-color: rgba(" + border_rgba + ");")
+    # Change the color
+    main_window.MaterialChildEditorUI.border_color_color.setStyleSheet("background-color: rgba(" + border_rgba + ");")
 
 
 def action_save_material_logic(main_window):

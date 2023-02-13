@@ -13,8 +13,7 @@ from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, dat
 from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
 # vram explorer
 from lib.vram_explorer.VEV import VEV
-from lib.vram_explorer.VEF import WorkerVef
-from lib.vram_explorer.VEF import initialize_ve
+from lib.vram_explorer import VEF
 
 # pak explorer
 from lib.pak_explorer.PEF import initialize_pe, WorkerPef, unpack, pack
@@ -304,7 +303,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBarUI.setupUi(self.progressBarWindow)
 
         # --- vram explorer ---
-        initialize_ve(self)
+        VEF.initialize_ve(self)
 
         # --- pak explorer ---
         initialize_pe(self)
@@ -327,55 +326,62 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def run_load_data_to_ve(self):
 
-        # Step 2: Create a QThread object
+        # Create a QThread object
         self.thread = QThread()
-        # Step 3: Create a worker object
-        self.worker = WorkerVef()
-        # Step 4: Move worker to the thread
+        # Create a worker object
+        self.worker = VEF.WorkerVef()
+        # Move worker to the thread
         self.worker.moveToThread(self.thread)
-        # Step 5: Connect signals and slots
+        # Create vars
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
         self.worker.main_window = self
+        # Connect signals and slots
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+
         self.thread.started.connect(self.worker.load_spr_vram_file)
+        self.thread.started.connect(lambda: VEF.listen_events_logic(self, False))
+        self.thread.started.connect(self.progressBarWindow.show)
+
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.progressValue.connect(self.report_progress_value)
-        self.worker.progressText.connect(self.report_progress_text)
-        # Step 6: Start the thread
-        self.progressBarWindow.show()
-        self.thread.start()
-
-        # Reset progressbar
+        self.thread.finished.connect(lambda: VEF.listen_events_logic(self, True))
+        self.thread.finished.connect(lambda: VEF.show_texture(self.listView, self.imageTexture, self.encodingImageText, self.mipMapsImageText, self.sizeImageText))
         self.reset_progress_bar()
+
+        # Starts thread
+        self.thread.start()
 
     def run_save_ve_to_data(self, vram_separator, path_output_file):
 
-        # Step 2: Create a QThread object
+        # Create a QThread object
         self.thread = QThread()
-        # Step 3: Create a worker object
-        self.worker = WorkerVef()
-        # Step 4: Move worker to the thread
+        # Create a worker object
+        self.worker = VEF.WorkerVef()
+        # Move worker to the thread
         self.worker.moveToThread(self.thread)
-        # Step 5: Connect signals and slots
+        # Create vars
         self.worker.main_window = self
         self.worker.vram_separator = vram_separator
         self.worker.path_output_file = path_output_file
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
+        # Connect signals and slots
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+
         self.thread.started.connect(self.worker.save_spr_vram_file)
+        self.thread.started.connect(self.progressBarWindow.show)
+
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.progressValue.connect(self.report_progress_value)
-        self.worker.progressText.connect(self.report_progress_text)
-        # Step 6: Start the thread
-        self.progressBarWindow.show()
-        self.thread.start()
-
-        # Reset progressbar
         self.reset_progress_bar()
+
+        # Starts thread
+        self.thread.start()
 
     def run_load_data_to_pe_cpe(self):
 
