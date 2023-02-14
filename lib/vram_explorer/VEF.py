@@ -1147,6 +1147,12 @@ class WorkerVef(QObject):
 def initialize_ve(main_window):
 
     # Buttons
+    main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
+    main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
+    main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
+    main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
+    main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
+    main_window.addButton.clicked.connect(lambda: action_add_logic(main_window))
     main_window.exportAllButton.setEnabled(False)
     main_window.importAllButton.setEnabled(False)
     main_window.exportButton.setEnabled(False)
@@ -1155,6 +1161,13 @@ def initialize_ve(main_window):
     main_window.addButton.setEnabled(False)
 
     # Material
+    main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
+    main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
+    main_window.exportAllMaterialButton.clicked.connect(lambda: action_material_export_all_logic(main_window))
+    main_window.importAllMaterialButton.clicked.connect(lambda: action_material_import_all_logic(main_window))
+    main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
+    main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
+    main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
     main_window.materialVal.setEnabled(False)
     main_window.layerVal.setEnabled(False)
     main_window.typeVal.setEnabled(False)
@@ -1187,27 +1200,12 @@ def listen_events_logic(main_window, flag):
 
     if flag:
 
-        # Buttons
-        main_window.exportAllButton.clicked.connect(lambda: action_export_all_logic(main_window))
-        main_window.importAllButton.clicked.connect(lambda: action_import_all_logic(main_window))
-        main_window.exportButton.clicked.connect(lambda: action_export_logic(main_window))
-        main_window.importButton.clicked.connect(lambda: action_import_logic(main_window))
-        main_window.removeButton.clicked.connect(lambda: action_remove_logic(main_window))
-        main_window.addButton.clicked.connect(lambda: action_add_logic(main_window))
-
         # Material
         main_window.materialVal.currentIndexChanged.connect(lambda: action_material_val_changed(main_window))
         main_window.layerVal.currentIndexChanged.connect(lambda: action_layer_val_changed(main_window))
         main_window.typeVal.currentIndexChanged.connect(lambda: action_type_val_changed(main_window))
         main_window.effectVal.currentIndexChanged.connect(lambda: action_effect_val_changed(main_window))
         main_window.textureVal.currentIndexChanged.connect(lambda: action_texture_val_changed(main_window))
-        main_window.exportMaterialButton.clicked.connect(lambda: action_material_export_logic(main_window))
-        main_window.importMaterialButton.clicked.connect(lambda: action_material_import_logic(main_window))
-        main_window.exportAllMaterialButton.clicked.connect(lambda: action_material_export_all_logic(main_window))
-        main_window.importAllMaterialButton.clicked.connect(lambda: action_material_import_all_logic(main_window))
-        main_window.editMaterialChildrenButton.clicked.connect(lambda: action_material_children_logic(main_window))
-        main_window.addMaterialButton.clicked.connect(lambda: action_add_material_logic(main_window))
-        main_window.removeMaterialButton.clicked.connect(lambda: action_remove_material_logic(main_window))
 
         # Model part
         main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
@@ -1237,42 +1235,30 @@ def listen_events_logic(main_window, flag):
 
     else:
 
-        # Buttons
-        main_window.exportAllButton.disconnect()
-        main_window.importAllButton.disconnect()
-        main_window.exportButton.disconnect()
-        main_window.importButton.disconnect()
-        main_window.removeButton.disconnect()
-        main_window.addButton.disconnect()
+        try:
+            # Material
+            main_window.materialVal.disconnect()
+            main_window.layerVal.disconnect()
+            main_window.typeVal.disconnect()
+            main_window.effectVal.disconnect()
+            main_window.textureVal.disconnect()
 
-        # Material
-        main_window.materialVal.disconnect()
-        main_window.layerVal.disconnect()
-        main_window.typeVal.disconnect()
-        main_window.effectVal.disconnect()
-        main_window.textureVal.disconnect()
-        main_window.exportMaterialButton.disconnect()
-        main_window.importMaterialButton.disconnect()
-        main_window.exportAllMaterialButton.disconnect()
-        main_window.importAllMaterialButton.disconnect()
-        main_window.editMaterialChildrenButton.disconnect()
-        main_window.addMaterialButton.disconnect()
-        main_window.removeMaterialButton.disconnect()
+            # Model part
+            main_window.modelPartVal.disconnect()
+            main_window.materialModelPartVal.disconnect()
 
-        # Model part
-        main_window.modelPartVal.disconnect()
-        main_window.materialModelPartVal.disconnect()
+            # Create a model for the list view of textures
+            main_window.listView.selectionModel().currentChanged.disconnect()
 
-        # Create a model for the list view of textures
-        main_window.listView.selectionModel().currentChanged.disconnect()
-
-        # Load the Material children editor window
-        main_window.MaterialChildEditorUI.border_color_R_value.disconnect()
-        main_window.MaterialChildEditorUI.border_color_G_value.disconnect()
-        main_window.MaterialChildEditorUI.border_color_B_value.disconnect()
-        main_window.MaterialChildEditorUI.border_color_A_value.disconnect()
-        main_window.MaterialChildEditorUI.save_material_button.disconnect()
-        main_window.MaterialChildEditorUI.cancel_material_button.disconnect()
+            # Load the Material children editor window
+            main_window.MaterialChildEditorUI.border_color_R_value.disconnect()
+            main_window.MaterialChildEditorUI.border_color_G_value.disconnect()
+            main_window.MaterialChildEditorUI.border_color_B_value.disconnect()
+            main_window.MaterialChildEditorUI.border_color_A_value.disconnect()
+            main_window.MaterialChildEditorUI.save_material_button.disconnect()
+            main_window.MaterialChildEditorUI.cancel_material_button.disconnect()
+        except TypeError:
+            pass
 
 
 def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):

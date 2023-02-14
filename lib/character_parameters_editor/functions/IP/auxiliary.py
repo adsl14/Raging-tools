@@ -1,4 +1,5 @@
 from PyQt5.QtGui import QPixmap
+
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.IPV import IPV
 from lib.packages import struct, os
@@ -102,9 +103,6 @@ def write_camera_cutscene_to_file(camera_cutscene, file):
 
 def change_camera_cutscene_values(main_window, camera_cutscene):
 
-    # Avoid combobox change the values
-    CPEV.disable_logic_events_combobox = True
-
     # Pivots
     main_window.pivot_value.setValue(camera_cutscene.pivots["pivot_1"])
     main_window.pivot_value_2.setValue(camera_cutscene.pivots["pivot_2"])
@@ -130,14 +128,8 @@ def change_camera_cutscene_values(main_window, camera_cutscene):
     # Speed
     main_window.speed_camera_value.setValue(camera_cutscene.camera_speed)
 
-    # Enable combobox change the values
-    CPEV.disable_logic_events_combobox = False
-
 
 def change_animation_bones_section(main_window, animation_array):
-
-    # Avoid combobox change the values
-    CPEV.disable_logic_events_combobox = True
 
     # Get the first bone entry
     spa_file = animation_array[0][0]
@@ -150,14 +142,8 @@ def change_animation_bones_section(main_window, animation_array):
 
     change_animation_layer_spas(main_window, spa_file)
 
-    # Enable combobox change the values
-    CPEV.disable_logic_events_combobox = False
-
 
 def change_animation_layer_spas(main_window, spa_file):
-
-    # Avoid combobox change the values
-    CPEV.disable_logic_events_combobox = True
 
     # Clear all the bones in combobox
     main_window.animation_bone_value.clear()
@@ -174,14 +160,8 @@ def change_animation_layer_spas(main_window, spa_file):
     else:
         change_animation_bone(main_window, None, 0, 0, 0)
 
-    # Enable combobox change the values
-    CPEV.disable_logic_events_combobox = False
-
 
 def change_animation_bone(main_window, bone_entry, translation_block_count, rotation_block_count, unknown_block_count):
-
-    # Avoid combobox change the values
-    CPEV.disable_logic_events_combobox = True
 
     # Bone entry has data
     if bone_entry is not None:
@@ -269,9 +249,6 @@ def change_animation_bone(main_window, bone_entry, translation_block_count, rota
         main_window.animation_bone_unknown_Y_value.setEnabled(False)
         main_window.animation_bone_unknown_Z_value.setEnabled(False)
         main_window.animation_bone_unknown_W_value.setEnabled(False)
-
-    # Enable combobox change the values
-    CPEV.disable_logic_events_combobox = False
 
 
 def change_animation_bone_translation_block(main_window, translations_float_data):
@@ -431,9 +408,6 @@ def write_blast_values_to_file(blast, file):
 
 def change_blast_values(main_window, blast_parameter):
 
-    # Avoid combobox change the values
-    CPEV.disable_logic_events_combobox = True
-
     # Glow
     main_window.glow_activation_value.setCurrentIndex(main_window.glow_activation_value.findData(blast_parameter.glow))
     '''print("Glow: " + str(blast_parameter.glow))'''
@@ -488,6 +462,3 @@ def change_blast_values(main_window, blast_parameter):
 
     # Size
     main_window.size_attack_value.setValue(blast_parameter.size_of_attack)
-
-    # Enable combobox change the values
-    CPEV.disable_logic_events_combobox = False

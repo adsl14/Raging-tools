@@ -34,7 +34,6 @@ from lib.packages import struct, QMessageBox
 def initialize_operate_character(main_window):
 
     # Set the camera cutscene type
-    main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
     for element in IPV.camera_types_cutscene:
         main_window.camera_type_key.addItem(element)
     # Export camera button
@@ -45,31 +44,6 @@ def initialize_operate_character(main_window):
     main_window.exportAllCameraButton.clicked.connect(lambda: action_export_all_camera_button_logic(main_window))
     # Import all camera button
     main_window.importAllCameraButton.clicked.connect(lambda: action_import_all_camera_button_logic(main_window))
-
-    # Set the pivots
-    main_window.pivot_value.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=0))
-    main_window.pivot_value_2.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=1))
-    main_window.pivot_value_3.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=2))
-    main_window.pivot_value_4.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=3))
-
-    # Set the translations
-    main_window.translation_y_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=0, z=-1))
-    main_window.translation_y_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=1, z=-1))
-    main_window.translation_z_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=0))
-    main_window.translation_z_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=1))
-
-    # Set the rotations
-    main_window.rotation_y_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=0, z=-1))
-    main_window.rotation_y_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=1, z=-1))
-    main_window.rotation_z_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=-1, z=0))
-    main_window.rotation_z_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=-1, z=1))
-
-    # Set the speed
-    main_window.speed_camera_value.valueChanged.connect(lambda: on_speed_camera_changed(main_window))
-
-    # Set the zoom
-    main_window.zoom_start_value.valueChanged.connect(lambda: on_zoom_start_value_changed(main_window))
-    main_window.zoom_end_value.valueChanged.connect(lambda: on_zoom_end_value_changed(main_window))
 
     # Set the cancel set
     for element in IPV.cancel_set_values:
@@ -88,8 +62,6 @@ def initialize_operate_character(main_window):
     for element in IPV.color_background_values:
         main_window.background_color_combo_value.addItem(element, IPV.color_background_values[element])
         main_window.background_color_trans_value.addItem(element, IPV.color_background_values[element])
-    main_window.background_color_trans_value.currentIndexChanged.connect(lambda:
-                                                                         on_background_color_trans_change(main_window))
 
     # Set the signature ki blast
     main_window.signature_ki_blast_export.clicked.connect(lambda:
@@ -100,7 +72,6 @@ def initialize_operate_character(main_window):
     # Set animations
     for element in IPV.animations_types:
         main_window.animation_type_value.addItem(element)
-    main_window.animation_type_value.currentIndexChanged.connect(lambda: on_animation_type_changed(main_window))
     # Export animation button
     main_window.exportAnimationButton.clicked.connect(
         lambda: action_export_animation_button_logic(main_window, 0))
@@ -125,12 +96,6 @@ def initialize_operate_character(main_window):
     # Import all animation properties button
     main_window.importAllAnimationEffectsButton.clicked.connect(
         lambda: action_import_all_animation_button_logic(main_window, 1))
-    # Bones section
-    main_window.animation_spas_layer_value.currentIndexChanged.connect(lambda: on_animation_layer_spas_changed(main_window))
-    main_window.animation_bone_value.currentIndexChanged.connect(lambda: on_animation_bone_changed(main_window))
-    main_window.animation_bone_translation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_translation_block_changed(main_window))
-    main_window.animation_bone_rotation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_rotations_block_changed(main_window))
-    main_window.animation_bone_unknown_block_value.currentIndexChanged.connect(lambda: on_animation_bone_unknown_block_changed(main_window))
     # Export bone
     main_window.animation_export_bone.clicked.connect(lambda: action_export_animation_bone_button_logic(main_window))
     main_window.animation_export_all_bone.clicked.connect(lambda: action_export_all_animation_bone_button_logic(main_window))
@@ -139,19 +104,8 @@ def initialize_operate_character(main_window):
     main_window.animation_import_all_bone.clicked.connect(lambda: action_import_all_animation_bone_button_logic(main_window))
     # Remove bone
     main_window.animation_remove_bone.clicked.connect(lambda: action_remove_animation_bone(main_window))
-    # Bone Axis
-    main_window.animation_bone_translation_X_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 0))
-    main_window.animation_bone_translation_Y_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 1))
-    main_window.animation_bone_translation_Z_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 2))
-    main_window.animation_bone_translation_W_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 3))
-    main_window.animation_bone_rotation_XYZ_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 1, 0))
-    main_window.animation_bone_unknown_X_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 0))
-    main_window.animation_bone_unknown_Y_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 1))
-    main_window.animation_bone_unknown_Z_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 2))
-    main_window.animation_bone_unknown_W_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 3))
 
     # Set the blast type
-    main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
     for i in range(0, 14):
         main_window.blast_key.addItem("Attack " + str(i))
     # Export blast button
@@ -164,71 +118,36 @@ def initialize_operate_character(main_window):
     main_window.importAllBlastButton.clicked.connect(lambda: action_import_all_blast_button_logic(main_window))
 
     # Set the glow values
-    main_window.glow_activation_value.currentIndexChanged.connect(lambda: on_glow_activation_changed(main_window))
     for element in IPV.glow_values:
         main_window.glow_activation_value.addItem(element, IPV.glow_values[element])
 
     # Set the stackable skill values
-    main_window.stackable_skill_value.currentIndexChanged.connect(lambda: on_stackable_skill_changed(main_window))
     for element in IPV.stackable_skill:
         main_window.stackable_skill_value.addItem(element, IPV.stackable_skill[element])
 
     # Set the melee values
-    main_window.melee_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.melee_power_up_value, "Melee"))
     for element in IPV.melee_power_up_properties:
         main_window.melee_power_up_value.addItem(element, IPV.melee_power_up_properties[element])
 
     # Set the defense values
-    main_window.defense_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.defense_power_up_value,
-                                                                                               "Defense"))
     for element in IPV.defense_power_up_properties:
         main_window.defense_power_up_value.addItem(element, IPV.defense_power_up_properties[element])
 
     # Set the super attack values
-    main_window.super_attack_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window,
-                                                                                                    main_window.super_attack_power_up_value,
-                                                                                                    "Super Attack"))
     for element in IPV.super_attack_power_up_properties:
         main_window.super_attack_power_up_value.addItem(element, IPV.super_attack_power_up_properties[element])
 
     # Set the Ki values
-    main_window.ki_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.ki_power_up_value, "Ki"))
     for element in IPV.ki_power_up_properties:
         main_window.ki_power_up_value.addItem(element, IPV.ki_power_up_properties[element])
 
     # Set the activation skill values
-    main_window.effect_attack_value.currentIndexChanged.connect(lambda: on_effect_attack_changed(main_window))
     for element in IPV.activation_skill:
         main_window.effect_attack_value.addItem(element, IPV.activation_skill[element])
 
     # Set the chargeable/boost skill values
-    main_window.chargeable_value.currentIndexChanged.connect(lambda: on_chargeable_changed(main_window))
     for element in IPV.chargeable_boost:
         main_window.chargeable_value.addItem(element, IPV.chargeable_boost[element])
-
-    # Set reach attack
-    main_window.reach_attack_value.valueChanged.connect(lambda: on_reach_attack_value_changed(main_window))
-
-    # Set speed_attack_value
-    main_window.speed_attack_value.valueChanged.connect(lambda: on_speed_attack_value_changed(main_window))
-
-    # Set blast_attack_damage_value
-    main_window.blast_attack_damage_value.valueChanged.connect(lambda: on_blast_attack_damage_value_changed(main_window))
-
-    # Set cost_blast_attack_value
-    main_window.cost_blast_attack_value.valueChanged.connect(lambda: on_cost_blast_attack_value_changed(main_window))
-
-    # Set number_of_hits_value
-    main_window.number_of_hits_value.valueChanged.connect(lambda: on_number_of_hits_value_changed(main_window))
-
-    # Set size_attack_value
-    main_window.size_attack_value.valueChanged.connect(lambda: on_size_attack_value_changed(main_window))
-
-    # Set camera_blast_value
-    main_window.camera_blast_value_0.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 0, main_window.camera_blast_value_0))
-    main_window.camera_blast_value_1.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 1, main_window.camera_blast_value_1))
-    main_window.camera_blast_value_2.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 2, main_window.camera_blast_value_2))
-    main_window.camera_blast_value_3.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 3, main_window.camera_blast_value_3))
 
     # Partner
     # Load the Select Chara partner window
@@ -245,6 +164,223 @@ def initialize_operate_character(main_window):
     # Prepare the partner slot
     main_window.partner_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
     main_window.partner_character_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
+
+
+def listen_events_logic(main_window, flag):
+
+    if flag:
+
+        # Set the camera cutscene type
+        main_window.camera_type_key.currentIndexChanged.connect(lambda: on_camera_type_key_changed(main_window))
+
+        # Set the pivots
+        main_window.pivot_value.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=0))
+        main_window.pivot_value_2.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=1))
+        main_window.pivot_value_3.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=2))
+        main_window.pivot_value_4.valueChanged.connect(lambda: on_pivot_value_changed(main_window, pivot_index=3))
+
+        # Set the translations
+        main_window.translation_y_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=0, z=-1))
+        main_window.translation_y_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=1, z=-1))
+        main_window.translation_z_start_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=0))
+        main_window.translation_z_end_value.valueChanged.connect(lambda: on_translations_changed(main_window, y=-1, z=1))
+
+        # Set the rotations
+        main_window.rotation_y_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=0, z=-1))
+        main_window.rotation_y_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=1, z=-1))
+        main_window.rotation_z_start_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=-1, z=0))
+        main_window.rotation_z_end_value.valueChanged.connect(lambda: on_rotations_changed(main_window, y=-1, z=1))
+
+        # Set the speed
+        main_window.speed_camera_value.valueChanged.connect(lambda: on_speed_camera_changed(main_window))
+
+        # Set the zoom
+        main_window.zoom_start_value.valueChanged.connect(lambda: on_zoom_start_value_changed(main_window))
+        main_window.zoom_end_value.valueChanged.connect(lambda: on_zoom_end_value_changed(main_window))
+
+        # Set the background color combo
+        # Set the transformation background color
+        main_window.background_color_trans_value.currentIndexChanged.connect(lambda:
+                                                                             on_background_color_trans_change(main_window))
+
+        # Set animations
+        main_window.animation_type_value.currentIndexChanged.connect(lambda: on_animation_type_changed(main_window))
+        # Bones section
+        main_window.animation_spas_layer_value.currentIndexChanged.connect(lambda: on_animation_layer_spas_changed(main_window))
+        main_window.animation_bone_value.currentIndexChanged.connect(lambda: on_animation_bone_changed(main_window))
+        main_window.animation_bone_translation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_translation_block_changed(main_window))
+        main_window.animation_bone_rotation_block_value.currentIndexChanged.connect(lambda: on_animation_bone_rotations_block_changed(main_window))
+        main_window.animation_bone_unknown_block_value.currentIndexChanged.connect(lambda: on_animation_bone_unknown_block_changed(main_window))
+        # Bone Axis
+        main_window.animation_bone_translation_X_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 0))
+        main_window.animation_bone_translation_Y_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 1))
+        main_window.animation_bone_translation_Z_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 2))
+        main_window.animation_bone_translation_W_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 0, 3))
+        main_window.animation_bone_rotation_XYZ_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 1, 0))
+        main_window.animation_bone_unknown_X_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 0))
+        main_window.animation_bone_unknown_Y_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 1))
+        main_window.animation_bone_unknown_Z_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 2))
+        main_window.animation_bone_unknown_W_value.valueChanged.connect(lambda: on_transla_rotation_unknown_axis_changed(main_window, 2, 3))
+
+        # Set the blast type
+        main_window.blast_key.currentIndexChanged.connect(lambda: on_blast_attack_changed(main_window))
+
+        # Set the glow values
+        main_window.glow_activation_value.currentIndexChanged.connect(lambda: on_glow_activation_changed(main_window))
+
+        # Set the stackable skill values
+        main_window.stackable_skill_value.currentIndexChanged.connect(lambda: on_stackable_skill_changed(main_window))
+
+        # Set the melee values
+        main_window.melee_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.melee_power_up_value, "Melee"))
+
+        # Set the defense values
+        main_window.defense_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.defense_power_up_value,
+                                                                                                   "Defense"))
+
+        # Set the super attack values
+        main_window.super_attack_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window,
+                                                                                                        main_window.super_attack_power_up_value,
+                                                                                                        "Super Attack"))
+
+        # Set the Ki values
+        main_window.ki_power_up_value.currentIndexChanged.connect(lambda: on_power_up_changed(main_window, main_window.ki_power_up_value, "Ki"))
+
+        # Set the activation skill values
+        main_window.effect_attack_value.currentIndexChanged.connect(lambda: on_effect_attack_changed(main_window))
+
+        # Set the chargeable/boost skill values
+        main_window.chargeable_value.currentIndexChanged.connect(lambda: on_chargeable_changed(main_window))
+
+        # Set reach attack
+        main_window.reach_attack_value.valueChanged.connect(lambda: on_reach_attack_value_changed(main_window))
+
+        # Set speed_attack_value
+        main_window.speed_attack_value.valueChanged.connect(lambda: on_speed_attack_value_changed(main_window))
+
+        # Set blast_attack_damage_value
+        main_window.blast_attack_damage_value.valueChanged.connect(lambda: on_blast_attack_damage_value_changed(main_window))
+
+        # Set cost_blast_attack_value
+        main_window.cost_blast_attack_value.valueChanged.connect(lambda: on_cost_blast_attack_value_changed(main_window))
+
+        # Set number_of_hits_value
+        main_window.number_of_hits_value.valueChanged.connect(lambda: on_number_of_hits_value_changed(main_window))
+
+        # Set size_attack_value
+        main_window.size_attack_value.valueChanged.connect(lambda: on_size_attack_value_changed(main_window))
+
+        # Set camera_blast_value
+        main_window.camera_blast_value_0.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 0, main_window.camera_blast_value_0))
+        main_window.camera_blast_value_1.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 1, main_window.camera_blast_value_1))
+        main_window.camera_blast_value_2.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 2, main_window.camera_blast_value_2))
+        main_window.camera_blast_value_3.valueChanged.connect(lambda: on_camera_blast_value_changed(main_window, 3, main_window.camera_blast_value_3))
+    else:
+
+        try:
+            # Set the camera cutscene type
+            main_window.camera_type_key.disconnect()
+
+            # Set the pivots
+            main_window.pivot_value.disconnect()
+            main_window.pivot_value_2.disconnect()
+            main_window.pivot_value_3.disconnect()
+            main_window.pivot_value_4.disconnect()
+
+            # Set the translations
+            main_window.translation_y_start_value.disconnect()
+            main_window.translation_y_end_value.disconnect()
+            main_window.translation_z_start_value.disconnect()
+            main_window.translation_z_end_value.disconnect()
+
+            # Set the rotations
+            main_window.rotation_y_start_value.disconnect()
+            main_window.rotation_y_end_value.disconnect()
+            main_window.rotation_z_start_value.disconnect()
+            main_window.rotation_z_end_value.disconnect()
+
+            # Set the speed
+            main_window.speed_camera_value.disconnect()
+
+            # Set the zoom
+            main_window.zoom_start_value.disconnect()
+            main_window.zoom_end_value.disconnect()
+
+            # Set the background color combo
+            # Set the transformation background color
+            main_window.background_color_trans_value.disconnect()
+
+            # Set animations
+            main_window.animation_type_value.disconnect()
+            # Bones section
+            main_window.animation_spas_layer_value.disconnect()
+            main_window.animation_bone_value.disconnect()
+            main_window.animation_bone_translation_block_value.disconnect()
+            main_window.animation_bone_rotation_block_value.disconnect()
+            main_window.animation_bone_unknown_block_value.disconnect()
+            # Bone Axis
+            main_window.animation_bone_translation_X_value.disconnect()
+            main_window.animation_bone_translation_Y_value.disconnect()
+            main_window.animation_bone_translation_Z_value.disconnect()
+            main_window.animation_bone_translation_W_value.disconnect()
+            main_window.animation_bone_rotation_XYZ_value.disconnect()
+            main_window.animation_bone_unknown_X_value.disconnect()
+            main_window.animation_bone_unknown_Y_value.disconnect()
+            main_window.animation_bone_unknown_Z_value.disconnect()
+            main_window.animation_bone_unknown_W_value.disconnect()
+
+            # Set the blast type
+            main_window.blast_key.disconnect()
+
+            # Set the glow values
+            main_window.glow_activation_value.disconnect()
+
+            # Set the stackable skill values
+            main_window.stackable_skill_value.disconnect()
+
+            # Set the melee values
+            main_window.melee_power_up_value.disconnect()
+
+            # Set the defense values
+            main_window.defense_power_up_value.disconnect()
+
+            # Set the super attack values
+            main_window.super_attack_power_up_value.disconnect()
+
+            # Set the Ki values
+            main_window.ki_power_up_value.disconnect()
+
+            # Set the activation skill values
+            main_window.effect_attack_value.disconnect()
+
+            # Set the chargeable/boost skill values
+            main_window.chargeable_value.disconnect()
+
+            # Set reach attack
+            main_window.reach_attack_value.disconnect()
+
+            # Set speed_attack_value
+            main_window.speed_attack_value.disconnect()
+
+            # Set blast_attack_damage_value
+            main_window.blast_attack_damage_value.disconnect()
+
+            # Set cost_blast_attack_value
+            main_window.cost_blast_attack_value.disconnect()
+
+            # Set number_of_hits_value
+            main_window.number_of_hits_value.disconnect()
+
+            # Set size_attack_value
+            main_window.size_attack_value.disconnect()
+
+            # Set camera_blast_value
+            main_window.camera_blast_value_0.disconnect()
+            main_window.camera_blast_value_1.disconnect()
+            main_window.camera_blast_value_2.disconnect()
+            main_window.camera_blast_value_3.disconnect()
+        except TypeError:
+            pass
 
 
 def read_single_character_parameters(worker_pef, step_progress, main_window):

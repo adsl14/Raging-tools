@@ -11,7 +11,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
     if GPV.chara_selected != index:
 
         # We're changing the character in the main panel (avoid combo box code)
-        CPEV.disable_logic_events_combobox = True
+        GPF.listen_events_logic(main_window, False)
 
         # The user has opened the file operate_character_parameters
         if GPV.operate_resident_param_file:
@@ -306,7 +306,7 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
         GPV.chara_selected = index
 
         # We're not changing the character in the main panel (play combo box code)
-        CPEV.disable_logic_events_combobox = False
+        GPF.listen_events_logic(main_window, True)
 
 
 def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
@@ -517,250 +517,221 @@ def action_import_signature_button_logic(main_window):
 
 
 def on_color_lightning_changed(main_window):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].color_lightning = main_window.color_lightning_value.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    GPV.character_list[GPV.chara_selected].color_lightning = main_window.color_lightning_value.currentData()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_glow_lightning_changed(main_window):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].glow_lightning = main_window.glow_lightning_value.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    GPV.character_list[GPV.chara_selected].glow_lightning = main_window.glow_lightning_value.currentData()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_transformation_ki_effect_changed(main_window):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[
-            GPV.chara_selected].transformation_effect = main_window.transEffectValue.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    GPV.character_list[
+        GPV.chara_selected].transformation_effect = main_window.transEffectValue.currentData()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_amount_ki_trans_changed(main_window, amount_ki_trans_index):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
 
-        # Change the slot of amount ki
-        if amount_ki_trans_index == 0:
-            GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                main_window.amountKi_trans1_value.value()
-        elif amount_ki_trans_index == 1:
-            GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                main_window.amountKi_trans2_value.value()
-        elif amount_ki_trans_index == 2:
-            GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                main_window.amountKi_trans3_value.value()
-        elif amount_ki_trans_index == 3:
-            GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
-                main_window.amountKi_trans4_value.value()
+    # Change the slot of amount ki
+    if amount_ki_trans_index == 0:
+        GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
+            main_window.amountKi_trans1_value.value()
+    elif amount_ki_trans_index == 1:
+        GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
+            main_window.amountKi_trans2_value.value()
+    elif amount_ki_trans_index == 2:
+        GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
+            main_window.amountKi_trans3_value.value()
+    elif amount_ki_trans_index == 3:
+        GPV.character_list[GPV.chara_selected].amount_ki_transformations[amount_ki_trans_index] = \
+            main_window.amountKi_trans4_value.value()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_animation_per_transformation_changed(main_window, animation_per_transformation):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        if animation_per_transformation == 0:
-            GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans1_animation_value.currentData()
-        elif animation_per_transformation == 1:
-            GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans2_animation_value.currentData()
-        elif animation_per_transformation == 2:
-            GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans3_animation_value.currentData()
-        elif animation_per_transformation == 3:
-            GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
-                main_window.trans4_animation_value.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    if animation_per_transformation == 0:
+        GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
+            main_window.trans1_animation_value.currentData()
+    elif animation_per_transformation == 1:
+        GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
+            main_window.trans2_animation_value.currentData()
+    elif animation_per_transformation == 2:
+        GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
+            main_window.trans3_animation_value.currentData()
+    elif animation_per_transformation == 3:
+        GPV.character_list[GPV.chara_selected].transformations_animation[animation_per_transformation] = \
+            main_window.trans4_animation_value.currentData()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_amount_ki_fusion_changed(main_window, amount_ki_fusion_index):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
 
-        # Change the slot of amount ki
-        if amount_ki_fusion_index == 0:
-            GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                main_window.amountKi_fusion1_value.value()
-        elif amount_ki_fusion_index == 1:
-            GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                main_window.amountKi_fusion2_value.value()
-        elif amount_ki_fusion_index == 2:
-            GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                main_window.amountKi_fusion3_value.value()
-        elif amount_ki_fusion_index == 3:
-            GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
-                main_window.amountKi_fusion4_value.value()
+    # Change the slot of amount ki
+    if amount_ki_fusion_index == 0:
+        GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
+            main_window.amountKi_fusion1_value.value()
+    elif amount_ki_fusion_index == 1:
+        GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
+            main_window.amountKi_fusion2_value.value()
+    elif amount_ki_fusion_index == 2:
+        GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
+            main_window.amountKi_fusion3_value.value()
+    elif amount_ki_fusion_index == 3:
+        GPV.character_list[GPV.chara_selected].amount_ki_fusions[amount_ki_fusion_index] = \
+            main_window.amountKi_fusion4_value.value()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_animation_per_fusion_changed(main_window, animation_per_fusion):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        if animation_per_fusion == 0:
-            GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion1_animation_value.currentData()
-        elif animation_per_fusion == 1:
-            GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion2_animation_value.currentData()
-        elif animation_per_fusion == 2:
-            GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion3_animation_value.currentData()
-        elif animation_per_fusion == 3:
-            GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
-                main_window.fusion4_animation_value.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    if animation_per_fusion == 0:
+        GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
+            main_window.fusion1_animation_value.currentData()
+    elif animation_per_fusion == 1:
+        GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
+            main_window.fusion2_animation_value.currentData()
+    elif animation_per_fusion == 2:
+        GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
+            main_window.fusion3_animation_value.currentData()
+    elif animation_per_fusion == 3:
+        GPV.character_list[GPV.chara_selected].fusions_animation[animation_per_fusion] = \
+            main_window.fusion4_animation_value.currentData()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_aura_size_changed(main_window, aura_index):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
 
-        if aura_index == 0:
-            # Change the slot of aura idle size
-            GPV.character_list[GPV.chara_selected].aura_size[0] = main_window.aura_size_idle_value.value()
-        elif aura_index == 1:
-            # Change the slot of aura dash size
-            GPV.character_list[GPV.chara_selected].aura_size[1] = main_window.aura_size_dash_value.value()
-        else:
-            # Change the slot of aura dash size
-            GPV.character_list[GPV.chara_selected].aura_size[2] = main_window.aura_size_charge_value.value()
+    if aura_index == 0:
+        # Change the slot of aura idle size
+        GPV.character_list[GPV.chara_selected].aura_size[0] = main_window.aura_size_idle_value.value()
+    elif aura_index == 1:
+        # Change the slot of aura dash size
+        GPV.character_list[GPV.chara_selected].aura_size[1] = main_window.aura_size_dash_value.value()
+    else:
+        # Change the slot of aura dash size
+        GPV.character_list[GPV.chara_selected].aura_size[2] = main_window.aura_size_charge_value.value()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_health_changed(main_window):
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
 
-        # Change the slot of health
-        GPV.character_list[GPV.chara_selected].health = int(main_window.health_value.value())
+    # Change the slot of health
+    GPV.character_list[GPV.chara_selected].health = int(main_window.health_value.value())
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_camera_size_changed(main_window, camera_index):
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
 
-        if camera_index == 0:
-            # Change the slot of camera cutscene size
-            GPV.character_list[GPV.chara_selected].camera_size[
-                0] = main_window.camera_size_cutscene_value.value()
-        else:
-            # Change the slot of camera idle size
-            GPV.character_list[GPV.chara_selected].camera_size[1] = main_window.camera_size_idle_value.value()
+    if camera_index == 0:
+        # Change the slot of camera cutscene size
+        GPV.character_list[GPV.chara_selected].camera_size[
+            0] = main_window.camera_size_cutscene_value.value()
+    else:
+        # Change the slot of camera idle size
+        GPV.character_list[GPV.chara_selected].camera_size[1] = main_window.camera_size_idle_value.value()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_hit_box_changed(main_window):
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
 
-        # Change the slot of health
-        GPV.character_list[GPV.chara_selected].hit_box = main_window.hit_box_value.value()
+    # Change the slot of health
+    GPV.character_list[GPV.chara_selected].hit_box = main_window.hit_box_value.value()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_aura_type_changed(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].aura_type = main_window.aura_type_value.currentData()
+    GPV.character_list[GPV.chara_selected].aura_type = main_window.aura_type_value.currentData()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_up_blast_attack_logic(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].blast_attacks["Up"] = main_window.\
-            ico_boost_stick_r_up_value.currentIndex()
+    GPV.character_list[GPV.chara_selected].blast_attacks["Up"] = main_window.\
+        ico_boost_stick_r_up_value.currentIndex()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_r_blast_attack_logic(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].blast_attacks["Right"] = main_window.\
-            ico_boost_stick_r_r_value.currentIndex()
+    GPV.character_list[GPV.chara_selected].blast_attacks["Right"] = main_window.\
+        ico_boost_stick_r_r_value.currentIndex()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_d_blast_attack_logic(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].blast_attacks["Down"] = main_window.\
-            ico_boost_stick_r_d_value.currentIndex()
+    GPV.character_list[GPV.chara_selected].blast_attacks["Down"] = main_window.\
+        ico_boost_stick_r_d_value.currentIndex()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_l_blast_attack_logic(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].blast_attacks["Left"] = main_window.\
-            ico_boost_stick_r_l_value.currentIndex()
+    GPV.character_list[GPV.chara_selected].blast_attacks["Left"] = main_window.\
+        ico_boost_stick_r_l_value.currentIndex()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
 
 
 def on_p_blast_attack_logic(main_window):
 
-    # Avoid trigger the combo box at starting
-    if not CPEV.disable_logic_events_combobox:
-        GPV.character_list[GPV.chara_selected].blast_attacks["Push"] = main_window.\
-            ico_boost_stick_r_push_value.currentIndex()
+    GPV.character_list[GPV.chara_selected].blast_attacks["Push"] = main_window.\
+        ico_boost_stick_r_push_value.currentIndex()
 
-        # If the character was edited before, we won't append the index to our array of characters edited once
-        if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
-            GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])

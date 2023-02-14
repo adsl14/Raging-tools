@@ -16,12 +16,11 @@ from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
 
 # pak explorer
-from lib.pak_explorer.PEF import initialize_pe, WorkerPef, unpack, pack
+from lib.pak_explorer import PEF
 from lib.pak_explorer.PEV import PEV
 
 # character parameters editor
-from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.CPEF import initialize_cpe
+from lib.character_parameters_editor import CPEF, GPF, IPF
 
 
 # Worker class
@@ -133,7 +132,7 @@ class WorkerMainWindow(QObject):
         # Show text
         self.progressText.emit("Unpacking file " + os.path.basename(self.path_file))
 
-        unpack(self.path_file, "", self.path_output_file, None)
+        PEF.unpack(self.path_file, "", self.path_output_file, None)
 
         show_progress_value(self, step_progress)
 
@@ -164,7 +163,7 @@ class WorkerMainWindow(QObject):
         filenames = natsorted(os.listdir(self.path_file), key=lambda y: y.lower())
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
-        pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
+        PEF.pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
 
         show_progress_value(self, step_progress)
 
@@ -306,11 +305,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         VEF.initialize_ve(self)
 
         # --- pak explorer ---
-        initialize_pe(self)
+        PEF.initialize_pe(self)
 
         # --- character parameters editor ---
-        CPEV.disable_logic_events_combobox = True  # Starting the tool (avoid combo box code)
-        initialize_cpe(self)
+        CPEF.initialize_cpe(self)
 
     def report_progress_value(self, n):
         self.progressBarUI.progressBar.setValue(int(n * 100))
@@ -348,6 +346,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(lambda: VEF.listen_events_logic(self, True))
+        # Show the first texture when the thread finishes. Inside the thread, the method it's not working, so we're doing it here instead
         self.thread.finished.connect(lambda: VEF.show_texture(self.listView, self.imageTexture, self.encodingImageText, self.mipMapsImageText, self.sizeImageText))
         self.reset_progress_bar()
 
@@ -385,35 +384,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def run_load_data_to_pe_cpe(self):
 
-        # Step 2: Create a QThread object
+        # Create a QThread object
         self.thread = QThread()
-        # Step 3: Create a worker object
-        self.worker = WorkerPef()
-        # Step 4: Move worker to the thread
+        # Create a worker object
+        self.worker = PEF.WorkerPef()
+        # Move worker to the thread
         self.worker.moveToThread(self.thread)
-        # Step 5: Connect signals and slots
+        # Create vars
         self.worker.main_window = self
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
+        # Connect signals and slots
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+
         self.thread.started.connect(self.worker.load_data_to_pe_cpe)
+        self.thread.started.connect(self.progressBarWindow.show)
+        self.thread.started.connect(lambda: GPF.listen_events_logic(self, False))
+        self.thread.started.connect(lambda: IPF.listen_events_logic(self, False))
+
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
-        self.worker.progressValue.connect(self.report_progress_value)
-        self.worker.progressText.connect(self.report_progress_text)
-        # Step 6: Start the thread
-        self.progressBarWindow.show()
-        self.thread.start()
-
-        # Reset progressbar
+        self.thread.finished.connect(lambda: GPF.listen_events_logic(self, True))
+        self.thread.finished.connect(lambda: IPF.listen_events_logic(self, True))
         self.reset_progress_bar()
+
+        # Starts thread
+        self.thread.start()
 
     def run_save_operate_character_and_pack(self, path_output_file, separator, separator_size):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
-        self.worker = WorkerPef()
+        self.worker = PEF.WorkerPef()
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
@@ -441,7 +446,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
-        self.worker = WorkerPef()
+        self.worker = PEF.WorkerPef()
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
@@ -469,7 +474,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
-        self.worker = WorkerPef()
+        self.worker = PEF.WorkerPef()
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
@@ -496,7 +501,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 2: Create a QThread object
         self.thread = QThread()
         # Step 3: Create a worker object
-        self.worker = WorkerPef()
+        self.worker = PEF.WorkerPef()
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots

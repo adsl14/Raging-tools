@@ -40,35 +40,14 @@ def initialize_operate_resident_param(main_window):
     # Disable all the buttons (operate_character_XXX_m)
     main_window.operate_character_xyz_m_frame.setEnabled(False)
 
-    # Set the health
-    main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
-
-    # Set the camera size
-    main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
-                                                                                               camera_index=0))
-    main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
-                                                                                           camera_index=1))
-
-    # Set the hit box
-    main_window.hit_box_value.valueChanged.connect(lambda: on_hit_box_changed(main_window))
-
     # Set the signature values
     main_window.signature_parameters_export.clicked.connect(lambda: action_export_signature_button_logic(main_window))
     main_window.signature_parameters_import.clicked.connect(lambda: action_import_signature_button_logic(main_window))
 
-    # Set the aura size
-    main_window.aura_size_idle_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=0))
-    main_window.aura_size_dash_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=1))
-    main_window.aura_size_charge_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=2))
-
-    # Set the color lightning
-    main_window.color_lightning_value.currentIndexChanged.connect(lambda: on_color_lightning_changed(main_window))
     # Add the values
     for element in GPV.color_lightning_values:
         main_window.color_lightning_value.addItem(element, GPV.color_lightning_values[element])
 
-    # Set the glow/lightning
-    main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
     # Add the values
     for element in GPV.glow_lightning_values:
         main_window.glow_lightning_value.addItem(element, GPV.glow_lightning_values[element])
@@ -77,8 +56,6 @@ def initialize_operate_resident_param(main_window):
     main_window.transPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_transform.png")))
     main_window.transText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_transform_US.png")))
 
-    # Set the transformation parameter
-    main_window.transEffectValue.currentIndexChanged.connect(lambda: on_transformation_ki_effect_changed(main_window))
     # Add the values
     for element in GPV.trans_effect_values:
         main_window.transEffectValue.addItem(element, GPV.trans_effect_values[element])
@@ -86,25 +63,6 @@ def initialize_operate_resident_param(main_window):
     # Set the Trasformation partner
     main_window.transPartnerSlot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
 
-    # Set the amount ki per transformation
-    main_window.amountKi_trans1_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
-                                                                                              amount_ki_trans_index=0))
-    main_window.amountKi_trans2_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
-                                                                                              amount_ki_trans_index=1))
-    main_window.amountKi_trans3_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
-                                                                                              amount_ki_trans_index=2))
-    main_window.amountKi_trans4_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
-                                                                                              amount_ki_trans_index=3))
-
-    # Set the animation per transformation
-    main_window.trans1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-                                                                   (main_window, animation_per_transformation=0))
-    main_window.trans2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-                                                                   (main_window, animation_per_transformation=1))
-    main_window.trans3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-                                                                   (main_window, animation_per_transformation=2))
-    main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-                                                                   (main_window, animation_per_transformation=3))
     # Add the values
     for element in GPV.trans_animation_values:
         main_window.trans1_animation_value.addItem(element, GPV.trans_animation_values[element])
@@ -118,29 +76,6 @@ def initialize_operate_resident_param(main_window):
     # Set fusion partner visual
     main_window.fusionPartnerVisual_slot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
 
-    # Set the amount ki per fusion
-    main_window.amountKi_fusion1_value.valueChanged.connect(lambda:
-                                                            on_amount_ki_fusion_changed(main_window,
-                                                                                        amount_ki_fusion_index=0))
-    main_window.amountKi_fusion2_value.valueChanged.connect(lambda:
-                                                            on_amount_ki_fusion_changed(main_window,
-                                                                                        amount_ki_fusion_index=1))
-    main_window.amountKi_fusion3_value.valueChanged.connect(lambda:
-                                                            on_amount_ki_fusion_changed(main_window,
-                                                                                        amount_ki_fusion_index=2))
-    main_window.amountKi_fusion4_value.valueChanged.connect(lambda:
-                                                            on_amount_ki_fusion_changed(main_window,
-                                                                                        amount_ki_fusion_index=3))
-
-    # Set the animation per fusion
-    main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-                                                                    (main_window, animation_per_fusion=0))
-    main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-                                                                    (main_window, animation_per_fusion=1))
-    main_window.fusion3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-                                                                    (main_window, animation_per_fusion=2))
-    main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-                                                                    (main_window, animation_per_fusion=3))
     # Add the values
     for element in GPV.fusion_animation_values:
         main_window.fusion1_animation_value.addItem(element, GPV.fusion_animation_values[element])
@@ -164,28 +99,162 @@ def initialize_operate_resident_param(main_window):
         GPV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
-    # Set the aura type values
-    main_window.aura_type_value.currentIndexChanged.connect(lambda: on_aura_type_changed(main_window))
     # Add the values
     for aura_type in GPV.aura_type_values:
         main_window.aura_type_value.addItem(aura_type, GPV.aura_type_values[aura_type])
 
     # Set the blast attacks
-    main_window.ico_boost_stick_r_up_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
-                                                                          "ico_boost_stick_r_up.png")))
-    main_window.ico_boost_stick_r_up_value.currentIndexChanged.connect(lambda: on_up_blast_attack_logic(main_window))
-    main_window.ico_boost_stick_r_r_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
-                                                                         "ico_boost_stick_r_r.png")))
-    main_window.ico_boost_stick_r_r_value.currentIndexChanged.connect(lambda: on_r_blast_attack_logic(main_window))
-    main_window.ico_boost_stick_r_d_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
-                                                                         "ico_boost_stick_r_d.png")))
-    main_window.ico_boost_stick_r_d_value.currentIndexChanged.connect(lambda: on_d_blast_attack_logic(main_window))
-    main_window.ico_boost_stick_r_l_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
-                                                                         "ico_boost_stick_r_l.png")))
-    main_window.ico_boost_stick_r_l_value.currentIndexChanged.connect(lambda: on_l_blast_attack_logic(main_window))
-    main_window.ico_boost_stick_r_push_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images,
-                                                                            "ico_boost_stick_r_push_00.png")))
-    main_window.ico_boost_stick_r_push_value.currentIndexChanged.connect(lambda: on_p_blast_attack_logic(main_window))
+    main_window.ico_boost_stick_r_up_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_up.png")))
+    main_window.ico_boost_stick_r_r_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_r.png")))
+    main_window.ico_boost_stick_r_d_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_d.png")))
+    main_window.ico_boost_stick_r_l_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_l.png")))
+    main_window.ico_boost_stick_r_push_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_push_00.png")))
+
+
+def listen_events_logic(main_window, flag):
+
+    if flag:
+        # Set the health
+        main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
+
+        # Set the camera size
+        main_window.camera_size_cutscene_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
+                                                                                                   camera_index=0))
+        main_window.camera_size_idle_value.valueChanged.connect(lambda: on_camera_size_changed(main_window,
+                                                                                               camera_index=1))
+
+        # Set the hit box
+        main_window.hit_box_value.valueChanged.connect(lambda: on_hit_box_changed(main_window))
+
+        # Set the color lightning
+        main_window.color_lightning_value.currentIndexChanged.connect(lambda: on_color_lightning_changed(main_window))
+
+        # Set the glow/lightning
+        main_window.glow_lightning_value.currentIndexChanged.connect(lambda: on_glow_lightning_changed(main_window))
+
+        # Set the transformation parameter
+        main_window.transEffectValue.currentIndexChanged.connect(lambda: on_transformation_ki_effect_changed(main_window))
+
+        # Set the aura size
+        main_window.aura_size_idle_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=0))
+        main_window.aura_size_dash_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=1))
+        main_window.aura_size_charge_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=2))
+
+        # Set the animation per transformation
+        main_window.trans1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
+        (main_window, animation_per_transformation=0))
+        main_window.trans2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
+        (main_window, animation_per_transformation=1))
+        main_window.trans3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
+        (main_window, animation_per_transformation=2))
+        main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
+        (main_window, animation_per_transformation=3))
+
+        # Set the amount ki per transformation
+        main_window.amountKi_trans1_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
+                                                                                                  amount_ki_trans_index=0))
+        main_window.amountKi_trans2_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
+                                                                                                  amount_ki_trans_index=1))
+        main_window.amountKi_trans3_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
+                                                                                                  amount_ki_trans_index=2))
+        main_window.amountKi_trans4_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
+                                                                                                  amount_ki_trans_index=3))
+
+        # Set the animation per fusion
+        main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
+        (main_window, animation_per_fusion=0))
+        main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
+        (main_window, animation_per_fusion=1))
+        main_window.fusion3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
+        (main_window, animation_per_fusion=2))
+        main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
+        (main_window, animation_per_fusion=3))
+
+        # Set the amount ki per fusion
+        main_window.amountKi_fusion1_value.valueChanged.connect(lambda:
+                                                                on_amount_ki_fusion_changed(main_window,
+                                                                                            amount_ki_fusion_index=0))
+        main_window.amountKi_fusion2_value.valueChanged.connect(lambda:
+                                                                on_amount_ki_fusion_changed(main_window,
+                                                                                            amount_ki_fusion_index=1))
+        main_window.amountKi_fusion3_value.valueChanged.connect(lambda:
+                                                                on_amount_ki_fusion_changed(main_window,
+                                                                                            amount_ki_fusion_index=2))
+        main_window.amountKi_fusion4_value.valueChanged.connect(lambda:
+                                                                on_amount_ki_fusion_changed(main_window,
+                                                                                            amount_ki_fusion_index=3))
+
+        # Set the aura type values
+        main_window.aura_type_value.currentIndexChanged.connect(lambda: on_aura_type_changed(main_window))
+
+        # Set the blast attacks
+        main_window.ico_boost_stick_r_up_value.currentIndexChanged.connect(lambda: on_up_blast_attack_logic(main_window))
+        main_window.ico_boost_stick_r_r_value.currentIndexChanged.connect(lambda: on_r_blast_attack_logic(main_window))
+        main_window.ico_boost_stick_r_d_value.currentIndexChanged.connect(lambda: on_d_blast_attack_logic(main_window))
+        main_window.ico_boost_stick_r_l_value.currentIndexChanged.connect(lambda: on_l_blast_attack_logic(main_window))
+        main_window.ico_boost_stick_r_push_value.currentIndexChanged.connect(lambda: on_p_blast_attack_logic(main_window))
+
+    else:
+        try:
+            # Set the health
+            main_window.health_value.disconnect()
+
+            # Set the camera size
+            main_window.camera_size_cutscene_value.disconnect()
+            main_window.camera_size_idle_value.disconnect()
+
+            # Set the hit box
+            main_window.hit_box_value.disconnect()
+
+            # Set the color lightning
+            main_window.color_lightning_value.disconnect()
+
+            # Set the glow/lightning
+            main_window.glow_lightning_value.disconnect()
+
+            # Set the transformation parameter
+            main_window.transEffectValue.disconnect()
+
+            # Set the aura size
+            main_window.aura_size_idle_value.disconnect()
+            main_window.aura_size_dash_value.disconnect()
+            main_window.aura_size_charge_value.disconnect()
+
+            # Set the animation per transformation
+            main_window.trans1_animation_value.disconnect()
+            main_window.trans2_animation_value.disconnect()
+            main_window.trans3_animation_value.disconnect()
+            main_window.trans4_animation_value.disconnect()
+
+            # Set the amount ki per transformation
+            main_window.amountKi_trans1_value.disconnect()
+            main_window.amountKi_trans2_value.disconnect()
+            main_window.amountKi_trans3_value.disconnect()
+            main_window.amountKi_trans4_value.disconnect()
+
+            # Set the animation per fusion
+            main_window.fusion1_animation_value.disconnect()
+            main_window.fusion2_animation_value.disconnect()
+            main_window.fusion3_animation_value.disconnect()
+            main_window.fusion4_animation_value.disconnect()
+
+            # Set the amount ki per fusion
+            main_window.amountKi_fusion1_value.disconnect()
+            main_window.amountKi_fusion2_value.disconnect()
+            main_window.amountKi_fusion3_value.disconnect()
+            main_window.amountKi_fusion4_value.disconnect()
+
+            # Set the aura type values
+            main_window.aura_type_value.currentIndexChanged.disconnect()
+
+            # Set the blast attacks
+            main_window.ico_boost_stick_r_up_value.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_r_value.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_d_value.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_l_value.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_push_value.currentIndexChanged.disconnect()
+        except TypeError:
+            pass
 
 
 def enable_disable_operate_resident_param_values(main_window, flag):

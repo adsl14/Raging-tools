@@ -70,7 +70,9 @@ def action_import_camera_button_logic(main_window):
             IPF.import_camera(camera_cutscene, file)
 
         # Set camera values to current combo box and show them in the tool
+        IPF.listen_events_logic(main_window, False)
         IPF.change_camera_cutscene_values(main_window, camera_cutscene)
+        IPF.listen_events_logic(main_window, True)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -141,7 +143,9 @@ def action_import_all_camera_button_logic(main_window):
 
                     # Change the values in the tool only for the current selected item
                     if main_window.camera_type_key.currentIndex() == i:
+                        IPF.listen_events_logic(main_window, False)
                         IPF.change_camera_cutscene_values(main_window, camera_cutscene)
+                        IPF.listen_events_logic(main_window, True)
 
                 else:
                     cameras_files_error.append(cameras_files[i])
@@ -242,7 +246,9 @@ def action_import_animation_button_logic(main_window, animation_type_index):
         main_window.old_path_file = file_import_path
 
         # Show visual change
+        IPF.listen_events_logic(main_window, True)
         change_animation_bones_section(main_window, animation_array)
+        IPF.listen_events_logic(main_window, False)
 
 
 def action_import_all_animation_button_logic(main_window, animation_type_index):
@@ -273,7 +279,9 @@ def action_import_all_animation_button_logic(main_window, animation_type_index):
             # animation has been done propertly
             if main_window.animation_type_value.currentIndex() == i and animation_files[i] not in animations_files_error:
                 # Show visual change
+                IPF.listen_events_logic(main_window, False)
                 change_animation_bones_section(main_window, animation_array)
+                IPF.listen_events_logic(main_window, True)
 
         # We show a message with the animations files that couldn't get imported
         if animations_files_error:
@@ -364,7 +372,9 @@ def action_import_animation_bone_button_logic(main_window):
             bone_entry = spa_file.bone_entries[current_bone_text]
 
             # Update changes in the visual
+            IPF.listen_events_logic(main_window, False)
             change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+            IPF.listen_events_logic(main_window, True)
 
             # Enable flag that this spa_file has been modified
             spa_file.modified = True
@@ -424,7 +434,9 @@ def action_import_all_animation_bone_button_logic(main_window):
                     spa_file.bone_entries.update(new_bones_dict)
 
             # Update changes in the visual
+            IPF.listen_events_logic(main_window, False)
             change_animation_layer_spas(main_window, spa_file)
+            IPF.listen_events_logic(main_window, True)
 
             # Enable flag that this spa_file has been modified
             spa_file.modified = True
@@ -520,7 +532,9 @@ def action_import_blast_button_logic(main_window):
             IPF.import_blast(blast, file)
 
             # Show the imported values in the tool
+            IPF.listen_events_logic(main_window, False)
             IPF.change_blast_values(main_window, blast)
+            IPF.listen_events_logic(main_window, True)
 
         # Change old path
         main_window.old_path_file = file_export_path
@@ -597,7 +611,9 @@ def action_import_all_blast_button_logic(main_window):
                         found_current_blast_key = True
 
                         # Show the imported values in the tool
+                        IPF.listen_events_logic(main_window, False)
                         IPF.change_blast_values(main_window, blast)
+                        IPF.listen_events_logic(main_window, True)
 
                 else:
                     blasts_files_error.append(blasts_files[i])
@@ -698,345 +714,301 @@ def action_modify_character(event, main_window, chara_id):
 
 
 def on_camera_type_key_changed(main_window):
-
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        IPF.change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
+    IPF.listen_events_logic(main_window, False)
+    IPF.change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
+    IPF.listen_events_logic(main_window, True)
 
 
 def on_pivot_value_changed(main_window, pivot_index):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        if pivot_index == 0:
-            main_window.camera_type_key.currentData().pivots["pivot_1"] = \
-                main_window.pivot_value.value()
-            main_window.camera_type_key.currentData().modified = True
-        elif pivot_index == 1:
-            main_window.camera_type_key.currentData().pivots["pivot_2"] = \
-                main_window.pivot_value_2.value()
-            main_window.camera_type_key.currentData().modified = True
-        elif pivot_index == 2:
-            main_window.camera_type_key.currentData().pivots["pivot_3"] = \
-                main_window.pivot_value_3.value()
-            main_window.camera_type_key.currentData().modified = True
-        else:
-            main_window.camera_type_key.currentData().pivots["pivot_4"] = \
-                main_window.pivot_value_4.value()
-            main_window.camera_type_key.currentData().modified = True
+    if pivot_index == 0:
+        main_window.camera_type_key.currentData().pivots["pivot_1"] = \
+            main_window.pivot_value.value()
+        main_window.camera_type_key.currentData().modified = True
+    elif pivot_index == 1:
+        main_window.camera_type_key.currentData().pivots["pivot_2"] = \
+            main_window.pivot_value_2.value()
+        main_window.camera_type_key.currentData().modified = True
+    elif pivot_index == 2:
+        main_window.camera_type_key.currentData().pivots["pivot_3"] = \
+            main_window.pivot_value_3.value()
+        main_window.camera_type_key.currentData().modified = True
+    else:
+        main_window.camera_type_key.currentData().pivots["pivot_4"] = \
+            main_window.pivot_value_4.value()
+        main_window.camera_type_key.currentData().modified = True
 
 
 def on_translations_changed(main_window, y, z):
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        if y >= 0:
-            if y == 0:
-                main_window.camera_type_key.currentData().positions["Y_start"] =\
-                    main_window.translation_y_start_value.value()
-                main_window.camera_type_key.currentData().modified = True
-            else:
-                main_window.camera_type_key.currentData().positions["Y_end"] = \
-                    main_window.translation_y_end_value.value()
-                main_window.camera_type_key.currentData().modified = True
+
+    if y >= 0:
+        if y == 0:
+            main_window.camera_type_key.currentData().positions["Y_start"] =\
+                main_window.translation_y_start_value.value()
+            main_window.camera_type_key.currentData().modified = True
         else:
-            if z == 0:
-                main_window.camera_type_key.currentData().positions["Z_start"] =\
-                    main_window.translation_z_start_value.value()
-                main_window.camera_type_key.currentData().modified = True
-            else:
-                main_window.camera_type_key.currentData().positions["Z_end"] = \
-                    main_window.translation_z_end_value.value()
-                main_window.camera_type_key.currentData().modified = True
+            main_window.camera_type_key.currentData().positions["Y_end"] = \
+                main_window.translation_y_end_value.value()
+            main_window.camera_type_key.currentData().modified = True
+    else:
+        if z == 0:
+            main_window.camera_type_key.currentData().positions["Z_start"] =\
+                main_window.translation_z_start_value.value()
+            main_window.camera_type_key.currentData().modified = True
+        else:
+            main_window.camera_type_key.currentData().positions["Z_end"] = \
+                main_window.translation_z_end_value.value()
+            main_window.camera_type_key.currentData().modified = True
 
 
 def on_rotations_changed(main_window, y, z):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        if y >= 0:
-            if y == 0:
-                main_window.camera_type_key.currentData().rotations["Y_start"] =\
-                    main_window.rotation_y_start_value.value()
-                main_window.camera_type_key.currentData().modified = True
-            else:
-                main_window.camera_type_key.currentData().rotations["Y_end"] = \
-                    main_window.rotation_y_end_value.value()
-                main_window.camera_type_key.currentData().modified = True
+    if y >= 0:
+        if y == 0:
+            main_window.camera_type_key.currentData().rotations["Y_start"] =\
+                main_window.rotation_y_start_value.value()
+            main_window.camera_type_key.currentData().modified = True
         else:
-            if z == 0:
-                main_window.camera_type_key.currentData().rotations["Z_start"] =\
-                    \
-                    main_window.rotation_z_start_value.value()
-                main_window.camera_type_key.currentData().modified = True
-            else:
-                main_window.camera_type_key.currentData().rotations["Z_end"] = \
-                    main_window.rotation_z_end_value.value()
-                main_window.camera_type_key.currentData().modified = True
+            main_window.camera_type_key.currentData().rotations["Y_end"] = \
+                main_window.rotation_y_end_value.value()
+            main_window.camera_type_key.currentData().modified = True
+    else:
+        if z == 0:
+            main_window.camera_type_key.currentData().rotations["Z_start"] =\
+                \
+                main_window.rotation_z_start_value.value()
+            main_window.camera_type_key.currentData().modified = True
+        else:
+            main_window.camera_type_key.currentData().rotations["Z_end"] = \
+                main_window.rotation_z_end_value.value()
+            main_window.camera_type_key.currentData().modified = True
 
 
 def on_speed_camera_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        main_window.camera_type_key.currentData().camera_speed = \
-            main_window.speed_camera_value.value()
-        main_window.camera_type_key.currentData().modified = True
+    main_window.camera_type_key.currentData().camera_speed = \
+        main_window.speed_camera_value.value()
+    main_window.camera_type_key.currentData().modified = True
 
 
 def on_zoom_start_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        main_window.camera_type_key.currentData().zooms["Zoom_start"] = \
-            main_window.zoom_start_value.value()
-        main_window.camera_type_key.currentData().modified = True
+    main_window.camera_type_key.currentData().zooms["Zoom_start"] = \
+        main_window.zoom_start_value.value()
+    main_window.camera_type_key.currentData().modified = True
 
 
 def on_zoom_end_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        main_window.camera_type_key.currentData().zooms["Zoom_end"] = \
-            main_window.zoom_end_value.value()
-        main_window.camera_type_key.currentData().modified = True
+    main_window.camera_type_key.currentData().zooms["Zoom_end"] = \
+        main_window.zoom_end_value.value()
+    main_window.camera_type_key.currentData().modified = True
 
 
 def on_background_color_trans_change(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the color of the background when we change the combo box background color transformation
-        animation_effect = main_window.animation_type_value.itemData(57)[0][1]
-        animation_effect.data = animation_effect.data[:IPV.trans_effect_position_byte] + \
-            main_window.background_color_trans_value.\
-            currentData().to_bytes(1, "big") + animation_effect.data[IPV.trans_effect_position_byte+1:]
-        animation_effect.modified = True
+    # Change the color of the background when we change the combo box background color transformation
+    animation_effect = main_window.animation_type_value.itemData(57)[0][1]
+    animation_effect.data = animation_effect.data[:IPV.trans_effect_position_byte] + \
+        main_window.background_color_trans_value.\
+        currentData().to_bytes(1, "big") + animation_effect.data[IPV.trans_effect_position_byte+1:]
+    animation_effect.modified = True
 
 
 def on_animation_type_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        animation_array = main_window.animation_type_value.currentData()
-        change_animation_bones_section(main_window, animation_array)
+    animation_array = main_window.animation_type_value.currentData()
+    IPF.listen_events_logic(main_window, False)
+    change_animation_bones_section(main_window, animation_array)
+    IPF.listen_events_logic(main_window, True)
 
 
 def on_animation_layer_spas_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        change_animation_layer_spas(main_window, spa_file)
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    IPF.listen_events_logic(main_window, False)
+    change_animation_layer_spas(main_window, spa_file)
+    IPF.listen_events_logic(main_window, True)
 
 
 def on_animation_bone_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        try:
-            bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-            change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
-        except KeyError:
-            change_animation_bone(main_window, None, 0, 0, 0)
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    try:
+        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+        IPF.listen_events_logic(main_window, False)
+        change_animation_bone(main_window, bone_entry, bone_entry.translation_block_count, bone_entry.rotation_block_count, bone_entry.unknown_block_count)
+        IPF.listen_events_logic(main_window, True)
+    except KeyError:
+        IPF.listen_events_logic(main_window, False)
+        change_animation_bone(main_window, None, 0, 0, 0)
+        IPF.listen_events_logic(main_window, True)
 
 
 def on_animation_bone_translation_block_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-        translations_float_data = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
-        change_animation_bone_translation_block(main_window, translations_float_data)
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+    translations_float_data = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
+    change_animation_bone_translation_block(main_window, translations_float_data)
 
 
 def on_animation_bone_rotations_block_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-        rotations_float_data = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
-        change_animation_bone_rotations_block(main_window, rotations_float_data)
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+    rotations_float_data = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
+    change_animation_bone_rotations_block(main_window, rotations_float_data)
 
 
 def on_animation_bone_unknown_block_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
-        unknowns_float_data = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
-        change_animation_bone_unknown_block(main_window, unknowns_float_data)
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+    unknowns_float_data = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
+    change_animation_bone_unknown_block(main_window, unknowns_float_data)
 
 
 def on_blast_attack_changed(main_window):
-
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        IPF.change_blast_values(main_window, main_window.blast_key.currentData())
+    IPF.listen_events_logic(main_window, False)
+    IPF.change_blast_values(main_window, main_window.blast_key.currentData())
+    IPF.listen_events_logic(main_window, True)
 
 
 def on_glow_activation_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the glow activation
-        blast = main_window.blast_key.currentData()
-        blast.glow = main_window.glow_activation_value.currentData()
-        blast.modified = True
+    # Change the glow activation
+    blast = main_window.blast_key.currentData()
+    blast.glow = main_window.glow_activation_value.currentData()
+    blast.modified = True
 
 
 def on_stackable_skill_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the skill stackable
-        blast = main_window.blast_key.currentData()
-        blast.skill_stackable = main_window.stackable_skill_value.currentData()
-        blast.modified = True
+    # Change the skill stackable
+    blast = main_window.blast_key.currentData()
+    blast.skill_stackable = main_window.stackable_skill_value.currentData()
+    blast.modified = True
 
 
 def on_power_up_changed(main_window, combobox, powerup_type):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the powerup activation
-        blast = main_window.blast_key.currentData()
-        blast.power_ups[powerup_type] = combobox.currentData()
-        blast.modified = True
+    # Change the powerup activation
+    blast = main_window.blast_key.currentData()
+    blast.power_ups[powerup_type] = combobox.currentData()
+    blast.modified = True
 
 
 def on_effect_attack_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the activation skill
-        blast = main_window.blast_key.currentData()
-        blast.activation_skill = main_window.effect_attack_value.currentData()
-        blast.modified = True
+    # Change the activation skill
+    blast = main_window.blast_key.currentData()
+    blast.activation_skill = main_window.effect_attack_value.currentData()
+    blast.modified = True
 
 
 def on_chargeable_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the chargeable/boost value
-        blast = main_window.blast_key.currentData()
-        blast.chargeable_boost = main_window.chargeable_value.currentData()
-        blast.modified = True
+    # Change the chargeable/boost value
+    blast = main_window.blast_key.currentData()
+    blast.chargeable_boost = main_window.chargeable_value.currentData()
+    blast.modified = True
 
 
 def on_reach_attack_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the reach attack value
-        blast = main_window.blast_key.currentData()
-        blast.reach_attack = main_window.reach_attack_value.value()
-        blast.modified = True
+    # Change the reach attack value
+    blast = main_window.blast_key.currentData()
+    blast.reach_attack = main_window.reach_attack_value.value()
+    blast.modified = True
 
 
 def on_speed_attack_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the speed_of_attack
-        blast = main_window.blast_key.currentData()
-        blast.speed_of_attack = main_window.speed_attack_value.value()
-        blast.modified = True
+    # Change the speed_of_attack
+    blast = main_window.blast_key.currentData()
+    blast.speed_of_attack = main_window.speed_attack_value.value()
+    blast.modified = True
 
 
 def on_blast_attack_damage_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the attack_damage
-        blast = main_window.blast_key.currentData()
-        blast.attack_damage = main_window.blast_attack_damage_value.value()
-        blast.modified = True
+    # Change the attack_damage
+    blast = main_window.blast_key.currentData()
+    blast.attack_damage = main_window.blast_attack_damage_value.value()
+    blast.modified = True
 
 
 def on_cost_blast_attack_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the cost_attack
-        blast = main_window.blast_key.currentData()
-        blast.cost_attack = main_window.cost_blast_attack_value.value()
-        blast.modified = True
+    # Change the cost_attack
+    blast = main_window.blast_key.currentData()
+    blast.cost_attack = main_window.cost_blast_attack_value.value()
+    blast.modified = True
 
 
 def on_number_of_hits_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the number_of_hits
-        blast = main_window.blast_key.currentData()
-        blast.number_of_hits = main_window.number_of_hits_value.value()
-        blast.modified = True
+    # Change the number_of_hits
+    blast = main_window.blast_key.currentData()
+    blast.number_of_hits = main_window.number_of_hits_value.value()
+    blast.modified = True
 
 
 def on_size_attack_value_changed(main_window):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the size_of_attack
-        blast = main_window.blast_key.currentData()
-        blast.size_of_attack = main_window.size_attack_value.value()
-        blast.modified = True
+    # Change the size_of_attack
+    blast = main_window.blast_key.currentData()
+    blast.size_of_attack = main_window.size_attack_value.value()
+    blast.modified = True
 
 
 def on_camera_blast_value_changed(main_window, camera_index, spinbox):
 
-    # Avoid change the values when the program is changing the character from the main panel and starting
-    if not CPEV.disable_logic_events_combobox:
-        # Change the camera value
-        blast = main_window.blast_key.currentData()
-        blast.camera[camera_index] = spinbox.value()
-        blast.modified = True
+    # Change the camera value
+    blast = main_window.blast_key.currentData()
+    blast.camera[camera_index] = spinbox.value()
+    blast.modified = True
 
 
 def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
 
-    if not CPEV.disable_logic_events_combobox:
-        spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
-        bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
+    spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+    bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
 
-        # Translation
-        if type == 0:
-            translations = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
-            # X
-            if axis == 0:
-                translations['x'] = main_window.animation_bone_translation_X_value.value()
-            # Y
-            elif axis == 1:
-                translations['y'] = main_window.animation_bone_translation_Y_value.value()
-            # Z
-            elif axis == 2:
-                translations['z'] = main_window.animation_bone_translation_Z_value.value()
-            # W
-            else:
-                translations['w'] = main_window.animation_bone_translation_W_value.value()
-        # Rotation
-        elif type == 1:
-            rotations = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
-            rotations['rot'] = int(main_window.animation_bone_rotation_XYZ_value.value())
-        # Unknown
+    # Translation
+    if type == 0:
+        translations = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
+        # X
+        if axis == 0:
+            translations['x'] = main_window.animation_bone_translation_X_value.value()
+        # Y
+        elif axis == 1:
+            translations['y'] = main_window.animation_bone_translation_Y_value.value()
+        # Z
+        elif axis == 2:
+            translations['z'] = main_window.animation_bone_translation_Z_value.value()
+        # W
         else:
-            unknowns = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
-            # X
-            if axis == 0:
-                unknowns['x'] = main_window.animation_bone_unknown_X_value.value()
-            # Y
-            elif axis == 1:
-                unknowns['y'] = main_window.animation_bone_unknown_Y_value.value()
-            # Z
-            elif axis == 2:
-                unknowns['z'] = main_window.animation_bone_unknown_Z_value.value()
-            # W
-            else:
-                unknowns['w'] = main_window.animation_bone_unknown_W_value.value()
+            translations['w'] = main_window.animation_bone_translation_W_value.value()
+    # Rotation
+    elif type == 1:
+        rotations = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
+        rotations['rot'] = int(main_window.animation_bone_rotation_XYZ_value.value())
+    # Unknown
+    else:
+        unknowns = bone_entry.unknown_float_data[main_window.animation_bone_unknown_block_value.currentData()]
+        # X
+        if axis == 0:
+            unknowns['x'] = main_window.animation_bone_unknown_X_value.value()
+        # Y
+        elif axis == 1:
+            unknowns['y'] = main_window.animation_bone_unknown_Y_value.value()
+        # Z
+        elif axis == 2:
+            unknowns['z'] = main_window.animation_bone_unknown_Z_value.value()
+        # W
+        else:
+            unknowns['w'] = main_window.animation_bone_unknown_W_value.value()
 
-        spa_file.modified = True
+    spa_file.modified = True
