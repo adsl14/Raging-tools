@@ -3163,7 +3163,7 @@ class Ui_MainWindow(object):
         self.ico_boost_stick_r_r_value.setItemText(9, _translate("MainWindow", "9"))
         self.ico_boost_stick_r_r_value.setItemText(10, _translate("MainWindow", "10"))
         self.ico_boost_stick_r_r_value.setItemText(11, _translate("MainWindow", "11"))
-        self.ico_boost_stick_r_r_value.setItemText(12, _translate("MainWindow", "121"))
+        self.ico_boost_stick_r_r_value.setItemText(12, _translate("MainWindow", "12"))
         self.ico_boost_stick_r_r_value.setItemText(13, _translate("MainWindow", "13"))
         self.ico_boost_stick_r_d_value.setItemText(0, _translate("MainWindow", "0"))
         self.ico_boost_stick_r_d_value.setItemText(1, _translate("MainWindow", "1"))
