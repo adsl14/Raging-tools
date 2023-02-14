@@ -339,8 +339,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.progressText.connect(self.report_progress_text)
 
         self.thread.started.connect(self.worker.load_spr_vram_file)
-        self.thread.started.connect(lambda: VEF.listen_events_logic(self, False))
-        self.thread.started.connect(self.progressBarWindow.show)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -351,6 +349,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.reset_progress_bar()
 
         # Starts thread
+        VEF.listen_events_logic(self, False)
+        self.progressBarWindow.show()
         self.thread.start()
 
     def run_save_ve_to_data(self, vram_separator, path_output_file):
@@ -372,7 +372,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.progressText.connect(self.report_progress_text)
 
         self.thread.started.connect(self.worker.save_spr_vram_file)
-        self.thread.started.connect(self.progressBarWindow.show)
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
@@ -380,6 +379,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.reset_progress_bar()
 
         # Starts thread
+        self.progressBarWindow.show()
         self.thread.start()
 
     def run_load_data_to_pe_cpe(self):
@@ -399,19 +399,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.progressText.connect(self.report_progress_text)
 
         self.thread.started.connect(self.worker.load_data_to_pe_cpe)
-        self.thread.started.connect(self.progressBarWindow.show)
-        self.thread.started.connect(lambda: GPF.listen_events_logic(self, False))
-        self.thread.started.connect(lambda: IPF.listen_events_logic(self, False))
 
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(lambda: GPF.listen_events_logic(self, True))
         self.thread.finished.connect(lambda: IPF.listen_events_logic(self, True))
-        self.reset_progress_bar()
 
         # Starts thread
+        GPF.listen_events_logic(self, False)
+        IPF.listen_events_logic(self, False)
+        self.progressBarWindow.show()
         self.thread.start()
+
+        self.reset_progress_bar()
 
     def run_save_operate_character_and_pack(self, path_output_file, separator, separator_size):
 
