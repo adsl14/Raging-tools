@@ -1210,7 +1210,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowIcon(self.ico_image)
         msg.setText(
             "<ul>"
-            "<li><b>Raging tools 1.8.1</b> by "
+            "<li><b>Raging tools 1.8.2</b> by "
             "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>The tutorial of how to work with the tool or get the source code, can be found here: "
             "<a href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
