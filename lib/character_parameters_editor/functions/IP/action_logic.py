@@ -246,9 +246,9 @@ def action_import_animation_button_logic(main_window, animation_type_index):
         main_window.old_path_file = file_import_path
 
         # Show visual change
-        IPF.listen_events_logic(main_window, True)
-        change_animation_bones_section(main_window, animation_array)
         IPF.listen_events_logic(main_window, False)
+        change_animation_bones_section(main_window, animation_array)
+        IPF.listen_events_logic(main_window, True)
 
 
 def action_import_all_animation_button_logic(main_window, animation_type_index):
