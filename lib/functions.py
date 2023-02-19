@@ -122,17 +122,19 @@ def read_spa_file(spa_path):
     # Read the data of the spa
     with open(spa_path, mode="rb") as file:
         spa_file.spa_header.unk0x00 = file.read(4)
+        name_offset = file.read(4)
+        spa_file.spa_header.unk0x08 = file.read(4)
 
-        # If there is data in the first 4 bytes, and it starts with b'\x00\x00\x00\x00, we continue reading
-        if spa_file.spa_header.unk0x00 == b'\x00\x00\x00\x00':
+        # If there is data in the first 4 bytes which starts with b'\x00\x00\x00\x00
+        # and the byte in position 8 to 12 is 5 (ID of is a spa maybe?) we continue reading
+        if spa_file.spa_header.unk0x00 == b'\x00\x00\x00\x00' and spa_file.spa_header.unk0x08 == b'\x00\x00\x00\x05':
 
             # Read the name and restore the pointer to continue reading the following bytes
             aux_pointer = file.tell()
-            spa_file.spa_header.name, spa_file.spa_header.extension = get_name_from_file(file, int.from_bytes(file.read(4), "big"))
-            file.seek(aux_pointer + 4)
+            spa_file.spa_header.name, spa_file.spa_header.extension = get_name_from_file(file, int.from_bytes(name_offset, "big"))
+            file.seek(aux_pointer)
 
             # Read header
-            spa_file.spa_header.unk0x08 = file.read(4)
             spa_file.spa_header.frame_count = struct.unpack('>f', file.read(4))[0]
             spa_file.spa_header.bone_count = int.from_bytes(file.read(4), "big")
             spa_file.spa_header.maybe_start_offset = int.from_bytes(file.read(4), "big")
