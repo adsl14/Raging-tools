@@ -344,8 +344,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(lambda: VEF.listen_events_logic(self, True))
-        # Show the first texture when the thread finishes. Inside the thread, the method it's not working, so we're doing it here instead
-        self.thread.finished.connect(lambda: VEF.show_texture(self.listView, self.imageTexture, self.encodingImageText, self.mipMapsImageText, self.sizeImageText))
         self.reset_progress_bar()
 
         # Starts thread

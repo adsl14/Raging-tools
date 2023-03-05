@@ -1195,6 +1195,13 @@ def initialize_ve(main_window):
     model = QStandardItemModel()
     main_window.listView.setModel(model)
 
+    # Connect the listener. Since it breaks the vertical bar if we disconnect it, we won't add it to the listen_events_logic
+    main_window.listView.selectionModel().currentChanged.connect(lambda: show_texture(main_window.listView,
+                                                                                      main_window.imageTexture,
+                                                                                      main_window.encodingImageText,
+                                                                                      main_window.mipMapsImageText,
+                                                                                      main_window.sizeImageText))
+
 
 def listen_events_logic(main_window, flag):
 
@@ -1211,13 +1218,6 @@ def listen_events_logic(main_window, flag):
         main_window.modelPartVal.currentIndexChanged.connect(lambda: action_model_part_val_changed(main_window))
         main_window.materialModelPartVal.currentIndexChanged.connect(lambda:
                                                                      action_material_model_part_val_changed(main_window))
-
-        # Create a model for the list view of textures
-        main_window.listView.selectionModel().currentChanged.connect(lambda: show_texture(main_window.listView,
-                                                                                          main_window.imageTexture,
-                                                                                          main_window.encodingImageText,
-                                                                                          main_window.mipMapsImageText,
-                                                                                          main_window.sizeImageText))
 
         # Load the Material children editor window
         main_window.MaterialChildEditorUI.border_color_R_value.valueChanged \
@@ -1246,9 +1246,6 @@ def listen_events_logic(main_window, flag):
             # Model part
             main_window.modelPartVal.disconnect()
             main_window.materialModelPartVal.disconnect()
-
-            # Create a model for the list view of textures
-            main_window.listView.selectionModel().currentChanged.disconnect()
 
             # Load the Material children editor window
             main_window.MaterialChildEditorUI.border_color_R_value.disconnect()
