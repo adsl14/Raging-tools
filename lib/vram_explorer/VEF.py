@@ -2713,10 +2713,13 @@ def read_dds_file(file_path):
 
     except OSError:
         print("The header of the image is not recognizable")
-        raise OSError
+        raise GLException
     except GLException:
         print("DDS image can't be shown")
-        raise OSError
+        raise GLException
+    except Exception:
+        print("Unknown exception. DDS image can't be shown")
+        raise GLException
 
 
 def show_dds_image(image_texture, texture_data, width, height, texture_path="temp.dds"):
@@ -2745,7 +2748,7 @@ def show_dds_image(image_texture, texture_data, width, height, texture_path="tem
 
         # Show the image
         image_texture.setPixmap(mpixmap)
-    except OSError:
+    except GLException:
         image_texture.clear()
 
     if texture_data is not None:
