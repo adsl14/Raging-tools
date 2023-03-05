@@ -40,7 +40,8 @@ pyqt5 5.15.4
 ```
   </li>
   <li>A graphic card that is compatible with OpenGL 4.0 or higher is required for <i>Vram Explorer</i>.
-  If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher. Otherwise, <i> Vram Explorer </i> won't show any <i>dds</i> texture. You can update Intel drivers <b><a href=https://www.intel.la/content/www/xl/es/support/detect.html>here</a></b>.</li>
+  If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher, otherwise, <i> Vram Explorer </i> won't show any <i>dds</i> texture. 
+  You can update Intel drivers <b><a href=https://www.intel.la/content/www/xl/es/support/detect.html>here</a></b>.</li>
   <li>It is highly recomended to place the tool in <i>Program files</i> because when using <i>Pak Explorer</i>, 
 if the path in Windows is very large, the tool will <b>crash!</b>
 Windows has a limit for the path name, so run the tool in a place where the path is not too long.</li>
