@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QLabel
 
 import lib.functions
 from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, change_animation_bones_section, change_animation_layer_spas, change_animation_bone, \
-    change_animation_bone_translation_block, change_animation_bone_rotations_block, change_animation_bone_unknown_block
+    change_animation_bone_translation_block, change_animation_bone_rotations_block, change_animation_bone_unknown_block, change_blast_values, change_camera_cutscene_values
 from lib.packages import natsorted, os, QFileDialog, QMessageBox
 
 from lib.character_parameters_editor import IPF
@@ -71,7 +71,7 @@ def action_import_camera_button_logic(main_window):
 
         # Set camera values to current combo box and show them in the tool
         IPF.listen_events_logic(main_window, False)
-        IPF.change_camera_cutscene_values(main_window, camera_cutscene)
+        change_camera_cutscene_values(main_window, camera_cutscene)
         IPF.listen_events_logic(main_window, True)
 
         # Change old path
@@ -144,7 +144,7 @@ def action_import_all_camera_button_logic(main_window):
                     # Change the values in the tool only for the current selected item
                     if main_window.camera_type_key.currentIndex() == i:
                         IPF.listen_events_logic(main_window, False)
-                        IPF.change_camera_cutscene_values(main_window, camera_cutscene)
+                        change_camera_cutscene_values(main_window, camera_cutscene)
                         IPF.listen_events_logic(main_window, True)
 
                 else:
@@ -533,7 +533,7 @@ def action_import_blast_button_logic(main_window):
 
             # Show the imported values in the tool
             IPF.listen_events_logic(main_window, False)
-            IPF.change_blast_values(main_window, blast)
+            change_blast_values(main_window, blast)
             IPF.listen_events_logic(main_window, True)
 
         # Change old path
@@ -612,7 +612,7 @@ def action_import_all_blast_button_logic(main_window):
 
                         # Show the imported values in the tool
                         IPF.listen_events_logic(main_window, False)
-                        IPF.change_blast_values(main_window, blast)
+                        change_blast_values(main_window, blast)
                         IPF.listen_events_logic(main_window, True)
 
                 else:
@@ -715,7 +715,7 @@ def action_modify_character(event, main_window, chara_id):
 
 def on_camera_type_key_changed(main_window):
     IPF.listen_events_logic(main_window, False)
-    IPF.change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
+    change_camera_cutscene_values(main_window, main_window.camera_type_key.currentData())
     IPF.listen_events_logic(main_window, True)
 
 
@@ -871,7 +871,7 @@ def on_animation_bone_unknown_block_changed(main_window):
 
 def on_blast_attack_changed(main_window):
     IPF.listen_events_logic(main_window, False)
-    IPF.change_blast_values(main_window, main_window.blast_key.currentData())
+    change_blast_values(main_window, main_window.blast_key.currentData())
     IPF.listen_events_logic(main_window, True)
 
 
@@ -971,13 +971,13 @@ def on_camera_blast_value_changed(main_window, camera_index, spinbox):
     blast.modified = True
 
 
-def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
+def on_transla_rotation_unknown_axis_changed(main_window, type_value, axis):
 
     spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
     bone_entry = spa_file.bone_entries[main_window.animation_bone_value.currentText()]
 
     # Translation
-    if type == 0:
+    if type_value == 0:
         translations = bone_entry.translation_float_data[main_window.animation_bone_translation_block_value.currentData()]
         # X
         if axis == 0:
@@ -992,7 +992,7 @@ def on_transla_rotation_unknown_axis_changed(main_window, type, axis):
         else:
             translations['w'] = main_window.animation_bone_translation_W_value.value()
     # Rotation
-    elif type == 1:
+    elif type_value == 1:
         rotations = bone_entry.rot_float_data[main_window.animation_bone_rotation_block_value.currentData()]
         rotations['rot'] = int(main_window.animation_bone_rotation_XYZ_value.value())
     # Unknown
