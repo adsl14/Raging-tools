@@ -9,6 +9,7 @@ from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.Animation import Animation
+from lib.character_parameters_editor.classes.CharacterInfo import CharacterInfo
 from lib.character_parameters_editor.classes.SPA.SPAFile import SPAFile
 from lib.character_parameters_editor.functions.IP.action_logic import on_camera_type_key_changed, \
     action_export_camera_button_logic, action_import_camera_button_logic, action_export_all_camera_button_logic, \
@@ -25,8 +26,8 @@ from lib.character_parameters_editor.functions.IP.action_logic import on_camera_
     on_animation_layer_spas_changed, on_animation_bone_changed, on_animation_bone_translation_block_changed, on_animation_bone_rotations_block_changed, on_animation_bone_unknown_block_changed, \
     action_export_animation_bone_button_logic, action_export_all_animation_bone_button_logic, action_import_animation_bone_button_logic, action_import_all_animation_bone_button_logic, \
     action_remove_animation_bone, on_transla_rotation_unknown_axis_changed
-from lib.character_parameters_editor.functions.IP.auxiliary import read_transformation_effect, store_blast_values_from_file, \
-    write_blast_values_to_file, change_blast_values, change_camera_cutscene_values, write_camera_cutscene_to_file, store_camera_cutscene_from_file, change_animation_bones_section
+from lib.character_parameters_editor.functions.IP.auxiliary import store_blast_values_from_file, \
+    write_blast_values_to_file, write_camera_cutscene_to_file, store_camera_cutscene_from_file, store_character_info_from_file
 from lib.functions import read_spa_file, write_spa_file, show_progress_value
 from lib.packages import struct, QMessageBox
 
@@ -399,8 +400,8 @@ def read_single_character_parameters(worker_pef, step_progress, main_window):
     # 5 tasks
     sub_step_progress = step_progress / 5
     read_animation_files(worker_pef, sub_step_progress, main_window, 0)
-    main_window.animation_type_value.setCurrentIndex(0)
-    change_animation_bones_section(main_window, main_window.animation_type_value.itemData(0))
+    worker_pef.set_first_index_animation_type_value_signal.emit(main_window.animation_type_value)
+    worker_pef.change_animation_bones_signal.emit(main_window, main_window.animation_type_value.itemData(0))
 
     # Read character info file
     with open(IPV.character_i_path, mode="rb") as file:
@@ -409,65 +410,14 @@ def read_single_character_parameters(worker_pef, step_progress, main_window):
         worker_pef.progressText.emit("Reading character info")
         show_progress_value(worker_pef, sub_step_progress)
 
-        # Speed of charging
-        main_window.speed_of_charging_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.speed_of_charging_value_2.setValue(struct.unpack('>f', file.read(4))[0])
-        # Ki regeneration rate
-        main_window.ki_regeneration_rate_value.setValue(struct.unpack('>f', file.read(4))[0])
+        # Create an instance of Character info
+        character_info = CharacterInfo()
 
-        # Ki cost of dash
-        file.seek(4, 1)
-        main_window.ki_cost_of_dash_value.setValue(struct.unpack('>f', file.read(4))[0])
+        # Store all the character info values in memory
+        store_character_info_from_file(character_info, file)
 
-        # Movement speed normal and sidestep
-        file.seek(12, 1)
-        main_window.movement_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.sidestep_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-
-        # Movement speed up and down
-        file.seek(12, 1)
-        main_window.up_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.down_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.dash_up_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-        main_window.dash_down_speed_value.setValue(struct.unpack('>f', file.read(4))[0])
-
-        # Attack damage
-        file.seek(4, 1)
-        main_window.attack_value.setValue(int.from_bytes(file.read(2), byteorder='big'))
-        # Ki blast damage
-        file.seek(4, 1)
-        main_window.blast_damage_value.setValue(int.from_bytes(file.read(2), byteorder='big'))
-
-        # Defense/Armor
-        file.seek(1, 1)
-        main_window.defense_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
-
-        # Number of ki blasts
-        file.seek(31, 1)
-        main_window.number_ki_blasts_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
-
-        # Cost of ki blast
-        file.seek(13, 1)
-        main_window.cost_of_blast_value.setValue(int.from_bytes(file.read(1), byteorder='big'))
-        # Size of ki blast
-        main_window.size_of_blast_value.setValue(struct.unpack('>f', file.read(4))[0])
-
-        # Cancel set and Type fighting
-        file.seek(8, 1)
-        main_window.cancel_set_value.setCurrentIndex(main_window.cancel_set_value.findData
-                                                     (int.from_bytes(file.read(1), "big")))
-        main_window.type_fighting_value.setCurrentIndex(main_window.type_fighting_value.findData
-                                                        (int.from_bytes(file.read(1), "big")))
-
-        # Direction last hit fast combo
-        file.seek(1, 1)
-        main_window.direction_last_hit_combo_value.setCurrentIndex(main_window.direction_last_hit_combo_value.findData
-                                                                   (int.from_bytes(file.read(1), "big")))
-
-        # Color background fast combo
-        file.seek(3, 1)
-        main_window.background_color_combo_value.setCurrentIndex(main_window.background_color_combo_value.findData
-                                                                 (int.from_bytes(file.read(1), "big")))
+        # Set character info to the gui
+        worker_pef.set_character_info_signal.emit(main_window, character_info)
 
     # Read camera info file
     with open(IPV.camera_i_path, mode="rb") as file:
@@ -492,11 +442,10 @@ def read_single_character_parameters(worker_pef, step_progress, main_window):
             store_camera_cutscene_from_file(camera_cutscene, file)
 
             # Set camera type combo box
-            main_window.camera_type_key.setItemData(i, camera_cutscene)
+            worker_pef.set_camera_type_signal.emit(main_window.camera_type_key, i, camera_cutscene)
 
         # Show the first item in the combo box and his values
-        main_window.camera_type_key.setCurrentIndex(0)
-        change_camera_cutscene_values(main_window, main_window.camera_type_key.itemData(0))
+        worker_pef.show_first_item_camera_signal.emit(main_window)
 
     # Read blast info file
     with open(IPV.blast_i_path, mode="rb") as file:
@@ -515,11 +464,10 @@ def read_single_character_parameters(worker_pef, step_progress, main_window):
             store_blast_values_from_file(blast, file)
 
             # Set blast combo box
-            main_window.blast_key.setItemData(i, blast)
+            worker_pef.set_blast_combo_box_signal.emit(main_window.blast_key, i, blast)
 
         # Show the first item in the combo box and his values
-        main_window.blast_key.setCurrentIndex(0)
-        change_blast_values(main_window, main_window.blast_key.itemData(0))
+        worker_pef.show_first_item_blast_signal.emit(main_window)
 
     # Read signature info file
     # Report progress
@@ -694,22 +642,20 @@ def read_animation_file(worker_pef, step_progress, main_window, index_list_view,
 
         # Animation effect instance
         animation_effect = Animation()
-        animation_effect.path = main_window.listView_2.model().item(size_between_animation_and_effects +
-                                                                    index_list_view + i, 0).text()
+        animation_effect.path = main_window.listView_2.model().item(size_between_animation_and_effects + index_list_view + i, 0).text()
         with open(animation_effect.path, mode="rb") as file:
             animation_effect.data = file.read()
         animation_effect.size = len(animation_effect.data)
 
         # Check if the file is 'Transformation in' from properties in order to read the background color
         if index_list_view == 308 and i == 0:
-            read_transformation_effect(main_window, animation_effect)
+            worker_pef.read_transformation_effect_signal.emit(main_window, animation_effect)
 
         # Add all the instances to an array
         item_data_animation.append([spa_file, animation_effect])
 
     # Add the array of Animation instances to the combo box
-    main_window.animation_type_value.setItemData(main_window.animation_type_value.findText(combo_box_label),
-                                                 item_data_animation)
+    worker_pef.add_array_of_animation_signal.emit(main_window.animation_type_value, combo_box_label, item_data_animation)
 
 
 # Read all the animation files
@@ -817,9 +763,7 @@ def read_animation_files(worker_pef, step_progress, main_window, offset_index):
 
     # Signature
     # Get the total number of signature spa and spae files that are inside the folder
-    number_spa_signature_files = os.listdir(os.path.dirname(main_window.listView_2.model().
-                                                            item(IPV.signature_folder_index_list_view,
-                                                                 0).text())).__len__()
+    number_spa_signature_files = os.listdir(os.path.dirname(main_window.listView_2.model().item(IPV.signature_folder_index_list_view, 0).text())).__len__()
     read_animation_file(worker_pef, sub_step_progress, main_window, IPV.signature_folder_index_list_view + offset_index, "Signature", number_spa_signature_files, 2, 1)
 
 
@@ -1023,8 +967,7 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                                 data_index_start = data_index_end
 
                             # Get a template basename for the brand-new files in the signature
-                            path_fist_spa_signature = main_window.listView_2.model()\
-                                .item(IPV.signature_folder_index_list_view, 0).text()
+                            path_fist_spa_signature = main_window.listView_2.model().item(IPV.signature_folder_index_list_view, 0).text()
                             dir_name = os.path.dirname(path_fist_spa_signature)
                             basename = os.path.basename(path_fist_spa_signature)
                             template_basename = basename.split(";")[1]
@@ -1047,18 +990,19 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
 
                                     # Modify the spa that will be stored in the array memory
                                     spa_file.modified = True
-                                    spa_file.path = os.path.join(dir_name, str(i * 2) + ";" + template_basename + "TOK_" + str(i) + ".spa")
 
                                     # We remove the temporal spa
                                     os.remove("temp_spa")
                                 # Check if we're importing spae animation
                                 else:
-                                    animation_spae.path = os.path.join(dir_name, str((i * 2) + 1) + ";" +
-                                                                       template_basename + "TOK_" + str(i) + ".spae")
                                     animation_spae.data = data[data_index_start:data_index_end]
                                     animation_spae.size = sizes_number_of_files[i]
                                     animation_spae.modified = True
                                 data_index_start = data_index_end
+
+                                # Create the new paths for each spa and spae so those files in memory are prepared when the user wants to save them in file
+                                spa_file.path = os.path.join(dir_name, str(i * 2) + ";" + template_basename + "TOK_" + str(i) + ".spa")
+                                animation_spae.path = os.path.join(dir_name, str((i * 2) + 1) + ";" + template_basename + "TOK_" + str(i) + ".spae")
 
                                 animation_array.append([spa_file, animation_spae])
                 else:
