@@ -1,9 +1,15 @@
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import QInputDialog
 
+from lib.character_parameters_editor.GPF import initialize_roster
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
+from lib.character_parameters_editor.functions.GP.signal_methods import initialize_buttons_events_operate_GP, enable_tabs_operate_GP, enable_tabs_db_font_GP, initialize_buttons_events_db_font_GP
+from lib.character_parameters_editor.functions.IP.auxiliary import change_animation_bones_section, read_transformation_effect
+from lib.character_parameters_editor.functions.IP.signal_methods import add_array_of_animation, show_first_item_camera, set_blast_combo_box, show_first_item_blast, set_camera_type, \
+    set_first_index_animation_type_value, set_character_info, enable_individual_parameters_tab
+from lib.character_parameters_editor.functions.RE.signal_methods import initialize_current_character_image_RE, delete_image_slot_RE, change_image_slot_RE, enable_tabs_RE
 from lib.design.Raging_Tools.Raging_Tools import *
 from lib.design.material_children.material_children import Material_Child_Editor
 from lib.design.progress_bar.progress_bar import Progress_Bar
@@ -22,8 +28,10 @@ from lib.pak_explorer.PEV import PEV
 # character parameters editor
 from lib.character_parameters_editor import CPEF, GPF, IPF
 
+from lib.pak_explorer.functions.signal_methods import assign_first_entry_file, enable_pack_explorer_assign_title, enable_pak_explorer_tab
+from lib.vram_explorer.functions.signal_methods import prepare_buttons_combobox_vram_explorer
 
-# Worker class
+
 class WorkerMainWindow(QObject):
 
     finished = pyqtSignal()
@@ -132,7 +140,7 @@ class WorkerMainWindow(QObject):
         # Show text
         self.progressText.emit("Unpacking file " + os.path.basename(self.path_file))
 
-        PEF.unpack(self.path_file, "", self.path_output_file, None)
+        PEF.unpack(self.path_file, "", self.path_output_file, None, None)
 
         show_progress_value(self, step_progress)
 
@@ -335,11 +343,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.end_progress = 100.0
         self.worker.main_window = self
         # Connect signals and slots
+        # Vram explorer
+        self.worker.prepare_buttons_combobox_vram_explorer_signal.connect(prepare_buttons_combobox_vram_explorer)
+
+        # Progress bar
         self.worker.progressValue.connect(self.report_progress_value)
         self.worker.progressText.connect(self.report_progress_text)
 
+        # Main method
         self.thread.started.connect(self.worker.load_spr_vram_file)
 
+        # Finish thread
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -393,24 +407,57 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
         # Connect signals and slots
+
+        # Pak explorer signals
+        self.worker.assign_first_entry_file_signal.connect(assign_first_entry_file)
+        self.worker.enable_pack_explorer_assign_title_signal.connect(enable_pack_explorer_assign_title)
+        self.worker.enable_pak_explorer_tab_signal.connect(enable_pak_explorer_tab)
+
+        # General parameters signals
+        self.worker.initialize_roster_signal.connect(initialize_roster)
+        self.worker.initialize_buttons_events_operate_GP_signal.connect(initialize_buttons_events_operate_GP)
+        self.worker.enable_tabs_operate_GP_signal.connect(enable_tabs_operate_GP)
+        self.worker.initialize_buttons_events_db_font_GP_signal.connect(initialize_buttons_events_db_font_GP)
+        self.worker.enable_tabs_db_font_GP_signal.connect(enable_tabs_db_font_GP)
+
+        # Individual parameters signals
+        self.worker.add_array_of_animation_signal.connect(add_array_of_animation)
+        self.worker.read_transformation_effect_signal.connect(read_transformation_effect)
+        self.worker.set_first_index_animation_type_value_signal.connect(set_first_index_animation_type_value)
+        self.worker.change_animation_bones_signal.connect(change_animation_bones_section)
+        self.worker.set_character_info_signal.connect(set_character_info)
+        self.worker.set_camera_type_signal.connect(set_camera_type)
+        self.worker.show_first_item_camera_signal.connect(show_first_item_camera)
+        self.worker.set_blast_combo_box_signal.connect(set_blast_combo_box)
+        self.worker.show_first_item_blast_signal.connect(show_first_item_blast)
+        self.worker.enable_individual_parameters_tab_signal.connect(enable_individual_parameters_tab)
+
+        # Roster signals
+        self.worker.initialize_current_character_image_RE_signal.connect(initialize_current_character_image_RE)
+        self.worker.delete_image_slot_RE_signal.connect(delete_image_slot_RE)
+        self.worker.change_image_slot_RE_signal.connect(change_image_slot_RE)
+        self.worker.enable_tabs_RE_signal.connect(enable_tabs_RE)
+
+        # Progress bar signals
         self.worker.progressValue.connect(self.report_progress_value)
         self.worker.progressText.connect(self.report_progress_text)
 
+        # Main method
         self.thread.started.connect(self.worker.load_data_to_pe_cpe)
 
+        # End signals
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
         self.thread.finished.connect(lambda: GPF.listen_events_logic(self, True))
         self.thread.finished.connect(lambda: IPF.listen_events_logic(self, True))
+        self.reset_progress_bar()
 
         # Starts thread
         GPF.listen_events_logic(self, False)
         IPF.listen_events_logic(self, False)
         self.progressBarWindow.show()
         self.thread.start()
-
-        self.reset_progress_bar()
 
     def run_save_operate_character_and_pack(self, path_output_file, separator, separator_size):
 
@@ -889,7 +936,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_multiple_SPA_to_multiple_JSON_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where spa files are located")
 
         if folder_import_path:
@@ -927,7 +974,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_multiple_JSON_to_multiple_SPA_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where json files are located")
 
         if folder_import_path:
@@ -1000,7 +1047,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_multiple_unpack_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where unpacked files are located")
 
         if folder_import_path:
@@ -1038,7 +1085,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_single_pack_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where files are located")
 
         if folder_import_path:
@@ -1070,7 +1117,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_multiple_pack_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where there are folders with files are located")
 
         if folder_import_path:
@@ -1161,7 +1208,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_multiple_encrypt_decrypt_logic(self):
 
-        # Ask to the user from where to import the files into the tool
+        # Ask the user from where to import the files into the tool
         folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where encrypted or decrypted files are located")
 
         if folder_import_path:

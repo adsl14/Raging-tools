@@ -1,25 +1,59 @@
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtGui import QStandardItem
+from PyQt5.QtWidgets import QListView, QComboBox, QMainWindow, QWidget
 
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.REF import read_cs_chip_file, write_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters, write_single_character_parameters
-from lib.character_parameters_editor.GPF import read_operate_resident_param, \
-    open_select_chara_window, read_db_font_pad_ps3, enable_disable_operate_resident_param_values, \
-    enable_disable_db_font_pad_ps3_values, initialize_roster, write_db_font_pad_ps3, write_operate_resident_param
+from lib.character_parameters_editor.GPF import read_operate_resident_param, read_db_font_pad_ps3, write_db_font_pad_ps3, write_operate_resident_param
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
-from lib.functions import show_progress_value
-from lib.packages import rmtree, re, natsorted, move
-from lib import functions
+from lib.character_parameters_editor.classes.Animation import Animation
+from lib.character_parameters_editor.classes.Blast import Blast
+from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
+from lib.character_parameters_editor.classes.CharacterInfo import CharacterInfo
+from lib.character_parameters_editor.classes.Slot import Slot
+from lib.functions import show_progress_value, del_rw
+from lib.packages import rmtree, re, natsorted, move, os, stat, QLabel, QStandardItemModel
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
-from lib.packages import os, functools, stat, QPixmap, QLabel, QStandardItem, QStandardItemModel
 from lib.pak_explorer.PEV import PEV
 from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic
 
 
 # Step 1: Create a worker class
 class WorkerPef(QObject):
+
+    # Pak explorer signals
+    assign_first_entry_file_signal = pyqtSignal(QListView)
+    enable_pack_explorer_assign_title_signal = pyqtSignal(QWidget, QLabel)
+    enable_pak_explorer_tab_signal = pyqtSignal(QMainWindow)
+
+    # General parameters signals
+    initialize_roster_signal = pyqtSignal(QMainWindow)
+    initialize_buttons_events_operate_GP_signal = pyqtSignal(QMainWindow, Character)
+    enable_tabs_operate_GP_signal = pyqtSignal(QMainWindow)
+    initialize_buttons_events_db_font_GP_signal = pyqtSignal(QMainWindow)
+    enable_tabs_db_font_GP_signal = pyqtSignal(QMainWindow)
+
+    # Individual parameters signals
+    add_array_of_animation_signal = pyqtSignal(QComboBox, str, list)
+    set_first_index_animation_type_value_signal = pyqtSignal(QComboBox)
+    read_transformation_effect_signal = pyqtSignal(QComboBox, Animation)
+    change_animation_bones_signal = pyqtSignal(QMainWindow, list)
+    set_character_info_signal = pyqtSignal(QMainWindow, CharacterInfo)
+    set_camera_type_signal = pyqtSignal(QComboBox, int, CameraCutscene)
+    show_first_item_camera_signal = pyqtSignal(QMainWindow)
+    set_blast_combo_box_signal = pyqtSignal(QComboBox, int, Blast)
+    show_first_item_blast_signal = pyqtSignal(QMainWindow)
+    enable_individual_parameters_tab_signal = pyqtSignal(QMainWindow)
+
+    # Roster editor signals
+    initialize_current_character_image_RE_signal = pyqtSignal(QMainWindow)
+    delete_image_slot_RE_signal = pyqtSignal(Slot)
+    change_image_slot_RE_signal = pyqtSignal(Slot, str)
+    enable_tabs_RE_signal = pyqtSignal(QMainWindow)
+
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
@@ -46,17 +80,14 @@ class WorkerPef(QObject):
 
         # Report progress
         self.progressText.emit("Unpacking file...")
-        unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder,
-               self.main_window.listView_2)
+        unpack(PEV.pak_file_path, os.path.basename(PEV.pak_file_path).split(".")[-1], PEV.temp_folder, self.main_window.listView_2, self)
         show_progress_value(self, step_progress)
 
         # Assign the first entry to the list view
-        self.main_window.listView_2.setCurrentIndex(self.main_window.listView_2.model().index(0, 0))
+        self.assign_first_entry_file_signal.emit(self.main_window.listView_2)
 
-        # Enable the pak explorer
-        self.main_window.pak_explorer.setEnabled(True)
-        # Add the title
-        self.main_window.fileNameText_2.setText(os.path.basename(PEV.pak_file_path_original))
+        # Enable the pak explorer and add the title
+        self.enable_pack_explorer_assign_title_signal.emit(self.main_window.pak_explorer, self.main_window.fileNameText_2)
 
         # Read the pak file (character parameters editor)
         pak_file = open(PEV.pak_file_path, mode="rb")
@@ -77,7 +108,7 @@ class WorkerPef(QObject):
             GPV.chara_selected = 0  # Index of the char selected in the program
             GPV.operate_resident_param_file = True
 
-            # Read all the data from the files
+            # Read all the data from the files'
             # character_info, transformer_i and skill.dat
             GPV.resident_character_inf_path = self.main_window.listView_2.model().item(3, 0).text()
             GPV.resident_transformer_i_path = self.main_window.listView_2.model().item(11, 0).text()
@@ -113,182 +144,16 @@ class WorkerPef(QObject):
             subpak_file_skill.close()
 
             # Initialize main roster
-            initialize_roster(self.main_window)
+            self.initialize_roster_signal.emit(self.main_window)
 
             # Get the values for the fist character of the list
             character_zero = GPV.character_list[0]
 
-            # Show the health
-            self.main_window.health_value.setValue(character_zero.health)
+            # Prepare all the buttons, values, events
+            self.initialize_buttons_events_operate_GP_signal.emit(self.main_window, character_zero)
 
-            # Show the camera size
-            self.main_window.camera_size_cutscene_value.setValue(character_zero.camera_size[0])
-            self.main_window.camera_size_idle_value.setValue(character_zero.camera_size[1])
-
-            # Show the hit box
-            self.main_window.hit_box_value.setValue(character_zero.hit_box)
-
-            # Show the aura size
-            self.main_window.aura_size_idle_value.setValue(character_zero.aura_size[0])
-            self.main_window.aura_size_dash_value.setValue(character_zero.aura_size[1])
-            self.main_window.aura_size_charge_value.setValue(character_zero.aura_size[2])
-
-            # Show the color lightnings parameter
-            self.main_window.color_lightning_value.setCurrentIndex(self.main_window.color_lightning_value.findData
-                                                                   (character_zero.color_lightning))
-
-            # Show the glow/lightnings parameter
-            self.main_window.glow_lightning_value.setCurrentIndex(self.main_window.glow_lightning_value.findData
-                                                                  (character_zero.glow_lightning))
-
-            # Show the transform panel
-            self.main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                            str(character_zero.transformations[0]).zfill(
-                                                                                3) + ".png")))
-            self.main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                 main_window=self.main_window,
-                                                                                 index=character_zero.transformations[0],
-                                                                                 trans_slot_panel_index=0)
-            self.main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                            str(character_zero.transformations[1]).zfill(
-                                                                                3) + ".png")))
-            self.main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                 main_window=self.main_window,
-                                                                                 index=character_zero.transformations[1],
-                                                                                 trans_slot_panel_index=1)
-            self.main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                            str(character_zero.transformations[2]).zfill(
-                                                                                3) + ".png")))
-            self.main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                 main_window=self.main_window,
-                                                                                 index=character_zero.transformations[2],
-                                                                                 trans_slot_panel_index=2)
-            self.main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                            str(character_zero.transformations[3]).zfill(
-                                                                                3) + ".png")))
-            self.main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                 main_window=self.main_window,
-                                                                                 index=character_zero.transformations[3],
-                                                                                 trans_slot_panel_index=3)
-
-            # Show the transformation parameter
-            self.main_window.transEffectValue.setCurrentIndex(self.main_window.transEffectValue.findData
-                                                              (character_zero.transformation_effect))
-
-            # Show the transformation partner
-            self.main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                              str(character_zero.transformation_partner).zfill(3)
-                                                                              + ".png")))
-            self.main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                   main_window=self.main_window,
-                                                                                   index=character_zero.transformation_partner,
-                                                                                   transformation_partner_flag=True)
-
-            # Show amount ki per transformation
-            self.main_window.amountKi_trans1_value.setValue(character_zero.amount_ki_transformations[0])
-            self.main_window.amountKi_trans2_value.setValue(character_zero.amount_ki_transformations[1])
-            self.main_window.amountKi_trans3_value.setValue(character_zero.amount_ki_transformations[2])
-            self.main_window.amountKi_trans4_value.setValue(character_zero.amount_ki_transformations[3])
-
-            # Show Animation per transformation
-            self.main_window.trans1_animation_value.setCurrentIndex(self.main_window.trans1_animation_value.findData
-                                                                    (character_zero.transformations_animation[0]))
-            self.main_window.trans2_animation_value.setCurrentIndex(self.main_window.trans2_animation_value.findData
-                                                                    (character_zero.transformations_animation[1]))
-            self.main_window.trans3_animation_value.setCurrentIndex(self.main_window.trans3_animation_value.findData
-                                                                    (character_zero.transformations_animation[2]))
-            self.main_window.trans4_animation_value.setCurrentIndex(self.main_window.trans4_animation_value.findData
-                                                                    (character_zero.transformations_animation[3]))
-
-            # Show the fusion panel
-            self.main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                           str(character_zero.fusions[0]).zfill(3) + ".png")))
-            self.main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                main_window=self.main_window,
-                                                                                index=character_zero.fusions[0],
-                                                                                fusion_slot_panel_index=0)
-            self.main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                           str(character_zero.fusions[1]).zfill(3) + ".png")))
-            self.main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                main_window=self.main_window,
-                                                                                index=character_zero.fusions[1],
-                                                                                fusion_slot_panel_index=1)
-            self.main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                           str(character_zero.fusions[2]).zfill(3) + ".png")))
-            self.main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                main_window=self.main_window,
-                                                                                index=character_zero.fusions[2],
-                                                                                fusion_slot_panel_index=2)
-            self.main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                                                           str(character_zero.fusions[3]).zfill(3) + ".png")))
-            self.main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                main_window=self.main_window,
-                                                                                index=character_zero.fusions[3],
-                                                                                fusion_slot_panel_index=3)
-
-            # Show the fusion partner (trigger)
-            self.main_window.fusionPartnerTrigger_value.setPixmap(
-                QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                     str(character_zero.fusion_partner[0]).zfill(3)
-                                     + ".png")))
-            self.main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                            main_window=self.main_window,
-                                                                                            index=character_zero.fusion_partner
-                                                                                            [0],
-                                                                                            fusion_partner_trigger_flag=True)
-
-            # Show fusion partner visual
-            self.main_window.fusionPartnerVisual_value.setPixmap(
-                QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
-                                     str(character_zero.fusion_partner[1]).zfill(3)
-                                     + ".png")))
-            self.main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
-                                                                                           main_window=self.main_window,
-                                                                                           index=character_zero.
-                                                                                           fusion_partner[1],
-                                                                                           fusion_partner_visual_flag=True)
-
-            # Show amount ki per fusion
-            self.main_window.amountKi_fusion1_value.setValue(character_zero.amount_ki_fusions[0])
-            self.main_window.amountKi_fusion2_value.setValue(character_zero.amount_ki_fusions[1])
-            self.main_window.amountKi_fusion3_value.setValue(character_zero.amount_ki_fusions[2])
-            self.main_window.amountKi_fusion4_value.setValue(character_zero.amount_ki_fusions[3])
-
-            # Show Animation per transformation
-            self.main_window.fusion1_animation_value.setCurrentIndex(self.main_window.fusion1_animation_value.findData
-                                                                     (character_zero.fusions_animation[0]))
-            self.main_window.fusion2_animation_value.setCurrentIndex(self.main_window.fusion2_animation_value.findData
-                                                                     (character_zero.fusions_animation[1]))
-            self.main_window.fusion3_animation_value.setCurrentIndex(self.main_window.fusion3_animation_value.findData
-                                                                     (character_zero.fusions_animation[2]))
-            self.main_window.fusion4_animation_value.setCurrentIndex(self.main_window.fusion4_animation_value.findData
-                                                                     (character_zero.fusions_animation[3]))
-
-            # Open the tab (character parameters editor)
-            if self.main_window.tabWidget.currentIndex() != 2:
-                self.main_window.tabWidget.setCurrentIndex(2)
-
-            # Open the tab operate_resident_param
-            if self.main_window.tabWidget_2.currentIndex() != 0:
-                self.main_window.tabWidget_2.setCurrentIndex(0)
-
-            # Enable completely the tab character parameters editor
-            if not self.main_window.character_parameters_editor.isEnabled():
-                self.main_window.character_parameters_editor.setEnabled(True)
-
-            # Enable all the buttons (character parameters editor -> operate_resident_param)
-            if not self.main_window.health.isEnabled():
-                enable_disable_operate_resident_param_values(self.main_window, True)
-                enable_disable_db_font_pad_ps3_values(self.main_window, False)
-            if not self.main_window.operate_resident_param_frame.isEnabled():
-                self.main_window.operate_resident_param_frame.setEnabled(True)
-
-            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if self.main_window.operate_character_xyz_m_frame.isEnabled():
-                self.main_window.operate_character_xyz_m_frame.setEnabled(False)
-            # Disable all the buttons (character parameters editor -> cs_chip)
-            if self.main_window.cs_chip.isEnabled():
-                self.main_window.cs_chip.setEnabled(False)
+            # Enable the tab
+            self.enable_tabs_operate_GP_signal.emit(self.main_window)
 
         # Check if the file is the db_font_pad_PS3_s.zpak or db_font_pad_X360_s.zpak
         elif data == CPEV.db_font_pad_PS3_s_d or data == CPEV.db_font_pad_X360_s_d:
@@ -324,44 +189,13 @@ class WorkerPef(QObject):
             subpak_file_resident_character_param.close()
 
             # Initialize main roster
-            initialize_roster(self.main_window)
+            self.initialize_roster_signal.emit(self.main_window)
 
-            # Show the aura_type parameter
-            self.main_window.aura_type_value.setCurrentIndex(self.main_window.aura_type_value.findData(
-                GPV.character_list[0].aura_type))
+            # Initialize buttons
+            self.initialize_buttons_events_db_font_GP_signal.emit(self.main_window)
 
-            # Show the blast attacks
-            self.main_window.ico_boost_stick_r_up_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Up"])
-            self.main_window.ico_boost_stick_r_r_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Right"])
-            self.main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Down"])
-            self.main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Left"])
-            self.main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[0].blast_attacks["Push"])
-
-            # Open the tab (character parameters editor)
-            if self.main_window.tabWidget.currentIndex() != 2:
-                self.main_window.tabWidget.setCurrentIndex(2)
-
-            # Open the tab operate_resident_param
-            if self.main_window.tabWidget_2.currentIndex() != 0:
-                self.main_window.tabWidget_2.setCurrentIndex(0)
-
-            # Enable completely the tab character parameters editor
-            if not self.main_window.character_parameters_editor.isEnabled():
-                self.main_window.character_parameters_editor.setEnabled(True)
-
-            # Enable all the buttons (db_font_pad_PS3_s -> game_resident_param)
-            if not self.main_window.aura_type.isEnabled():
-                enable_disable_operate_resident_param_values(self.main_window, False)
-                enable_disable_db_font_pad_ps3_values(self.main_window, True)
-            if not self.main_window.operate_resident_param_frame.isEnabled():
-                self.main_window.operate_resident_param_frame.setEnabled(True)
-
-            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if self.main_window.operate_character_xyz_m_frame.isEnabled():
-                self.main_window.operate_character_xyz_m_frame.setEnabled(False)
-            # Disable all the buttons (character parameters editor -> cs_chip)
-            if self.main_window.cs_chip.isEnabled():
-                self.main_window.cs_chip.setEnabled(False)
+            # Enable/Disable tabs
+            self.enable_tabs_db_font_GP_signal.emit(self.main_window)
 
         # Check if the file is an operate_character_xyz_m type
         elif re.search(CPEV.operate_character_xyz_m_regex, data):
@@ -372,27 +206,8 @@ class WorkerPef(QObject):
             # Read all the data from the files and store it in the global_character from IPV.
             read_single_character_parameters(self, step_progress, self.main_window)
 
-            # Open the tab (character parameters editor)
-            if self.main_window.tabWidget.currentIndex() != 2:
-                self.main_window.tabWidget.setCurrentIndex(2)
-
-            # Open the tab operate_character_XXX_m
-            if self.main_window.tabWidget_2.currentIndex() != 1:
-                self.main_window.tabWidget_2.setCurrentIndex(1)
-
-            # Enable completely the tab character parameters editor
-            if not self.main_window.character_parameters_editor.isEnabled():
-                self.main_window.character_parameters_editor.setEnabled(True)
-
-            # Disable all the buttons (character parameters editor -> operate_resident_param)
-            if self.main_window.operate_resident_param_frame.isEnabled():
-                self.main_window.operate_resident_param_frame.setEnabled(False)
-            # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if not self.main_window.operate_character_xyz_m_frame.isEnabled():
-                self.main_window.operate_character_xyz_m_frame.setEnabled(True)
-            # Disable all the buttons (character parameters editor -> cs_chip)
-            if self.main_window.cs_chip.isEnabled():
-                self.main_window.cs_chip.setEnabled(False)
+            # Check how we enable the tab
+            self.enable_individual_parameters_tab_signal.emit(self.main_window)
 
         # Check if the file is cs_chip
         elif data == CPEV.cs_chip:
@@ -422,15 +237,8 @@ class WorkerPef(QObject):
                     select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
                 # Reset the rest of the vars
-                self.main_window.portrait_2.setPixmap(QPixmap(""))
                 REV.slots_edited.clear()
-                for i in range(0, REV.num_slots_characters):
-                    slot = REV.slots_characters[i]
-                    slot.reset()
-                for i in range(0, REV.num_slots_transformations):
-                    slot = REV.slots_transformations[i]
-                    slot.reset()
-                    slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
+                self.initialize_current_character_image_RE_signal.emit(self.main_window)
 
                 REV.slot_chara_selected = -1
                 REV.slot_trans_selected = -1
@@ -441,38 +249,14 @@ class WorkerPef(QObject):
             # Read all the data from the files and store it in the global vars from REV.
             read_cs_chip_file(self, step_progress, self.main_window)
 
-            # Open the tab (character parameters editor)
-            if self.main_window.tabWidget.currentIndex() != 2:
-                self.main_window.tabWidget.setCurrentIndex(2)
-
-            # Open the tab operate_character_XXX_m
-            if self.main_window.tabWidget_2.currentIndex() != 2:
-                self.main_window.tabWidget_2.setCurrentIndex(2)
-
-            # Enable completely the tab character parameters editor
-            if not self.main_window.character_parameters_editor.isEnabled():
-                self.main_window.character_parameters_editor.setEnabled(True)
-
-            # Disable all the buttons (character parameters editor -> operate_resident_param)
-            if self.main_window.operate_resident_param_frame.isEnabled():
-                self.main_window.operate_resident_param_frame.setEnabled(False)
-            # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
-            if self.main_window.operate_character_xyz_m_frame.isEnabled():
-                self.main_window.operate_character_xyz_m_frame.setEnabled(False)
-            # Disable all the buttons (character parameters editor -> cs_chip)
-            if not self.main_window.cs_chip.isEnabled():
-                self.main_window.cs_chip.setEnabled(True)
+            # Enable/Disable tabs
+            self.enable_tabs_RE_signal.emit(self.main_window)
 
         # Generic pak file
         else:
 
             # Open the tab (pak explorer)
-            if self.main_window.tabWidget.currentIndex() != 1:
-                self.main_window.tabWidget.setCurrentIndex(1)
-
-            # Disable completely the tab character parameters editor
-            if self.main_window.character_parameters_editor.isEnabled():
-                self.main_window.character_parameters_editor.setEnabled(False)
+            self.enable_pak_explorer_tab_signal.emit(self.main_window)
 
             self.progressText.emit("Unpacked")
             show_progress_value(self, step_progress)
@@ -604,7 +388,7 @@ class WorkerPef(QObject):
 
         # Remove the 'old_pak' folder
         if PEV.stpz_file:
-            rmtree(old_pak_folder, onerror=functions.del_rw)
+            rmtree(old_pak_folder, onerror=del_rw)
 
         # Finish the thread
         self.finished.emit()
@@ -632,7 +416,7 @@ def initialize_pe(main_window):
     main_window.pak_explorer.setEnabled(False)
 
 
-def unpack(path_file, extension, main_temp_folder, list_view_2):
+def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
     # Open the file
     with open(path_file, mode="rb") as file:
 
@@ -651,7 +435,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
             folder_name = os.path.basename(path_file).split(".")[0]
             folder_path = os.path.join(path_file_without_basename, folder_name)
             if os.path.exists(folder_path):
-                rmtree(folder_path, onerror=functions.del_rw)
+                rmtree(folder_path, onerror=del_rw)
             os.mkdir(folder_path)
 
             # Get the number of subpak files that has the main pak file
@@ -687,7 +471,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2):
                 file.seek(offset_aux)
 
                 # Call the function again
-                unpack(new_file_path, name_splitted[1], "", list_view_2)
+                unpack(new_file_path, name_splitted[1], "", list_view_2, worker_pef)
 
         # means the pak file doesn't have subpak.
         else:

@@ -1,4 +1,5 @@
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow
 from pyglet.gl import GLException
 
 from lib.functions import check_entry_module, get_name_from_file, show_progress_value
@@ -38,6 +39,9 @@ from lib.vram_explorer.functions.xbox_swizzle import process
 
 # Step 1: Create a worker class
 class WorkerVef(QObject):
+
+    prepare_buttons_combobox_vram_explorer_signal = pyqtSignal(QMainWindow, str)
+
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
@@ -82,79 +86,8 @@ class WorkerVef(QObject):
         open_spr_file(self, step_progress, self.main_window, self.main_window.listView.model(), VEV.spr_file_path)
         open_vram_file(self, step_progress, VEV.vram_file_path)
 
-        # Set the index of the list view to be always the first row when loading a new spr/vram file
-        # We show always the first texture
-        self.main_window.listView.setCurrentIndex(self.main_window.listView.model().index(0, 0))
-
-        # Enable the buttons
-        self.main_window.exportAllButton.setEnabled(True)
-        self.main_window.importAllButton.setEnabled(True)
-        self.main_window.importButton.setEnabled(True)
-        self.main_window.exportButton.setEnabled(True)
-        self.main_window.removeButton.setEnabled(True)
-        self.main_window.addButton.setEnabled(True)
-
-        # If the spr holds entries like pshd or vshd (used in maps), we won't enable the texture
-        # adding, removing and the material edition
-        if VEV.enable_spr_scratch:
-            self.main_window.addButton.setEnabled(True)
-            self.main_window.removeButton.setEnabled(True)
-        else:
-            self.main_window.addButton.setEnabled(False)
-            self.main_window.removeButton.setEnabled(False)
-            VEV.exists_mtrl = False
-
-        # Enable the buttons of material only if the spr holds mtrl section
-        if VEV.exists_mtrl:
-            self.main_window.materialVal.setEnabled(True)
-            self.main_window.layerVal.setEnabled(True)
-            self.main_window.typeVal.setEnabled(True)
-            self.main_window.effectVal.setEnabled(True)
-            self.main_window.textureVal.setEnabled(True)
-            self.main_window.exportMaterialButton.setEnabled(True)
-            self.main_window.importMaterialButton.setEnabled(True)
-            self.main_window.exportAllMaterialButton.setEnabled(True)
-            self.main_window.importAllMaterialButton.setEnabled(True)
-            self.main_window.addMaterialButton.setEnabled(True)
-            self.main_window.removeMaterialButton.setEnabled(True)
-            self.main_window.editMaterialChildrenButton.setEnabled(True)
-
-            self.main_window.modelPartVal.setEnabled(True)
-            self.main_window.materialModelPartVal.setEnabled(True)
-
-            # Enable combo box and set the values for the first layer of the first material
-            self.main_window.materialVal.setCurrentIndex(0)
-            self.main_window.modelPartVal.setCurrentIndex(0)
-            action_material_val_changed(self.main_window)
-            action_model_part_val_changed(self.main_window)
-
-        else:
-            self.main_window.materialVal.setEnabled(False)
-            self.main_window.layerVal.setEnabled(False)
-            self.main_window.typeVal.setEnabled(False)
-            self.main_window.effectVal.setEnabled(False)
-            self.main_window.textureVal.setEnabled(False)
-            self.main_window.exportMaterialButton.setEnabled(False)
-            self.main_window.importMaterialButton.setEnabled(False)
-            self.main_window.exportAllMaterialButton.setEnabled(False)
-            self.main_window.importAllMaterialButton.setEnabled(False)
-            self.main_window.addMaterialButton.setEnabled(False)
-            self.main_window.removeMaterialButton.setEnabled(False)
-            self.main_window.editMaterialChildrenButton.setEnabled(False)
-
-            self.main_window.modelPartVal.setEnabled(False)
-            self.main_window.materialModelPartVal.setEnabled(False)
-
-        # Show the text labels
-        self.main_window.fileNameText.setText(basename)
-        self.main_window.fileNameText.setVisible(True)
-        self.main_window.encodingImageText.setVisible(True)
-        self.main_window.mipMapsImageText.setVisible(True)
-        self.main_window.sizeImageText.setVisible(True)
-
-        # Open the tab
-        if self.main_window.tabWidget.currentIndex() != 0:
-            self.main_window.tabWidget.setCurrentIndex(0)
+        # Prepare all the buttons, comboboxes, set first index ina list and everything related to the GUI in terms of 'set'
+        self.prepare_buttons_combobox_vram_explorer_signal.emit(self.main_window, basename)
 
         # Finish the thread
         self.finished.emit()

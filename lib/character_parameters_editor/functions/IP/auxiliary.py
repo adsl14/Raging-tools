@@ -17,13 +17,72 @@ def read_transformation_effect(main_window, animation):
             # Enable combo box
             main_window.background_color_trans_value.setEnabled(True)
             # Store the data
+            main_window.background_color_trans_value.setCurrentIndex(main_window.background_color_trans_value.findData(animation.data[i-1]))
+
             IPV.trans_effect_position_byte = i-1
-            main_window.background_color_trans_value.setCurrentIndex(main_window.background_color_trans_value.findData
-                                                                     (animation.data[i-1]))
             return
 
     # If we didn't find the bytes that identify if is a proper trans effect file, we disable the combo box
     main_window.background_color_trans_value.setEnabled(False)
+
+
+def store_character_info_from_file(character_info, file):
+
+    # Speed of charging
+    character_info.speed_of_charging_value = struct.unpack('>f', file.read(4))[0]
+    character_info.speed_of_charging_value_2 = struct.unpack('>f', file.read(4))[0]
+    # Ki regeneration rate
+    character_info.ki_regeneration_rate_value = struct.unpack('>f', file.read(4))[0]
+
+    # Ki cost of dash
+    file.seek(4, 1)
+    character_info.ki_cost_of_dash_value = struct.unpack('>f', file.read(4))[0]
+
+    # Movement speed normal and sidestep
+    file.seek(12, 1)
+    character_info.movement_speed_value = struct.unpack('>f', file.read(4))[0]
+    character_info.sidestep_speed_value = struct.unpack('>f', file.read(4))[0]
+
+    # Movement speed up and down
+    file.seek(12, 1)
+    character_info.up_speed_value = struct.unpack('>f', file.read(4))[0]
+    character_info.down_speed_value = struct.unpack('>f', file.read(4))[0]
+    character_info.dash_up_speed_value = struct.unpack('>f', file.read(4))[0]
+    character_info.dash_down_speed_value = struct.unpack('>f', file.read(4))[0]
+
+    # Attack damage
+    file.seek(4, 1)
+    character_info.attack_value = int.from_bytes(file.read(2), byteorder='big')
+    # Ki blast damage
+    file.seek(4, 1)
+    character_info.blast_damage_value = int.from_bytes(file.read(2), byteorder='big')
+
+    # Defense/Armor
+    file.seek(1, 1)
+    character_info.defense_value = int.from_bytes(file.read(1), byteorder='big')
+
+    # Number of ki blasts
+    file.seek(31, 1)
+    character_info.number_ki_blasts_value = int.from_bytes(file.read(1), byteorder='big')
+
+    # Cost of ki blast
+    file.seek(13, 1)
+    character_info.cost_of_blast_value = int.from_bytes(file.read(1), byteorder='big')
+    # Size of ki blast
+    character_info.size_of_blast_value = struct.unpack('>f', file.read(4))[0]
+
+    # Cancel set and Type fighting
+    file.seek(8, 1)
+    character_info.cancel_set_value = int.from_bytes(file.read(1), "big")
+    character_info.type_fighting_value = int.from_bytes(file.read(1), "big")
+
+    # Direction last hit fast combo
+    file.seek(1, 1)
+    character_info.direction_last_hit_combo_value = int.from_bytes(file.read(1), "big")
+
+    # Color background fast combo
+    file.seek(3, 1)
+    character_info.background_color_combo_value = int.from_bytes(file.read(1), "big")
 
 
 def store_camera_cutscene_from_file(camera_cutscene, file):

@@ -100,14 +100,13 @@ def read_cs_chip_file(worker_pef, step_progress, main_window):
                 else:
                     # Deactivate the null slot image
                     image_name = ""
-                    slot_character.qlabel_object.setStyleSheet("QLabel {}")
-                    slot_character.qlabel_object.mousePressEvent = None
+                    worker_pef.delete_image_slot_RE_signal.emit(slot_character)
 
                     # Change to 101 so the ID is the same as noise image
                     slot_character.chara_id = 101
 
                 # Change the image slot
-                slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
+                worker_pef.change_image_slot_RE_signal.emit(slot_character, image_name)
 
 
 def write_cs_chip_file(worker_pef, step_progress):
