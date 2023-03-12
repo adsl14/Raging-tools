@@ -23,7 +23,7 @@ def show_texture(list_view, image_texture, encoding_image_text, mip_maps_image_t
 
             # If the encoding is DXT5 or DXT1, we show the dds image
             if data_entry.data_info.data.dxt_encoding != 0:
-                # If we're dealing with a Xbox spr file and the encoding of the texture is ATI2 (normal texture)
+                # If we're dealing with an Xbox spr file and the encoding of the texture is ATI2 (normal texture)
                 # we won't show anything in the tool view
                 if VEV.header_type_spr_file != b'SPR3' or data_entry.data_info.data.dxt_encoding != 32:
                     # Create the dds in disk and open it
@@ -91,7 +91,7 @@ def action_export_logic(main_window):
 
 def action_export_all_logic(main_window):
 
-    # Ask to the user where to save the files
+    # Ask the user where to save the files
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export textures", os.path.splitext(
         VEV.spr_file_path)[0] + "_textures")[0]
 
@@ -136,7 +136,7 @@ def action_export_all_logic(main_window):
 
 def action_import_all_logic(main_window):
 
-    # Ask to the user from where to import the files into the tool
+    # Ask the user from where to import the files into the tool
     folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import textures")
 
     if folder_import_path:
@@ -206,7 +206,7 @@ def action_import_logic(main_window):
 
 def action_remove_logic(main_window):
 
-    # Ask to the user if is sure to remove the texture
+    # Ask the user if is sure to remove the texture
     msg = QMessageBox()
     msg.setWindowTitle("Message")
     msg.setWindowIcon(main_window.ico_image)
@@ -229,7 +229,7 @@ def action_remove_logic(main_window):
             VEF.listen_events_logic(main_window, False)
             current_index_material_texture_index = current_index_list_view + 1
 
-            # Search the material layer that is using the texture removed to assing the empty offset one
+            # Search the material layer that is using the texture removed to assign the empty offset one
             # in the material layer
             name_offset_removed = main_window.textureVal.itemData(current_index_material_texture_index)
             for i in range(0, main_window.materialVal.count()):
@@ -290,7 +290,7 @@ def action_material_val_changed(main_window):
     # Get the index to 0. This will call the other methods
     if main_window.layerVal.currentIndex() != 0:
         main_window.layerVal.setCurrentIndex(0)
-    # If the index is 0, we call by ourselfs the methods of the type and texture material
+    # If the index is 0, we call by our self the methods of the type and texture material
     else:
         # Get the type of layer (index 0)
         main_window.typeVal.setCurrentIndex(main_window.typeVal.findText(layer.layer_name))
@@ -384,7 +384,7 @@ def action_texture_val_changed(main_window):
 
 def action_add_material_logic(main_window):
 
-    # Ask to the user the name of the material
+    # Ask the user the name of the material
     text, ok_pressed = QInputDialog.getText(main_window, "Material", "Insert a material name:", QLineEdit.Normal, "")
 
     # If the user write the name and is not empty, we create a new material
@@ -464,7 +464,7 @@ def action_add_material_logic(main_window):
 
 def action_remove_material_logic(main_window):
 
-    # Ask to the user if is sure to remove the texture
+    # Ask the user if is sure to remove the texture
     msg = QMessageBox()
     msg.setWindowTitle("Message")
     msg.setWindowIcon(main_window.ico_image)
@@ -482,7 +482,7 @@ def action_remove_material_logic(main_window):
             material_name_offset = main_window.materialVal.itemData(current_index_material_model).data_info.name_offset
             main_window.materialVal.removeItem(current_index_material_model)
 
-            # Search the model part that is using the material removed to assing the empty offset one
+            # Search the model part that is using the material removed to assign the empty offset one
             VEF.listen_events_logic(main_window, False)
             for i in range(0, main_window.modelPartVal.count()):
                 data_info_children = main_window.modelPartVal.itemData(i)
@@ -516,7 +516,7 @@ def action_material_export_logic(main_window):
 
 def action_material_import_logic(main_window):
 
-    # Ask to the user from what file wants to open the camera files
+    # Ask the user from what file wants to open the camera files
     file_import_path = QFileDialog.getOpenFileName(main_window, "Import material", main_window.old_path_file, "")[0]
 
     if os.path.exists(file_import_path):
@@ -537,7 +537,7 @@ def action_material_import_logic(main_window):
 
 def action_material_export_all_logic(main_window):
 
-    # Ask to the user where to save the files
+    # Ask the user where to save the files
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export materials", os.path.splitext(
         VEV.spr_file_path)[0] + "_materials")[0]
 
@@ -570,7 +570,7 @@ def action_material_export_all_logic(main_window):
 
 def action_material_import_all_logic(main_window):
 
-    # Ask to the user from where to import the files into the tool
+    # Ask the user from where to import the files into the tool
     folder_import_path = QFileDialog.getExistingDirectory(main_window, "Import materials")
 
     if folder_import_path:
@@ -671,7 +671,7 @@ def action_save_material_logic(main_window):
         # Create the message window
         msg = QMessageBox()
         message = "Do you wish to replace the current 'A' border color value to all materials?"
-        # Ask to the user if he/she is sure that wants to replace the current border color values to all the materials
+        # Ask the user if he/she is sure that wants to replace the current border color values to all the materials
         msg.setWindowIcon(main_window.ico_image)
         message_import_result = msg.question(main_window, 'Warning', message, msg.Yes | msg.No)
 

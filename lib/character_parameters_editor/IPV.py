@@ -7,7 +7,7 @@ class IPV:
     character_i_path = ""
     camera_i_path = ""
     blast_i_path = ""
-    # Warning base message when importing a bone that doesn't exists in memory
+    # Warning base message when importing a bone that doesn't exist in memory
     message_bone_import_doesnt_exists = "The following bones are new for the current animation: "
     # Indexes
     signature_folder_index_list_view = None
@@ -21,7 +21,7 @@ class IPV:
                               "Cancel 11": 10, "Cancel 12": 11, "Cancel 13": 13, "Cancel 14": 14})
     direction_last_hit_combo_values = dict({"Forward": 0, "Up": 1, "Down": 2, "Left": 3, "Right": 4})
     color_background_values = dict({"Red": 76, "Pink": 84, "Blue": 88, "Lighter Blue": 86, "Purple": 80,
-                                    "Golden": 98, "Yellow": 94, "Darkner Yellow": 74, "Lighter Yellow": 92,
+                                    "Golden": 98, "Yellow": 94, "Darker Yellow": 74, "Lighter Yellow": 92,
                                     "Lighter Green": 31, "Green": 90, "Black": 78, "Gray": 82, "Unknown": 99,
                                     "Unknown 2": 28})
     # Camera properties
@@ -72,7 +72,7 @@ class IPV:
     ki_power_up_properties = dict({"Nothing": 0, "Consumption reduced": 100})
     size_between_blast = 100
     blast_extension = "bla"
-    # This var will be used to store the ID of the partner character so we can clean the Window
+    # This var will be used to store the ID of the partner character, so we can clean the Window
     old_selected_partner = 0
     # Transformation effect values
     trans_effect_identification_file = b'<#\xd7\n'

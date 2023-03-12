@@ -450,7 +450,7 @@ def action_edit_trans_fusion_slot(event, main_window, char_selected_new):
 
 def action_export_signature_button_logic(main_window):
 
-    # Ask to the user the file output
+    # Ask the user the file output
     name_file = str(GPV.chara_selected).zfill(3) + "_" + GPV.signature_output_name
     file_export_path = QFileDialog.getSaveFileName(main_window, "Export signature parameters",
                                                    os.path.join(main_window.old_path_file, name_file), "")[0]
@@ -480,7 +480,7 @@ def action_export_signature_button_logic(main_window):
 
 def action_import_signature_button_logic(main_window):
 
-    # Ask to the user from what file wants to open the signature
+    # Ask the user from what file wants to open the signature
     file_import_path = QFileDialog.getOpenFileName(main_window, "Import signature parameters",
                                                    main_window.old_path_file, "")[0]
 
