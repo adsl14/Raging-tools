@@ -7,7 +7,7 @@ class VEV:
     swizzle_path = os.path.join("lib", "vram_explorer", "resources", "swizzle.exe")
 
     # Watermark message when generates the SPR
-    watermark_message = "Generated.with.Raging.Tools.1.8.3"
+    watermark_message = "Generated.with.Raging.Tools.1.8.4"
 
     # header type for the spr
     header_type_spr_file = b''
