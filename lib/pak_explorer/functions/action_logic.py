@@ -10,7 +10,7 @@ def action_open_temp_folder_button_logic():
 
 def action_export_all_2_logic(main_window):
 
-    # Ask to the user in what folder wants to save the files
+    # Ask the user in what folder wants to save the files
     name_folder = os.path.basename(os.path.splitext(PEV.pak_file_path_original)[0])
     folder_export_path = QFileDialog.getSaveFileName(main_window, "Export files",
                                                      os.path.join(main_window.old_path_file, name_folder), "")[0]
@@ -36,15 +36,10 @@ def action_export_all_2_logic(main_window):
 
 def action_export_2_logic(main_window):
 
-    # Ask to the user where to save the file
+    # Get item
+    item = main_window.listView_2.model().item(main_window.listView_2.selectionModel().currentIndex().row(), 0)
 
-    # Get the index
-    index = main_window.listView_2.selectionModel().currentIndex().row()
-    # If there is only one item, currentIndex will return -1 unless we select something. We check that, if index is -1, we return 0 instead
-    if index < 0:
-        index = 0
-
-    item = main_window.listView_2.model().item(index, 0)
+    # Ask the user where to save the file
     path_original_file = item.text()
     path_copy_file = QFileDialog.getSaveFileName(main_window, "Export file",
                                                  os.path.join(main_window.old_path_file, item.data()), "")[0]
@@ -55,15 +50,10 @@ def action_export_2_logic(main_window):
 
 def action_import_2_logic(main_window):
 
-    # Ask to the user what file wants to import
+    # Get item
+    item = main_window.listView_2.model().item(main_window.listView_2.selectionModel().currentIndex().row(), 0)
 
-    # Get the index
-    index = main_window.listView_2.selectionModel().currentIndex().row()
-    # If there is only one item, currentIndex will return -1 unless we select something. We check that, if index is -1, we return 0 instead
-    if index < 0:
-        index = 0
-
-    item = main_window.listView_2.model().item(index, 0)
+    # Ask the user where to save the file
     path_original_file = item.text()
     path_new_file = QFileDialog.getOpenFileName(main_window, "Import file",
                                                 os.path.join(main_window.old_path_file, item.data()))[0]
