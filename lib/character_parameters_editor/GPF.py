@@ -11,7 +11,6 @@ from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
 def initialize_operate_resident_param(main_window):
-
     # Load all the mini portraits (main panel)
     GPV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
@@ -112,7 +111,6 @@ def initialize_operate_resident_param(main_window):
 
 
 def listen_events_logic(main_window, flag):
-
     if flag:
         # Set the health
         main_window.health_value.valueChanged.connect(lambda: on_health_changed(main_window))
@@ -141,14 +139,10 @@ def listen_events_logic(main_window, flag):
         main_window.aura_size_charge_value.valueChanged.connect(lambda: on_aura_size_changed(main_window, aura_index=2))
 
         # Set the animation per transformation
-        main_window.trans1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-        (main_window, animation_per_transformation=0))
-        main_window.trans2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-        (main_window, animation_per_transformation=1))
-        main_window.trans3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-        (main_window, animation_per_transformation=2))
-        main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed
-        (main_window, animation_per_transformation=3))
+        main_window.trans1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed(main_window, animation_per_transformation=0))
+        main_window.trans2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed(main_window, animation_per_transformation=1))
+        main_window.trans3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed(main_window, animation_per_transformation=2))
+        main_window.trans4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_transformation_changed(main_window, animation_per_transformation=3))
 
         # Set the amount ki per transformation
         main_window.amountKi_trans1_value.valueChanged.connect(lambda: on_amount_ki_trans_changed(main_window,
@@ -161,14 +155,10 @@ def listen_events_logic(main_window, flag):
                                                                                                   amount_ki_trans_index=3))
 
         # Set the animation per fusion
-        main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-        (main_window, animation_per_fusion=0))
-        main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-        (main_window, animation_per_fusion=1))
-        main_window.fusion3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-        (main_window, animation_per_fusion=2))
-        main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed
-        (main_window, animation_per_fusion=3))
+        main_window.fusion1_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed(main_window, animation_per_fusion=0))
+        main_window.fusion2_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed(main_window, animation_per_fusion=1))
+        main_window.fusion3_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed(main_window, animation_per_fusion=2))
+        main_window.fusion4_animation_value.currentIndexChanged.connect(lambda: on_animation_per_fusion_changed(main_window, animation_per_fusion=3))
 
         # Set the amount ki per fusion
         main_window.amountKi_fusion1_value.valueChanged.connect(lambda:
@@ -258,7 +248,6 @@ def listen_events_logic(main_window, flag):
 
 
 def enable_disable_operate_resident_param_values(main_window, flag):
-
     # --- Transform info values ---
     # Transform section
     main_window.transformPanel.setEnabled(flag)
@@ -285,7 +274,6 @@ def enable_disable_operate_resident_param_values(main_window, flag):
 
 
 def initialize_roster(main_window):
-
     # Load the large portrait
     main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
 
@@ -306,7 +294,6 @@ def initialize_roster(main_window):
 
 
 def enable_disable_db_font_pad_ps3_values(main_window, flag):
-
     # Aura section
     main_window.aura_type.setEnabled(flag)
 
@@ -315,7 +302,6 @@ def enable_disable_db_font_pad_ps3_values(main_window, flag):
 
 
 def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
-
     # --- character_inf ---
     # Health
     character.health = int.from_bytes(subpak_file_character_inf.read(4), byteorder='big')
@@ -429,7 +415,6 @@ def read_operate_resident_param(character, subpak_file_character_inf, subpak_fil
 
 
 def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
-
     # --- resident_character_param ---
     # Aura type
     subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
@@ -520,7 +505,6 @@ def write_operate_resident_param(character, subpak_file_character_inf, subpak_fi
 
 
 def write_db_font_pad_ps3(character, subpak_file_resident_character_param):
-
     # Move to the visual parameters character
     subpak_file_resident_character_param.seek(character.position_resident_character_param)
 
@@ -565,7 +549,7 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
         GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
 
         # Reset the previous character select
-        GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window]\
+        GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window] \
             .setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
         # Store the actual character selected in the select character window
