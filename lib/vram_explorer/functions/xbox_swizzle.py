@@ -19,7 +19,7 @@ def xg_address_2d_tiled(axis, offset, width, texel_pitch):
         return macro + micro
     elif axis == 'y':
         macro_y = (int(offset_m / (aligned_width >> 5)) << 2)
-        tile = ((offset_t >> (6 + log_bpp)) & 1) + (((offset_b & 2048) >> 10))
+        tile = ((offset_t >> (6 + log_bpp)) & 1) + ((offset_b & 2048) >> 10)
         macro = (macro_y + tile) << 3
         micro = ((((offset_t & (((texel_pitch << 6) - 1) & ~31)) +
                    ((offset_t & 15) << 1)) >> (3 + log_bpp)) & ~1)
