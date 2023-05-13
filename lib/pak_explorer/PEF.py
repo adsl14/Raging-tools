@@ -571,8 +571,7 @@ def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files,
             else:
                 filename = filename[:extra_bytes]
 
-            header = header + offset.to_bytes(4, "big") + size_o.to_bytes(4, "big") + bytes.fromhex(
-                "00 00 00 00 00 00 00 00") + filename
+            header = header + offset.to_bytes(4, "big") + size_o.to_bytes(4, "big") + bytes.fromhex("00 00 00 00 00 00 00 00") + filename
             data = data + data_aux
 
     # Create the pak file

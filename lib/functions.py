@@ -1,8 +1,6 @@
 import json
 import struct
 
-from PyQt5.QtWidgets import QMessageBox
-
 from lib.character_parameters_editor.classes.BONE.BoneEntry import BoneEntry
 from lib.character_parameters_editor.classes.SPA.SPAFile import SPAFile
 
