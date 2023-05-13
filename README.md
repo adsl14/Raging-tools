@@ -11,6 +11,7 @@ Compatibility list
 Dragon Ball Raging Blast (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
 Dragon Ball Raging Blast 2 (PS3 and Xbox 360)
 Dragon Ball Z Ultimate Tenkaichi (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
+Dragon Ball Z Zenkai Battle (uncompressed files) -> Only Vram Explorer and Pak Explorer
 ```
 
 Credits:
@@ -166,6 +167,9 @@ When opens a <i>.zpak</i> or <i>.pak</i> file, it will store all the sub-files i
 propertly. When the algorithm finishes, the tool will show the full path of the sub-files.
 
 You can export the files, import a new one, export all the files or open the folder where those files are located.
+
+When saving, it will ask you the format of the pak output file. To make it compatible with the console version, select
+the proper options according to the pak file you're editing.
 
 ## Character Parameters Editor
 
