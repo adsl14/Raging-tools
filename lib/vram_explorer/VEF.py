@@ -121,6 +121,79 @@ class WorkerVef(QObject):
             for type_entry in VEV.sprp_file.type_entry:
 
                 # ------------------
+                # --- Write BIN ---
+                # ------------------
+                if b'BIN ' == type_entry:
+                    # Get the type entry bin
+                    bin_type_entry = VEV.sprp_file.type_entry[b'BIN ']
+
+                    # Get each bin data entry
+                    sub_step_report = step_report / bin_type_entry.data_count
+                    for i in range(0, bin_type_entry.data_count):
+                        # Get the data entry for the BIN
+                        bin_data_entry = bin_type_entry.data_entry[i]
+
+                        # Report progress
+                        self.progressText.emit("Saving " + type_entry.decode('utf-8') + ": writting " + bin_data_entry.data_info.name)
+                        show_progress_value(self, sub_step_report)
+
+                        # Write the name for each bin
+                        name = bin_data_entry.data_info.name
+                        string_table += b'\x00' + name.encode('utf-8')
+                        string_table_size += 1 + len(name)
+
+                        # Write the data_entry for each bin
+                        data_entry += bin_data_entry.data_type
+                        data_entry += i.to_bytes(4, 'big')
+                        data_entry += string_name_offset.to_bytes(4, 'big')
+                        data_entry += data_offset.to_bytes(4, 'big')
+                        data_entry += bin_data_entry.data_info.data_size.to_bytes(4, 'big')
+                        data_entry += bin_data_entry.data_info.child_count.to_bytes(4, 'big')
+                        # We write the child offset later
+
+                        # Write the data for each bin
+                        data += bin_data_entry.data_info.data
+                        data_size += bin_data_entry.data_info.data_size
+
+                        # Write children (if any)
+                        if bin_data_entry.data_info.child_count > 0:
+                            string_table_child, string_table_child_size, string_name_offset, \
+                                data_child, data_child_size, data_offset = \
+                                write_children(self.main_window, num_material, num_textures,
+                                               bin_data_entry.data_info, b'BIN ',
+                                               string_table_size + 1, data_size, special_names_dict)
+
+                            # Update the string_name and string_table_size
+                            string_table += string_table_child
+                            string_table_size += string_table_child_size
+
+                            # Update the data and data_size
+                            data += data_child
+                            data_size += data_child_size
+
+                            # Write in the data entry, the children offset
+                            data_entry += data_offset.to_bytes(4, 'big')
+                        else:
+                            # Child offset
+                            data_entry += b'\x00\x00\x00\x00'
+                        data_entry += b'\x00\x00\x00\x00'
+                        data_entry_size += 32
+
+                        # Check if the data, the module of 16 is 0
+                        data, data_size, padding_size = check_entry_module(data, data_size, 16)
+
+                        # Update offsets for the next entry
+                        string_name_offset = 1 + string_table_size
+                        data_offset = data_size
+
+                    # Update the entry info
+                    entry_info += b'BIN ' + b'\x00\x01\x00\x00' + \
+                                  bin_type_entry.data_count.to_bytes(4, 'big')
+                    # Update the sizes
+                    entry_count += 1
+                    entry_info_size += 12
+
+                # ------------------
                 # --- Write TX2D ---
                 # ------------------
                 if b'TX2D' == type_entry:
@@ -130,7 +203,7 @@ class WorkerVef(QObject):
                                             entry_info_size, entry_count, string_table,
                                             string_table_size, string_name_offset, data_entry,
                                             data_entry_size, data, data_size, data_offset,
-                                            self.vram_separator, num_textures)
+                                            self.vram_separator, num_textures, num_material, special_names_dict)
 
                 # ------------------
                 # --- Write VSHD ---
@@ -557,10 +630,10 @@ class WorkerVef(QObject):
                         # Check if the data, the module of 16 is 0
                         data, data_size, padding_size = check_entry_module(data, data_size, 16)
 
-                        # If we check the size of the vbuf data due to Game Assets Converter
+                        # We check the size of the vbuf data due to Game Assets Converter
                         # store the size as 'header + data' instead of 'header'. If the size is
-                        # different from 32, we modify the original size
-                        if vbuf_data_entry.data_info.data_size != 32:
+                        # different from 32 or 40 (40 is for UT), we modify the original size
+                        if vbuf_data_entry.data_info.data_size != 32 and vbuf_data_entry.data_info.data_size != 40:
                             vbuf_data_entry.data_info.data_size = 32
 
                         # Write the data_entry for each vbuf
@@ -579,11 +652,21 @@ class WorkerVef(QObject):
                         data += vbuf_info.data_offset.to_bytes(4, 'big')
                         data += vbuf_info.data_size.to_bytes(4, 'big')
                         data += vbuf_info.vertex_count.to_bytes(4, 'big')
+
+                        # If the data_info size of the data_entry for the vbuf is 40, means is a UT/Zenkai Battle character
+                        if vbuf_data_entry.data_info.data_size == 40:
+                            data += vbuf_info.index_count.to_bytes(4, 'big')
+
                         data += vbuf_info.unk0x14
                         data += vbuf_info.unk0x16
                         data += vbuf_info.decl_count_0.to_bytes(2, 'big')
                         data += vbuf_info.decl_count_1.to_bytes(2, 'big')
                         data += data_offset_vertex_decl.to_bytes(4, 'big')
+
+                        # If the data_info size of the data_entry for the vbuf is 40, means is a UT/Zenkai Battle character
+                        if vbuf_data_entry.data_info.data_size == 40:
+                            data += vbuf_info.index_offset.to_bytes(4, 'big')
+
                         data_size += vbuf_data_entry.data_info.data_size
 
                         # Child offset
@@ -1048,7 +1131,7 @@ class WorkerVef(QObject):
                                         entry_info_size, entry_count, string_table,
                                         string_table_size, string_name_offset, data_entry,
                                         data_entry_size, data, data_size, data_offset, self.vram_separator,
-                                        num_textures)
+                                        num_textures, num_material, special_names_dict)
                 data_entry = input_spr_file.read(VEV.sprp_file.sprp_header.data_info_size)
 
                 # Write the data
@@ -1272,8 +1355,17 @@ def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):
                 else:
                     sprp_data_entry.data_info.name = sprp_type_entry.data_type.decode('utf-8') + "_" + str(j)
 
+                # Save the data when is the type BIN
+                if sprp_type_entry.data_type == b"BIN ":
+
+                    # Move where the actual information starts
+                    file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
+
+                    # Read all the data
+                    sprp_data_entry.data_info.data = file.read(sprp_data_entry.data_info.data_size)
+
                 # Save the data when is the type TX2D
-                if sprp_type_entry.data_type == b"TX2D":
+                elif sprp_type_entry.data_type == b"TX2D":
 
                     # Move where the actual information starts
                     file.seek(VEV.sprp_file.data_block_base + sprp_data_entry.data_info.data_offset)
@@ -1392,11 +1484,20 @@ def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):
                     vbuf_info.data_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     vbuf_info.data_size = int.from_bytes(file.read(VEV.bytes2Read), "big")
                     vbuf_info.vertex_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                    # If the data_info size of the data_entry for the vbuf is 40, means is a UT/Zenkai Battle character
+                    if sprp_data_entry.data_info.data_size == 40:
+                        vbuf_info.index_count = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
                     vbuf_info.unk0x14 = file.read(2)
                     vbuf_info.unk0x16 = file.read(2)
                     vbuf_info.decl_count_0 = int.from_bytes(file.read(2), "big")
                     vbuf_info.decl_count_1 = int.from_bytes(file.read(2), "big")
                     vbuf_info.decl_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
+
+                    # If the data_info size of the data_entry for the vbuf is 40, means is a UT/Zenkai Battle character
+                    if sprp_data_entry.data_info.data_size == 40:
+                        vbuf_info.index_offset = int.from_bytes(file.read(VEV.bytes2Read), "big")
 
                     # Read the vertexDecl
                     file.seek(VEV.sprp_file.data_block_base + vbuf_info.decl_offset)
@@ -1648,7 +1749,7 @@ def open_vram_file(worker_vef, end_progress, vram_path):
 
 def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified, entry_info, entry_info_size, entry_count,
                         string_table, string_table_size, string_name_offset, data_entry, data_entry_size, data, data_size, data_offset,
-                        vram_separator, num_textures):
+                        vram_separator, num_textures, num_material, special_names_dict):
 
     with open(vram_path_modified, mode="wb") as output_vram_file:
 
@@ -1767,8 +1868,27 @@ def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified
             data += b'\00\00\00'
             data_size += tx2d_data_entry.data_info.data_size
 
-            # Child offset
-            data_entry += b'\x00\x00\x00\x00'
+            # Write children (if any)
+            if tx2d_data_entry.data_info.child_count > 0:
+                string_table_child, string_table_child_size, string_name_offset, \
+                    data_child, data_child_size, data_offset = \
+                    write_children(main_window, num_material, num_textures,
+                                   tx2d_data_entry.data_info, b'TX2D',
+                                   string_table_size + 1, data_size, special_names_dict)
+
+                # Update the string_name and string_table_size
+                string_table += string_table_child
+                string_table_size += string_table_child_size
+
+                # Update the data and data_size
+                data += data_child
+                data_size += data_child_size
+
+                # Write in the data entry, the children offset
+                data_entry += data_offset.to_bytes(4, 'big')
+            else:
+                # Child offset
+                data_entry += b'\x00\x00\x00\x00'
             data_entry += b'\x00\x00\x00\x00'
             data_entry_size += 32
 
@@ -1814,41 +1934,47 @@ def read_children(main_window, file, sprp_data_info, type_section):
         extension_size = len(sprp_data_info_child.extension)
         sprp_data_info_child.name_size = 1 + base_name_size + (extension_size + 1 if extension_size > 0 else 0)
 
+        # Get the texture data
+        if type_section == b'TX2D':
+
+            # Move where the data starts
+            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+
+            # Store the data
+            sprp_data_info_child.data = file.read(sprp_data_info_child.data_size)
+
         # Get the material data
-        if type_section == b'MTRL':
+        elif type_section == b'MTRL':
 
-            # Save the data of the children from a material
-            if sprp_data_info_child.name == "DbzCharMtrl":
+            # Move where the info starts
+            file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
 
-                file.seek(sprp_data_info_child.data_offset + VEV.sprp_file.data_block_base)
+            # Save the data of the children from a material in the mtrl_prop var (Raging Blast 2 material)
+            if sprp_data_info_child.data_size == VEV.rb2_material_child_size:
+                mtrl_prop = MtrlProp()
+                mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x04)):
+                    mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
+                mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.Border_RGBA)):
+                    mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x44)):
+                    mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
+                for i in range(len(mtrl_prop.unk0x50)):
+                    mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
+            else:
+                mtrl_prop = file.read(sprp_data_info_child.data_size)
 
-                # Save the info of the material children in the mtrl_prop var
-                # Raging Blast 2 material
-                if sprp_data_info_child.data_size == VEV.rb2_material_child_size:
-                    mtrl_prop = MtrlProp()
-                    mtrl_prop.Ilumination_Shadow_orientation = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Ilumination_Light_orientation_glow = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x04)):
-                        mtrl_prop.unk0x04[i] = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_purple_light_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_glow = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Saturation_base = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_toonmap_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_some_positions = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence = struct.unpack('>f', file.read(4))[0]
-                    mtrl_prop.Brightness_incandescence_active_other_positions = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.Border_RGBA)):
-                        mtrl_prop.Border_RGBA[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x44)):
-                        mtrl_prop.unk0x44[i] = struct.unpack('>f', file.read(4))[0]
-                    for i in range(len(mtrl_prop.unk0x50)):
-                        mtrl_prop.unk0x50[i] = struct.unpack('>f', file.read(4))[0]
-                else:
-                    mtrl_prop = file.read(sprp_data_info_child.data_size)
-
-                sprp_data_info_child.data = mtrl_prop
+            sprp_data_info_child.data = mtrl_prop
 
         # Get the shape data
         elif type_section == b'SHAP':
@@ -2027,8 +2153,29 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
         # Get the child
         data_info_child = data_info_parent.child_info[i]
 
+        # The type entry is tx2d
+        if type_entry == b'TX2D':
+
+            # Write the name. If it doesn't exists, we create it
+            if data_info_child.name_offset != 0:
+                if data_info_child.name in special_names:
+                    name_offset = special_names[data_info_child.name]
+                else:
+                    special_names[data_info_child.name] = string_name_offset
+                    name_offset = string_name_offset
+                    string_table_child += b'\x00' + data_info_child.name.encode('utf-8')
+                    string_name_size = 1 + len(data_info_child.name)
+                    # Update the offset
+                    string_table_child_size += string_name_size
+                    string_name_offset += string_name_size
+            else:
+                name_offset = 0
+
+            # Write the data
+            data_child += data_info_child.data
+
         # The type entry is material
-        if type_entry == b'MTRL':
+        elif type_entry == b'MTRL':
 
             # Get the material properties
             mtrl_prop = data_info_child.data
@@ -3171,7 +3318,7 @@ def import_material(main_window, file_import_path, mtrl_data_entry, multiple_imp
 
         size_file = len(file.read())
         child_size = size_file - VEV.material_values_size
-        # The file of the camera has to be 52 bytes length
+        # The file of the material has to be 112 bytes length
         if size_file >= VEV.material_values_size:
             file.seek(0)
         else:
