@@ -12,11 +12,12 @@ from lib.character_parameters_editor.functions.IP.signal_methods import add_arra
 from lib.character_parameters_editor.functions.RE.signal_methods import initialize_current_character_image_RE, delete_image_slot_RE, change_image_slot_RE, enable_tabs_RE
 from lib.design.Raging_Tools.Raging_Tools import *
 from lib.design.material_children.material_children import Material_Child_Editor
+from lib.design.pack_format.pack_format import Pack_Format
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
-from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
+from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_separator
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -39,6 +40,7 @@ class WorkerMainWindow(QObject):
     progressText = pyqtSignal(str)
     path_file = ""
     path_output_file = ""
+    main_window = None
     extension_file = ""
     folder_path = ""
     folder_output_path = ""
@@ -171,7 +173,8 @@ class WorkerMainWindow(QObject):
         filenames = natsorted(os.listdir(self.path_file), key=lambda y: y.lower())
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
-        PEF.pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
+        separator_size, separator = create_separator(self.main_window, num_pak_files)
+        PEF.pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator)
 
         show_progress_value(self, step_progress)
 
@@ -300,10 +303,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selectCharaRosterWindow = QtWidgets.QDialog()
         self.selectCharaRosterUI = Select_Chara_Roster()
         self.selectCharaRosterUI.setupUi(self.selectCharaRosterWindow)
-        # Material windows
+        # Material window
         self.MaterialChildEditorWindow = QtWidgets.QDialog()
         self.MaterialChildEditorUI = Material_Child_Editor()
         self.MaterialChildEditorUI.setupUi(self.MaterialChildEditorWindow)
+        # Pack format window
+        self.packFormatWindow = QtWidgets.QDialog()
+        self.packFormatUI = Pack_Format()
+        self.packFormatUI.setupUi(self.packFormatWindow)
         # Progress bar
         self.progressBarWindow = QtWidgets.QDialog()
         self.progressBarUI = Progress_Bar()
@@ -459,7 +466,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBarWindow.show()
         self.thread.start()
 
-    def run_save_operate_character_and_pack(self, path_output_file, separator, separator_size):
+    def run_save_operate_character_and_pack(self, path_output_file):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
@@ -470,8 +477,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 5: Connect signals and slots
         self.worker.main_window = self
         self.worker.path_output_file = path_output_file
-        self.worker.separator = separator
-        self.worker.separator_size = separator_size
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
         self.thread.started.connect(self.worker.save_operate_character_and_pack)
@@ -487,7 +492,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Reset progressbar
         self.reset_progress_bar()
 
-    def run_save_cs_chip_and_pack(self, path_output_file, separator, separator_size):
+    def run_save_cs_chip_and_pack(self, path_output_file):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
@@ -498,8 +503,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 5: Connect signals and slots
         self.worker.main_window = self
         self.worker.path_output_file = path_output_file
-        self.worker.separator = separator
-        self.worker.separator_size = separator_size
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
         self.thread.started.connect(self.worker.save_cs_chip_and_pack)
@@ -515,7 +518,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Reset progressbar
         self.reset_progress_bar()
 
-    def run_save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file, separator, separator_size):
+    def run_save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
@@ -524,9 +527,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
+        self.worker.main_window = self
         self.worker.path_output_file = path_output_file
-        self.worker.separator = separator
-        self.worker.separator_size = separator_size
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
         self.thread.started.connect(self.worker.save_operate_resident_param_db_font_pad_ps3_and_pack)
@@ -542,7 +544,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Reset progressbar
         self.reset_progress_bar()
 
-    def run_save_pe_to_data(self, path_output_file, separator, separator_size):
+    def run_save_pe_to_data(self, path_output_file):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
@@ -551,9 +553,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Step 4: Move worker to the thread
         self.worker.moveToThread(self.thread)
         # Step 5: Connect signals and slots
+        self.worker.main_window = self
         self.worker.path_output_file = path_output_file
-        self.worker.separator = separator
-        self.worker.separator_size = separator_size
         self.worker.start_progress = 0.0
         self.worker.step_progress_pack = 100.0
         self.thread.started.connect(self.worker.pack_and_save_file)
@@ -809,33 +810,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             # The user has opened the operate_character tab
                             if self.operate_character_xyz_m_frame.isEnabled():
 
-                                # Ask the user if it is packing a vram or ioram file for Xbox
-                                separator, separator_size = ask_pack_structure(self)
+                                # Ask the user the packing format
+                                ask_pack_structure(self)
 
-                                # Save all the info
-                                print("Writing values in the file...")
-                                self.run_save_operate_character_and_pack(path_output_file, separator, separator_size)
+                                # Save all the info (only if the user wants to)
+                                if PEV.accept_button_pushed_pack_format_window:
+                                    print("Writing values in the file...")
+                                    self.run_save_operate_character_and_pack(path_output_file)
 
                             # --- operate_resident_param --- or --- db_font_pad ---
                             # If the user has opened the operate resident or db_font_pad and edited one character, we will save the file
                             elif self.operate_resident_param_frame.isEnabled() and GPV.character_list_edited:
 
-                                # Ask the user if it is packing a vram or ioram file for Xbox
-                                separator, separator_size = ask_pack_structure(self)
+                                # Ask the user the packing format
+                                ask_pack_structure(self)
 
-                                # pack file
-                                self.run_save_operate_resident_param_db_font_pad_ps3_and_pack(path_output_file, separator, separator_size)
+                                # pack file (only if the user wants to)
+                                if PEV.accept_button_pushed_pack_format_window:
+                                    self.run_save_operate_resident_param_db_font_pad_ps3_and_pack(path_output_file)
 
                             # --- cs_chip ---
                             # If the user has opened the cs_chip tab and edited one character, we will save the file
                             elif self.cs_chip.isEnabled() and REV.slots_edited:
 
-                                # Ask the user if it is packing a vram or ioram file for Xbox
-                                separator, separator_size = ask_pack_structure(self)
+                                # Ask the user the packing format
+                                ask_pack_structure(self)
 
-                                # Save all the info
-                                print("Writing values in the file...")
-                                self.run_save_cs_chip_and_pack(path_output_file, separator, separator_size)
+                                # Save all the info (only if the user wants to)
+                                if PEV.accept_button_pushed_pack_format_window:
+                                    print("Writing values in the file...")
+                                    self.run_save_cs_chip_and_pack(path_output_file)
 
                             else:
                                 msg = QMessageBox()
@@ -846,19 +850,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                         # The user wants to save the values only from the 'pak explorer'
                         elif answer == msg.No:
-                            # Ask the user if it is packing a vram or ioram file for Xbox
-                            separator, separator_size = ask_pack_structure(self)
 
-                            # pack file
-                            self.run_save_pe_to_data(path_output_file, separator, separator_size)
+                            # Ask the user the packing format
+                            ask_pack_structure(self)
+
+                            # pack file (only if the user wants to)
+                            if PEV.accept_button_pushed_pack_format_window:
+                                self.run_save_pe_to_data(path_output_file)
 
                 # We save the data from the 'pak explorer' tab
                 elif self.pak_explorer.isEnabled():
-                    # Ask the user if it is packing a vram or ioram file for Xbox
-                    separator, separator_size = ask_pack_structure(self)
 
-                    # pack file
-                    self.run_save_pe_to_data(path_output_file, separator, separator_size)
+                    # Ask the user the packing format
+                    ask_pack_structure(self)
+
+                    # pack file (only if the user wants to)
+                    if PEV.accept_button_pushed_pack_format_window:
+                        self.run_save_pe_to_data(path_output_file)
                 else:
                     msg = QMessageBox()
                     msg.setWindowTitle("Warning")
@@ -1098,22 +1106,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Step 5: Connect signals and slots
             self.worker.path_file = folder_import_path
             self.worker.path_output_file = folder_import_path + ".pak"
-            # Ask the user if it is packing a vram or ioram file for Xbox
-            self.worker.separator, self.worker.separator_size = ask_pack_structure(self)
-            self.worker.start_progress = 0.0
-            self.worker.end_progress = 100.0
-            self.thread.started.connect(self.worker.single_pack_file)
-            self.worker.finished.connect(self.thread.quit)
-            self.worker.finished.connect(self.worker.deleteLater)
-            self.thread.finished.connect(self.thread.deleteLater)
-            self.worker.progressValue.connect(self.report_progress_value)
-            self.worker.progressText.connect(self.report_progress_text)
-            # Step 6: Start the thread
-            self.progressBarWindow.show()
-            self.thread.start()
+            self.worker.main_window = self
+            # Ask the user the packing format
+            ask_pack_structure(self)
+            # pack file (only if the user wants to)
+            if PEV.accept_button_pushed_pack_format_window:
+                self.worker.start_progress = 0.0
+                self.worker.end_progress = 100.0
+                self.thread.started.connect(self.worker.single_pack_file)
+                self.worker.finished.connect(self.thread.quit)
+                self.worker.finished.connect(self.worker.deleteLater)
+                self.thread.finished.connect(self.thread.deleteLater)
+                self.worker.progressValue.connect(self.report_progress_value)
+                self.worker.progressText.connect(self.report_progress_text)
+                # Step 6: Start the thread
+                self.progressBarWindow.show()
+                self.thread.start()
 
-            # Reset progressbar
-            self.reset_progress_bar()
+                # Reset progressbar
+                self.reset_progress_bar()
 
     def action_multiple_pack_logic(self):
 
@@ -1122,39 +1133,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if folder_import_path:
 
-            # Ask the user if it is packing a vram or ioram file for Xbox
-            self.worker.separator, self.worker.separator_size = ask_pack_structure(self)
+            # Ask the user the packing format
+            ask_pack_structure(self)
 
-            # Create output folder
-            folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
-            # If exists, we remove everything inside and create the folder again
-            if os.path.exists(folder_output_path):
-                shutil.rmtree(folder_output_path)
-            os.mkdir(folder_output_path)
+            # pack file (only if the user wants to)
+            if PEV.accept_button_pushed_pack_format_window:
+                # Create output folder
+                folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+                # If exists, we remove everything inside and create the folder again
+                if os.path.exists(folder_output_path):
+                    shutil.rmtree(folder_output_path)
+                os.mkdir(folder_output_path)
 
-            # Step 2: Create a QThread object
-            self.thread = QThread()
-            # Step 3: Create a worker object
-            self.worker = WorkerMainWindow()
-            # Step 4: Move worker to the thread
-            self.worker.moveToThread(self.thread)
-            # Step 5: Connect signals and slots
-            self.worker.folder_path = folder_import_path
-            self.worker.folder_output_path = folder_output_path
-            self.worker.start_progress = 0.0
-            self.worker.end_progress = 100.0
-            self.thread.started.connect(self.worker.multiple_pack_file)
-            self.worker.finished.connect(self.thread.quit)
-            self.worker.finished.connect(self.worker.deleteLater)
-            self.thread.finished.connect(self.thread.deleteLater)
-            self.worker.progressValue.connect(self.report_progress_value)
-            self.worker.progressText.connect(self.report_progress_text)
-            # Step 6: Start the thread
-            self.progressBarWindow.show()
-            self.thread.start()
+                # Step 2: Create a QThread object
+                self.thread = QThread()
+                # Step 3: Create a worker object
+                self.worker = WorkerMainWindow()
+                # Step 4: Move worker to the thread
+                self.worker.moveToThread(self.thread)
+                # Step 5: Connect signals and slots
+                self.worker.folder_path = folder_import_path
+                self.worker.folder_output_path = folder_output_path
+                self.worker.start_progress = 0.0
+                self.worker.end_progress = 100.0
+                self.thread.started.connect(self.worker.multiple_pack_file)
+                self.worker.finished.connect(self.thread.quit)
+                self.worker.finished.connect(self.worker.deleteLater)
+                self.thread.finished.connect(self.thread.deleteLater)
+                self.worker.progressValue.connect(self.report_progress_value)
+                self.worker.progressText.connect(self.report_progress_text)
+                # Step 6: Start the thread
+                self.progressBarWindow.show()
+                self.thread.start()
 
-            # Reset progressbar
-            self.reset_progress_bar()
+                # Reset progressbar
+                self.reset_progress_bar()
 
     def action_single_encrypt_decrypt_logic(self):
 

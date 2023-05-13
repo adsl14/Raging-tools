@@ -19,27 +19,57 @@ def del_rw(name_method, path, error):
 
 def ask_pack_structure(main_window):
 
-    # Ask the user if it is packing a vram or ioram file for Xbox. If is for Xbox,
-    # we have to change the separator size that is written between header and data. Otherwise,
-    # will crash or make an output with bugs and errors
-    msg = QMessageBox()
-    msg.setWindowTitle("Message")
-    msg.setWindowIcon(main_window.ico_image)
-    message = "Do you wish to pack the file with Xbox compatibility?"
-    answer = msg.question(main_window, '', message, msg.Yes | msg.No)
+    # Ask the user the packing format (separator between header and data)
+    PEV.accept_button_pushed_pack_format_window = False
+    main_window.packFormatUI.console_version.setCurrentIndex(0)
+    main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
+    main_window.packFormatWindow.activateWindow()
+    main_window.packFormatWindow.exec()
 
-    if answer == msg.Yes:
-        # Packing file with Xbox compatibility (this is only when packing .vram or .ioram files, but
-        # it looks like it's working for any other files)
-        print("Packing the file with Xbox compatibility...")
-        separator_size = PEV.separator_size_4032
-        separator = PEV.separator_4032
+
+def create_separator(main_window, num_pak_files):
+
+    separator = b''
+    separator_size = 0
+    # Calculate the separator size
+    # PS3
+    if main_window.packFormatUI.console_version.currentIndex() == 0:
+
+        # vram/ioram
+        if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
+            separator_size = 64
+            if num_pak_files > 1:
+                for i in range(1, num_pak_files):
+                    if i % 2 != 0:
+                        separator_size = separator_size - 48
+                    else:
+                        separator_size = separator_size + 80
+    # XBOX 360
     else:
-        print("Packing the file...")
-        separator_size = PEV.separator_size_64
-        separator = PEV.separator_64
 
-    return separator, separator_size
+        # vram/ioram
+        if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
+            separator_size = 4032
+            if num_pak_files > 1:
+                for i in range(1, num_pak_files):
+                    separator_size = separator_size - 48
+        # Other
+        elif main_window.packFormatUI.type_format_pack.currentIndex() == 2:
+            separator_size = 1984
+            if num_pak_files > 1:
+                for i in range(1, num_pak_files):
+                    separator_size = separator_size - 48
+
+                    # If the separator size is less than 0, we break the loop and assign the size to 0
+                    if separator_size < 0:
+                        separator_size = 0
+                        break
+
+    # Create the separator
+    for _ in range(separator_size):
+        separator = separator + bytes.fromhex("00")
+
+    return separator_size, separator
 
 
 def check_entry_module(entry, entry_size, module):

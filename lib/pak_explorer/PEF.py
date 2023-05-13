@@ -13,12 +13,13 @@ from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.CharacterInfo import CharacterInfo
 from lib.character_parameters_editor.classes.Slot import Slot
-from lib.functions import show_progress_value, del_rw
+from lib.functions import show_progress_value, del_rw, create_separator
 from lib.packages import rmtree, re, natsorted, move, os, stat, QLabel, QStandardItemModel
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
 from lib.pak_explorer.PEV import PEV
-from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic
+from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic, accept_button_pack_format_logic, \
+    cancel_button_pack_format_logic
 
 
 # Step 1: Create a worker class
@@ -60,8 +61,6 @@ class WorkerPef(QObject):
 
     main_window = None
     path_output_file = ""
-    separator = b''
-    separator_size = 0
     start_progress = 0.0
     step_progress_pack = 0.0
     end_progress = 100.0
@@ -375,7 +374,8 @@ class WorkerPef(QObject):
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
         path_output_file = folder_input + ".pak"
         self.progressText.emit("Packing file...")
-        pack(folder_input, path_output_file, filenames, num_filenames, num_pak_files, self.separator_size, self.separator)
+        separator_size, separator = create_separator(self.main_window, num_pak_files)
+        pack(folder_input, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator)
         show_progress_value(self, sub_step_progress)
 
         # Generate the final file for the game
@@ -411,6 +411,10 @@ def initialize_pe(main_window):
 
     # Import button
     main_window.importButton_2.clicked.connect(lambda: action_import_2_logic(main_window))
+
+    # Load the Pack format window
+    main_window.packFormatUI.accept_pack_format.clicked.connect(lambda: accept_button_pack_format_logic(main_window))
+    main_window.packFormatUI.cancel_pack_format.clicked.connect(lambda: cancel_button_pack_format_logic(main_window))
 
     # Disable pak explorer tab
     main_window.pak_explorer.setEnabled(False)
@@ -501,6 +505,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
 
 
 def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator):
+
     # Create the headers and data vars
     header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
     header = b''
@@ -569,10 +574,6 @@ def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files,
             header = header + offset.to_bytes(4, "big") + size_o.to_bytes(4, "big") + bytes.fromhex(
                 "00 00 00 00 00 00 00 00") + filename
             data = data + data_aux
-
-    # Add the last 112 bytes due to is the end of the file (maybe it's not necessary)
-    for i in range(0, 112):
-        data = data + bytes.fromhex("00")
 
     # Create the pak file
     pak_file = header_0 + header + separator + pak_file + data
