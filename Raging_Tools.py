@@ -17,7 +17,7 @@ from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
-from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_separator
+from lib.functions import del_rw, ask_pack_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_stpk_properties
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -173,8 +173,8 @@ class WorkerMainWindow(QObject):
         filenames = natsorted(os.listdir(self.path_file), key=lambda y: y.lower())
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
-        separator_size, separator = create_separator(self.main_window, num_pak_files)
-        PEF.pack(self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator)
+        separator_size, separator, unk0x0c = create_stpk_properties(self.main_window, num_pak_files)
+        PEF.pack(self.main_window, self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c)
 
         show_progress_value(self, step_progress)
 
@@ -1152,6 +1152,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Step 4: Move worker to the thread
                 self.worker.moveToThread(self.thread)
                 # Step 5: Connect signals and slots
+                self.worker.main_window = self
                 self.worker.folder_path = folder_import_path
                 self.worker.folder_output_path = folder_output_path
                 self.worker.start_progress = 0.0

@@ -13,7 +13,7 @@ from lib.character_parameters_editor.classes.Blast import Blast
 from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscene
 from lib.character_parameters_editor.classes.CharacterInfo import CharacterInfo
 from lib.character_parameters_editor.classes.Slot import Slot
-from lib.functions import show_progress_value, del_rw, create_separator
+from lib.functions import show_progress_value, del_rw, create_stpk_properties
 from lib.packages import rmtree, re, natsorted, move, os, stat, QLabel, QStandardItemModel
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
@@ -374,8 +374,8 @@ class WorkerPef(QObject):
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
         path_output_file = folder_input + ".pak"
         self.progressText.emit("Packing file...")
-        separator_size, separator = create_separator(self.main_window, num_pak_files)
-        pack(folder_input, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator)
+        separator_size, separator, unk0x0c = create_stpk_properties(self.main_window, num_pak_files)
+        pack(self.main_window, folder_input, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c)
         show_progress_value(self, sub_step_progress)
 
         # Generate the final file for the game
@@ -504,10 +504,10 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
             PEV.number_files += 1
 
 
-def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator):
+def pack(main_window, path_folder, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c):
 
     # Create the headers and data vars
-    header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + bytes.fromhex("00 00 00 10")
+    header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + unk0x0c
     header = b''
     data = b''
 
@@ -533,8 +533,8 @@ def pack(path_folder, path_output_file, filenames, num_filenames, num_pak_files,
             num_sub_filenames = len(sub_filenames)
             num_subpak_files = int(sub_filenames[-1].split(";")[0]) + 1
             sub_path_output_file = sub_folder_path + ".pak"
-
-            pack(sub_folder_path, sub_path_output_file, sub_filenames, num_sub_filenames, num_subpak_files, separator_size, separator)
+            sub_separator_size, sub_separator, sub_unk0x0c = create_stpk_properties(main_window, num_subpak_files)
+            pack(main_window, sub_folder_path, sub_path_output_file, sub_filenames, num_sub_filenames, num_subpak_files, sub_separator_size, sub_separator, sub_unk0x0c)
 
         else:
             with open(os.path.join(path_folder, filename), mode="rb") as file_pointer:

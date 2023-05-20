@@ -25,10 +25,11 @@ def ask_pack_structure(main_window):
     main_window.packFormatWindow.exec()
 
 
-def create_separator(main_window, num_pak_files):
+def create_stpk_properties(main_window, num_pak_files):
 
     separator = b''
     separator_size = 0
+
     # Calculate the separator size
     # PS3
     if main_window.packFormatUI.console_version.currentIndex() == 0:
@@ -36,24 +37,30 @@ def create_separator(main_window, num_pak_files):
         # vram/ioram
         if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
             separator_size = 64
+            unk0x0c = bytes.fromhex("00 00 00 80")
             if num_pak_files > 1:
                 for i in range(1, num_pak_files):
                     if i % 2 != 0:
                         separator_size = separator_size - 48
                     else:
                         separator_size = separator_size + 80
+        # Other and spr
+        else:
+            unk0x0c = bytes.fromhex("00 00 00 10")
     # XBOX 360
     else:
 
         # vram/ioram
         if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
             separator_size = 4032
+            unk0x0c = bytes.fromhex("00 00 10 00")
             if num_pak_files > 1:
                 for i in range(1, num_pak_files):
                     separator_size = separator_size - 48
         # Other
         elif main_window.packFormatUI.type_format_pack.currentIndex() == 2:
             separator_size = 1984
+            unk0x0c = bytes.fromhex("00 00 08 00")
             if num_pak_files > 1:
                 for i in range(1, num_pak_files):
                     separator_size = separator_size - 48
@@ -62,12 +69,15 @@ def create_separator(main_window, num_pak_files):
                     if separator_size < 0:
                         separator_size = 0
                         break
+        # spr
+        else:
+            unk0x0c = bytes.fromhex("00 00 00 10")
 
     # Create the separator
     for _ in range(separator_size):
         separator = separator + bytes.fromhex("00")
 
-    return separator_size, separator
+    return separator_size, separator, unk0x0c
 
 
 def check_entry_module(entry, entry_size, module):
