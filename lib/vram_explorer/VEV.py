@@ -13,8 +13,9 @@ class VEV:
     header_type_spr_file = b''
 
     # Warning base message when importing a texture with differences in encoding, size, mipmaps, etc
-    message_base_import_texture_start = "The new texture has the following differences from the original:"
-    message_base_import_texture_end = "It could crash in a real hardware. Do you want to continue?"
+    message_base_import_texture_start = "The new texture has the following issues:"
+    message_base_import_texture_end = "It could crash in real hardware. Check the specifications for textures in <b>Help -> Textures specs</b> tab for further information. " \
+                                      "<br><br>Do you wish to continue?"
     message_base_import_BMP_start = "There are some errors while importing the texture:"
 
     # Asking base message when we need to ask to the user from differents options

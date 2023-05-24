@@ -34,13 +34,12 @@ def show_texture(list_view, image_texture, encoding_image_text, mip_maps_image_t
                     # Remove image in the tool view
                     image_texture.clear()
             else:
-                if data_entry.data_info.extension \
-                   != "png":
+                if not data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
                     VEF.show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data,
                                        data_entry.data_info.data.width,
                                        data_entry.data_info.data.height)
                 else:
-                    VEF.show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle,
+                    VEF.show_bmp_image(image_texture, data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3,
                                        data_entry.data_info.data.width,
                                        data_entry.data_info.data.height)
         else:
@@ -78,10 +77,10 @@ def action_export_logic(main_window):
             VEV.spr_file_path, data_entry.data_info.name
             + ".bmp"), "BMP file (*.bmp)")[0]
 
-        if data_entry.data_info.extension != "png":
+        if not data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
             data = data_entry.data_info.data.tx2d_vram.data
         else:
-            data = data_entry.data_info.data.tx2d_vram.data_unswizzle
+            data = data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3
 
     if export_path:
         file = open(export_path, mode="wb")
@@ -115,10 +114,10 @@ def action_export_all_logic(main_window):
 
             else:
                 file = open(os.path.join(folder_export_path, data_entry.data_info.name + ".bmp"), mode="wb")
-                if data_entry.data_info.extension != "png":
+                if not data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
                     file.write(data_entry.data_info.data.tx2d_vram.data)
                 else:
-                    file.write(data_entry.data_info.data.tx2d_vram.data_unswizzle)
+                    file.write(data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3)
                 file.close()
 
         msg = QMessageBox()
@@ -172,16 +171,18 @@ def action_import_all_logic(main_window):
             # If the tool finds errors, it won't import the texture and will add a message at the end with the errors
             path_file = os.path.join(folder_import_path, texture_name_extension)
             if os.path.exists(path_file):
-                message = message + VEF.import_texture(main_window, path_file, False, show_texture_flag, data_entry)
+                output_message = VEF.import_texture(main_window, path_file, False, show_texture_flag, data_entry)
+                if output_message:
+                    message = message + texture_name_extension + "<ul>" + output_message + "</ul>"
             else:
-                message = message + "<li>" + texture_name_extension + " not found!" + "</li>"
+                message = message + texture_name_extension + "<ul><li>" + "Texture <b>not found!</b>" + "</li></ul>"
 
         # If there is a message, it has detected differences
         if message:
             msg = QMessageBox()
             msg.setWindowTitle("Error")
             msg.setWindowIcon(main_window.ico_image)
-            msg.setText("Found the following errors while importing:" + "<ul>" + message + "</ul>")
+            msg.setText("Found the following errors while importing: <br><br>" + message)
             msg.exec()
             return
 

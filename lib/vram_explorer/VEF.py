@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QMainWindow
 from pyglet.gl import GLException
 
 from lib.functions import check_entry_module, get_name_from_file, show_progress_value
-from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem
+from lib.packages import image, QImage, QPixmap, QMessageBox, os, struct, QStandardItemModel, QStandardItem, math
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer.classes.MTRL.MtrlInfo import MtrlInfo
 from lib.vram_explorer.classes.MTRL.MtrlLayer import MtrlLayer
@@ -1731,10 +1731,10 @@ def open_vram_file(worker_vef, end_progress, vram_path):
                     # Get the data from the .exe
                     with open("tempUnSwizzledImage", mode="rb") as file_temp:
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info\
-                            .data.tx2d_vram.data_unswizzle = file_temp.read()
+                            .data.tx2d_vram.data_unswizzle_ps3 = file_temp.read()
                     with open("Indexes.txt", mode="r") as file_temp:
                         VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data.tx2d_vram\
-                            .indexes_unswizzle_algorithm = file_temp.read().split(";")[:-1]
+                            .indexes_unswizzle_ps3_algorithm = file_temp.read().split(";")[:-1]
                         # [:-1] because swizzle.exe saves an '' element in the end
 
                     # Remove the temp files
@@ -1743,8 +1743,8 @@ def open_vram_file(worker_vef, end_progress, vram_path):
                     os.remove("Indexes.txt")
 
                     VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info.data\
-                        .tx2d_vram.data_unswizzle = header + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info\
-                        .data.tx2d_vram.data_unswizzle
+                        .tx2d_vram.data_unswizzle_ps3 = header + VEV.sprp_file.type_entry[b'TX2D'].data_entry[i].data_info\
+                        .data.tx2d_vram.data_unswizzle_ps3
 
 
 def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified, entry_info, entry_info_size, entry_count,
@@ -1794,7 +1794,7 @@ def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified
             # It's a BMP image
             else:
 
-                if tx2d_data_entry.data_info.extension != "png":
+                if not tx2d_data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
                     # We're dealing with a shader. We have to change the endian
                     if tx2d_info.height == 1:
                         # Since is a shader, it if is for a Xbox file, we need to change the 'related2encoding' value
@@ -1811,12 +1811,12 @@ def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified
 
                     # Write in disk the data unswizzled
                     with open("tempUnSwizzledImage", mode="wb") as file:
-                        file.write(tx2d_info.tx2d_vram.data_unswizzle[54:])
+                        file.write(tx2d_info.tx2d_vram.data_unswizzle_ps3[54:])
 
                     # Write in disk the indexes
                     with open("Indexes.txt", mode="w") as file:
                         for index in tx2d_info.tx2d_vram. \
-                                indexes_unswizzle_algorithm:
+                                indexes_unswizzle_ps3_algorithm:
                             file.write(index + ";")
 
                     # Run the exe file of 'swizzle.exe'
@@ -2720,19 +2720,19 @@ def write_children(main_window, num_material, num_textures, data_info_parent, ty
         data_child_size + data_child_offset_section_size, data_offset
 
 
-def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_encoding_text):
+def differences_imported_texture(tx2d_info, width, height, mip_maps, dxt_encoding_text):
 
     message = ""
 
     # Check resolution
     if width != tx2d_info.width or height != tx2d_info.height:
-        message = "<li> The original size is " + str(tx2d_info.width) \
+        message = message + "<li> The original resolution is <b>" + str(tx2d_info.width) \
             + "x" + str(tx2d_info.height) \
-            + ". The imported texture is " + str(width) + "x" + str(height) + ".</li>"
+            + "</b>. The imported texture is <b>" + str(width) + "x" + str(height) + "</b>.</li>"
 
     # Check mip_maps
     if tx2d_info.mip_maps != mip_maps:
-        message = message + "<li> The original Mipmaps has " + str(tx2d_info.mip_maps) \
+        message = message + "<li> The original mipmaps are " + str(tx2d_info.mip_maps) \
             + ". The imported texture has " + str(mip_maps) + ".</li>"
 
     # Check encoding
@@ -2744,31 +2744,41 @@ def validation_dds_imported_texture(tx2d_info, width, height, mip_maps, dxt_enco
     return message
 
 
-def validation_bmp_imported_texture(tx2d_info, width, height, number_bits, mip_maps, dxt_encoding_text):
+def validation_resolution_mipmaps_imported_texture(width, height, mip_maps):
 
     message = ""
 
-    # Check resolution
-    if width != tx2d_info.width or height != tx2d_info.height:
-        message = "<li>The original size is " + str(tx2d_info.width) \
-            + "x" + str(tx2d_info.height) \
-            + ". The imported texture is " + str(width) + "x" + str(height) + ".</li>"
+    # Check resolution only if mipmaps are greater than 1
+    if mip_maps != 1:
+        # Check resolution
+        if width % 4 != 0:
+            message = message + "<li>" + "The imported texture resolution width <b>" + str(width) + "</b> is not multiple of <b>4</b>.</li>"
+        if height % 4 != 0:
+            message = message + "<li>" + "The imported texture resolution height <b>" + str(height) + "</b> is not multiple of <b>4</b>.</li>"
+        if width >= height:
+            max_dimension = width
+        else:
+            max_dimension = height
+
+        mip_map_validations = dict()
+        mip_map_validations["RB2_PS3"] = int(math.log(max_dimension, 2)) - 1
+        mip_map_validations["RB"] = mip_map_validations["RB2_PS3"] - 4 if mip_map_validations["RB2_PS3"] - 4 >= 1 else 1
+        mip_map_validations["RB2_XBOX"] = mip_map_validations["RB2_PS3"] - 5 if mip_map_validations["RB2_PS3"] - 5 >= 1 else 1
+
+        if mip_map_validations["RB2_PS3"] != mip_maps and mip_map_validations["RB"] != mip_maps and mip_map_validations["RB2_XBOX"] != mip_maps:
+            message = message + "<li>" + "The imported texture resolution is <b>" + str(width) + "x" + str(height) + "</b> with <b>" + str(mip_maps) + "</b> mipmaps."
+
+    return message
+
+
+def validation_number_of_bits_imported_texture(number_bits):
+
+    message = ""
 
     # Check number of bits
     if 32 != number_bits:
         message = message + "<li>The original number of bits is " + str(32) \
             + ". The imported texture is " + str(number_bits) + " bits.</li>"
-
-    # Check mip_maps
-    if tx2d_info.mip_maps != mip_maps:
-        message = message + "<li> The original Mipmaps has " + str(tx2d_info.mip_maps) \
-            + ". The imported texture has " + str(mip_maps) + ".</li>"
-
-    # Check encoding
-    dxt_encoding_text_original = get_encoding_name(tx2d_info.dxt_encoding)
-    if dxt_encoding_text_original != dxt_encoding_text:
-        message = message + "<li> The original encoding is " + dxt_encoding_text_original \
-                  + ". The imported texture is " + dxt_encoding_text + ".</li>"
 
     return message
 
@@ -2940,30 +2950,33 @@ def import_texture(main_window, import_file_path, ask_user, show_texture_flag, d
             dxt_encoding_text = file.read(VEV.bytes2Read).decode()
             dxt_encoding = get_dxt_value(dxt_encoding_text)
 
-            message = validation_dds_imported_texture(data_entry.data_info.data, width,
-                                                      height, mip_maps, dxt_encoding_text)
+            message_differences = differences_imported_texture(data_entry.data_info.data, width,height, mip_maps, dxt_encoding_text)
+            message_console = validation_resolution_mipmaps_imported_texture(width, height, mip_maps)
 
-            # If the message is empty, there is no differences between original and modified one
-            if message:
+            # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
+            # properties as the original texture due to the swizzled algorithm
+            if data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
 
-                # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
-                # properties as the original texture due to the swizzled algorithm
-                if data_entry.data_info.extension == "png" and data_entry.data_info.data.dxt_encoding == 0:
+                # There are differences between original and the imported texture
+                if message_differences:
+                    if ask_user:
+                        msg = QMessageBox()
+                        msg.setWindowTitle("Error")
+                        msg.setWindowIcon(main_window.ico_image)
+                        msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message_differences + message_console + "</ul>")
+                        msg.exec()
+                        return ""
+                    else:
+                        return message_differences + message_console
 
-                    msg = QMessageBox()
-                    msg.setWindowTitle("Error")
-                    msg.setWindowIcon(main_window.ico_image)
-                    msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
-                    msg.exec()
-                    return
-
-                # This will be used to ask the user if he/she wants to replace the texture eventhough it has
-                # differences between original texture and modified one
-                elif ask_user:
+            # The imported texture has issues
+            elif message_console:
+                # This will be used to ask the user if he/she wants to replace the texture
+                if ask_user:
                     msg = QMessageBox()
 
                     # Concatenate the base message and the differences the tool has found
-                    message = VEV.message_base_import_texture_start + "<ul>" + message + "</ul>" + \
+                    message = VEV.message_base_import_texture_start + "<ul>" + message_console + "</ul>" + \
                         VEV.message_base_import_texture_end
 
                     # Ask to the user if he/she is sure that wants to replace the texture
@@ -2972,7 +2985,9 @@ def import_texture(main_window, import_file_path, ask_user, show_texture_flag, d
 
                     # If the users click on 'No', the modified texture won't be imported
                     if message_import_result == msg.No:
-                        return
+                        return ""
+                else:
+                    return message_console
 
             # Get all the data
             file.seek(0)
@@ -3028,30 +3043,34 @@ def import_texture(main_window, import_file_path, ask_user, show_texture_flag, d
             number_bits = int.from_bytes(file.read(2), 'little')
 
             # Validate the BMP imported texture
-            message = validation_bmp_imported_texture(data_entry.data_info.data, width, height, number_bits, 1, "RGBA")
+            message_differences = differences_imported_texture(data_entry.data_info.data, width, height, 1, "RGBA")
+            message_number_bits = validation_number_of_bits_imported_texture(number_bits)
+            message_console = validation_resolution_mipmaps_imported_texture(width, height, 1)
 
-            # If there is a message, it has detected differences
-            if message:
+            # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
+            # properties as the original texture due to the swizzled algorithm
+            if data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
 
-                # It's an image that originally is swizzled. It's mandatory that the modified texture has the same
-                # properties as the original texture due to the swizzled algorithm
-                if data_entry.data_info.extension == "png" and data_entry.data_info.data.dxt_encoding == 0:
+                # There are differences between original and the imported texture
+                if message_differences or message_number_bits:
+                    if ask_user:
+                        msg = QMessageBox()
+                        msg.setWindowTitle("Error")
+                        msg.setWindowIcon(main_window.ico_image)
+                        msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message_differences + message_number_bits + message_console + "</ul>")
+                        msg.exec()
+                        return ""
+                    else:
+                        return message_differences + message_number_bits + message_console
 
-                    msg = QMessageBox()
-                    msg.setWindowTitle("Error")
-                    msg.setWindowIcon(main_window.ico_image)
-                    msg.setText(VEV.message_base_import_BMP_start + "<ul>" + message + "</ul>")
-                    msg.exec()
-                    return
-
-                # This will be used to ask the user if he/she wants to replace the texture eventhough it has
-                # differences between original texture and modified one
-                elif ask_user:
+            # The imported texture has issues
+            elif message_number_bits or message_console:
+                # This will be used to ask the user if he/she wants to replace the texture
+                if ask_user:
                     msg = QMessageBox()
 
                     # Concatenate the base message and the differences the tool has found
-                    message = VEV.message_base_import_texture_start + "<ul>" + message + "</ul>" + \
-                        VEV.message_base_import_texture_end
+                    message = VEV.message_base_import_texture_start + "<ul>" + message_number_bits + message_console + "</ul>" + VEV.message_base_import_texture_end
 
                     # Ask to the user if he/she is sure that wants to replace the texture
                     msg.setWindowIcon(main_window.ico_image)
@@ -3059,7 +3078,9 @@ def import_texture(main_window, import_file_path, ask_user, show_texture_flag, d
 
                     # If the users click on 'No', the modified texture won't be imported
                     if message_import_result == msg.No:
-                        return
+                        return ""
+                else:
+                    return message_number_bits + message_console
 
             # Get all the data
             file.seek(0)
@@ -3076,12 +3097,12 @@ def import_texture(main_window, import_file_path, ask_user, show_texture_flag, d
             data = header + data_texture
 
             # --- Importing the texture ---
-            # Change texture in the array
-            if data_entry.data_info.extension != "png":
-                data_entry.data_info.data.tx2d_vram.data = data
             # It's png swizzled texture file
+            if data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
+                data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3 = data
+            # Change texture in the array
             else:
-                data_entry.data_info.data.tx2d_vram.data_unswizzle = data
+                data_entry.data_info.data.tx2d_vram.data = data
 
             # Replace the texture properties in memory
             replace_texture_properties(main_window, data_entry, 2, len_data, width, height, 1, 2804746880, 0)

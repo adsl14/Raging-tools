@@ -1,4 +1,4 @@
-import os, re, stat, shutil, struct, functools, stat, numpy as np, time, datetime
+import os, re, stat, shutil, struct, functools, stat, numpy as np, time, datetime, math
 from shutil import rmtree, copyfile, move, copytree
 from pyglet import image
 from datetime import datetime

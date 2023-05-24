@@ -286,6 +286,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionSingle_encrypt_decrypt.triggered.connect(self.action_single_encrypt_decrypt_logic)
         self.actionAll_encrypt_decrypt.triggered.connect(self.action_multiple_encrypt_decrypt_logic)
 
+        # Help tab
+        self.actionTexturesSpec.triggered.connect(self.action_texture_spec_logic)
+
         # About tab
         self.actionAuthor.triggered.connect(self.action_author_logic)
         self.actionCredits.triggered.connect(self.action_credits_logic)
@@ -1257,6 +1260,70 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
             # Reset progressbar
             self.reset_progress_bar()
+
+    def action_texture_spec_logic(self):
+        msg = QMessageBox()
+        msg.setTextFormat(1)
+        msg.setWindowTitle("Textures specifications")
+        msg.setWindowIcon(self.ico_image)
+        msg.setText('<div><b>In general:</b>\
+        <ul>\
+        <li>Vram file size less than 6.5 MB</li>\
+        <li>Resolution width and height should be multiple of 4, with the exception for those textures which has 1 mipmap</li>\
+        <li>Textures that are swizzled in PS3 version, the imported one needs to have the exact same resolution, mipmaps and encoding (tool will tell this advice when importing)</li>\
+        <li>Texture should have 32 number of bits</li>\
+        </ul>\
+        </div>\
+        <div>&nbsp;</div>\
+        <table style="height: 144px; width: 100%; border-collapse: collapse; border-color: black;" border="1" cellspacing="4" cellpadding="4">'
+                    '<caption><strong>Resolution and mipmaps relation for characters:</strong></caption>\
+        <div>&nbsp;</div>\
+        <tbody>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;"><strong>Resolution max size (width or height)</strong></td>\
+        <td style="width: 50%; text-align: center; height: 18px;"><strong>Mipmaps RB</strong></td>\
+        <td style="width: 50%; text-align: center; height: 18px;"><strong>Mipmaps RB2 and UT (PS3) </strong></td>\
+        <td style="width: 50%; text-align: center; height: 18px;"><strong>Mipmaps RB2 and UT (XBOX 360) </strong></td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">64</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">1</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">5</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">1</td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">128</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">2</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">6</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">1</td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">256</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">3</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">7</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">2</td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">512</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">4</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">8</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">3</td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">1024</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">5</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">9</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">4</td>\
+        </tr>\
+        <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">2048</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">6</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">10</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">5</td>\
+        </tr>\
+        </tbody>\
+        <div>&nbsp;</div>')
+        msg.exec()
 
     def closeEvent(self, event):
         if os.path.exists(PEV.temp_folder):
