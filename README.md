@@ -106,7 +106,13 @@ to <i>SPA</i>
 <img src="images/utilities_tab_converter_spa.jpg" alt="utilities_tab_converter_spa" width="40%">
 <img src="images/utilities_tab_converter_json.jpg" alt="utilities_tab_converter_json" width="34%">
 
-### About
+## Help
+
+In this tab you can check some guides when using the tool in order to avoid crashes, specially in real hardware.
+
+<img src="images/help_tab.jpg" alt="about_tab" width="30%">
+
+## About
 
 In this tab you can check the author of the tool, go to the <i>GitHub</i> repository where is explained how to use
 the tool, and the people that contribuited in the development of this tool. There is also a link to the <b>Discord</b>
