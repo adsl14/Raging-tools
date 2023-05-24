@@ -90,6 +90,9 @@ datetime of creation.
 <i>Packer</i> will unpack the files that are packed as a <i>.pak</i>, or pack a folder with files, creating a output
 as a <i>.pak</i> file.
 
+When packing, it will ask you what format do you want to pack the file. 
+Select the format depending of the type of files that will be inside the pak file.
+
 Like the previous task, you can unpack or pack, a file or folder respectively, a single one or massivelly.
 
 <img src="images/utilities_tab_packer_unpack.jpg" alt="utilities_tab_packer_unpack" width="40%">
@@ -108,7 +111,9 @@ to <i>SPA</i>
 
 ## Help
 
-In this tab you can check some guides when using the tool in order to avoid crashes, specially in real hardware.
+In this tab you can check some guides that explains, in a more detail way,
+some specifications to take account in order to avoid crashes when running 
+the game in real hardware.
 
 <img src="images/help_tab.jpg" alt="about_tab" width="30%">
 
