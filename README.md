@@ -115,7 +115,7 @@ In this tab you can check some guides that explains, in a more detail way,
 some specifications to take account in order to avoid crashes when running 
 the game in real hardware.
 
-<img src="images/help_tab.jpg" alt="about_tab" width="30%">
+<img src="images/help_tab.jpg" alt="help_tab" width="30%">
 
 ## About
 
@@ -128,7 +128,7 @@ this series.
 
 ## Vram Explorer
 
-<img src="https://i.imgur.com/z8N3uoh.jpg" alt="vram_explorer_image" width="50%">
+<img src="images/vram_explorer_main.jpg" alt="vram_explorer_image" width="50%">
 
 <i>Vram Explorer</i> is a tool that will help you to edit the textures of the game. When you open a <i>.spr</i> and 
 <i>.vram</i> file, the textures will be loaded.
