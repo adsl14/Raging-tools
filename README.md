@@ -30,15 +30,18 @@ compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</
 ## Requisites
 
 <ul> 
-  <li>If you want to run the <b>source code</b>, the required packages are the following:
+  <li>If you want to run the <b>source code</b>, the requisites are the following:
 
+Python: ```3.8.13```
+
+Packages:
 ```
-python 3.8.13
 natsort 7.1.1
 numpy 1.21.1
 pyglet 2.0.5
 pyqt5 5.15.4
 ```
+You can install these packages by running: ```pip install -r packages.txt```
   </li>
   <li>A graphic card that is compatible with OpenGL 4.0 or higher is required for <i>Vram Explorer</i>.
   If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher, otherwise, <i> Vram Explorer </i> won't show any <i>dds</i> texture. 
