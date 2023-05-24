@@ -41,7 +41,7 @@ numpy 1.21.1
 pyglet 2.0.5
 pyqt5 5.15.4
 ```
-You can install these packages by running: ```pip install -r packages.txt```
+You can install these packages by running ```pip install -r packages.txt```
   </li>
   <li>A graphic card that is compatible with OpenGL 4.0 or higher is required for <i>Vram Explorer</i>.
   If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher, otherwise, <i> Vram Explorer </i> won't show any <i>dds</i> texture. 
@@ -114,7 +114,7 @@ to <i>SPA</i>
 
 ## Help
 
-In this tab you can check some guides that explains, in a more detail way,
+In this tab you can check some guides that explain, in a more detail way,
 some specifications to take account in order to avoid crashes when running 
 the game in real hardware.
 
