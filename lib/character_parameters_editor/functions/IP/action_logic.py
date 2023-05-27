@@ -313,10 +313,12 @@ def action_export_animation_bone_button_logic(main_window):
 
         # Get from the combo box, the bone of the animation
         spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
+        scne_entry = dict({})
+        camera_entry = dict({})
         bone_entry = dict({main_window.animation_bone_value.currentText(): spa_file.bone_entries[main_window.animation_bone_value.currentText()]})
 
         # Write in a json file, the bone
-        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, bone_entry)
+        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, bone_entry, scne_entry, camera_entry)
 
 
 def action_export_all_animation_bone_button_logic(main_window):
@@ -334,7 +336,7 @@ def action_export_all_animation_bone_button_logic(main_window):
         spa_file = main_window.animation_type_value.currentData()[main_window.animation_spas_layer_value.currentData()][0]
 
         # Write in a json file, the bones
-        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, spa_file.bone_entries)
+        lib.functions.write_json_bone_file(file_export_path, spa_file.spa_header, spa_file.bone_entries, spa_file.scne_entries, spa_file.camera_entries)
 
 
 def action_import_animation_bone_button_logic(main_window):

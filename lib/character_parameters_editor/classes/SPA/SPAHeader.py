@@ -7,7 +7,7 @@ class SPAHeader:
         self.unk0x08 = b''
         self.frame_count = 0.0
         self.bone_count = 0
-        self.maybe_start_offset = 0
+        self.bone_nodes_offset = 0
         self.scene_nodes_count = 0
         self.scene_nodes_offset = 0
         self.camera_count = 0

@@ -70,7 +70,7 @@ class WorkerMainWindow(QObject):
         self.progressText.emit("Writing " + os.path.basename(output_path))
 
         # Write the output
-        write_json_bone_file(output_path, spa_file.spa_header, spa_file.bone_entries)
+        write_json_bone_file(output_path, spa_file.spa_header,  spa_file.bone_entries, spa_file.scne_entries, spa_file.camera_entries)
 
         # Show progress
         show_progress_value(self, step_progress)
