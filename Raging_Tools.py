@@ -1286,6 +1286,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         <td style="width: 50%; text-align: center; height: 18px;"><strong>Mipmaps RB2 and UT (XBOX 360) </strong></td>\
         </tr>\
         <tr style="height: 18px;">\
+        <td style="width: 50%; text-align: center; height: 18px;">32</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">1</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">4</td>\
+        <td style="width: 50%; text-align: center; height: 18px;">1</td>\
+        </tr>\
+        <tr style="height: 18px;">\
         <td style="width: 50%; text-align: center; height: 18px;">64</td>\
         <td style="width: 50%; text-align: center; height: 18px;">1</td>\
         <td style="width: 50%; text-align: center; height: 18px;">5</td>\
