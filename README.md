@@ -78,11 +78,15 @@ encrypt or decrypt a single file, or multiple files. The supported files are <i>
 The <i>dbrb_compressor.exe</i> will detect if the input file needs
 an encryption or decryption, so there is no need to specify what you need to do.
 
-For the single file option, the tool will generate the output in the same path where the input is located. If is a decryption,
-the output file will be <i>.pak</i>. If is a encryption, the output file will be <i>.zpak</i>
+For the single file option, the tool will generate the output in the same path where the input is located. 
+When is a decryption, the output file will be <i>.pak</i>. 
+When is a encryption, it will ask you  what game format do you want
+the output (Ultimate Tenkaichi or Raging Blast series). After that, the file output will be written in <i>.zpak</i>.
 
 For the multiple files option, the tool will ask you the path of the 
-folder where the files you want to encrypt or decrypt. The tool will create a folder with the output files, in the same
+folder where the files you want to encrypt or decrypt and also the game format (if there is a file that needs a decryption,
+the game format won't affect the result of the output, only when is a encryption). 
+The tool will create a folder with the output files, in the same
 path where the folder input is located. The name of the output folder will be the same as the input folder, but with the
 datetime of creation.
 
