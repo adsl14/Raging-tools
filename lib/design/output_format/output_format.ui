@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>200</width>
+    <width>252</width>
     <height>166</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>pack format</string>
+   <string>output format</string>
   </property>
   <widget class="QComboBox" name="console_version">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>40</y>
-     <width>81</width>
+     <width>111</width>
      <height>22</height>
     </rect>
    </property>
@@ -36,20 +36,20 @@
   <widget class="QComboBox" name="type_format_pack">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>40</y>
-     <width>81</width>
+     <x>70</x>
+     <y>70</y>
+     <width>111</width>
      <height>22</height>
     </rect>
    </property>
    <item>
     <property name="text">
-     <string>vram/ioram</string>
+     <string>vram / ioram</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>spr</string>
+     <string>spr (character)</string>
     </property>
    </item>
    <item>
@@ -63,12 +63,12 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>180</width>
-     <height>16</height>
+     <width>231</width>
+     <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Choose the format for packing:</string>
+    <string>Choose the output format:</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -77,7 +77,7 @@
   <widget class="QPushButton" name="accept_pack_format">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>40</x>
      <y>130</y>
      <width>75</width>
      <height>23</height>
@@ -90,7 +90,7 @@
   <widget class="QPushButton" name="cancel_pack_format">
    <property name="geometry">
     <rect>
-     <x>100</x>
+     <x>140</x>
      <y>130</y>
      <width>75</width>
      <height>23</height>
@@ -99,6 +99,26 @@
    <property name="text">
     <string>Cancel</string>
    </property>
+  </widget>
+  <widget class="QComboBox" name="type_game">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>40</y>
+     <width>111</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <item>
+    <property name="text">
+     <string>Raging Blast 1 &amp; 2</string>
+    </property>
+   </item>
+   <item>
+    <property name="text">
+     <string>Ultimate Tenkaichi</string>
+    </property>
+   </item>
   </widget>
  </widget>
  <resources/>

@@ -17,12 +17,30 @@ def del_rw(name_method, path, error):
     return name_method, error
 
 
-def ask_pack_structure(main_window):
+def ask_pack_compression_structure(main_window, ask_packing_only=False, ask_compression_only=False):
 
-    # Ask the user the packing format (separator between header and data)
+    # Ask the user the packing and compression format (separator between header and data)
     PEV.accept_button_pushed_pack_format_window = False
-    main_window.packFormatUI.console_version.setCurrentIndex(0)
-    main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
+
+    if ask_packing_only:
+        main_window.packFormatUI.console_version.setEnabled(True)
+        main_window.packFormatUI.type_format_pack.setEnabled(True)
+        main_window.packFormatUI.type_game.setEnabled(False)
+        main_window.packFormatUI.console_version.setCurrentIndex(0)
+        main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
+    elif ask_compression_only:
+        main_window.packFormatUI.console_version.setEnabled(False)
+        main_window.packFormatUI.type_format_pack.setEnabled(False)
+        main_window.packFormatUI.type_game.setEnabled(True)
+        main_window.packFormatUI.type_game.setCurrentIndex(0)
+    else:
+        main_window.packFormatUI.console_version.setEnabled(True)
+        main_window.packFormatUI.type_format_pack.setEnabled(True)
+        main_window.packFormatUI.type_game.setEnabled(True)
+        main_window.packFormatUI.console_version.setCurrentIndex(0)
+        main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
+        main_window.packFormatUI.type_game.setCurrentIndex(0)
+
     main_window.packFormatWindow.activateWindow()
     main_window.packFormatWindow.exec()
 

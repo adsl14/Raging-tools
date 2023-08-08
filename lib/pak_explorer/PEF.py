@@ -379,8 +379,12 @@ class WorkerPef(QObject):
         show_progress_value(self, sub_step_progress)
 
         # Generate the final file for the game
+        # Check endianess
+        compressing_endian_format = ""
+        if self.main_window.packFormatUI.type_game.currentIndex() == 1:
+            compressing_endian_format = "-ut"
         self.progressText.emit("Compressing file...")
-        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_file + "\" \"" + self.path_output_file + "\""
+        args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_file + "\" \"" + self.path_output_file + "\" \"" + compressing_endian_format + "\""
         os.system('cmd /c ' + args)
         show_progress_value(self, sub_step_progress)
         # Disable read only
