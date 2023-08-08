@@ -22,12 +22,12 @@ def write_separator_vram(output_vram_file, data_entry):
     if data_entry.data_info.data.width == data_entry.data_info.data.height:
         if data_entry.data_info.data.dxt_encoding == 8:
             output_vram_file.write(VEV.vram_separator_80)
-        # We check if the Mipmaps are greater than 6. If that's so, we write a separator
-        elif data_entry.data_info.data.mip_maps >= 6:
+        # We check if the Mipmaps are greater than 1. If that's so, we write a separator
+        elif data_entry.data_info.data.mip_maps > 1:
             output_vram_file.write(VEV.vram_separator_48)
     # The texture is not a square.
-    # We check if the Mipmaps are greater than 6. If that's so, we write a separator
-    elif data_entry.data_info.data.mip_maps >= 6:
+    # We check if the Mipmaps are greater than 1. If that's so, we write a separator
+    elif data_entry.data_info.data.mip_maps > 1:
         # If the encoding is dxt1, we write a separator of 32 bytes
         if data_entry.data_info.data.dxt_encoding == 8:
             output_vram_file.write(VEV.vram_separator_32)
