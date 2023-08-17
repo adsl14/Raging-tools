@@ -1,0 +1,13 @@
+from lib.gsc_explorer.classes.GSCD.GSCDHeader import GscdHeader
+from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
+from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
+
+
+class GscfHeader:
+
+    def __init__(self):
+        self.unk0x04 = b'\x10\x00\x00\x00'
+        self.unk0x0c = b'\x01\x00\x00\x00'
+        self.gshd_header = GshdHeader()
+        self.gscd_header = GscdHeader()
+        self.gsdt_header = GsdtHeader()

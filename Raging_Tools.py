@@ -16,6 +16,7 @@ from lib.design.output_format.output_format import Output_Format
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
+from lib.gsc_explorer import GSCEF
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
 from lib.functions import del_rw, ask_pack_compression_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_stpk_properties
 # vram explorer
@@ -251,6 +252,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     # Extensions
     extension_zpak = "Zpack files (*.zpak)"
     extension_spr_vram = "Spr/Vram files (*._)"
+    extension_gsc = "Gsc files (*.gsc)"
 
     def __init__(self, *args, **kwargs):
         QtWidgets.QMainWindow.__init__(self, *args, **kwargs)
@@ -568,18 +570,76 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Reset progressbar
         self.reset_progress_bar()
 
+    def run_load_data_to_gsce(self, path_input_file):
+
+        # Create a QThread object
+        self.thread = QThread()
+        # Create a worker object
+        self.worker = GSCEF.WorkerGscef()
+        # Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # Create vars
+        self.worker.main_window = self
+        self.worker.gsc_file_path = path_input_file
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+
+        # Progress bar
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+
+        # Main method
+        self.thread.started.connect(self.worker.load_gsc_file)
+
+        # Finish thread
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.reset_progress_bar()
+
+        # Starts thread
+        self.progressBarWindow.show()
+        self.thread.start()
+
+    def run_save_gsce_to_data(self, path_output_file):
+
+        # Create a QThread object
+        self.thread = QThread()
+        # Create a worker object
+        self.worker = GSCEF.WorkerGscef()
+        # Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # Create vars
+        self.worker.main_window = self
+        self.worker.gsc_file_path = path_output_file
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        # Connect signals and slots
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+
+        self.thread.started.connect(self.worker.save_gsc_file)
+
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.reset_progress_bar()
+
+        # Starts thread
+        self.progressBarWindow.show()
+        self.thread.start()
+
     def action_open_logic(self):
 
         # Open the file
         path_file = QFileDialog.getOpenFileName(self,
                                                 "Open file", MainWindow.old_path_file,
                                                 "Supported files "
-                                                "(*.pak *.zpak *.spr *.vram)"
-                                                ";;Packed files "
-                                                "(*.pak *.zpak)"
+                                                "(*.pak *.zpak *.spr *.vram *.gsc)"
+                                                ";;Packed files (*.pak *.zpak)"
                                                 ";;Info files (*.spr)"
-                                                ";;Texture files "
-                                                "(*.vram)")[0]
+                                                ";;Texture files (*.vram)"
+                                                ";;Story mode files (*.gsc)")[0]
         # Check if the user has selected a file
         if os.path.exists(path_file):
 
@@ -687,6 +747,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Load all the data to the vram_explorer from the spr and vram files
                 self.run_load_data_to_ve()
 
+            # gsc file
+            elif header_type == b'GSCF':
+
+                # Load all the data to the gsc_explorer from the gsc file
+                self.run_load_data_to_gsce(path_file)
+
             # vram file
             else:
 
@@ -739,12 +805,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if self.tabWidget.currentIndex() == 0:
             initial_extension = self.extension_spr_vram
         # The current tab is pak explorer or character parameters editor
-        else:
+        elif self.tabWidget.currentIndex() == 1 or self.tabWidget.currentIndex() == 2:
             initial_extension = self.extension_zpak
+        # The current tab is gsce explorer
+        else:
+            initial_extension = self.extension_gsc
         path_output_file, extension = QFileDialog.getSaveFileName(self,
                                                                   "Save file", path_output_file,
                                                                   self.extension_zpak + ";;" +
-                                                                  self.extension_spr_vram, initial_extension)
+                                                                  self.extension_spr_vram + ";;" +
+                                                                  self.extension_gsc, initial_extension)
 
         # The user has selected a path
         if path_output_file:
@@ -784,7 +854,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.run_save_ve_to_data(vram_separator, path_output_file)
 
             # Save pak file
-            else:
+            elif extension == self.extension_zpak:
 
                 # Check if character parameters editor is enabled in order to save the parameters from that tab
                 if self.character_parameters_editor.isEnabled():
@@ -871,6 +941,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     msg.setWindowIcon(self.ico_image)
                     msg.setText("No pak file has been loaded.")
                     msg.exec()
+
+            # Save gsc file
+            else:
+                # Save gsc file
+                self.run_save_gsce_to_data(path_output_file)
 
     def action_SPA_to_JSON_logic(self):
 
