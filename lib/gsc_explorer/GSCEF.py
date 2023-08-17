@@ -3,13 +3,11 @@ import struct
 from lib.functions import show_progress_value, check_entry_module
 from lib.gsc_explorer.classes.GSAC.GSACData import GsacData
 from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
-from lib.gsc_explorer.classes.GSAC.PointerData import PointerData
-from lib.gsc_explorer.classes.GSAC.PointerDataInfo import PointerDataInfo
 from lib.gsc_explorer.classes.GSCD.GSCDHeader import GscdHeader
 from lib.gsc_explorer.classes.GSCF.GSCFHeader import GscfHeader
 from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
-from lib.gsc_explorer.functions.auxiliary import search_data_in_gsdt
+from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info
 from lib.packages import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -39,8 +37,9 @@ class WorkerGscef(QObject):
 
     def save_gsc_file(self):
 
-        # Save gsc file
-        save_gsc_file(self.gsc_file_path)
+        # Save gsc file (1 task)
+        step_progress = self.end_progress
+        save_gsc_file(self, step_progress, self.gsc_file_path)
 
         # Finish the thread
         self.finished.emit()
@@ -54,14 +53,14 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
     gscd_header = GscdHeader()
     gsdt_header = GsdtHeader()
 
-    # Four tasks
-    sub_end_progress = end_progress / 4
+    # Six tasks
+    sub_end_progress = end_progress / 6
 
     with open(gsc_path, mode="rb") as file:
 
         # Load gscf header
         # Report progress
-        worker_gscef.progressText.emit("Loading GSCF")
+        worker_gscef.progressText.emit("Loading GSCF header")
         show_progress_value(worker_gscef, sub_end_progress)
         file.seek(4, os.SEEK_CUR)
         gscf_header.unk0x04 = file.read(GSCEV.bytes2Read)
@@ -69,27 +68,46 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
         gscf_header.unk0x0c = file.read(GSCEV.bytes2Read)
 
         # Load gshd header
-        # Report progress
-        worker_gscef.progressText.emit("Loading GSHD")
+        worker_gscef.progressText.emit("Loading GSCF header")
         show_progress_value(worker_gscef, sub_end_progress)
         file.seek(4, os.SEEK_CUR)
         gshd_header.unk0x04 = file.read(GSCEV.bytes2Read)
         gshd_header_size = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
         gshd_header.unk0x0c = file.read(GSCEV.bytes2Read)
-        gshd_header.data = file.read(gshd_header_size)
-        # Avoid eofc tag
-        file.seek(16, os.SEEK_CUR)
+        gshd_data_index = file.tell()
+        file.seek(gshd_header_size + 16, os.SEEK_CUR)
 
         # Load gscd header
-        # Report progress
-        worker_gscef.progressText.emit("Loading GSCD")
+        worker_gscef.progressText.emit("Loading GSCD header")
         show_progress_value(worker_gscef, sub_end_progress)
         file.seek(4, os.SEEK_CUR)
         gscd_header.unk0x04 = file.read(GSCEV.bytes2Read)
         gscd_header_size = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
         gscd_header.unk0x0c = file.read(GSCEV.bytes2Read)
-        gstd_start_data_index = file.tell() + gscd_header_size + 16 + 16
+        gscd_data_index = file.tell()
+        file.seek(gscd_header_size + 16, os.SEEK_CUR)
 
+        # Load gsdt header
+        worker_gscef.progressText.emit("Loading GSDT header")
+        show_progress_value(worker_gscef, sub_end_progress)
+        file.seek(4, os.SEEK_CUR)
+        gsdt_header.unk0x04 = file.read(GSCEV.bytes2Read)
+        file.seek(4, os.SEEK_CUR)
+        gsdt_header.unk0x0c = file.read(GSCEV.bytes2Read)
+        gstd_data_index = file.tell()
+
+        # Load gshd data
+        worker_gscef.progressText.emit("Loading GSHD data")
+        show_progress_value(worker_gscef, sub_end_progress)
+        file.seek(gshd_data_index)
+        number_of_bytes_gshd_header_readed = 0
+        while number_of_bytes_gshd_header_readed < gshd_header_size:
+            number_of_bytes_gshd_header_readed = read_pointer_data_info(file, number_of_bytes_gshd_header_readed, gstd_data_index, gshd_header.pointers)
+
+        # Load gscd data
+        worker_gscef.progressText.emit("Loading GSCD data")
+        show_progress_value(worker_gscef, sub_end_progress)
+        file.seek(gscd_data_index)
         number_of_bytes_gsac_header_readed = 0
         while number_of_bytes_gsac_header_readed < gscd_header_size:
             # Load each gsac header inside the gscd header
@@ -105,64 +123,7 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
             gsac_data = GsacData()
             number_of_bytes_gsac_data_readed = 0
             while number_of_bytes_gsac_data_readed < gsac_header_size:
-                pointer_data_info = PointerDataInfo()
-                pointer_data_info.type = file.read(1)
-                pointer_data_info.number_of_pointers = int.from_bytes(file.read(1), "little")
-                pointer_data_info.secundary_number_of_pointers = int.from_bytes(file.read(1), "little")
-                pointer_data_info.unk0x04 = file.read(1)
-                number_of_bytes_gsac_data_readed += 4
-
-                # Load each pointer_data inside the pointer_data_info (only the ones that are a pointer)
-                if pointer_data_info.type != b'\x00':
-
-                    # Pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte
-                    if pointer_data_info.type != b'\x08':
-                        for i in range(0, pointer_data_info.number_of_pointers):
-                            # Read value
-                            aux_pointer = file.tell()
-                            pointer_data = PointerData()
-                            pointer_data.type_GSDT = file.read(1)
-                            block_gstd_index = int.from_bytes(file.read(2), 'little')
-                            pointer_data.unk0x03 = file.read(1)
-                            file.seek(gstd_start_data_index + (block_gstd_index * 4))
-                            # Check if the data we're reading is an integer or float
-                            if pointer_data.type_GSDT == b'\x0A':
-                                pointer_data.value_GSDT = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
-                            else:
-                                pointer_data.value_GSDT = struct.unpack('>f', file.read(GSCEV.bytes2Read))[0]
-                            file.seek(aux_pointer + 4)
-
-                            # Increase number of bytes readed inside the gsac_data
-                            number_of_bytes_gsac_data_readed += 4
-
-                            # Append each pointer data into the pointer data info
-                            pointer_data_info.pointers_data.append(pointer_data)
-
-                    # Pointers that are 08 in their first byte, means the number of pointers_data is in the third byte
-                    elif pointer_data_info.type == b'\x08':
-                        for i in range(0, pointer_data_info.secundary_number_of_pointers):
-                            # Read value
-                            aux_pointer = file.tell()
-                            pointer_data = PointerData()
-                            pointer_data.type_GSDT = file.read(1)
-                            block_gstd_index = int.from_bytes(file.read(2), 'little')
-                            pointer_data.unk0x03 = file.read(1)
-                            file.seek(gstd_start_data_index + (block_gstd_index * 4))
-                            # Check if the data we're reading is an integer or float
-                            if pointer_data.type_GSDT == b'\x0A':
-                                pointer_data.value_GSDT = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
-                            else:
-                                pointer_data.value_GSDT = struct.unpack('>f', file.read(GSCEV.bytes2Read))[0]
-                            file.seek(aux_pointer + 4)
-
-                            # Increase number of bytes readed inside the gsac_data
-                            number_of_bytes_gsac_data_readed += 4
-
-                            # Append each pointer data into the pointer data info
-                            pointer_data_info.pointers_data.append(pointer_data)
-
-                    # Append each pointer data info into the gsac data
-                    gsac_data.pointers.append(pointer_data_info)
+                number_of_bytes_gsac_data_readed = read_pointer_data_info(file, number_of_bytes_gsac_data_readed, gstd_data_index, gsac_data.pointers)
 
             # Avoid the EOFC tag
             file.seek(16, os.SEEK_CUR)
@@ -172,17 +133,6 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
             gsac_header.data = gsac_data
             gscd_header.gsac_array.append(gsac_header)
 
-        # Avoid eofc tag
-        file.seek(16, os.SEEK_CUR)
-        # Load gsdt header
-        # Report progress
-        worker_gscef.progressText.emit("Loading GSDT")
-        show_progress_value(worker_gscef, sub_end_progress)
-        file.seek(4, os.SEEK_CUR)
-        gsdt_header.unk0x04 = file.read(GSCEV.bytes2Read)
-        gsdt_header_size = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
-        gsdt_header.unk0x0c = file.read(GSCEV.bytes2Read)
-
     # Create the class where we will store all the data
     gscf_header.gshd_header = gshd_header
     gscf_header.gscd_header = gscd_header
@@ -190,61 +140,46 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
     GSCEV.gsc_file.gscf_header = gscf_header
 
 
-def save_gsc_file(gsc_path):
+def save_gsc_file(worker_gscef, end_progress, gsc_path):
+
+    # Four tasks
+    sub_end_progress = end_progress / 4
 
     # Create eofc header
     eofc_header = b'EOFC' + b'\x10\x00\x00\x00' + b'\x00\x00\x00\x00' + b'\x00\x00\x00\x00'
 
-    # Create gshd header
-    gshd_data = GSCEV.gsc_file.gscf_header.gshd_header.data
-    gshd_data_size = len(GSCEV.gsc_file.gscf_header.gshd_header.data)
-    gshd_header = b'GSHD' + GSCEV.gsc_file.gscf_header.gshd_header.unk0x04 + gshd_data_size.to_bytes(4, 'little') + GSCEV.gsc_file.gscf_header.gshd_header.unk0x0c
-    gshd = gshd_header + gshd_data + eofc_header
-
-    # Create gscd and gsdt header
-    gscd_data = b''
-    gscd_data_size = 0
+    # Prepare gstd header vars. We will store the gstd data by writting the gshd and gsac data entries
     gsdt_data = b''
     gsdt_data_size = 0
     gsdt_data_array = []
     gsdt_data_array_size = 0
+
+    # Create gshd header
+    worker_gscef.progressText.emit("Writing GSHD header")
+    show_progress_value(worker_gscef, sub_end_progress)
+    gshd_data = b''
+    gshd_data_size = 0
+    # Write each pointer_data_info from gshd header
+    for pointer_data_info in GSCEV.gsc_file.gscf_header.gshd_header.pointers:
+        gshd_data, gshd_data_size, gsdt_data, gsdt_data_size, gsdt_data_array_size = write_pointer_data_info(pointer_data_info, gshd_data, gshd_data_size, gsdt_data, gsdt_data_size,
+                                                                                                             gsdt_data_array, gsdt_data_array_size)
+    # Check if the data, the module of 16 is 0 before writing
+    gshd_data, gshd_data_size, _ = check_entry_module(gshd_data, gshd_data_size, 16)
+    gshd_header = b'GSHD' + GSCEV.gsc_file.gscf_header.gshd_header.unk0x04 + gshd_data_size.to_bytes(4, 'little') + GSCEV.gsc_file.gscf_header.gshd_header.unk0x0c
+    gshd = gshd_header + gshd_data + eofc_header
+
+    # Create gscd header
+    worker_gscef.progressText.emit("Writing GSCD header")
+    show_progress_value(worker_gscef, sub_end_progress)
+    gscd_data = b''
+    gscd_data_size = 0
     # Create gsac header
     for gsac in GSCEV.gsc_file.gscf_header.gscd_header.gsac_array:
         gsac_data = b''
         gsac_data_size = 0
         for pointer_data_info in gsac.data.pointers:
-
-            # Store the pointer_data_info
-            if pointer_data_info.type != b'\x00':
-                # Store the pointer data info in the gsac_data byte
-                gsac_data += pointer_data_info.type + pointer_data_info.number_of_pointers.to_bytes(1, 'little') + pointer_data_info.secundary_number_of_pointers.to_bytes(1, 'little') + \
-                             pointer_data_info.unk0x04
-                gsac_data_size += 4
-
-            # Store the pointer_data
-            for pointer_data in pointer_data_info.pointers_data:
-
-                # Search if the value is in the gsdt array
-                index = search_data_in_gsdt(gsdt_data_array, gsdt_data_array_size, pointer_data)
-
-                # We didn't find the value in the gsdt array
-                if index is None:
-                    gsdt_data_array.append(pointer_data.value_GSDT)
-                    index = gsdt_data_array_size
-                    gsdt_data_array_size += 1
-
-                    # Store the gsdt data value
-                    # Integer value
-                    if pointer_data.type_GSDT == b'\x0A':
-                        value_gsdt = pointer_data.value_GSDT.to_bytes(4, 'little')
-                    else:
-                        value_gsdt = struct.pack('>f', pointer_data.value_GSDT)
-                    gsdt_data += value_gsdt
-                    gsdt_data_size += 4
-
-                # Store the pointer data in the gsac_data byte
-                gsac_data += pointer_data.type_GSDT + index.to_bytes(2, 'little') + pointer_data.unk0x03
-                gsac_data_size += 4
+            gsac_data, gsac_data_size, gsdt_data, gsdt_data_size, gsdt_data_array_size = write_pointer_data_info(pointer_data_info, gsac_data, gsac_data_size, gsdt_data, gsdt_data_size,
+                                                                                                                 gsdt_data_array, gsdt_data_array_size)
 
         # Check if the data, the module of 16 is 0 before writing
         gsac_data, gsac_data_size, _ = check_entry_module(gsac_data, gsac_data_size, 16)
@@ -256,18 +191,21 @@ def save_gsc_file(gsc_path):
         # Store each gsac inside the gscd
         gscd_data += gsac
         gscd_data_size += 16 + gsac_data_size + 16
-
     # Store the gscd
     gscd_header = b'GSCD' + GSCEV.gsc_file.gscf_header.gscd_header.unk0x04 + gscd_data_size.to_bytes(4, 'little') + GSCEV.gsc_file.gscf_header.gscd_header.unk0x0c
     gscd = gscd_header + gscd_data + eofc_header
 
     # Store the gsdt
+    worker_gscef.progressText.emit("Writing GSDT header")
+    show_progress_value(worker_gscef, sub_end_progress)
     # Check if the data, the module of 16 is 0 before writing
     gsdt_data, gsdt_data_size, _ = check_entry_module(gsdt_data, gsdt_data_size, 16)
     gsdt_header = b'GSDT' + GSCEV.gsc_file.gscf_header.gsdt_header.unk0x04 + gsdt_data_size.to_bytes(4, 'little') + GSCEV.gsc_file.gscf_header.gsdt_header.unk0x0c
     gsdt = gsdt_header + gsdt_data + eofc_header
 
     # Create gscf
+    worker_gscef.progressText.emit("Writing GSCF header")
+    show_progress_value(worker_gscef, sub_end_progress)
     gscf_data = gshd + gscd + gsdt
     gscf_data_size = 16 + gshd_data_size + 16 + 16 + gscd_data_size + 16 + 16 + gsdt_data_size + 16
     gscf_header = b'GSCF' + GSCEV.gsc_file.gscf_header.unk0x04 + gscf_data_size.to_bytes(4, 'little') + GSCEV.gsc_file.gscf_header.unk0x0c
