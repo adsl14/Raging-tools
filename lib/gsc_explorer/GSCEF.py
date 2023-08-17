@@ -1,5 +1,3 @@
-import struct
-
 from lib.functions import show_progress_value, check_entry_module
 from lib.gsc_explorer.classes.GSAC.GSACData import GsacData
 from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
@@ -102,7 +100,7 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
         file.seek(gshd_data_index)
         number_of_bytes_gshd_header_readed = 0
         while number_of_bytes_gshd_header_readed < gshd_header_size:
-            number_of_bytes_gshd_header_readed = read_pointer_data_info(file, number_of_bytes_gshd_header_readed, gstd_data_index, gshd_header.pointers)
+            number_of_bytes_gshd_header_readed = read_pointer_data_info(file, number_of_bytes_gshd_header_readed, gstd_data_index, gshd_header.data.pointers)
 
         # Load gscd data
         worker_gscef.progressText.emit("Loading GSCD data")
@@ -160,7 +158,7 @@ def save_gsc_file(worker_gscef, end_progress, gsc_path):
     gshd_data = b''
     gshd_data_size = 0
     # Write each pointer_data_info from gshd header
-    for pointer_data_info in GSCEV.gsc_file.gscf_header.gshd_header.pointers:
+    for pointer_data_info in GSCEV.gsc_file.gscf_header.gshd_header.data.pointers:
         gshd_data, gshd_data_size, gsdt_data, gsdt_data_size, gsdt_data_array_size = write_pointer_data_info(pointer_data_info, gshd_data, gshd_data_size, gsdt_data, gsdt_data_size,
                                                                                                              gsdt_data_array, gsdt_data_array_size)
     # Check if the data, the module of 16 is 0 before writing
@@ -213,5 +211,3 @@ def save_gsc_file(worker_gscef, end_progress, gsc_path):
 
     with open(gsc_path, mode="wb") as output_file:
         output_file.write(gscf)
-
-
