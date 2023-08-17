@@ -103,12 +103,11 @@ def create_stpk_properties(main_window, num_pak_files):
 def check_entry_module(entry, entry_size, module):
 
     rest = module - (entry_size % module)
-    if rest != module:
-        for i in range(rest):
-            entry += b'\00'
-            entry_size += 1
-    else:
-        rest = 0
+
+    # Adding a padding always until we reach the following line
+    for i in range(rest):
+        entry += b'\00'
+        entry_size += 1
 
     return entry, entry_size, rest
 
