@@ -1,3 +1,5 @@
+from PyQt5.QtWidgets import QMainWindow
+
 from lib.functions import show_progress_value, check_entry_module
 from lib.gsc_explorer.classes.GSAC.GSACData import GsacData
 from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
@@ -15,10 +17,13 @@ from lib.gsc_explorer.GSCEV import GSCEV
 
 class WorkerGscef(QObject):
 
+    # Signals
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
+    enable_gsc_explorer_tab_signal = pyqtSignal(QMainWindow)
 
+    # Vars
     main_window = None
     start_progress = 0.0
     end_progress = 100.0
@@ -29,6 +34,9 @@ class WorkerGscef(QObject):
         # Open gsc file (1 task)
         step_progress = self.end_progress
         open_gsc_file(self, step_progress, self.gsc_file_path)
+
+        # Open the tab gsc explorer
+        self.enable_gsc_explorer_tab_signal.emit(self.main_window)
 
         # Finish the thread
         self.finished.emit()

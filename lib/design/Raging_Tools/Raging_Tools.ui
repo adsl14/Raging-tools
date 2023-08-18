@@ -9596,6 +9596,14 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="gsc_explorer">
+       <property name="accessibleName">
+        <string/>
+       </property>
+       <attribute name="title">
+        <string>Gsc Explorer</string>
+       </attribute>
+      </widget>
      </widget>
     </item>
    </layout>

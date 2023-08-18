@@ -17,6 +17,7 @@ from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.gsc_explorer import GSCEF
+from lib.gsc_explorer.functions.signal_methods import enable_gsc_explorer_tab
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
 from lib.functions import del_rw, ask_pack_compression_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_stpk_properties
 # vram explorer
@@ -583,6 +584,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.gsc_file_path = path_input_file
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
+
+        # Connect signals and slots
+        self.worker.enable_gsc_explorer_tab_signal.connect(enable_gsc_explorer_tab)
 
         # Progress bar
         self.worker.progressValue.connect(self.report_progress_value)
