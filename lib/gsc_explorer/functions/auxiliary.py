@@ -115,3 +115,27 @@ def write_pointer_data_info(pointer_data_info, data, data_size, gsdt_data, gsdt_
         data_size += 4
 
     return data, data_size, gsdt_data, gsdt_data_size, gsdt_data_array_size
+
+
+def create_pointer_data_info(type, number_of_pointers, secundary_number_of_pointers, unk0x04, pointers_data_values):
+
+    pointer_data_info = PointerDataInfo()
+    pointer_data_info.type = type
+    pointer_data_info.number_of_pointers = number_of_pointers
+    pointer_data_info.secundary_number_of_pointers = secundary_number_of_pointers
+    pointer_data_info.unk0x04 = unk0x04
+
+    for i in range(0, len(pointers_data_values)):
+        pointer_data_info.pointers_data.append(create_pointer_data(pointers_data_values[i][0], pointers_data_values[i][1], pointers_data_values[i][2]))
+
+    return pointer_data_info
+
+
+def create_pointer_data(type_GSDT, value_GSDT, unk0x03):
+
+    pointer_data = PointerData()
+    pointer_data.type_GSDT = type_GSDT
+    pointer_data.value_GSDT = value_GSDT
+    pointer_data.unk0x03 = unk0x03
+
+    return pointer_data

@@ -9603,6 +9603,117 @@
        <attribute name="title">
         <string>Gsc Explorer</string>
        </attribute>
+       <widget class="QFrame" name="stage_properties">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>981</width>
+          <height>71</height>
+         </rect>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::WinPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <widget class="QLabel" name="stage_properties_text">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>0</y>
+           <width>91</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Stage properties:</string>
+         </property>
+        </widget>
+        <widget class="QLabel" name="map_name_text">
+         <property name="geometry">
+          <rect>
+           <x>100</x>
+           <y>20</y>
+           <width>121</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Map</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="map_name_value">
+         <property name="geometry">
+          <rect>
+           <x>100</x>
+           <y>40</y>
+           <width>121</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <item>
+          <property name="text">
+           <string>Wasteland</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Rocky Land</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Planet Namek</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Runied Planet Namek</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Abandoned City</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cell Games</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Island</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>World Tournament</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Supreme Kai's World</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Cave</string>
+          </property>
+         </item>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>

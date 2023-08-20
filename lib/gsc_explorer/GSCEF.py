@@ -6,8 +6,10 @@ from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
 from lib.gsc_explorer.classes.GSCD.GSCDHeader import GscdHeader
 from lib.gsc_explorer.classes.GSCF.GSCFHeader import GscfHeader
 from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
+from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
-from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info
+from lib.gsc_explorer.functions.action_logic import on_map_changed
+from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -21,7 +23,7 @@ class WorkerGscef(QObject):
     finished = pyqtSignal()
     progressValue = pyqtSignal(float)
     progressText = pyqtSignal(str)
-    enable_gsc_explorer_tab_signal = pyqtSignal(QMainWindow)
+    store_parameters_gsc_explorer = pyqtSignal(QMainWindow)
 
     # Vars
     main_window = None
@@ -35,8 +37,8 @@ class WorkerGscef(QObject):
         step_progress = self.end_progress
         open_gsc_file(self, step_progress, self.gsc_file_path)
 
-        # Open the tab gsc explorer
-        self.enable_gsc_explorer_tab_signal.emit(self.main_window)
+        # Store parameters loaded in gsc tab
+        self.store_parameters_gsc_explorer.emit(self.main_window)
 
         # Finish the thread
         self.finished.emit()
@@ -49,6 +51,115 @@ class WorkerGscef(QObject):
 
         # Finish the thread
         self.finished.emit()
+
+
+def initialize_gsce(main_window):
+
+    # Initialize the gscfile class
+    # gscf
+    gscf_header = GscfHeader()
+    gscf_header.unk0x04 = b'\x10\x00\x00\x00'
+    gscf_header.unk0x0c = b'\x01\x00\x00\x00'
+
+    # gshd
+    gshd_header = GshdHeader()
+    gshd_header.unk0x04 = b'\x10\x00\x00\x00'
+    gshd_header.unk0x0c = b'\x00\x00\x00\x00'
+    gshd_data = GshdData()
+    gshd_data.pointers.append(create_pointer_data_info(b'\x03', 0, 0, b'\x00', []))
+    gshd_data.pointers.append(create_pointer_data_info(b'\x03', 0, 0, b'\x00', []))
+    gshd_header.data = gshd_data
+
+    # gscd
+    gscd_header = GscdHeader()
+    gscd_header.unk0x04 = b'\x10\x00\x00\x00'
+    gscd_header.unk0x0c = b'\x01\x00\x00\x00'
+    # GSAC 0
+    gsac_header = GsacHeader()
+    gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsac_header.id = 4294967295
+    gsac_data = GsacData()
+    gsac_data.pointers.append(create_pointer_data_info(b'\x02', 0, 16, b'\x27', []))
+    gsac_header.data = gsac_data
+    gscd_header.gsac_array.append(gsac_header)
+    # GSAC 1
+    gsac_header = GsacHeader()
+    gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsac_header.id = 1000
+    gsac_data = GsacData()
+    gsac_data.pointers.append(create_pointer_data_info(b'\x02', 0, 254, b'\xFF', []))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x02', 0, 253, b'\xFF', []))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x02', 0, 252, b'\xFF', []))
+    gsac_header.data = gsac_data
+    gscd_header.gsac_array.append(gsac_header)
+    # GSAC 2
+    gsac_header = GsacHeader()
+    gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsac_header.id = 4294967294
+    gsac_data = GsacData()
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 1, 0, b'\x00', [[b'\x0A', 32, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 15, b'\x00', [[b'\x0A', 1000, b'\x00'], [b'\x0A', 1500, b'\x00'], [b'\x0A', 2000, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 16, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 17, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 18, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 19, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 0, 20, b'\x00', []))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x08', 111, 2, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x08', 111, 2, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x08', 111, 2, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 21, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_header.data = gsac_data
+    gscd_header.gsac_array.append(gsac_header)
+    # GSAC 3
+    gsac_header = GsacHeader()
+    gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsac_header.id = 4294967293
+    gsac_data = GsacData()
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 8, b'\x00', [[b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 12, 9, b'\x00', [[b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
+                                                                                 [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
+                                                                                 [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 0, 10, b'\x00', []))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x08', 101, 3, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+    gsac_data.pointers.append(create_pointer_data_info(b'\x08', 101, 3, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+    for i in range(1, 21):
+        gsac_data.pointers.append(create_pointer_data_info(b'\x01', 15, 11, b'\x00', [[b'\x0A', i, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
+                                                                                     [b'\x0A', 0, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 100, b'\x00'], [b'\x0A', 4294967295, b'\x00'],
+                                                                                      [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'],
+                                                                                      [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+        gsac_data.pointers.append(create_pointer_data_info(b'\x01', 6, 12, b'\x00', [[b'\x0A', i, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'],
+                                                                                     [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
+    gsac_header.data = gsac_data
+    gscd_header.gsac_array.append(gsac_header)
+
+    # gsdt
+    gsdt_header = GsdtHeader()
+    gsdt_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsdt_header.unk0x0c = b'\x00\x00\x00\x00'
+
+    gscf_header.gshd_header = gshd_header
+    gscf_header.gscd_header = gscd_header
+    gscf_header.gsdt_header = gsdt_header
+
+    # Store everything in the global class
+    GSCEV.gsc_file.gscf_header = gscf_header
+
+    # Enable all signals
+    listen_events_logic(main_window, True)
+
+
+def listen_events_logic(main_window, flag):
+
+    if flag:
+        # Set the map value
+        main_window.map_name_value.currentIndexChanged.connect(lambda: on_map_changed(main_window))
+    else:
+
+        try:
+            # Set the map value
+            main_window.map_name_value.disconnect()
+        except TypeError:
+            pass
 
 
 def open_gsc_file(worker_gscef, end_progress, gsc_path):
@@ -74,7 +185,7 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
         gscf_header.unk0x0c = file.read(GSCEV.bytes2Read)
 
         # Load gshd header
-        worker_gscef.progressText.emit("Loading GSCF header")
+        worker_gscef.progressText.emit("Loading GSHD header")
         show_progress_value(worker_gscef, sub_end_progress)
         file.seek(4, os.SEEK_CUR)
         gshd_header.unk0x04 = file.read(GSCEV.bytes2Read)
@@ -122,7 +233,7 @@ def open_gsc_file(worker_gscef, end_progress, gsc_path):
             file.seek(4, os.SEEK_CUR)
             gsac_header.unk0x04 = file.read(GSCEV.bytes2Read)
             gsac_header_size = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
-            gsac_header.id = file.read(GSCEV.bytes2Read)
+            gsac_header.id = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
             number_of_bytes_gsac_header_readed += 16
 
             # Load each pointer inside the gsac header
@@ -191,7 +302,7 @@ def save_gsc_file(worker_gscef, end_progress, gsc_path):
         gsac_data, gsac_data_size, _ = check_entry_module(gsac_data, gsac_data_size, 16)
 
         # Store the gsac
-        gsac_header = b'GSAC' + gsac.unk0x04 + gsac_data_size.to_bytes(4, 'little') + gsac.id
+        gsac_header = b'GSAC' + gsac.unk0x04 + gsac_data_size.to_bytes(4, 'little') + gsac.id.to_bytes(4, 'little')
         gsac = gsac_header + gsac_data + eofc_header
 
         # Store each gsac inside the gscd
