@@ -9608,8 +9608,8 @@
          <rect>
           <x>10</x>
           <y>10</y>
-          <width>981</width>
-          <height>71</height>
+          <width>311</width>
+          <height>81</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -9637,81 +9637,186 @@
           <string>Stage properties:</string>
          </property>
         </widget>
-        <widget class="QLabel" name="map_name_text">
+        <widget class="QFrame" name="instruction_010308">
          <property name="geometry">
           <rect>
-           <x>100</x>
+           <x>10</x>
            <y>20</y>
-           <width>121</width>
-           <height>16</height>
+           <width>191</width>
+           <height>51</height>
           </rect>
          </property>
-         <property name="text">
-          <string>Map</string>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
          </property>
+         <widget class="QLabel" name="music_text">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>0</y>
+            <width>41</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Change the music during the battle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Music</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QComboBox" name="map_name_value">
+          <property name="geometry">
+           <rect>
+            <x>14</x>
+            <y>20</y>
+            <width>121</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <item>
+           <property name="text">
+            <string>Wasteland</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Rocky Land</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Planet Namek</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Runied Planet Namek</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Abandoned City</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cell Games</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Island</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>World Tournament</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Supreme Kai's World</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Cave</string>
+           </property>
+          </item>
+         </widget>
+         <widget class="QLabel" name="map_name_text">
+          <property name="geometry">
+           <rect>
+            <x>14</x>
+            <y>0</y>
+            <width>121</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the map for the battle&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Map</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="music_value">
+          <property name="geometry">
+           <rect>
+            <x>140</x>
+            <y>20</y>
+            <width>42</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>30</number>
+          </property>
+         </widget>
         </widget>
-        <widget class="QComboBox" name="map_name_value">
+        <widget class="QFrame" name="intruction_010C09">
          <property name="geometry">
           <rect>
-           <x>100</x>
-           <y>40</y>
-           <width>121</width>
-           <height>22</height>
+           <x>210</x>
+           <y>20</y>
+           <width>91</width>
+           <height>51</height>
           </rect>
          </property>
-         <item>
-          <property name="text">
-           <string>Wasteland</string>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <widget class="QSpinBox" name="num_characters_value">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>41</width>
+            <height>22</height>
+           </rect>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Rocky Land</string>
+          <property name="minimum">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Planet Namek</string>
+          <property name="maximum">
+           <number>20</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Runied Planet Namek</string>
+          <property name="value">
+           <number>0</number>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Abandoned City</string>
+         </widget>
+         <widget class="QLabel" name="num_characters_text">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>0</y>
+            <width>71</width>
+            <height>20</height>
+           </rect>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Cell Games</string>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unknown value&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-         </item>
-         <item>
           <property name="text">
-           <string>Island</string>
+           <string>Nº characters</string>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>World Tournament</string>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Supreme Kai's World</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Cave</string>
-          </property>
-         </item>
+         </widget>
         </widget>
        </widget>
       </widget>

@@ -8,7 +8,7 @@ from lib.gsc_explorer.classes.GSCF.GSCFHeader import GscfHeader
 from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
-from lib.gsc_explorer.functions.action_logic import on_map_changed
+from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -131,6 +131,7 @@ def initialize_gsce(main_window):
                                                                                      [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
     gsac_header.data = gsac_data
     gscd_header.gsac_array.append(gsac_header)
+    # GSAC 4 (WIP)
 
     # gsdt
     gsdt_header = GsdtHeader()
@@ -151,13 +152,25 @@ def initialize_gsce(main_window):
 def listen_events_logic(main_window, flag):
 
     if flag:
+        # GSAC 3
         # Set the map value
         main_window.map_name_value.currentIndexChanged.connect(lambda: on_map_changed(main_window))
+        # Set the music value
+        main_window.music_value.valueChanged.connect(lambda: on_music_changed(main_window))
+
+        # Set the number of characters value
+        main_window.num_characters_value.valueChanged.connect(lambda: on_num_characters_changed(main_window))
     else:
 
         try:
+            # GSAC 3
             # Set the map value
             main_window.map_name_value.disconnect()
+            # Set the music value
+            main_window.music_value.disconnect()
+
+            # Set the number of characters value
+            main_window.num_characters_value.disconnect()
         except TypeError:
             pass
 
