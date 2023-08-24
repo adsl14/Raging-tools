@@ -304,6 +304,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.selectCharaRosterWindow = QtWidgets.QDialog()
         self.selectCharaRosterUI = Select_Chara_Roster()
         self.selectCharaRosterUI.setupUi(self.selectCharaRosterWindow)
+        # Select Chara gsc window
+        self.selectCharaGscWindow = QtWidgets.QDialog()
+        self.selectCharaGscUI = Select_Chara()
+        self.selectCharaGscUI.setupUi(self.selectCharaGscWindow)
         # Material window
         self.MaterialChildEditorWindow = QtWidgets.QDialog()
         self.MaterialChildEditorUI = Material_Child_Editor()
@@ -1487,6 +1491,7 @@ if __name__ == "__main__":
     window.selectCharaWindow.setWindowIcon(window.ico_image)
     window.selectCharaPartnerWindow.setWindowIcon(window.ico_image)
     window.selectCharaRosterWindow.setWindowIcon(window.ico_image)
+    window.selectCharaGscWindow.setWindowIcon(window.ico_image)
     window.MaterialChildEditorWindow.setWindowIcon(window.ico_image)
     window.progressBarWindow.setWindowIcon(window.ico_image)
     window.show()

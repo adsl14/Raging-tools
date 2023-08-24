@@ -1,4 +1,7 @@
-from PyQt5.QtWidgets import QMainWindow
+import functools
+
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QMainWindow, QLabel
 
 from lib.functions import show_progress_value, check_entry_module
 from lib.gsc_explorer.classes.GSAC.GSACData import GsacData
@@ -8,7 +11,8 @@ from lib.gsc_explorer.classes.GSCF.GSCFHeader import GscfHeader
 from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
-from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed
+from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
+    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -145,6 +149,24 @@ def initialize_gsce(main_window):
     # Store everything in the global class
     GSCEV.gsc_file.gscf_header = gscf_header
 
+    # Load the Select Chara window for RB1
+    GSCEV.mini_portraits_image_select_chara_window = main_window.selectCharaGscUI.frame.findChildren(QLabel)
+    for i in range(0, 73):
+        label_id_image = GSCEV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
+        GSCEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + label_id_image.zfill(3) + ".bmp")))
+        GSCEV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(action_modify_character, main_window=main_window, chara_id=i)
+        GSCEV.mini_portraits_image_select_chara_window[i].setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+    # Disable the rest of slots
+    for i in range(73, 101):
+        label_id_image = GSCEV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
+        GSCEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + label_id_image.zfill(3) + ".bmp")))
+        GSCEV.mini_portraits_image_select_chara_window[i].setEnabled(False)
+        GSCEV.mini_portraits_image_select_chara_window[i].setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+    # Prepare the char_id_slot
+    main_window.char_id_slot.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_image, "pl_slot.png")))
+    main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(0).zfill(3) + ".png")))
+    main_window.char_id_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
+
     # Enable all signals
     listen_events_logic(main_window, True)
 
@@ -160,6 +182,15 @@ def listen_events_logic(main_window, flag):
 
         # Set the number of characters value
         main_window.num_characters_value.valueChanged.connect(lambda: on_num_characters_changed(main_window))
+
+        # Set the character id
+        main_window.character_value.valueChanged.connect(lambda: on_character_id_changed(main_window))
+        # Set the character skin
+        main_window.skin_value.valueChanged.connect(lambda: on_skin_changed(main_window))
+        # Set the battle damaged
+        main_window.damaged_costume.toggled.connect(lambda: on_damaged_costume(main_window))
+        # Set the character health
+        main_window.gsc_health_value.valueChanged.connect(lambda: on_gsc_health_value_changed(main_window))
     else:
 
         try:
@@ -171,6 +202,16 @@ def listen_events_logic(main_window, flag):
 
             # Set the number of characters value
             main_window.num_characters_value.disconnect()
+
+            # Set the character id
+            main_window.character_value.valueChanged.disconnect()
+            # Set the character skin
+            main_window.skin_value.valueChanged.disconnect()
+            # Set the battle damaged
+            main_window.damaged_costume.toggled.disconnect()
+            # Set the character health
+            main_window.gsc_health_value.valueChanged.disconnect()
+
         except TypeError:
             pass
 
