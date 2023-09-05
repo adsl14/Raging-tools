@@ -316,7 +316,7 @@ def read_spa_file(spa_path):
                 file.seek(aux_pointer)
 
                 # Store everything in the dict
-                spa_file.camera_entries[scne_entry.name] = scne_entry
+                spa_file.scne_entries[scne_entry.name] = scne_entry
 
             # Read cameras
             file.seek(spa_file.spa_header.camera_offset)
