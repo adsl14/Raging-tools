@@ -35,6 +35,17 @@ def on_character_id_changed(main_window):
     # Character
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())]
                                                                                                                .pointers_data[2].value_GSDT).zfill(3) + ".png")))
+    # Blast attacks
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[1].value_GSDT
+    main_window.ico_boost_stick_r_up_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[2].value_GSDT
+    main_window.ico_boost_stick_r_d_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[3].value_GSDT
+    main_window.ico_boost_stick_r_l_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[4].value_GSDT
+    main_window.ico_boost_stick_r_r_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[5].value_GSDT
+    main_window.ico_boost_stick_r_push_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
 
 
 def on_skin_changed(main_window):
@@ -51,6 +62,35 @@ def on_damaged_costume(main_window):
 def on_gsc_health_value_changed(main_window):
     # Store the value from ui into the class
     GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[7].value_GSDT = main_window.gsc_health_value.value()
+
+
+def on_ico_boost_stick_value_changed(main_window, stick_number):
+
+    # Check the stick number the user has selected
+    # Up
+    if stick_number == 1:
+        combobox_index = main_window.ico_boost_stick_r_up_value_2.currentIndex()
+    # Down
+    elif stick_number == 2:
+        combobox_index = main_window.ico_boost_stick_r_d_value_2.currentIndex()
+    # Left
+    elif stick_number == 3:
+        combobox_index = main_window.ico_boost_stick_r_l_value_2.currentIndex()
+    # Right
+    elif stick_number == 4:
+        combobox_index = main_window.ico_boost_stick_r_r_value_2.currentIndex()
+    else:
+        combobox_index = main_window.ico_boost_stick_r_push_value_2.currentIndex()
+
+    # If there is no blast attack selected, we assign -1 to the edited pointer
+    if combobox_index == 0:
+        value = 4294967295
+    # If there is a blast attack selected, we convert the index from combobox, to the value for gsdt
+    else:
+        value = combobox_index - 1
+
+    # Store the value from ui into the class
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[stick_number].value_GSDT = value
 
 
 def action_change_character(event, main_window):

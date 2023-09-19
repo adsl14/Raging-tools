@@ -12,6 +12,7 @@ class GSCEV:
     path_slot_image = os.path.join("lib", "character_parameters_editor", "images", "fourSlot")
     path_slot_small_images = os.path.join(path_slot_image, "small")
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
+    path_controller_images = os.path.join("lib", "character_parameters_editor", "images", "controller")
 
     # This var will be used to store the ID of the character, so we can clean the Window
     old_selected_partner = 0

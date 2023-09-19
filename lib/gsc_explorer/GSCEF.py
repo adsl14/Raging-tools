@@ -12,7 +12,7 @@ from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
 from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
-    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed
+    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -167,6 +167,13 @@ def initialize_gsce(main_window):
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(0).zfill(3) + ".png")))
     main_window.char_id_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
 
+    # Set the blast attacks images
+    main_window.ico_boost_stick_r_up_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_up.png")))
+    main_window.ico_boost_stick_r_r_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_r.png")))
+    main_window.ico_boost_stick_r_d_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_d.png")))
+    main_window.ico_boost_stick_r_l_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_l.png")))
+    main_window.ico_boost_stick_r_push_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_push_00.png")))
+
     # Enable all signals
     listen_events_logic(main_window, True)
 
@@ -191,6 +198,13 @@ def listen_events_logic(main_window, flag):
         main_window.damaged_costume.toggled.connect(lambda: on_damaged_costume(main_window))
         # Set the character health
         main_window.gsc_health_value.valueChanged.connect(lambda: on_gsc_health_value_changed(main_window))
+        # Set the character blast attacks
+        main_window.ico_boost_stick_r_up_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 1))
+        main_window.ico_boost_stick_r_d_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 2))
+        main_window.ico_boost_stick_r_l_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 3))
+        main_window.ico_boost_stick_r_r_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 4))
+        main_window.ico_boost_stick_r_push_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 5))
+
     else:
 
         try:
@@ -211,6 +225,12 @@ def listen_events_logic(main_window, flag):
             main_window.damaged_costume.toggled.disconnect()
             # Set the character health
             main_window.gsc_health_value.valueChanged.disconnect()
+            # Set the character blast attacks
+            main_window.ico_boost_stick_r_up_value_2.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_d_value_2.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_l_value_2.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_r_value_2.currentIndexChanged.disconnect()
+            main_window.ico_boost_stick_r_push_value_2.currentIndexChanged.disconnect()
 
         except TypeError:
             pass

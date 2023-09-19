@@ -27,6 +27,17 @@ def store_parameters_gsc_explorer(main_window):
     main_window.gsc_health_value.setValue(gsac_3.data.pointers[5].pointers_data[7].value_GSDT)
     # Character (store in gui, only the first one)
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[5].pointers_data[2].value_GSDT).zfill(3) + ".png")))
+    # Blast attacks
+    value_gsdt = gsac_3.data.pointers[6].pointers_data[1].value_GSDT
+    main_window.ico_boost_stick_r_up_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = gsac_3.data.pointers[6].pointers_data[2].value_GSDT
+    main_window.ico_boost_stick_r_d_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = gsac_3.data.pointers[6].pointers_data[3].value_GSDT
+    main_window.ico_boost_stick_r_l_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = gsac_3.data.pointers[6].pointers_data[4].value_GSDT
+    main_window.ico_boost_stick_r_r_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
+    value_gsdt = gsac_3.data.pointers[6].pointers_data[5].value_GSDT
+    main_window.ico_boost_stick_r_push_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
 
     # Open the tab (gsc explorer)
     if main_window.tabWidget.currentIndex() != 3:
