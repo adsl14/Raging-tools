@@ -225,7 +225,7 @@ alt="character_parameters_editor_general_parameters_1" width="50%">
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
   <li>
-    <i>cs_main.zpak.zpak</i> located in <i>st_pack_progress_pt_ps3.afs</i> and
+    <i>cs_main.zpak</i> located in <i>st_pack_progress_pt_ps3.afs</i> and
     <i>st_pack_progress_pt_x360.zpak</i> (Raging Blast 2).<br>
     <img src="images/character_parameters_editor_general_parameters_3.jpg" 
 alt="character_parameters_editor_general_parameters_3" width="50%">
