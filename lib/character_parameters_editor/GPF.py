@@ -6,7 +6,7 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_animation_per_transformation_changed, on_amount_ki_fusion_changed, on_animation_per_fusion_changed, \
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
     on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic, action_export_signature_button_logic, \
-    action_import_signature_button_logic
+    action_import_signature_button_logic, on_name_text_changed, on_sub_name_text_changed
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
@@ -110,6 +110,26 @@ def initialize_operate_resident_param(main_window):
     main_window.ico_boost_stick_r_push_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_push_00.png")))
 
 
+def initialize_roster(main_window):
+    # Load the large portrait
+    main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
+
+    # Show the transformations in the main panel
+    main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_001.bmp")))
+    main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
+                                                                  index=1, modify_slot_transform=False)
+    main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_002.bmp")))
+    main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
+                                                                  index=2, modify_slot_transform=False)
+    main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_003.bmp")))
+    main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
+                                                                  index=3, modify_slot_transform=False)
+    main_window.label_trans_0.setVisible(True)
+    main_window.label_trans_1.setVisible(True)
+    main_window.label_trans_2.setVisible(True)
+    main_window.label_trans_3.setVisible(False)
+
+
 def listen_events_logic(main_window, flag):
     if flag:
         # Set the health
@@ -184,6 +204,12 @@ def listen_events_logic(main_window, flag):
         main_window.ico_boost_stick_r_l_value.currentIndexChanged.connect(lambda: on_l_blast_attack_logic(main_window))
         main_window.ico_boost_stick_r_push_value.currentIndexChanged.connect(lambda: on_p_blast_attack_logic(main_window))
 
+        # Set the text name id for the character select character
+        main_window.name_value.valueChanged.connect(lambda: on_name_text_changed(main_window))
+
+        # Set the text sub-name id for the character select character
+        main_window.sub_name_value.valueChanged.connect(lambda: on_sub_name_text_changed(main_window))
+
     else:
         try:
             # Set the health
@@ -243,6 +269,13 @@ def listen_events_logic(main_window, flag):
             main_window.ico_boost_stick_r_d_value.currentIndexChanged.disconnect()
             main_window.ico_boost_stick_r_l_value.currentIndexChanged.disconnect()
             main_window.ico_boost_stick_r_push_value.currentIndexChanged.disconnect()
+
+            # Set the text name id for the character select character
+            main_window.name_value.valueChanged.disconnect()
+
+            # Set the text sub-name id for the character select character
+            main_window.sub_name_value.valueChanged.disconnect()
+
         except TypeError:
             pass
 
@@ -273,32 +306,17 @@ def enable_disable_operate_resident_param_values(main_window, flag):
     main_window.glow_lightning.setEnabled(flag)
 
 
-def initialize_roster(main_window):
-    # Load the large portrait
-    main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
-
-    # Show the transformations in the main panel
-    main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_001.bmp")))
-    main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=1, modify_slot_transform=False)
-    main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_002.bmp")))
-    main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=2, modify_slot_transform=False)
-    main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_003.bmp")))
-    main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=3, modify_slot_transform=False)
-    main_window.label_trans_0.setVisible(True)
-    main_window.label_trans_1.setVisible(True)
-    main_window.label_trans_2.setVisible(True)
-    main_window.label_trans_3.setVisible(False)
-
-
 def enable_disable_db_font_pad_ps3_values(main_window, flag):
     # Aura section
     main_window.aura_type.setEnabled(flag)
 
     # Blast attacks
     main_window.ico_boost_stick_r.setEnabled(flag)
+
+
+def enable_disable_cs_main_values(main_window, flag):
+    # Text id names
+    main_window.text_names_chara.setEnabled(flag)
 
 
 def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
@@ -435,6 +453,18 @@ def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
     subpak_file_resident_character_param.seek(32, os.SEEK_CUR)
 
 
+def read_cs_main(character, subpak_file_cs_main):
+
+    # --- cs_main ---
+    # Character name and sub-name ide
+    subpak_file_cs_main.seek(4, os.SEEK_CUR)
+    character.character_name_text_id = int.from_bytes(subpak_file_cs_main.read(4), byteorder='big')
+    character.character_sub_name_text_id = int.from_bytes(subpak_file_cs_main.read(4), byteorder='big')
+
+    # Move to the next entry
+    subpak_file_cs_main.seek(68, os.SEEK_CUR)
+
+
 def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
     # Move to the visual parameters character
     subpak_file_character_inf.seek(character.position_visual_parameters)
@@ -523,6 +553,16 @@ def write_db_font_pad_ps3(character, subpak_file_resident_character_param):
     subpak_file_resident_character_param.write(character.blast_attacks["Left"].to_bytes(1, byteorder="big"))
     subpak_file_resident_character_param.seek(3, os.SEEK_CUR)
     subpak_file_resident_character_param.write(character.blast_attacks["Push"].to_bytes(1, byteorder="big"))
+
+
+def write_cs_main(character, subpak_file_cs_main):
+    # Move to the edited character
+    subpak_file_cs_main.seek(character.position_cs_main)
+
+    # Name and sub_name text
+    subpak_file_cs_main.seek(4, os.SEEK_CUR)
+    subpak_file_cs_main.write(character.character_name_text_id.to_bytes(4, byteorder="big"))
+    subpak_file_cs_main.write(character.character_sub_name_text_id.to_bytes(4, byteorder="big"))
 
 
 def open_select_chara_window(event, main_window, index, trans_slot_panel_index=None, fusion_slot_panel_index=None,

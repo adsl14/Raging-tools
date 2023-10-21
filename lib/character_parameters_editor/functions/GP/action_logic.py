@@ -230,7 +230,9 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
                                                                 (GPV.character_list[index].fusions_animation[2]))
             main_window.fusion4_animation_value.setCurrentIndex(main_window.fusion4_animation_value.findData
                                                                 (GPV.character_list[index].fusions_animation[3]))
-        else:
+
+        # The user has opened the file db_fond_pad
+        elif GPV.db_font_pad_XYZ_s_d:
 
             # Aura type
             main_window.aura_type_value.setCurrentIndex(main_window.aura_type_value.findData
@@ -242,6 +244,25 @@ def action_change_character(event, main_window, index=None, modify_slot_transfor
             main_window.ico_boost_stick_r_d_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Down"])
             main_window.ico_boost_stick_r_l_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Left"])
             main_window.ico_boost_stick_r_push_value.setCurrentIndex(GPV.character_list[index].blast_attacks["Push"])
+
+        # The user has opened the file cs_main
+        else:
+
+            # Name id parameter
+            # Check if there is a character that doesn't have any name written. We have to adjust the value to the tool if that's the case
+            if GPV.character_list[index].character_name_text_id == 4294967295:
+                value = -1
+            else:
+                value = GPV.character_list[index].character_name_text_id
+            main_window.name_value.setValue(value)
+
+            # Sub-name id parameter
+            # Check if there is a character that doesn't have any name written. We have to adjust the value to the tool if that's the case
+            if GPV.character_list[index].character_sub_name_text_id == 4294967295:
+                value = -1
+            else:
+                value = GPV.character_list[index].character_sub_name_text_id
+            main_window.sub_name_value.setValue(value)
 
         # Load the portrait
         main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_" +
@@ -731,6 +752,34 @@ def on_p_blast_attack_logic(main_window):
 
     GPV.character_list[GPV.chara_selected].blast_attacks["Push"] = main_window.\
         ico_boost_stick_r_push_value.currentIndex()
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_name_text_changed(main_window):
+
+    # Store the id text name selected by the user. Check if the value in the tool is '-1' so we can store in memory the proper value
+    if main_window.name_value.value() == -1:
+        value = 4294967295
+    else:
+        value = main_window.name_value.value()
+    GPV.character_list[GPV.chara_selected].character_name_text_id = value
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_sub_name_text_changed(main_window):
+
+    # Store the id text name selected by the user. Check if the value in the tool is '-1' so we can store in memory the proper value
+    if main_window.sub_name_value.value() == -1:
+        value = 4294967295
+    else:
+        value = main_window.sub_name_value.value()
+    GPV.character_list[GPV.chara_selected].character_sub_name_text_id = value
 
     # If the character was edited before, we won't append the index to our array of characters edited once
     if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:

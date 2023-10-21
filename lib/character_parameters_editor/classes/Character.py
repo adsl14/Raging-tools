@@ -32,3 +32,8 @@ class Character:
 		self.position_resident_character_param = 0
 		self.aura_type = 0
 		self.blast_attacks = dict({"Up": 0, "Right": 0, "Down": 0, "Left": 0, "Push": 0})
+
+		# Values for the file cs_main.zpak
+		self.position_cs_main = 0
+		self.character_name_text_id = 0
+		self.character_sub_name_text_id = 0

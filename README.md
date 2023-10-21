@@ -207,7 +207,8 @@ This tool is divided in three tabs:
 
 ### General Parameters
 
-This tab holds the general parameters of the characters, like transformations, glow, lightnings, health, aura size, etc.
+This tab holds the general parameters of the characters, like transformations, glow, lightnings, health, aura size, 
+default blast attacks, names in the select character menu, etc.
 
 In order to use this tab, and deppeding on what you need to edit, you have to open one of the following files:
 <ul>
@@ -221,6 +222,12 @@ alt="character_parameters_editor_general_parameters_1" width="50%">
     <i>db_font_pad_PS3_s.zpak</i> located in <i>st_pack_boot_pt_ps3.afs</i> and
     <i>db_font_pad_X360_s.zpak</i> located in <i>st_pack_boot_pt_x360.afs (Raging Blast 2)</i>.<br>
     <img src="images/character_parameters_editor_general_parameters_2.jpg" 
+alt="character_parameters_editor_general_parameters_1" width="50%">
+  </li>
+  <li>
+    <i>cs_main.zpak.zpak</i> located in <i>st_pack_progress_pt_ps3.afs</i> and
+    <i>st_pack_progress_pt_x360.zpak</i> (Raging Blast 2).<br>
+    <img src="images/character_parameters_editor_general_parameters_3.jpg" 
 alt="character_parameters_editor_general_parameters_1" width="50%">
   </li>
 </ul>   

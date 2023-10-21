@@ -2,17 +2,20 @@
 
 class GPV:
 
-    # Flag that will tell us if the user has loaded the operate_character_parameters file
+    # Flag that will tell us if the user has loaded the operate_character_parameters or, db_font_pad_PS3_s_d and db_font_pad_X360_s_d
     operate_resident_param_file = False
+    db_font_pad_XYZ_s_d = False
     # path for character info, transformer, skill and game_resident_character_param.da
     resident_character_inf_path = ""
     resident_transformer_i_path = ""
     resident_skill_path = ""
     game_resident_character_param = ""
+    cs_main_dat = ""
     # number of bytes between each character
     sizeVisualParameters = 148
     sizeTrans = 33
     sizeCharacterParam = 56
+    sizeCharacterCsMainDat = 80
     # Values for the combo box
     trans_effect_values = dict({"Super Saiyan": 0, "Metamoru": 1, "Potara": 2, "Cell": 3, "Super Buu": 4,
                                "Broly": 5, "Freezer": 6, "Super Saiyan 3": 7, "Cooler": 8, "Bojack": 9, "C-13": 10,

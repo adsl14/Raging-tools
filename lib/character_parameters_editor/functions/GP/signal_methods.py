@@ -4,7 +4,7 @@ import os
 from PyQt5.QtGui import QPixmap
 
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.GPF import open_select_chara_window, enable_disable_operate_resident_param_values, enable_disable_db_font_pad_ps3_values
+from lib.character_parameters_editor.GPF import open_select_chara_window, enable_disable_operate_resident_param_values, enable_disable_db_font_pad_ps3_values, enable_disable_cs_main_values
 from lib.character_parameters_editor.GPV import GPV
 
 
@@ -175,6 +175,7 @@ def enable_tabs_operate_GP(main_window):
     if not main_window.health.isEnabled():
         enable_disable_operate_resident_param_values(main_window, True)
         enable_disable_db_font_pad_ps3_values(main_window, False)
+        enable_disable_cs_main_values(main_window, False)
     if not main_window.operate_resident_param_frame.isEnabled():
         main_window.operate_resident_param_frame.setEnabled(True)
 
@@ -218,6 +219,53 @@ def enable_tabs_db_font_GP(main_window):
     if not main_window.aura_type.isEnabled():
         enable_disable_operate_resident_param_values(main_window, False)
         enable_disable_db_font_pad_ps3_values(main_window, True)
+        enable_disable_cs_main_values(main_window, False)
+    if not main_window.operate_resident_param_frame.isEnabled():
+        main_window.operate_resident_param_frame.setEnabled(True)
+
+    # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
+    if main_window.operate_character_xyz_m_frame.isEnabled():
+        main_window.operate_character_xyz_m_frame.setEnabled(False)
+    # Disable all the buttons (character parameters editor -> cs_chip)
+    if main_window.cs_chip.isEnabled():
+        main_window.cs_chip.setEnabled(False)
+
+
+def initialize_buttons_events_cs_main_GP(main_window):
+    # Show the name id parameter
+    if GPV.character_list[0].character_name_text_id == 4294967295:
+        value = -1
+    else:
+        value = GPV.character_list[0].character_name_text_id
+    main_window.name_value.setValue(value)
+
+    # Show the sub-name id parameter
+    if GPV.character_list[0].character_sub_name_text_id == 4294967295:
+        value = -1
+    else:
+        value = GPV.character_list[0].character_sub_name_text_id
+    main_window.sub_name_value.setValue(value)
+
+
+def enable_tabs_cs_main_GP(main_window):
+
+    # Open the tab (character parameters editor)
+    if main_window.tabWidget.currentIndex() != 2:
+        main_window.tabWidget.setCurrentIndex(2)
+
+    # Open the tab operate_resident_param
+    if main_window.tabWidget_2.currentIndex() != 0:
+        main_window.tabWidget_2.setCurrentIndex(0)
+
+    # Enable completely the tab character parameters editor
+    if not main_window.character_parameters_editor.isEnabled():
+        main_window.character_parameters_editor.setEnabled(True)
+
+    # Enable all the buttons (cs_main -> cs_main_dat)
+    if not main_window.text_names_chara.isEnabled():
+        enable_disable_operate_resident_param_values(main_window, False)
+        enable_disable_db_font_pad_ps3_values(main_window, False)
+        enable_disable_cs_main_values(main_window, True)
     if not main_window.operate_resident_param_frame.isEnabled():
         main_window.operate_resident_param_frame.setEnabled(True)
 

@@ -10,6 +10,7 @@ class CPEV:
     cs_chip = b"cs_chip.dat"
     db_font_pad_PS3_s_d = b"db_font_pad_PS3.spr"
     db_font_pad_X360_s_d = b"db_font_pad_X360.spr"
+    cs_main = b"cs_main.dat"
 
     # path images
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")

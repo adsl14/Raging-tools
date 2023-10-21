@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import QListView, QComboBox, QMainWindow, QWidget
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.REF import read_cs_chip_file, write_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters, write_single_character_parameters
-from lib.character_parameters_editor.GPF import read_operate_resident_param, read_db_font_pad_ps3, write_db_font_pad_ps3, write_operate_resident_param
+from lib.character_parameters_editor.GPF import read_operate_resident_param, read_db_font_pad_ps3, write_db_font_pad_ps3, write_operate_resident_param, read_cs_main, write_cs_main
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.character_parameters_editor.classes.Animation import Animation
@@ -36,6 +36,8 @@ class WorkerPef(QObject):
     enable_tabs_operate_GP_signal = pyqtSignal(QMainWindow)
     initialize_buttons_events_db_font_GP_signal = pyqtSignal(QMainWindow)
     enable_tabs_db_font_GP_signal = pyqtSignal(QMainWindow)
+    initialize_buttons_events_cs_main_GP_signal = pyqtSignal(QMainWindow)
+    enable_tabs_cs_main_GP_signal = pyqtSignal(QMainWindow)
 
     # Individual parameters signals
     add_array_of_animation_signal = pyqtSignal(QComboBox, str, list)
@@ -106,6 +108,7 @@ class WorkerPef(QObject):
             GPV.character_list.clear()
             GPV.chara_selected = 0  # Index of the char selected in the program
             GPV.operate_resident_param_file = True
+            GPV.db_font_pad_XYZ_s_d = False
 
             # Read all the data from the files'
             # character_info, transformer_i and skill.dat
@@ -162,6 +165,7 @@ class WorkerPef(QObject):
             GPV.character_list.clear()
             GPV.chara_selected = 0  # Index of the char selected in the program
             GPV.operate_resident_param_file = False
+            GPV.db_font_pad_XYZ_s_d = True
 
             # Read all the data from the files
             GPV.game_resident_character_param = self.main_window.listView_2.model().item(2, 0).text()
@@ -195,6 +199,48 @@ class WorkerPef(QObject):
 
             # Enable/Disable tabs
             self.enable_tabs_db_font_GP_signal.emit(self.main_window)
+
+        # Check if the file is the cs_main.zpak
+        elif data == CPEV.cs_main:
+            # reset the values
+            GPV.character_list_edited.clear()
+            GPV.character_list.clear()
+            GPV.chara_selected = 0  # Index of the char selected in the program
+            GPV.operate_resident_param_file = False
+            GPV.db_font_pad_XYZ_s_d = False
+
+            # Read all the data from the files
+            GPV.cs_main_dat = self.main_window.listView_2.model().item(0, 0).text()
+            subpak_file_cs_main_dat = open(GPV.cs_main_dat, mode="rb")
+
+            # Read the data from the files and store the parameters
+            sub_step_progress = step_progress / 100.0
+            for i in range(0, 100):
+                # Report progress
+                self.progressText.emit("Reading character " + str(i))
+                show_progress_value(self, sub_step_progress)
+
+                # Create a Character object
+                character = Character()
+
+                # Store the positions where the information is located
+                character.position_cs_main = i * GPV.sizeCharacterCsMainDat
+
+                # Store the information in the object and append to a list
+                read_cs_main(character, subpak_file_cs_main_dat)
+                GPV.character_list.append(character)
+
+            # Close the files
+            subpak_file_cs_main_dat.close()
+
+            # Initialize main roster
+            self.initialize_roster_signal.emit(self.main_window)
+
+            # Initialize buttons
+            self.initialize_buttons_events_cs_main_GP_signal.emit(self.main_window)
+
+            # Enable/Disable tabs
+            self.enable_tabs_cs_main_GP_signal.emit(self.main_window)
 
         # Check if the file is an operate_character_xyz_m type
         elif re.search(CPEV.operate_character_xyz_m_regex, data):
@@ -295,7 +341,7 @@ class WorkerPef(QObject):
         # Finish the thread
         self.finished.emit()
 
-    def save_operate_resident_param_db_font_pad_ps3_and_pack(self):
+    def save_general_parameters_and_pack(self):
 
         # Values for the progress bar
         # 2 main tasks
@@ -327,7 +373,7 @@ class WorkerPef(QObject):
             subpak_file_skill.close()
 
         # --- db_font_pad_ps3 ---
-        else:
+        elif GPV.db_font_pad_XYZ_s_d:
 
             # Open the files
             subpak_file_resident_character_param = open(GPV.game_resident_character_param,
@@ -343,6 +389,22 @@ class WorkerPef(QObject):
 
             # Close the files
             subpak_file_resident_character_param.close()
+
+        # --- cs_main ---
+        else:
+            # Open the files
+            subpak_file_cs_main = open(GPV.cs_main_dat, mode="rb+")
+            print("Writing values in the file...")
+            # Change the values in the file
+            for character in GPV.character_list_edited:
+                # Report progress
+                show_progress_value(self, sub_step_progress)
+
+                # Save all the info for each character
+                write_cs_main(character, subpak_file_cs_main)
+
+            # Close the files
+            subpak_file_cs_main.close()
 
         # Pack the files
         self.step_progress_pack = step_progress

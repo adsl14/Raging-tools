@@ -5,7 +5,8 @@ from lib.character_parameters_editor.GPF import initialize_roster
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
-from lib.character_parameters_editor.functions.GP.signal_methods import initialize_buttons_events_operate_GP, enable_tabs_operate_GP, enable_tabs_db_font_GP, initialize_buttons_events_db_font_GP
+from lib.character_parameters_editor.functions.GP.signal_methods import initialize_buttons_events_operate_GP, enable_tabs_operate_GP, enable_tabs_db_font_GP, initialize_buttons_events_db_font_GP, \
+    initialize_buttons_events_cs_main_GP, enable_tabs_cs_main_GP
 from lib.character_parameters_editor.functions.IP.auxiliary import change_animation_bones_section, read_transformation_effect
 from lib.character_parameters_editor.functions.IP.signal_methods import add_array_of_animation, show_first_item_camera, set_blast_combo_box, show_first_item_blast, set_camera_type, \
     set_first_index_animation_type_value, set_character_info, enable_individual_parameters_tab
@@ -434,6 +435,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.enable_tabs_operate_GP_signal.connect(enable_tabs_operate_GP)
         self.worker.initialize_buttons_events_db_font_GP_signal.connect(initialize_buttons_events_db_font_GP)
         self.worker.enable_tabs_db_font_GP_signal.connect(enable_tabs_db_font_GP)
+        self.worker.initialize_buttons_events_cs_main_GP_signal.connect(initialize_buttons_events_cs_main_GP)
+        self.worker.enable_tabs_cs_main_GP_signal.connect(enable_tabs_cs_main_GP)
 
         # Individual parameters signals
         self.worker.add_array_of_animation_signal.connect(add_array_of_animation)
@@ -526,7 +529,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Reset progressbar
         self.reset_progress_bar()
 
-    def run_save_operate_resident_param_db_font_pad_ps3_and_pack(self, path_output_file):
+    def run_save_general_parameters_and_pack(self, path_output_file):
 
         # Step 2: Create a QThread object
         self.thread = QThread()
@@ -539,7 +542,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.path_output_file = path_output_file
         self.worker.start_progress = 0.0
         self.worker.end_progress = 100.0
-        self.thread.started.connect(self.worker.save_operate_resident_param_db_font_pad_ps3_and_pack)
+        self.thread.started.connect(self.worker.save_general_parameters_and_pack)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -908,7 +911,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                                 # pack file (only if the user wants to)
                                 if PEV.accept_button_pushed_pack_format_window:
-                                    self.run_save_operate_resident_param_db_font_pad_ps3_and_pack(path_output_file)
+                                    self.run_save_general_parameters_and_pack(path_output_file)
 
                             # --- cs_chip ---
                             # If the user has opened the cs_chip tab and edited one character, we will save the file
