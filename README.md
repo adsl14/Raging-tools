@@ -208,7 +208,7 @@ This tool is divided in three tabs:
 ### General Parameters
 
 This tab holds the general parameters of the characters, like transformations, glow, lightnings, health, aura size, 
-default blast attacks, names in the select character menu, etc.
+default blast attacks, names, etc.
 
 In order to use this tab, and deppeding on what you need to edit, you have to open one of the following files:
 <ul>
