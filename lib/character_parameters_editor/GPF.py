@@ -11,30 +11,19 @@ from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
 def initialize_operate_resident_param(main_window):
-    # Load all the mini portraits (main panel)
-    GPV.mini_portraits_image = main_window.mainPanel.findChildren(QLabel)
 
-    for i in range(0, 66):
-        index_chara = GPV.mini_portraits_image[i].objectName().split("_")[1]
-        GPV.mini_portraits_image[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_0" +
-                                                                   index_chara + ".bmp")))
-        GPV.mini_portraits_image[i].setStyleSheet(CPEV.styleSheetSelectSlotRoster)
-        GPV.mini_portraits_image[i].mousePressEvent = functools.partial(action_change_character,
-                                                                        main_window=main_window,
-                                                                        index=int(index_chara),
-                                                                        modify_slot_transform=True)
-
-    for i in range(66, len(GPV.mini_portraits_image)):
-        GPV.mini_portraits_image[i].setStyleSheet(CPEV.styleSheetSelectSlotRoster)
-
-    # Hide the transformation slots
-    main_window.label_trans_0.setVisible(False)
-    main_window.label_trans_1.setVisible(False)
-    main_window.label_trans_2.setVisible(False)
-    main_window.label_trans_3.setVisible(False)
+    # Define character slot changer
+    main_window.general_parameter_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
+    # Load the Select Chara window
+    GPV.mini_portraits_image_select_chara = main_window.selectGeneralCharaRosterUI.frame.findChildren(QLabel)
+    for i in range(0, len(GPV.mini_portraits_image_select_chara)):
+        label_id_image = GPV.mini_portraits_image_select_chara[i].objectName().split("_")[-1]
+        GPV.mini_portraits_image_select_chara[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_" + label_id_image.zfill(3) + ".bmp")))
+        GPV.mini_portraits_image_select_chara[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+        GPV.mini_portraits_image_select_chara[i].mousePressEvent = functools.partial(action_change_character, main_window=main_window, index=i)
 
     # Disable all the buttons (operate_resident_param)
-    main_window.operate_resident_param_frame.setEnabled(False)
+    main_window.general_parameters_frame.setEnabled(False)
 
     # Disable all the buttons (operate_character_XXX_m)
     main_window.operate_character_xyz_m_frame.setEnabled(False)
@@ -59,7 +48,7 @@ def initialize_operate_resident_param(main_window):
     for element in GPV.trans_effect_values:
         main_window.transEffectValue.addItem(element, GPV.trans_effect_values[element])
 
-    # Set the Trasformation partner
+    # Set the Transformation partner
     main_window.transPartnerSlot.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_slot.png")))
 
     # Add the values
@@ -86,16 +75,16 @@ def initialize_operate_resident_param(main_window):
     main_window.fusiPanel.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "pl_fusion.png")))
     main_window.fusiPanelText.setPixmap(QPixmap(os.path.join(CPEV.path_fourSlot_images, "tx_fusion_US.png")))
 
-    # Load the Select Chara window
-    GPV.mini_portraits_image_select_chara_window = main_window.selectCharaUI.frame.findChildren(QLabel)
-    for i in range(0, len(GPV.mini_portraits_image_select_chara_window)):
-        label_id_image = GPV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
-        GPV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
+    # Load the Select Chara trans and fusion window
+    GPV.mini_portraits_image_select_chara_trans_fusion_window = main_window.selectCharaTransFusionUI.frame.findChildren(QLabel)
+    for i in range(0, len(GPV.mini_portraits_image_select_chara_trans_fusion_window)):
+        label_id_image = GPV.mini_portraits_image_select_chara_trans_fusion_window[i].objectName().split("_")[-1]
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[i].setPixmap(QPixmap(os.path.join(CPEV.path_small_images,
                                                                                        "chara_chips_" +
-                                                                                       label_id_image.zfill(3)
-                                                                                       + ".bmp")))
-        GPV.mini_portraits_image_select_chara_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
-        GPV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(
+                                                                                                    label_id_image.zfill(3)
+                                                                                                    + ".bmp")))
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[i].setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[i].mousePressEvent = functools.partial(
             action_edit_trans_fusion_slot, main_window=main_window, char_selected_new=i)
 
     # Add the values
@@ -111,23 +100,10 @@ def initialize_operate_resident_param(main_window):
 
 
 def initialize_roster(main_window):
-    # Load the large portrait
-    main_window.portrait.setPixmap(QPixmap(os.path.join(CPEV.path_large_images, "chara_up_chips_l_000.png")))
 
-    # Show the transformations in the main panel
-    main_window.label_trans_0.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_001.bmp")))
-    main_window.label_trans_0.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=1, modify_slot_transform=False)
-    main_window.label_trans_1.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_002.bmp")))
-    main_window.label_trans_1.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=2, modify_slot_transform=False)
-    main_window.label_trans_2.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_003.bmp")))
-    main_window.label_trans_2.mousePressEvent = functools.partial(action_change_character, main_window=main_window,
-                                                                  index=3, modify_slot_transform=False)
-    main_window.label_trans_0.setVisible(True)
-    main_window.label_trans_1.setVisible(True)
-    main_window.label_trans_2.setVisible(True)
-    main_window.label_trans_3.setVisible(False)
+    # Load the first character image
+    main_window.general_parameter_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_000.bmp")))
+    main_window.general_parameter_character_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=main_window)
 
 
 def listen_events_logic(main_window, flag):
@@ -297,26 +273,17 @@ def enable_disable_operate_resident_param_values(main_window, flag):
     main_window.animation_per_fusion.setEnabled(flag)
 
     # --- Character info values ---
-    main_window.health.setEnabled(flag)
-    main_window.camera_size.setEnabled(flag)
-    main_window.hit_box.setEnabled(flag)
-    main_window.signature_parameters.setEnabled(flag)
-    main_window.aura_size.setEnabled(flag)
-    main_window.color_lightning.setEnabled(flag)
-    main_window.glow_lightning.setEnabled(flag)
+    main_window.operate_parameters_frame.setEnabled(flag)
 
 
 def enable_disable_db_font_pad_ps3_values(main_window, flag):
-    # Aura section
-    main_window.aura_type.setEnabled(flag)
-
-    # Blast attacks
-    main_window.ico_boost_stick_r.setEnabled(flag)
+    # db font pad values
+    main_window.db_font_pad_frame.setEnabled(flag)
 
 
 def enable_disable_cs_main_values(main_window, flag):
-    # Text id names
-    main_window.text_names_chara.setEnabled(flag)
+    # cs main values
+    main_window.text_names_chara_frame.setEnabled(flag)
 
 
 def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
@@ -565,9 +532,19 @@ def write_cs_main(character, subpak_file_cs_main):
     subpak_file_cs_main.write(character.character_sub_name_text_id.to_bytes(4, byteorder="big"))
 
 
-def open_select_chara_window(event, main_window, index, trans_slot_panel_index=None, fusion_slot_panel_index=None,
-                             transformation_partner_flag=False, fusion_partner_trigger_flag=False,
-                             fusion_partner_visual_flag=False):
+def open_select_chara_window(event, main_window):
+
+    # Add the color border to the character that has been selected in the select chara window only if it wasn't colored before
+    if GPV.mini_portraits_image_select_chara[GPV.chara_selected].styleSheet() != CPEV.styleSheetSelectTransRosterWindow:
+        GPV.mini_portraits_image_select_chara[GPV.chara_selected].setStyleSheet(CPEV.styleSheetSelectTransRosterWindow)
+
+    # Show the select chara window
+    main_window.selectGeneralCharaRosterWindow.show()
+
+
+def open_select_chara_trans_fusion_window(event, main_window, index, trans_slot_panel_index=None, fusion_slot_panel_index=None,
+                                          transformation_partner_flag=False, fusion_partner_trigger_flag=False,
+                                          fusion_partner_visual_flag=False):
     # Check what selected the user. If the user didn't select the transform panel or transform partner
     # then, the user selected the fusion panel (or potara or metamoran)
     if trans_slot_panel_index is not None or transformation_partner_flag:
@@ -586,10 +563,10 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
     if GPV.previous_chara_selected_character_window != index:
 
         # Add the color border to the character that has been selected in the trans/fusion slot
-        GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[index].setStyleSheet(q_label_style)
 
         # Reset the previous character select
-        GPV.mini_portraits_image_select_chara_window[GPV.previous_chara_selected_character_window] \
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[GPV.previous_chara_selected_character_window] \
             .setStyleSheet(CPEV.styleSheetSlotRosterWindow)
 
         # Store the actual character selected in the select character window
@@ -597,12 +574,12 @@ def open_select_chara_window(event, main_window, index, trans_slot_panel_index=N
 
     # If the color border isn't the same, means the user has selected a different slot (trans or fusion
     # or partners)
-    elif GPV.mini_portraits_image_select_chara_window[index].styleSheet() != q_label_style:
+    elif GPV.mini_portraits_image_select_chara_trans_fusion_window[index].styleSheet() != q_label_style:
 
         # Add the color border to the character that has been selected in the trans/fusion slot
-        GPV.mini_portraits_image_select_chara_window[index].setStyleSheet(q_label_style)
+        GPV.mini_portraits_image_select_chara_trans_fusion_window[index].setStyleSheet(q_label_style)
 
         # Store the actual character selected in the select character window
         GPV.previous_chara_selected_character_window = index
 
-    main_window.selectCharaWindow.show()
+    main_window.selectCharaTransFusionWindow.show()

@@ -17,6 +17,7 @@ from lib.design.output_format.output_format import Output_Format
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
+from lib.design.select_chara.select_general_chara_roster import Select_General_Chara_Roster
 from lib.gsc_explorer import GSCEF
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
@@ -293,10 +294,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionCredits.triggered.connect(self.action_credits_logic)
 
         # Generate external windows
-        # Select Chara window
-        self.selectCharaWindow = QtWidgets.QDialog()
-        self.selectCharaUI = Select_Chara()
-        self.selectCharaUI.setupUi(self.selectCharaWindow)
+        # Select character
+        self.selectGeneralCharaRosterWindow = QtWidgets.QDialog()
+        self.selectGeneralCharaRosterUI = Select_General_Chara_Roster()
+        self.selectGeneralCharaRosterUI.setupUi(self.selectGeneralCharaRosterWindow)
+        # Select Chara transform and fusion window
+        self.selectCharaTransFusionWindow = QtWidgets.QDialog()
+        self.selectCharaTransFusionUI = Select_Chara()
+        self.selectCharaTransFusionUI.setupUi(self.selectCharaTransFusionWindow)
         # Select Chara partner window
         self.selectCharaPartnerWindow = QtWidgets.QDialog()
         self.selectCharaPartnerUI = Select_Chara()
@@ -904,7 +909,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                             # --- operate_resident_param --- or --- db_font_pad ---
                             # If the user has opened the operate resident or db_font_pad and edited one character, we will save the file
-                            elif self.operate_resident_param_frame.isEnabled() and GPV.character_list_edited:
+                            elif self.general_parameters_frame.isEnabled() and GPV.character_list_edited:
 
                                 # Ask the user the packing format
                                 ask_pack_compression_structure(self)
@@ -1491,7 +1496,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication([])
     window = MainWindow()
     window.setWindowIcon(window.ico_image)
-    window.selectCharaWindow.setWindowIcon(window.ico_image)
+    window.selectCharaTransFusionWindow.setWindowIcon(window.ico_image)
     window.selectCharaPartnerWindow.setWindowIcon(window.ico_image)
     window.selectCharaRosterWindow.setWindowIcon(window.ico_image)
     window.selectCharaGscWindow.setWindowIcon(window.ico_image)

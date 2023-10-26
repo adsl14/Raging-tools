@@ -32,12 +32,12 @@ class GPV:
                              'Burter': 19, 'Frieza': 20, 'Super Janemba': 21, 'Majin Vegeta': 22, 'Videl': 23,
                              'Red Flame ': 24, 'Blue Flame': 25})
 
-    # panelPortraistlist
-    mini_portraits_image = []
+    # select general chara window portraits
+    mini_portraits_image_select_chara = []
 
     # portraits object for the Select Character window
     previous_chara_selected_character_window = 100
-    mini_portraits_image_select_chara_window = []
+    mini_portraits_image_select_chara_trans_fusion_window = []
 
     # List of character with their data from the file
     character_list = []  # It stores the instances of character with all the info stored within
@@ -49,13 +49,6 @@ class GPV:
     fusion_partner_flag = [False, False]
     # Array of the characters that has been edited
     character_list_edited = []
-
-    # Store what character has original transform version
-    characters_with_trans = [0, 5, 8, 17, 22, 24, 27, 29, 31, 34, 40, 48, 58, 63, 67, 79, 82, 85, 88]
-    # Store what transformations has the character originally
-    characters_with_trans_index = [[1, 2, 3], [6, 7], [9, 10], [18, 19, 20], [23], [25, 26], [28], [30], [32, 33],
-                                   [35], [41], [49, 50, 51, 52], [59, 60, 61], [64, 65], [68, 69], [80], [83], [86],
-                                   [89]]
 
     # Outputname for the signature skill
     signature_output_name = "Signature_parameters"

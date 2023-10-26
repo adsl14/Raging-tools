@@ -4,7 +4,8 @@ import os
 from PyQt5.QtGui import QPixmap
 
 from lib.character_parameters_editor.CPEV import CPEV
-from lib.character_parameters_editor.GPF import open_select_chara_window, enable_disable_operate_resident_param_values, enable_disable_db_font_pad_ps3_values, enable_disable_cs_main_values
+from lib.character_parameters_editor.GPF import open_select_chara_trans_fusion_window, enable_disable_operate_resident_param_values, enable_disable_db_font_pad_ps3_values, \
+    enable_disable_cs_main_values
 from lib.character_parameters_editor.GPV import GPV
 
 
@@ -37,28 +38,28 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
     main_window.transSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                str(character_zero.transformations[0]).zfill(
                                                                    3) + ".png")))
-    main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.transSlotPanel0.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                     main_window=main_window,
                                                                     index=character_zero.transformations[0],
                                                                     trans_slot_panel_index=0)
     main_window.transSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                str(character_zero.transformations[1]).zfill(
                                                                    3) + ".png")))
-    main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.transSlotPanel1.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                     main_window=main_window,
                                                                     index=character_zero.transformations[1],
                                                                     trans_slot_panel_index=1)
     main_window.transSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                str(character_zero.transformations[2]).zfill(
                                                                    3) + ".png")))
-    main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.transSlotPanel2.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                     main_window=main_window,
                                                                     index=character_zero.transformations[2],
                                                                     trans_slot_panel_index=2)
     main_window.transSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                str(character_zero.transformations[3]).zfill(
                                                                    3) + ".png")))
-    main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.transSlotPanel3.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                     main_window=main_window,
                                                                     index=character_zero.transformations[3],
                                                                     trans_slot_panel_index=3)
@@ -71,7 +72,7 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
     main_window.transPartnerValue.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                                  str(character_zero.transformation_partner).zfill(3)
                                                                  + ".png")))
-    main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.transPartnerValue.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                       main_window=main_window,
                                                                       index=character_zero.transformation_partner,
                                                                       transformation_partner_flag=True)
@@ -95,25 +96,25 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
     # Show the fusion panel
     main_window.fusiSlotPanel0.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                               str(character_zero.fusions[0]).zfill(3) + ".png")))
-    main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusiSlotPanel0.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                    main_window=main_window,
                                                                    index=character_zero.fusions[0],
                                                                    fusion_slot_panel_index=0)
     main_window.fusiSlotPanel1.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                               str(character_zero.fusions[1]).zfill(3) + ".png")))
-    main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusiSlotPanel1.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                    main_window=main_window,
                                                                    index=character_zero.fusions[1],
                                                                    fusion_slot_panel_index=1)
     main_window.fusiSlotPanel2.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                               str(character_zero.fusions[2]).zfill(3) + ".png")))
-    main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusiSlotPanel2.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                    main_window=main_window,
                                                                    index=character_zero.fusions[2],
                                                                    fusion_slot_panel_index=2)
     main_window.fusiSlotPanel3.setPixmap(QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                                                               str(character_zero.fusions[3]).zfill(3) + ".png")))
-    main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusiSlotPanel3.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                    main_window=main_window,
                                                                    index=character_zero.fusions[3],
                                                                    fusion_slot_panel_index=3)
@@ -123,7 +124,7 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
         QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                              str(character_zero.fusion_partner[0]).zfill(3)
                              + ".png")))
-    main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusionPartnerTrigger_value.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                                main_window=main_window,
                                                                                index=character_zero.fusion_partner
                                                                                [0],
@@ -134,7 +135,7 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
         QPixmap(os.path.join(CPEV.path_small_four_slot_images, "sc_chara_s_" +
                              str(character_zero.fusion_partner[1]).zfill(3)
                              + ".png")))
-    main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_window,
+    main_window.fusionPartnerVisual_value.mousePressEvent = functools.partial(open_select_chara_trans_fusion_window,
                                                                               main_window=main_window,
                                                                               index=character_zero.
                                                                               fusion_partner[1],
@@ -172,12 +173,12 @@ def enable_tabs_operate_GP(main_window):
         main_window.character_parameters_editor.setEnabled(True)
 
     # Enable all the buttons (character parameters editor -> operate_resident_param)
-    if not main_window.health.isEnabled():
+    if not main_window.operate_parameters_frame.isEnabled():
         enable_disable_operate_resident_param_values(main_window, True)
         enable_disable_db_font_pad_ps3_values(main_window, False)
         enable_disable_cs_main_values(main_window, False)
-    if not main_window.operate_resident_param_frame.isEnabled():
-        main_window.operate_resident_param_frame.setEnabled(True)
+    if not main_window.general_parameters_frame.isEnabled():
+        main_window.general_parameters_frame.setEnabled(True)
 
     # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
     if main_window.operate_character_xyz_m_frame.isEnabled():
@@ -216,12 +217,12 @@ def enable_tabs_db_font_GP(main_window):
         main_window.character_parameters_editor.setEnabled(True)
 
     # Enable all the buttons (db_font_pad_PS3_s -> game_resident_param)
-    if not main_window.aura_type.isEnabled():
+    if not main_window.db_font_pad_frame.isEnabled():
         enable_disable_operate_resident_param_values(main_window, False)
         enable_disable_db_font_pad_ps3_values(main_window, True)
         enable_disable_cs_main_values(main_window, False)
-    if not main_window.operate_resident_param_frame.isEnabled():
-        main_window.operate_resident_param_frame.setEnabled(True)
+    if not main_window.general_parameters_frame.isEnabled():
+        main_window.general_parameters_frame.setEnabled(True)
 
     # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
     if main_window.operate_character_xyz_m_frame.isEnabled():
@@ -262,12 +263,12 @@ def enable_tabs_cs_main_GP(main_window):
         main_window.character_parameters_editor.setEnabled(True)
 
     # Enable all the buttons (cs_main -> cs_main_dat)
-    if not main_window.text_names_chara.isEnabled():
+    if not main_window.text_names_chara_frame.isEnabled():
         enable_disable_operate_resident_param_values(main_window, False)
         enable_disable_db_font_pad_ps3_values(main_window, False)
         enable_disable_cs_main_values(main_window, True)
-    if not main_window.operate_resident_param_frame.isEnabled():
-        main_window.operate_resident_param_frame.setEnabled(True)
+    if not main_window.general_parameters_frame.isEnabled():
+        main_window.general_parameters_frame.setEnabled(True)
 
     # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
     if main_window.operate_character_xyz_m_frame.isEnabled():

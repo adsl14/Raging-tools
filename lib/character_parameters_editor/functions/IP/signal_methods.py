@@ -90,8 +90,8 @@ def enable_individual_parameters_tab(main_window):
         main_window.character_parameters_editor.setEnabled(True)
 
     # Disable all the buttons (character parameters editor -> operate_resident_param)
-    if main_window.operate_resident_param_frame.isEnabled():
-        main_window.operate_resident_param_frame.setEnabled(False)
+    if main_window.general_parameters_frame.isEnabled():
+        main_window.general_parameters_frame.setEnabled(False)
     # Enable all the buttons (character parameters editor -> operate_character_XXX_m)
     if not main_window.operate_character_xyz_m_frame.isEnabled():
         main_window.operate_character_xyz_m_frame.setEnabled(True)
