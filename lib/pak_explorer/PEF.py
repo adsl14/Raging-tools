@@ -31,7 +31,7 @@ class WorkerPef(QObject):
     enable_pak_explorer_tab_signal = pyqtSignal(QMainWindow)
 
     # General parameters signals
-    initialize_roster_signal = pyqtSignal(QMainWindow)
+    initialize_character_slot_changer_signal = pyqtSignal(QMainWindow)
     initialize_buttons_events_operate_GP_signal = pyqtSignal(QMainWindow, Character)
     enable_tabs_operate_GP_signal = pyqtSignal(QMainWindow)
     initialize_buttons_events_db_font_GP_signal = pyqtSignal(QMainWindow)
@@ -146,7 +146,7 @@ class WorkerPef(QObject):
             subpak_file_skill.close()
 
             # Initialize main roster
-            self.initialize_roster_signal.emit(self.main_window)
+            self.initialize_character_slot_changer_signal.emit(self.main_window)
 
             # Get the values for the fist character of the list
             character_zero = GPV.character_list[0]
@@ -192,7 +192,7 @@ class WorkerPef(QObject):
             subpak_file_resident_character_param.close()
 
             # Initialize main roster
-            self.initialize_roster_signal.emit(self.main_window)
+            self.initialize_character_slot_changer_signal.emit(self.main_window)
 
             # Initialize buttons
             self.initialize_buttons_events_db_font_GP_signal.emit(self.main_window)
@@ -234,7 +234,7 @@ class WorkerPef(QObject):
             subpak_file_cs_main_dat.close()
 
             # Initialize main roster
-            self.initialize_roster_signal.emit(self.main_window)
+            self.initialize_character_slot_changer_signal.emit(self.main_window)
 
             # Initialize buttons
             self.initialize_buttons_events_cs_main_GP_signal.emit(self.main_window)

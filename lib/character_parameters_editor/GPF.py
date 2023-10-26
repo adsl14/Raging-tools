@@ -14,6 +14,7 @@ def initialize_operate_resident_param(main_window):
 
     # Define character slot changer
     main_window.general_parameter_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
+    main_window.general_parameter_character_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=main_window)
     # Load the Select Chara window
     GPV.mini_portraits_image_select_chara = main_window.selectGeneralCharaRosterUI.frame.findChildren(QLabel)
     for i in range(0, len(GPV.mini_portraits_image_select_chara)):
@@ -99,11 +100,10 @@ def initialize_operate_resident_param(main_window):
     main_window.ico_boost_stick_r_push_image.setPixmap(QPixmap(os.path.join(CPEV.path_controller_images, "ico_boost_stick_r_push_00.png")))
 
 
-def initialize_roster(main_window):
+def initialize_character_slot_changer(main_window):
 
     # Load the first character image
     main_window.general_parameter_character_slot.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_000.bmp")))
-    main_window.general_parameter_character_value.mousePressEvent = functools.partial(open_select_chara_window, main_window=main_window)
 
 
 def listen_events_logic(main_window, flag):

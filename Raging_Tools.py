@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QThread, QObject, pyqtSignal
 from PyQt5.QtWidgets import QInputDialog
 
-from lib.character_parameters_editor.GPF import initialize_roster
+from lib.character_parameters_editor.GPF import initialize_character_slot_changer
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
@@ -435,7 +435,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.enable_pak_explorer_tab_signal.connect(enable_pak_explorer_tab)
 
         # General parameters signals
-        self.worker.initialize_roster_signal.connect(initialize_roster)
+        self.worker.initialize_character_slot_changer_signal.connect(initialize_character_slot_changer)
         self.worker.initialize_buttons_events_operate_GP_signal.connect(initialize_buttons_events_operate_GP)
         self.worker.enable_tabs_operate_GP_signal.connect(enable_tabs_operate_GP)
         self.worker.initialize_buttons_events_db_font_GP_signal.connect(initialize_buttons_events_db_font_GP)
