@@ -148,7 +148,7 @@ def initialize_gsce(main_window):
     main_window.pointer_subtitle_list_view.setModel(model)
     # Add each subtitle instruction
     for i in range(0, 5):
-        gsac_data.pointers.append(create_pointer_data_info(b'\x08', 118, 4, b'\x00', [[b'\x0A', str(i), b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+        gsac_data.pointers.append(create_pointer_data_info(b'\x08', 118, 4, b'\x00', [[b'\x0A', i, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
         item = QStandardItem("Instruction " + str(i))
         item.setData(i)
         item.setEditable(False)
