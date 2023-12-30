@@ -1,6 +1,6 @@
 import functools
 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QMainWindow, QLabel
 
 from lib.functions import show_progress_value, check_entry_module
@@ -12,7 +12,8 @@ from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
 from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
-    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed
+    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, on_pointer_subtitle_list_view_changed, \
+    on_cutscene_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -135,7 +136,31 @@ def initialize_gsce(main_window):
                                                                                      [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00'], [b'\x0A', 4294967295, b'\x00']]))
     gsac_header.data = gsac_data
     gscd_header.gsac_array.append(gsac_header)
-    # GSAC 4 (WIP)
+
+    # GSAC 4
+    gsac_header = GsacHeader()
+    gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+    gsac_header.id = 4294967292
+    gsac_data = GsacData()
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 0, 24, b'\x00', []))
+    # Prepare the subtitle list view
+    model = QStandardItemModel()
+    main_window.pointer_subtitle_list_view.setModel(model)
+    # Add each subtitle instruction
+    for i in range(0, 5):
+        gsac_data.pointers.append(create_pointer_data_info(b'\x08', 118, 4, b'\x00', [[b'\x0A', str(i), b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
+        item = QStandardItem("Instruction " + str(i))
+        item.setData(i)
+        item.setEditable(False)
+        main_window.pointer_subtitle_list_view.model().appendRow(item)
+    # Select the first subtitle instruction
+    main_window.pointer_subtitle_list_view.setCurrentIndex(main_window.pointer_subtitle_list_view.model().index(0, 0))
+    # Connect the listener. Since it breaks the vertical bar if we disconnect it, we won't add it to the listen_events_logic
+    main_window.pointer_subtitle_list_view.selectionModel().currentChanged.connect(lambda: on_pointer_subtitle_list_view_changed(main_window))
+    gsac_header.data = gsac_data
+    gscd_header.gsac_array.append(gsac_header)
+
+    # GSAV 5 (WIP)
 
     # gsdt
     gsdt_header = GsdtHeader()
@@ -165,7 +190,7 @@ def initialize_gsce(main_window):
     # Prepare the char_id_slot
     main_window.char_id_slot.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_image, "pl_slot.png")))
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(0).zfill(3) + ".png")))
-    main_window.char_id_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window)
+    main_window.char_id_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window, option=0)
 
     # Set the blast attacks images
     main_window.ico_boost_stick_r_up_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_up.png")))
@@ -173,6 +198,11 @@ def initialize_gsce(main_window):
     main_window.ico_boost_stick_r_d_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_d.png")))
     main_window.ico_boost_stick_r_l_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_l.png")))
     main_window.ico_boost_stick_r_push_image_2.setPixmap(QPixmap(os.path.join(GSCEV.path_controller_images, "ico_boost_stick_r_push_00.png")))
+
+    # Prepare the char_id_subtitle_slot
+    main_window.char_id_subtitle_slot.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_image, "pl_slot.png")))
+    main_window.char_id_subtitle_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(0).zfill(3) + ".png")))
+    main_window.char_id_subtitle_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window, option=1)
 
     # Enable all signals
     listen_events_logic(main_window, True)
@@ -205,6 +235,12 @@ def listen_events_logic(main_window, flag):
         main_window.ico_boost_stick_r_r_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 4))
         main_window.ico_boost_stick_r_push_value_2.currentIndexChanged.connect(lambda: on_ico_boost_stick_value_changed(main_window, 5))
 
+        # GSAC 4
+        # Set the text id subtitle value
+        main_window.text_id_value.valueChanged.connect(lambda: on_text_id_changed(main_window))
+        # Set the cutscene text
+        main_window.subtitle_in_cutscene.toggled.connect(lambda: on_cutscene_changed(main_window))
+
     else:
 
         try:
@@ -231,6 +267,12 @@ def listen_events_logic(main_window, flag):
             main_window.ico_boost_stick_r_l_value_2.currentIndexChanged.disconnect()
             main_window.ico_boost_stick_r_r_value_2.currentIndexChanged.disconnect()
             main_window.ico_boost_stick_r_push_value_2.currentIndexChanged.disconnect()
+
+            # GSAC 4
+            # Set the text id subtitle value
+            main_window.text_id_value.valueChanged.disconnect()
+            # Set the cutscene text
+            main_window.subtitle_in_cutscene.toggled.disconnect()
 
         except TypeError:
             pass

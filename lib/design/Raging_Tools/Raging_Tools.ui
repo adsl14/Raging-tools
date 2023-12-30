@@ -31,7 +31,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="vram_explorer">
        <attribute name="title">
@@ -8509,22 +8509,6 @@
            </rect>
           </property>
          </widget>
-         <widget class="QRadioButton" name="damaged_costume">
-          <property name="geometry">
-           <rect>
-            <x>260</x>
-            <y>20</y>
-            <width>111</width>
-            <height>17</height>
-           </rect>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable or disable damaged costume. If a character doesn't have a damaged costume, and you enable it, it will crash the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Damaged costume</string>
-          </property>
-         </widget>
          <widget class="QSpinBox" name="gsc_health_value">
           <property name="geometry">
            <rect>
@@ -9199,6 +9183,240 @@
             <string>13</string>
            </property>
           </item>
+         </widget>
+         <widget class="QCheckBox" name="damaged_costume">
+          <property name="geometry">
+           <rect>
+            <x>260</x>
+            <y>20</y>
+            <width>111</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Damaged costume</string>
+          </property>
+         </widget>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="subtitles_properties">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>160</y>
+          <width>361</width>
+          <height>221</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::WinPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <widget class="QLabel" name="label_3">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>111</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Subtitle properties:</string>
+         </property>
+        </widget>
+        <widget class="QFrame" name="instruction_087604">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>30</y>
+           <width>341</width>
+           <height>171</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <widget class="QListView" name="pointer_subtitle_list_view">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>10</y>
+            <width>111</width>
+            <height>121</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="add_subtitle_instruction">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>140</y>
+            <width>51</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Add</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="remove_subtitle_instruction">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>140</y>
+            <width>51</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Remove</string>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="text_id_value">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>30</y>
+            <width>42</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="maximum">
+           <number>999</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="text_id_text">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>10</y>
+            <width>41</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Text and lips ID to be used in the game. You can check each text and lips inside the pak file where this gsc belongs. Needs more research when adding a new subtitle (txt, lps and audio?)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Text Id</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="subtitle_in_cutscene">
+          <property name="geometry">
+           <rect>
+            <x>210</x>
+            <y>70</y>
+            <width>70</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This describe if the text will be used during the stort mode (?)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Cutscene</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="char_id_subtitle_text">
+          <property name="geometry">
+           <rect>
+            <x>270</x>
+            <y>10</y>
+            <width>71</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Character name ID. This shows the name of the character that will be written during the subtitle.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Char name Id</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="char_id_subtitle_slot">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>30</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>../../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="char_id_subtitle_value">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>30</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="move_instruction_subtitle_up">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>130</x>
+            <y>40</y>
+            <width>41</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>▲</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="move_instruction_subtitle_down">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>130</x>
+            <y>70</y>
+            <width>41</width>
+            <height>23</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>▼</string>
+          </property>
          </widget>
         </widget>
        </widget>

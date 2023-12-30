@@ -14,8 +14,10 @@ class GSCEV:
     path_small_images = os.path.join("lib", "character_parameters_editor", "images", "small")
     path_controller_images = os.path.join("lib", "character_parameters_editor", "images", "controller")
 
-    # This var will be used to store the ID of the character, so we can clean the Window
-    old_selected_partner = 0
+    # This var will be used to store the ID of the character, so we can clean the Character Select Window
+    old_chara = 0
+    # This var will be used to detect from what option we're opening the Character Select Window
+    char_id_option_selected = 0
 
     # portraits object for the Select Character window
     mini_portraits_image_select_chara_window = []
