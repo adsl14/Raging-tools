@@ -2887,7 +2887,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuAbout.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         self.tabWidget_2.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -3389,7 +3389,7 @@ class Ui_MainWindow(object):
         self.remove_subtitle_instruction.setText(_translate("MainWindow", "Remove"))
         self.text_id_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>Text and lips ID to be used in the game. You can check each text and lips inside the pak file where this gsc belongs. Needs more research when adding a new subtitle (txt, lps and audio?)</p></body></html>"))
         self.text_id_text.setText(_translate("MainWindow", "Text Id"))
-        self.subtitle_in_cutscene.setToolTip(_translate("MainWindow", "<html><head/><body><p>This describe if the text will be used during the stort mode (?)</p></body></html>"))
+        self.subtitle_in_cutscene.setToolTip(_translate("MainWindow", "<html><head/><body><p>This describe if the text will be used during the story mode (?)</p></body></html>"))
         self.subtitle_in_cutscene.setText(_translate("MainWindow", "Cutscene"))
         self.char_id_subtitle_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>Character name ID. This shows the name of the character that will be written during the subtitle.</p></body></html>"))
         self.char_id_subtitle_text.setText(_translate("MainWindow", "Char name Id"))
