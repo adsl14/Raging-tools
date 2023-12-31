@@ -8,8 +8,9 @@ from lib.gsc_explorer.classes.GSAC.PointerDataInfo import PointerDataInfo
 def search_data_in_gsdt(gsdt_data_array, gsdt_data_array_size, pointer_data):
     index = None
 
+    # Check if we can find the value with the same instance (integer or float)
     for i in range(0, gsdt_data_array_size):
-        if gsdt_data_array[i] == pointer_data.value_GSDT:
+        if gsdt_data_array[i] == pointer_data.value_GSDT and isinstance(gsdt_data_array[i], type(pointer_data.value_GSDT)):
             index = i
             break
 
@@ -42,7 +43,7 @@ def read_pointer_data_info(file, number_of_bytes_data_readed, start_data_index, 
                 if pointer_data.type_GSDT == b'\x0A':
                     pointer_data.value_GSDT = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
                 else:
-                    pointer_data.value_GSDT = struct.unpack('>f', file.read(GSCEV.bytes2Read))[0]
+                    pointer_data.value_GSDT = struct.unpack('<f', file.read(GSCEV.bytes2Read))[0]
                 file.seek(aux_pointer + 4)
 
                 # Increase number of bytes readed inside the gsac_data
@@ -65,7 +66,7 @@ def read_pointer_data_info(file, number_of_bytes_data_readed, start_data_index, 
                 if pointer_data.type_GSDT == b'\x0A':
                     pointer_data.value_GSDT = int.from_bytes(file.read(GSCEV.bytes2Read), "little")
                 else:
-                    pointer_data.value_GSDT = struct.unpack('>f', file.read(GSCEV.bytes2Read))[0]
+                    pointer_data.value_GSDT = struct.unpack('<f', file.read(GSCEV.bytes2Read))[0]
                 file.seek(aux_pointer + 4)
 
                 # Increase number of bytes readed inside the gsac_data
@@ -106,7 +107,7 @@ def write_pointer_data_info(pointer_data_info, data, data_size, gsdt_data, gsdt_
             if pointer_data.type_GSDT == b'\x0A':
                 value_gsdt = pointer_data.value_GSDT.to_bytes(4, 'little')
             else:
-                value_gsdt = struct.pack('>f', pointer_data.value_GSDT)
+                value_gsdt = struct.pack('<f', pointer_data.value_GSDT)
             gsdt_data += value_gsdt
             gsdt_data_size += 4
 
@@ -139,3 +140,17 @@ def create_pointer_data(type_GSDT, value_GSDT, unk0x03):
     pointer_data.unk0x03 = unk0x03
 
     return pointer_data
+
+
+def assign_pointer_to_ui(pointers_values_ui, pointer_data_info, number_of_pointers):
+
+    for i in range(0, number_of_pointers):
+        # Enable the pointer value ui
+        if not pointers_values_ui[i].isEnabled():
+            pointers_values_ui[i].setEnabled(True)
+        pointers_values_ui[i].setValue(pointer_data_info.pointers_data[i].value_GSDT)
+    # Disable the rest of pointer values in ui
+    for i in range(number_of_pointers, 8):
+        # Enable the pointer value
+        if pointers_values_ui[i].isEnabled:
+            pointers_values_ui[i].setEnabled(False)
