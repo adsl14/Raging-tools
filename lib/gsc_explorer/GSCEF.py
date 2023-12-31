@@ -258,14 +258,14 @@ def listen_events_logic(main_window, flag):
         main_window.subtitle_in_cutscene.toggled.connect(lambda: on_cutscene_changed(main_window))
 
         # GSAC 5 and so on
-        main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
-        main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
-        main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
-        main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
-        main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
-        main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
-        main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
-        main_window.instruction_value_8.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+        main_window.instruction_value_0.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
+        main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
+        main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
+        main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
+        main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
+        main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
+        main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
+        main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
 
     else:
 
@@ -301,6 +301,7 @@ def listen_events_logic(main_window, flag):
             main_window.subtitle_in_cutscene.toggled.disconnect()
 
             # GSAC 5 and so on
+            main_window.instruction_value_0.valueChanged.disconnect()
             main_window.instruction_value_1.valueChanged.disconnect()
             main_window.instruction_value_2.valueChanged.disconnect()
             main_window.instruction_value_3.valueChanged.disconnect()
@@ -308,7 +309,6 @@ def listen_events_logic(main_window, flag):
             main_window.instruction_value_5.valueChanged.disconnect()
             main_window.instruction_value_6.valueChanged.disconnect()
             main_window.instruction_value_7.valueChanged.disconnect()
-            main_window.instruction_value_8.valueChanged.disconnect()
 
         except TypeError:
             pass

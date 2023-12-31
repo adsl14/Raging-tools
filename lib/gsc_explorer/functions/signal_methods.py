@@ -20,7 +20,7 @@ def store_parameters_gsc_explorer(main_window):
     main_window.num_characters_value.setValue(gsac_3.data.pointers[1].pointers_data[7].value_GSDT)
 
     # Character id (select only the first one)
-    main_window.character_value.setValue(1)
+    main_window.character_value.setValue(0)
     # Skin (store in gui, only the first one)
     main_window.skin_value.setValue(gsac_3.data.pointers[5].pointers_data[3].value_GSDT)
     # Battle damaged (store in gui, only the first one)

@@ -8493,10 +8493,13 @@
            </rect>
           </property>
           <property name="minimum">
-           <number>1</number>
+           <number>0</number>
           </property>
           <property name="maximum">
-           <number>20</number>
+           <number>19</number>
+          </property>
+          <property name="value">
+           <number>0</number>
           </property>
          </widget>
          <widget class="QSpinBox" name="skin_value">
@@ -9467,6 +9470,9 @@
            <height>20</height>
           </rect>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of GSAC entries&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>GSAC events</string>
          </property>
@@ -9482,6 +9488,9 @@
            <width>251</width>
            <height>20</height>
           </rect>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of instructions of one GSAC&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Instructions</string>
@@ -9515,10 +9524,45 @@
          <property name="frameShadow">
           <enum>QFrame::Sunken</enum>
          </property>
-         <widget class="QLabel" name="instruction_text_1">
+         <widget class="QLabel" name="instruction_text_0">
           <property name="geometry">
            <rect>
             <x>16</x>
+            <y>10</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 0</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_0">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_1">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
             <y>10</y>
             <width>91</width>
             <height>20</height>
@@ -9537,7 +9581,7 @@
           </property>
           <property name="geometry">
            <rect>
-            <x>10</x>
+            <x>120</x>
             <y>30</y>
             <width>101</width>
             <height>22</height>
@@ -9553,7 +9597,7 @@
          <widget class="QLabel" name="instruction_text_2">
           <property name="geometry">
            <rect>
-            <x>126</x>
+            <x>236</x>
             <y>10</y>
             <width>91</width>
             <height>20</height>
@@ -9572,7 +9616,7 @@
           </property>
           <property name="geometry">
            <rect>
-            <x>120</x>
+            <x>230</x>
             <y>30</y>
             <width>101</width>
             <height>22</height>
@@ -9588,8 +9632,8 @@
          <widget class="QLabel" name="instruction_text_3">
           <property name="geometry">
            <rect>
-            <x>236</x>
-            <y>10</y>
+            <x>16</x>
+            <y>60</y>
             <width>91</width>
             <height>20</height>
            </rect>
@@ -9607,8 +9651,8 @@
           </property>
           <property name="geometry">
            <rect>
-            <x>230</x>
-            <y>30</y>
+            <x>10</x>
+            <y>80</y>
             <width>101</width>
             <height>22</height>
            </rect>
@@ -9623,7 +9667,7 @@
          <widget class="QLabel" name="instruction_text_4">
           <property name="geometry">
            <rect>
-            <x>16</x>
+            <x>126</x>
             <y>60</y>
             <width>91</width>
             <height>20</height>
@@ -9642,7 +9686,7 @@
           </property>
           <property name="geometry">
            <rect>
-            <x>10</x>
+            <x>120</x>
             <y>80</y>
             <width>101</width>
             <height>22</height>
@@ -9658,7 +9702,7 @@
          <widget class="QLabel" name="instruction_text_5">
           <property name="geometry">
            <rect>
-            <x>126</x>
+            <x>236</x>
             <y>60</y>
             <width>91</width>
             <height>20</height>
@@ -9677,7 +9721,7 @@
           </property>
           <property name="geometry">
            <rect>
-            <x>120</x>
+            <x>230</x>
             <y>80</y>
             <width>101</width>
             <height>22</height>
@@ -9693,8 +9737,8 @@
          <widget class="QLabel" name="instruction_text_6">
           <property name="geometry">
            <rect>
-            <x>236</x>
-            <y>60</y>
+            <x>16</x>
+            <y>110</y>
             <width>91</width>
             <height>20</height>
            </rect>
@@ -9707,41 +9751,6 @@
           </property>
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_6">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="geometry">
-           <rect>
-            <x>230</x>
-            <y>80</y>
-            <width>101</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <double>-4294967295.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>4294967295.000000000000000</double>
-          </property>
-         </widget>
-         <widget class="QLabel" name="instruction_text_7">
-          <property name="geometry">
-           <rect>
-            <x>16</x>
-            <y>110</y>
-            <width>91</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="text">
-           <string>Value 7</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-         <widget class="QDoubleSpinBox" name="instruction_value_7">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -9760,7 +9769,7 @@
            <double>4294967295.000000000000000</double>
           </property>
          </widget>
-         <widget class="QLabel" name="instruction_text_8">
+         <widget class="QLabel" name="instruction_text_7">
           <property name="geometry">
            <rect>
             <x>126</x>
@@ -9770,13 +9779,13 @@
            </rect>
           </property>
           <property name="text">
-           <string>Value 8</string>
+           <string>Value 7</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
-         <widget class="QDoubleSpinBox" name="instruction_value_8">
+         <widget class="QDoubleSpinBox" name="instruction_value_7">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -9804,6 +9813,9 @@
            <width>341</width>
            <height>21</height>
           </rect>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The values of the current instruction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>Instruction values</string>
