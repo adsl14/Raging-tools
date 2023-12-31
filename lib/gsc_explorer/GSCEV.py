@@ -21,6 +21,8 @@ class GSCEV:
 
     # portraits object for the Select Character window
     mini_portraits_image_select_chara_window = []
+    # QSpinBox object for instruction values ui
+    pointer_values_ui = []
 
     # Color for the borders
     styleSheetSelectCharaGscBlackWindow = "QLabel {border : 3px solid black;}"

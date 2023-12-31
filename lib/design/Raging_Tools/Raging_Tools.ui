@@ -31,7 +31,7 @@
     <item row="0" column="1">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="vram_explorer">
        <attribute name="title">
@@ -9418,6 +9418,399 @@
            <string>▼</string>
           </property>
          </widget>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="events_properties">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>400</y>
+          <width>981</width>
+          <height>351</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::WinPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <widget class="QLabel" name="events_properties_text">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>10</y>
+           <width>101</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Events properties:</string>
+         </property>
+        </widget>
+        <widget class="QListView" name="gsac_events_list">
+         <property name="geometry">
+          <rect>
+           <x>20</x>
+           <y>80</y>
+           <width>256</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QLabel" name="gsac_events_list_text">
+         <property name="geometry">
+          <rect>
+           <x>26</x>
+           <y>50</y>
+           <width>251</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>GSAC events</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QLabel" name="events_instructions_text">
+         <property name="geometry">
+          <rect>
+           <x>310</x>
+           <y>50</y>
+           <width>251</width>
+           <height>20</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Instructions</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QListView" name="events_instructions_list">
+         <property name="geometry">
+          <rect>
+           <x>310</x>
+           <y>80</y>
+           <width>256</width>
+           <height>192</height>
+          </rect>
+         </property>
+        </widget>
+        <widget class="QFrame" name="instruction_values">
+         <property name="geometry">
+          <rect>
+           <x>620</x>
+           <y>81</y>
+           <width>341</width>
+           <height>171</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <widget class="QLabel" name="instruction_text_1">
+          <property name="geometry">
+           <rect>
+            <x>16</x>
+            <y>10</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 1</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_1">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>30</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_2">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
+            <y>10</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 2</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_2">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>30</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_3">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
+            <y>10</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 3</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_3">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>30</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_4">
+          <property name="geometry">
+           <rect>
+            <x>16</x>
+            <y>60</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 4</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_4">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>80</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_5">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
+            <y>60</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 5</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_5">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>80</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_6">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
+            <y>60</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 6</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_6">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>80</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_7">
+          <property name="geometry">
+           <rect>
+            <x>16</x>
+            <y>110</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 7</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_7">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>130</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_8">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
+            <y>110</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 8</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_8">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>130</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QLabel" name="label_4">
+         <property name="geometry">
+          <rect>
+           <x>620</x>
+           <y>50</y>
+           <width>341</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Instruction values</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
         </widget>
        </widget>
       </widget>

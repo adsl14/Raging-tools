@@ -1,7 +1,7 @@
 import functools
 
 from PyQt5.QtGui import QPixmap, QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QMainWindow, QLabel
+from PyQt5.QtWidgets import QMainWindow, QLabel, QDoubleSpinBox
 
 from lib.functions import show_progress_value, check_entry_module
 from lib.gsc_explorer.classes.GSAC.GSACData import GsacData
@@ -13,7 +13,7 @@ from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
 from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
     on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, on_pointer_subtitle_list_view_changed, \
-    on_cutscene_changed
+    on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -161,6 +161,22 @@ def initialize_gsce(main_window):
     gscd_header.gsac_array.append(gsac_header)
 
     # GSAV 5 (WIP)
+    # Prepare the GSAC list view
+    model = QStandardItemModel()
+    main_window.gsac_events_list.setModel(model)
+    # Select the first gsac
+    main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(0, 0))
+    # Connect the listener. Since it breaks the vertical bar if we disconnect it, we won't add it to the listen_events_logic
+    main_window.gsac_events_list.selectionModel().currentChanged.connect(lambda: on_gsac_events_list_changed(main_window))
+    # Prepare the instructions list view
+    model = QStandardItemModel()
+    main_window.events_instructions_list.setModel(model)
+    # Select the first event instruction
+    main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+    # Connect the listener. Since it breaks the vertical bar if we disconnect it, we won't add it to the listen_events_logic
+    main_window.events_instructions_list.selectionModel().currentChanged.connect(lambda: on_events_instructions_list_changed(main_window))
+    # Get all instruction values ui
+    GSCEV.pointer_values_ui = main_window.instruction_values.findChildren(QDoubleSpinBox)
 
     # gsdt
     gsdt_header = GsdtHeader()
@@ -241,6 +257,16 @@ def listen_events_logic(main_window, flag):
         # Set the cutscene text
         main_window.subtitle_in_cutscene.toggled.connect(lambda: on_cutscene_changed(main_window))
 
+        # GSAC 5 and so on
+        main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
+        main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
+        main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
+        main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
+        main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
+        main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
+        main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
+        main_window.instruction_value_8.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+
     else:
 
         try:
@@ -273,6 +299,16 @@ def listen_events_logic(main_window, flag):
             main_window.text_id_value.valueChanged.disconnect()
             # Set the cutscene text
             main_window.subtitle_in_cutscene.toggled.disconnect()
+
+            # GSAC 5 and so on
+            main_window.instruction_value_1.valueChanged.disconnect()
+            main_window.instruction_value_2.valueChanged.disconnect()
+            main_window.instruction_value_3.valueChanged.disconnect()
+            main_window.instruction_value_4.valueChanged.disconnect()
+            main_window.instruction_value_5.valueChanged.disconnect()
+            main_window.instruction_value_6.valueChanged.disconnect()
+            main_window.instruction_value_7.valueChanged.disconnect()
+            main_window.instruction_value_8.valueChanged.disconnect()
 
         except TypeError:
             pass

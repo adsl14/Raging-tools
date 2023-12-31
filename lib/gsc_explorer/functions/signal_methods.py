@@ -7,7 +7,9 @@ from lib.gsc_explorer.GSCEV import GSCEV
 
 def store_parameters_gsc_explorer(main_window):
 
-    # Stage properties (GSAC3)
+    # --------
+    # # Stage properties (GSAC3)
+    # --------
     gsac_3 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3]
     # Map value
     main_window.map_name_value.setCurrentIndex(gsac_3.data.pointers[0].pointers_data[0].value_GSDT)
@@ -39,18 +41,34 @@ def store_parameters_gsc_explorer(main_window):
     value_gsdt = gsac_3.data.pointers[6].pointers_data[5].value_GSDT
     main_window.ico_boost_stick_r_push_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
 
+    # --------
     # Subtitle properties (GSAC4)
+    # --------
     gsac_4 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4]
     # Reset model list view
     main_window.pointer_subtitle_list_view.model().clear()
     # Add each subtitle instruction
-    for i in range(1, len(gsac_4.data.pointers)):
-        item = QStandardItem("Instruction " + str(gsac_4.data.pointers[i].pointers_data[0].value_GSDT))
-        item.setData(gsac_4.data.pointers[i].pointers_data[0])
+    for gsac_4_pointer in gsac_4.data.pointers[1:]:
+        item = QStandardItem("Instruction " + str(gsac_4_pointer.pointers_data[0].value_GSDT))
+        item.setData(gsac_4_pointer.pointers_data[0])
         item.setEditable(False)
         main_window.pointer_subtitle_list_view.model().appendRow(item)
     # Select the first subtitle instruction
     main_window.pointer_subtitle_list_view.setCurrentIndex(main_window.pointer_subtitle_list_view.model().index(0, 0))
+
+    # --------
+    # Events properties (GSAC5 to end)
+    # --------
+    # Reset gsac list view
+    main_window.gsac_events_list.model().clear()
+    # Add all gsac events to the list view
+    for gsac in GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]:
+        item = QStandardItem(str(gsac.id))
+        item.setData(gsac)
+        item.setEditable(False)
+        main_window.gsac_events_list.model().appendRow(item)
+    # Select the first gsac entry
+    main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(0, 0))
 
     # Open the tab (gsc explorer)
     if main_window.tabWidget.currentIndex() != 3:

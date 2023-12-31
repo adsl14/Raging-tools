@@ -1,6 +1,7 @@
+from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui
 from lib.packages import os
 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QStandardItem
 from PyQt5.QtWidgets import QLabel
 
 from lib.gsc_explorer.GSCEV import GSCEV
@@ -128,6 +129,84 @@ def on_pointer_subtitle_list_view_changed(main_window):
     # Connect signals
     main_window.text_id_value.valueChanged.connect(lambda: on_text_id_changed(main_window))
     main_window.subtitle_in_cutscene.toggled.connect(lambda: on_cutscene_changed(main_window))
+
+
+def on_gsac_events_list_changed(main_window):
+
+    # Reset instructions list view
+    main_window.events_instructions_list.model().clear()
+
+    # Get the current gsac entry
+    index = main_window.gsac_events_list.currentIndex().row()
+
+    # Add each instruction pointer from current gsac
+    gsac = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index]
+    for event_instruction in gsac.data.pointers:
+        item = QStandardItem(str(event_instruction.type.hex()) + ' ' + "%02X" % event_instruction.number_of_pointers + ' ' + "%02X" % event_instruction.secundary_number_of_pointers + ' ' +
+                             str(event_instruction.unk0x04.hex()))
+        item.setData(event_instruction)
+        item.setEditable(False)
+        main_window.events_instructions_list.model().appendRow(item)
+
+    # Select the first instruction
+    main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+
+
+def on_events_instructions_list_changed(main_window):
+
+    # Get the current gsac entry
+    index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+    # Get the current pointer instruction
+    index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+    # Get the pointer data info
+    pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
+    # Get number of pointers (pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte, otherwise the third byte)
+    number_of_pointers = pointer_data_info.number_of_pointers if pointer_data_info.type != b'\x08' else pointer_data_info.secundary_number_of_pointers
+
+    # Disconnect the instruction values
+    try:
+        # GSAC 5 and so on
+        main_window.instruction_value_1.valueChanged.disconnect()
+        main_window.instruction_value_2.valueChanged.disconnect()
+        main_window.instruction_value_3.valueChanged.disconnect()
+        main_window.instruction_value_4.valueChanged.disconnect()
+        main_window.instruction_value_5.valueChanged.disconnect()
+        main_window.instruction_value_6.valueChanged.disconnect()
+        main_window.instruction_value_7.valueChanged.disconnect()
+        main_window.instruction_value_8.valueChanged.disconnect()
+    except TypeError:
+        pass
+
+    # Assign each pointer value from the instruction
+    assign_pointer_to_ui(GSCEV.pointer_values_ui, pointer_data_info, number_of_pointers)
+
+    # Connect the instruction values
+    main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
+    main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
+    main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
+    main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
+    main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
+    main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
+    main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
+    main_window.instruction_value_8.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+
+
+def on_instruction_value_changed(main_window, value_index):
+
+    # Get the current gsac entry
+    index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+    # Get the current pointer instruction
+    index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+    # Get the pointer data info
+    pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
+
+    # Store the value modified into the pointer in memory. Check if the pointer value is in integer or float, to convert it to the proper format
+    pointer_value_ui = GSCEV.pointer_values_ui[value_index].value()
+    pointer_data_info.pointers_data[value_index].value_GSDT = int(pointer_value_ui) if pointer_data_info.pointers_data[value_index].type_GSDT == b'\x0A' else pointer_value_ui
 
 
 def action_change_character(event, main_window, option):
