@@ -9490,10 +9490,10 @@
           </rect>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of instructions of one GSAC&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of functions and properties of one GSAC&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Instructions</string>
+          <string>Functions and Properties</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -9805,7 +9805,7 @@
           </property>
          </widget>
         </widget>
-        <widget class="QLabel" name="label_4">
+        <widget class="QLabel" name="instruction_text">
          <property name="geometry">
           <rect>
            <x>620</x>
@@ -9815,10 +9815,10 @@
           </rect>
          </property>
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The values of the current instruction&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The parameters of the current function/properties&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Instruction values</string>
+          <string>Parameters</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
