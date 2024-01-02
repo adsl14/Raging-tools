@@ -209,12 +209,7 @@ def on_instruction_value_changed(main_window, value_index):
 
     # Store the value modified into the pointer in memory. Check if the pointer value is in integer or float, to convert it to the proper format
     pointer_value_ui = GSCEV.pointer_values_ui[value_index].value()
-    if pointer_data_info.pointers_data[value_index].type_GSDT == b'\x0A':
-        # The pointer needs an integer and if the user selected a negative value, we convert it to 0
-        if pointer_value_ui < 0:
-            pointer_value_ui = 0
-        pointer_value_ui = int(pointer_value_ui)
-    pointer_data_info.pointers_data[value_index].value_GSDT = pointer_value_ui
+    pointer_data_info.pointers_data[value_index].value_GSDT = int(pointer_value_ui) if pointer_data_info.pointers_data[value_index].type_GSDT == b'\x0A' else pointer_value_ui
 
 
 def action_change_character(event, main_window, option):
