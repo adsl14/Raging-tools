@@ -24,6 +24,10 @@ class GSCEV:
     # QSpinBox object for instruction values ui
     pointer_values_ui = []
 
+    # Dictionary of values for each instruction [Functions, Properties]. The key in the dictionary is in hex
+    instructions_names = [dict({"02": "End of event", "1B": "Pause until next iteration", "20": "Dialogue", "23": "Character position (cutscene)", "26": "Character position (gameplay)",
+                                "27": "Character animation", "28": "Character face", "31": "Activate aura", "34": "Camera (start)", "35": "Camera (end)", "39": "Shading"}), dict({})]
+
     # Color for the borders
     styleSheetSelectCharaGscBlackWindow = "QLabel {border : 3px solid black;}"
     styleSheetSelectCharaGscCyanWindow = "QLabel {border : 5px solid cyan;}"

@@ -162,3 +162,25 @@ def assign_pointer_to_ui(pointers_values_ui, pointer_data_info, number_of_pointe
         # Enable the pointer value
         if pointers_values_ui[i].isEnabled:
             pointers_values_ui[i].setEnabled(False)
+
+
+def get_pointer_data_info_name(event_instruction):
+
+    name = str(event_instruction.type.hex()) + ' ' + "%02X" % event_instruction.number_of_pointers + ' ' + "%02X" % event_instruction.secundary_number_of_pointers + ' ' + \
+           str(event_instruction.unk0x04.hex())
+
+    # Function "0x01"
+    if event_instruction.type == b'\x01':
+        try:
+            name = GSCEV.instructions_names[0]["%02X" % event_instruction.secundary_number_of_pointers]
+        except KeyError:
+            pass
+    # Properties "0x08"
+    else:
+        try:
+            name = GSCEV.instructions_names[1]["%02X" % event_instruction.number_of_pointers]
+        except KeyError:
+            pass
+
+    return name
+

@@ -1,4 +1,4 @@
-from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui
+from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui, get_pointer_data_info_name
 from lib.packages import os
 
 from PyQt5.QtGui import QPixmap, QStandardItem
@@ -145,8 +145,8 @@ def on_gsac_events_list_changed(main_window):
     # Add each instruction pointer from current gsac
     gsac = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index]
     for event_instruction in gsac.data.pointers:
-        item = QStandardItem(str(event_instruction.type.hex()) + ' ' + "%02X" % event_instruction.number_of_pointers + ' ' + "%02X" % event_instruction.secundary_number_of_pointers + ' ' +
-                             str(event_instruction.unk0x04.hex()))
+        name = get_pointer_data_info_name(event_instruction)
+        item = QStandardItem(name)
         item.setData(event_instruction)
         item.setEditable(False)
         main_window.events_instructions_list.model().appendRow(item)
