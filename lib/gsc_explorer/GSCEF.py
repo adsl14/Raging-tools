@@ -12,8 +12,10 @@ from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
 from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
-    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, on_pointer_subtitle_list_view_changed, \
-    on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic
+    on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, \
+    on_pointer_subtitle_list_view_changed, on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic, \
+    action_events_instructions_list_down_button_logic, action_events_instructions_list_up_button_logic, action_gsac_events_list_up_button_logic, action_gsac_events_list_down_button_logic, \
+    action_remove_gsac_logic
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -177,6 +179,14 @@ def initialize_gsce(main_window):
     main_window.events_instructions_list.selectionModel().currentChanged.connect(lambda: on_events_instructions_list_changed(main_window))
     # Get all instruction values ui
     GSCEV.pointers_values_ui = main_window.instruction_values.findChildren(QDoubleSpinBox)
+    # Enable buttons for gsac list
+    main_window.gsac_events_list_up_button.clicked.connect(lambda: action_gsac_events_list_up_button_logic(main_window))
+    main_window.gsac_events_list_down_button.clicked.connect(lambda: action_gsac_events_list_down_button_logic(main_window))
+    main_window.remove_gsac_event_button.clicked.connect(lambda: action_remove_gsac_logic(main_window))
+    # Enable buttons for instructions
+    main_window.events_instructions_list_up_button.clicked.connect(lambda: action_events_instructions_list_up_button_logic(main_window))
+    main_window.events_instructions_list_down_button.clicked.connect(lambda: action_events_instructions_list_down_button_logic(main_window))
+    main_window.remove_instruction_button.clicked.connect(lambda: action_remove_instruction_logic(main_window))
 
     # gsdt
     gsdt_header = GsdtHeader()
@@ -258,8 +268,6 @@ def listen_events_logic(main_window, flag):
         main_window.subtitle_in_cutscene.toggled.connect(lambda: on_cutscene_changed(main_window))
 
         # GSAC 5 and so on
-        main_window.remove_instruction_button.clicked.connect(lambda: action_remove_instruction_logic(main_window))
-
         main_window.instruction_value_0.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
         main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
         main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
@@ -303,8 +311,6 @@ def listen_events_logic(main_window, flag):
             main_window.subtitle_in_cutscene.toggled.disconnect()
 
             # GSAC 5 and so on
-            main_window.remove_instruction_button.clicked.disconnect()
-
             main_window.instruction_value_0.valueChanged.disconnect()
             main_window.instruction_value_1.valueChanged.disconnect()
             main_window.instruction_value_2.valueChanged.disconnect()

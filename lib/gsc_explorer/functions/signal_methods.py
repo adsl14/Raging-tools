@@ -59,8 +59,27 @@ def store_parameters_gsc_explorer(main_window):
     # --------
     # Events properties (GSAC5 to end)
     # --------
-    # Reset gsac list view
+    # Reset gsac, instructions and parameters
     main_window.gsac_events_list.model().clear()
+    if main_window.remove_gsac_event_button.isEnabled():
+        # Disable the buttons
+        main_window.gsac_events_list_up_button.setEnabled(False)
+        main_window.gsac_events_list_down_button.setEnabled(False)
+        main_window.remove_gsac_event_button.setEnabled(False)
+
+    main_window.events_instructions_list.model().clear()
+    # Disable some buttons if there won't be any more instructions
+    if main_window.remove_instruction_button.isEnabled():
+        # Disable the buttons
+        main_window.events_instructions_list_up_button.setEnabled(False)
+        main_window.events_instructions_list_down_button.setEnabled(False)
+        main_window.remove_instruction_button.setEnabled(False)
+
+    # Disable all the parameters value ui
+    for i in range(0, 8):
+        if GSCEV.pointers_values_ui[i].isEnabled():
+            GSCEV.pointers_values_ui[i].setEnabled(False)
+
     # Add all gsac events to the list view
     for gsac in GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]:
         item = QStandardItem(str(gsac.id))

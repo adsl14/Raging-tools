@@ -59,6 +59,161 @@ def action_modify_character(event, main_window, chara_id):
     main_window.selectCharaGscWindow.close()
 
 
+def action_gsac_events_list_up_button_logic(main_window):
+
+    # Get the current pointer instruction
+    index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+    # Check if is the last instrunction entry
+    if index_gsac > 0:
+
+        # Get current gsac name and data
+        current_instruction_name = main_window.gsac_events_list.model().item(index_gsac).text()
+        current_instruction_data = main_window.gsac_events_list.model().item(index_gsac).data()
+
+        # Get next gsac name and data
+        before_instruction_name = main_window.gsac_events_list.model().item(index_gsac - 1).text()
+        before_instruction_data = main_window.gsac_events_list.model().item(index_gsac - 1).data()
+
+        # Make the swap
+        main_window.gsac_events_list.model().item(index_gsac).setText(before_instruction_name)
+        main_window.gsac_events_list.model().item(index_gsac).setData(before_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac] = before_instruction_data
+
+        main_window.gsac_events_list.model().item(index_gsac - 1).setText(current_instruction_name)
+        main_window.gsac_events_list.model().item(index_gsac - 1).setData(current_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac - 1] = current_instruction_data
+
+        # Select the next gsac entry
+        main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(index_gsac - 1, 0))
+
+
+def action_gsac_events_list_down_button_logic(main_window):
+
+    # Get the current pointer instruction
+    index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+    # Check if is the last instrunction entry
+    if index_gsac < main_window.gsac_events_list.model().rowCount() - 1:
+
+        # Get current instruction name and data
+        current_instruction_name = main_window.gsac_events_list.model().item(index_gsac).text()
+        current_instruction_data = main_window.gsac_events_list.model().item(index_gsac).data()
+
+        # Get next instruction name and data
+        next_instruction_name = main_window.gsac_events_list.model().item(index_gsac + 1).text()
+        next_instruction_data = main_window.gsac_events_list.model().item(index_gsac + 1).data()
+
+        # Make the swap
+        main_window.gsac_events_list.model().item(index_gsac).setText(next_instruction_name)
+        main_window.gsac_events_list.model().item(index_gsac).setData(next_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac] = next_instruction_data
+
+        main_window.gsac_events_list.model().item(index_gsac + 1).setText(current_instruction_name)
+        main_window.gsac_events_list.model().item(index_gsac + 1).setData(current_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac] = current_instruction_data
+
+        # Select the next instruction
+        main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(index_gsac + 1, 0))
+
+
+def action_remove_gsac_logic(main_window):
+
+    # Ask the user if is sure to remove the texture
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
+    message = "The gsac entry will be removed. Are you sure to continue?"
+    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+    # Check if the user has selected something
+    if answer:
+
+        # The user wants to remove the selected texture
+        if answer == msg.Yes:
+
+            # Get the current gsac entry
+            index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+            # Get the gsac entries
+            gsac_entries = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]
+
+            # Remove the instruction in memory, creating a new array
+            new_gsac_entries = []
+            for i in range(0, index_gsac):
+                new_gsac_entries.append(gsac_entries[i])
+            for i in range(index_gsac + 1, len(gsac_entries)):
+                new_gsac_entries.append(gsac_entries[i])
+            GSCEV.gsc_file.gscf_header.gscd_header.gsac_array = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[:5] + new_gsac_entries
+
+            # Remove from the array of instructions in the list
+            main_window.gsac_events_list.model().removeRow(index_gsac)
+
+
+def action_events_instructions_list_up_button_logic(main_window):
+
+    # Get the current pointer instruction
+    index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+    # Check if is the last instrunction entry
+    if index_intruction > 0:
+
+        # Get the current gsac entry
+        index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+        # Get current instruction name and data
+        current_instruction_name = main_window.events_instructions_list.model().item(index_intruction).text()
+        current_instruction_data = main_window.events_instructions_list.model().item(index_intruction).data()
+
+        # Get next instruction name and data
+        before_instruction_name = main_window.events_instructions_list.model().item(index_intruction - 1).text()
+        before_instruction_data = main_window.events_instructions_list.model().item(index_intruction - 1).data()
+
+        # Make the swap
+        main_window.events_instructions_list.model().item(index_intruction).setText(before_instruction_name)
+        main_window.events_instructions_list.model().item(index_intruction).setData(before_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction] = before_instruction_data
+
+        main_window.events_instructions_list.model().item(index_intruction - 1).setText(current_instruction_name)
+        main_window.events_instructions_list.model().item(index_intruction - 1).setData(current_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction - 1] = current_instruction_data
+
+        # Select the next instruction
+        main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(index_intruction - 1, 0))
+
+
+def action_events_instructions_list_down_button_logic(main_window):
+
+    # Get the current pointer instruction
+    index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+    # Check if is the last instrunction entry
+    if index_intruction < main_window.events_instructions_list.model().rowCount() - 1:
+
+        # Get the current gsac entry
+        index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+        # Get current instruction name and data
+        current_instruction_name = main_window.events_instructions_list.model().item(index_intruction).text()
+        current_instruction_data = main_window.events_instructions_list.model().item(index_intruction).data()
+
+        # Get next instruction name and data
+        next_instruction_name = main_window.events_instructions_list.model().item(index_intruction + 1).text()
+        next_instruction_data = main_window.events_instructions_list.model().item(index_intruction + 1).data()
+
+        # Make the swap
+        main_window.events_instructions_list.model().item(index_intruction).setText(next_instruction_name)
+        main_window.events_instructions_list.model().item(index_intruction).setData(next_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction] = next_instruction_data
+
+        main_window.events_instructions_list.model().item(index_intruction + 1).setText(current_instruction_name)
+        main_window.events_instructions_list.model().item(index_intruction + 1).setData(current_instruction_data)
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction + 1] = current_instruction_data
+
+        # Select the next instruction
+        main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(index_intruction + 1, 0))
+
+
 def action_remove_instruction_logic(main_window):
 
     # Ask the user if is sure to remove the texture
@@ -80,26 +235,8 @@ def action_remove_instruction_logic(main_window):
             # Get the current pointer instruction
             index_intruction = main_window.events_instructions_list.currentIndex().row()
 
-            # Remove from the array of instructions in the list
-            main_window.events_instructions_list.model().removeRow(index_intruction)
-
             # Get the pointers for the specific gasc entry
-            pointers = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers
-
-            # Check if there is no more instructions
-            if main_window.events_instructions_list.currentIndex().row() < 0:
-                # Disable some buttons if there won't be any more instructions
-                if main_window.remove_instruction_button.isEnabled():
-                    # Disable the buttons
-                    main_window.events_instructions_list_up_button.setEnabled(False)
-                    main_window.events_instructions_list_down_button.setEnabled(False)
-                    main_window.remove_instruction_button.setEnabled(False)
-
-                # Disable all the parameters value ui
-                number_of_pointers = pointers[index_intruction].number_of_pointers if pointers[index_intruction].type != b'\x08' else pointers[index_intruction].secundary_number_of_pointers
-                for i in range(0, number_of_pointers):
-                    if GSCEV.pointers_values_ui[i].isEnabled():
-                        GSCEV.pointers_values_ui[i].setEnabled(False)
+            pointers = main_window.gsac_events_list.model().item(index_gsac).data().data.pointers
 
             # Remove the instruction in memory, creating a new array
             new_pointers = []
@@ -108,6 +245,9 @@ def action_remove_instruction_logic(main_window):
             for i in range(index_intruction + 1, len(pointers)):
                 new_pointers.append(pointers[i])
             GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers = new_pointers
+
+            # Remove from the array of instructions in the list
+            main_window.events_instructions_list.model().removeRow(index_intruction)
 
 
 def on_map_changed(main_window):
@@ -245,56 +385,64 @@ def on_gsac_events_list_changed(main_window):
     # Get the current gsac entry
     index = main_window.gsac_events_list.currentIndex().row()
 
-    # Add each instruction pointer from current gsac
-    gsac = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index]
-    for event_instruction in gsac.data.pointers:
-        name = get_pointer_data_info_name(event_instruction)
-        item = QStandardItem(name)
-        item.setData(event_instruction)
-        item.setEditable(False)
-        main_window.events_instructions_list.model().appendRow(item)
+    # Add each instruction pointer from current gsac. If there is any gsac entry, it will throw 'AttributeError' exception
+    try:
+        num_instructions = 0
+        gsac = main_window.gsac_events_list.model().item(index).data()
+        for event_instruction in gsac.data.pointers:
+            name = get_pointer_data_info_name(event_instruction)
+            item = QStandardItem(name)
+            item.setData(event_instruction)
+            item.setEditable(False)
+            main_window.events_instructions_list.model().appendRow(item)
+            num_instructions = num_instructions + 1
 
-    # Check if the gsac entry has pointers (instructions)
-    if main_window.events_instructions_list.model().rowCount() > 0:
-        # Enable the buttons if they're disabled
-        if not main_window.remove_instruction_button.isEnabled():
+        if not main_window.remove_gsac_event_button.isEnabled():
             # Enable the buttons
-            # main_window.events_instructions_list_up_button.setEnabled(True)
-            # main_window.events_instructions_list_down_button.setEnabled(True)
-            main_window.remove_instruction_button.setEnabled(True)
+            main_window.gsac_events_list_up_button.setEnabled(True)
+            main_window.gsac_events_list_down_button.setEnabled(True)
+            main_window.remove_gsac_event_button.setEnabled(True)
 
-        # Select the first instruction
-        main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+        if num_instructions > 0:
+            # Enable the buttons if they're disabled
+            if not main_window.remove_instruction_button.isEnabled():
+                # Enable the buttons
+                main_window.events_instructions_list_up_button.setEnabled(True)
+                main_window.events_instructions_list_down_button.setEnabled(True)
+                main_window.remove_instruction_button.setEnabled(True)
 
-    # Disable the buttons when changing the gsac entry
-    else:
+            # Select the first instruction
+            main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+        else:
+            # Disable some buttons if there won't be any more instructions
+            if main_window.remove_instruction_button.isEnabled():
+                # Disable the buttons
+                main_window.events_instructions_list_up_button.setEnabled(False)
+                main_window.events_instructions_list_down_button.setEnabled(False)
+                main_window.remove_instruction_button.setEnabled(False)
 
-        # Disable some buttons if there won't be any more instructions
-        if main_window.remove_instruction_button.isEnabled():
-            # Disable the buttons
-            main_window.events_instructions_list_up_button.setEnabled(False)
-            main_window.events_instructions_list_down_button.setEnabled(False)
-            main_window.remove_instruction_button.setEnabled(False)
+            # Disable all the parameters value ui
+            for i in range(0, 8):
+                if GSCEV.pointers_values_ui[i].isEnabled():
+                    GSCEV.pointers_values_ui[i].setEnabled(False)
 
-        # Disable all the parameters value ui
-        for i in range(0, 8):
-            if GSCEV.pointers_values_ui[i].isEnabled():
-                GSCEV.pointers_values_ui[i].setEnabled(False)
+    except AttributeError:
+
+        if main_window.remove_gsac_event_button.isEnabled():
+            # Enable the buttons
+            main_window.gsac_events_list_up_button.setEnabled(False)
+            main_window.gsac_events_list_down_button.setEnabled(False)
+            main_window.remove_gsac_event_button.setEnabled(False)
 
 
 def on_events_instructions_list_changed(main_window):
 
-    # Get the current gsac entry
-    index_gsac = main_window.gsac_events_list.currentIndex().row()
-
     # Get the current pointer instruction
     index_intruction = main_window.events_instructions_list.currentIndex().row()
 
-    # If there is instructions in the list, we will change the parameters
-    if index_intruction >= 0:
-
+    try:
         # Get the pointer data info
-        pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
+        pointer_data_info = main_window.events_instructions_list.model().item(index_intruction).data()
 
         # Get number of pointers (pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte, otherwise the third byte)
         number_of_pointers = pointer_data_info.number_of_pointers if pointer_data_info.type != b'\x08' else pointer_data_info.secundary_number_of_pointers
@@ -325,6 +473,20 @@ def on_events_instructions_list_changed(main_window):
         main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
         main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
         main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+
+    except AttributeError:
+
+        # Disable some buttons if there won't be any more instructions
+        if main_window.remove_instruction_button.isEnabled():
+            # Disable the buttons
+            main_window.events_instructions_list_up_button.setEnabled(False)
+            main_window.events_instructions_list_down_button.setEnabled(False)
+            main_window.remove_instruction_button.setEnabled(False)
+
+        # Disable all the parameters value ui
+        for i in range(0, 8):
+            if GSCEV.pointers_values_ui[i].isEnabled():
+                GSCEV.pointers_values_ui[i].setEnabled(False)
 
 
 def on_instruction_value_changed(main_window, value_index):
