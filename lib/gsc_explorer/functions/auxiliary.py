@@ -172,13 +172,13 @@ def get_pointer_data_info_name(event_instruction):
     # Function "0x01"
     if event_instruction.type == b'\x01':
         try:
-            name = GSCEV.instructions_names[0]["%02X" % event_instruction.secundary_number_of_pointers]
+            name = "F: " + GSCEV.instructions_names[0]["%02X" % event_instruction.secundary_number_of_pointers]
         except KeyError:
             pass
     # Properties "0x08"
     else:
         try:
-            name = GSCEV.instructions_names[1]["%02X" % event_instruction.number_of_pointers]
+            name = "P: " + GSCEV.instructions_names[1]["%02X" % event_instruction.number_of_pointers]
         except KeyError:
             pass
 

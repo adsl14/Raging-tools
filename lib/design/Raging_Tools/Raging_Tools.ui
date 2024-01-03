@@ -9493,7 +9493,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List of functions and properties of one GSAC&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Functions and Properties</string>
+          <string>Functions (F) and Properties (P)</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
