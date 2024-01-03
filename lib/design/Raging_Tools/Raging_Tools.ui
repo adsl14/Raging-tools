@@ -9255,7 +9255,7 @@
            </rect>
           </property>
          </widget>
-         <widget class="QPushButton" name="add_subtitle_instruction">
+         <widget class="QPushButton" name="add_subtitle_instruction_button">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -9271,7 +9271,7 @@
            <string>Add</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="remove_subtitle_instruction">
+         <widget class="QPushButton" name="remove_subtitle_instruction_button">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -9389,7 +9389,7 @@
            <bool>true</bool>
           </property>
          </widget>
-         <widget class="QPushButton" name="move_instruction_subtitle_up">
+         <widget class="QPushButton" name="move_instruction_subtitle_up_button">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -9405,7 +9405,7 @@
            <string>▲</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="move_instruction_subtitle_down">
+         <widget class="QPushButton" name="move_instruction_subtitle_down_button">
           <property name="enabled">
            <bool>false</bool>
           </property>
@@ -9456,7 +9456,7 @@
           <rect>
            <x>20</x>
            <y>80</y>
-           <width>256</width>
+           <width>161</width>
            <height>192</height>
           </rect>
          </property>
@@ -9466,7 +9466,7 @@
           <rect>
            <x>26</x>
            <y>50</y>
-           <width>251</width>
+           <width>151</width>
            <height>20</height>
           </rect>
          </property>
@@ -9483,7 +9483,7 @@
         <widget class="QLabel" name="events_instructions_text">
          <property name="geometry">
           <rect>
-           <x>310</x>
+           <x>260</x>
            <y>50</y>
            <width>251</width>
            <height>20</height>
@@ -9502,9 +9502,9 @@
         <widget class="QListView" name="events_instructions_list">
          <property name="geometry">
           <rect>
-           <x>310</x>
+           <x>260</x>
            <y>80</y>
-           <width>256</width>
+           <width>251</width>
            <height>192</height>
           </rect>
          </property>
@@ -9512,7 +9512,7 @@
         <widget class="QFrame" name="instruction_values">
          <property name="geometry">
           <rect>
-           <x>620</x>
+           <x>630</x>
            <y>81</y>
            <width>341</width>
            <height>171</height>
@@ -9542,7 +9542,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_0">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9577,7 +9577,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_1">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9612,7 +9612,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_2">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9647,7 +9647,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_3">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9682,7 +9682,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_4">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9717,7 +9717,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_5">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9752,7 +9752,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_6">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9787,7 +9787,7 @@
          </widget>
          <widget class="QDoubleSpinBox" name="instruction_value_7">
           <property name="enabled">
-           <bool>true</bool>
+           <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
@@ -9808,7 +9808,7 @@
         <widget class="QLabel" name="instruction_text">
          <property name="geometry">
           <rect>
-           <x>620</x>
+           <x>630</x>
            <y>50</y>
            <width>341</width>
            <height>21</height>
@@ -9822,6 +9822,134 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="gsac_events_list_up_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>140</y>
+           <width>41</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="gsac_events_list_down_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>190</x>
+           <y>170</y>
+           <width>41</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>▼</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="events_instructions_list_down_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>520</x>
+           <y>170</y>
+           <width>41</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>▼</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="events_instructions_list_up_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>520</x>
+           <y>140</y>
+           <width>41</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>▲</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="remove_gsac_event_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>110</x>
+           <y>280</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Remove</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="add_gsac_event_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>40</x>
+           <y>280</y>
+           <width>51</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Add</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="remove_instruction_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>390</x>
+           <y>280</y>
+           <width>51</width>
+           <height>23</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Remove</string>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="add_instruction_button">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="geometry">
+          <rect>
+           <x>320</x>
+           <y>280</y>
+           <width>51</width>
+           <height>21</height>
+          </rect>
+         </property>
+         <property name="text">
+          <string>Add</string>
          </property>
         </widget>
        </widget>

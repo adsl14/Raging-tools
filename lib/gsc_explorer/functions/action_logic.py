@@ -2,9 +2,112 @@ from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui, get_point
 from lib.packages import os
 
 from PyQt5.QtGui import QPixmap, QStandardItem
-from PyQt5.QtWidgets import QLabel
+from PyQt5.QtWidgets import QLabel, QMessageBox
 
 from lib.gsc_explorer.GSCEV import GSCEV
+
+
+def action_change_character(event, main_window, option):
+
+    # Get the current character
+    # Chara ID for stage properties
+    if option == 0:
+        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT
+    # Chara ID for subtitle properties
+    else:
+        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT
+
+    # Check if the current character is the same as the selected in the window, so we can clean the window
+    if GSCEV.old_chara != char_id:
+
+        # Restore the color of the old selected character
+        select_chara_roster_window_label = main_window.selectCharaGscUI.frame.findChild(QLabel, "label_" + str(GSCEV.old_chara))
+        select_chara_roster_window_label.setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+
+        # Store the current character
+        GSCEV.old_chara = char_id
+
+    # Change color for the selected character in chara roster window
+    select_chara_roster_window_label = main_window.selectCharaGscUI.frame.findChild(QLabel, "label_" + str(char_id))
+    select_chara_roster_window_label.setStyleSheet(GSCEV.styleSheetSelectCharaGscCyanWindow)
+
+    # Set the option selected
+    GSCEV.char_id_option_selected = option
+
+    # Show the select chara roster window
+    main_window.selectCharaGscWindow.show()
+
+
+def action_modify_character(event, main_window, chara_id):
+
+    # Check the option selected
+    if GSCEV.char_id_option_selected == 0:
+        # Change character id
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT = chara_id
+
+        # Change character image
+        main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
+
+    else:
+        # Change character id
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT = chara_id
+
+        # Change character image
+        main_window.char_id_subtitle_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
+
+    # Close Window
+    main_window.selectCharaGscWindow.close()
+
+
+def action_remove_instruction_logic(main_window):
+
+    # Ask the user if is sure to remove the texture
+    msg = QMessageBox()
+    msg.setWindowTitle("Message")
+    msg.setWindowIcon(main_window.ico_image)
+    message = "The instruction will be removed. Are you sure to continue?"
+    answer = msg.question(main_window, '', message, msg.Yes | msg.No | msg.Cancel)
+
+    # Check if the user has selected something
+    if answer:
+
+        # The user wants to remove the selected texture
+        if answer == msg.Yes:
+
+            # Get the current gsac entry
+            index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+            # Get the current pointer instruction
+            index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+            # Remove from the array of instructions in the list
+            main_window.events_instructions_list.model().removeRow(index_intruction)
+
+            # Get the pointers for the specific gasc entry
+            pointers = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers
+
+            # Check if there is no more instructions
+            if main_window.events_instructions_list.currentIndex().row() < 0:
+                # Disable some buttons if there won't be any more instructions
+                if main_window.remove_instruction_button.isEnabled():
+                    # Disable the buttons
+                    main_window.events_instructions_list_up_button.setEnabled(False)
+                    main_window.events_instructions_list_down_button.setEnabled(False)
+                    main_window.remove_instruction_button.setEnabled(False)
+
+                # Disable all the parameters value ui
+                number_of_pointers = pointers[index_intruction].number_of_pointers if pointers[index_intruction].type != b'\x08' else pointers[index_intruction].secundary_number_of_pointers
+                for i in range(0, number_of_pointers):
+                    if GSCEV.pointers_values_ui[i].isEnabled():
+                        GSCEV.pointers_values_ui[i].setEnabled(False)
+
+            # Remove the instruction in memory, creating a new array
+            new_pointers = []
+            for i in range(0, index_intruction):
+                new_pointers.append(pointers[i])
+            for i in range(index_intruction + 1, len(pointers)):
+                new_pointers.append(pointers[i])
+            GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers = new_pointers
 
 
 def on_map_changed(main_window):
@@ -151,8 +254,32 @@ def on_gsac_events_list_changed(main_window):
         item.setEditable(False)
         main_window.events_instructions_list.model().appendRow(item)
 
-    # Select the first instruction
-    main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+    # Check if the gsac entry has pointers (instructions)
+    if main_window.events_instructions_list.model().rowCount() > 0:
+        # Enable the buttons if they're disabled
+        if not main_window.remove_instruction_button.isEnabled():
+            # Enable the buttons
+            # main_window.events_instructions_list_up_button.setEnabled(True)
+            # main_window.events_instructions_list_down_button.setEnabled(True)
+            main_window.remove_instruction_button.setEnabled(True)
+
+        # Select the first instruction
+        main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
+
+    # Disable the buttons when changing the gsac entry
+    else:
+
+        # Disable some buttons if there won't be any more instructions
+        if main_window.remove_instruction_button.isEnabled():
+            # Disable the buttons
+            main_window.events_instructions_list_up_button.setEnabled(False)
+            main_window.events_instructions_list_down_button.setEnabled(False)
+            main_window.remove_instruction_button.setEnabled(False)
+
+        # Disable all the parameters value ui
+        for i in range(0, 8):
+            if GSCEV.pointers_values_ui[i].isEnabled():
+                GSCEV.pointers_values_ui[i].setEnabled(False)
 
 
 def on_events_instructions_list_changed(main_window):
@@ -163,37 +290,41 @@ def on_events_instructions_list_changed(main_window):
     # Get the current pointer instruction
     index_intruction = main_window.events_instructions_list.currentIndex().row()
 
-    # Get the pointer data info
-    pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
-    # Get number of pointers (pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte, otherwise the third byte)
-    number_of_pointers = pointer_data_info.number_of_pointers if pointer_data_info.type != b'\x08' else pointer_data_info.secundary_number_of_pointers
+    # If there is instructions in the list, we will change the parameters
+    if index_intruction >= 0:
 
-    # Disconnect the instruction values
-    try:
-        # GSAC 5 and so on
-        main_window.instruction_value_0.valueChanged.disconnect()
-        main_window.instruction_value_1.valueChanged.disconnect()
-        main_window.instruction_value_2.valueChanged.disconnect()
-        main_window.instruction_value_3.valueChanged.disconnect()
-        main_window.instruction_value_4.valueChanged.disconnect()
-        main_window.instruction_value_5.valueChanged.disconnect()
-        main_window.instruction_value_6.valueChanged.disconnect()
-        main_window.instruction_value_7.valueChanged.disconnect()
-    except TypeError:
-        pass
+        # Get the pointer data info
+        pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
 
-    # Assign each pointer value from the instruction
-    assign_pointer_to_ui(GSCEV.pointer_values_ui, pointer_data_info, number_of_pointers)
+        # Get number of pointers (pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte, otherwise the third byte)
+        number_of_pointers = pointer_data_info.number_of_pointers if pointer_data_info.type != b'\x08' else pointer_data_info.secundary_number_of_pointers
 
-    # Connect the instruction values
-    main_window.instruction_value_0.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
-    main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
-    main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
-    main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
-    main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
-    main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
-    main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
-    main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+        # Disconnect the instruction values
+        try:
+            # GSAC 5 and so on
+            main_window.instruction_value_0.valueChanged.disconnect()
+            main_window.instruction_value_1.valueChanged.disconnect()
+            main_window.instruction_value_2.valueChanged.disconnect()
+            main_window.instruction_value_3.valueChanged.disconnect()
+            main_window.instruction_value_4.valueChanged.disconnect()
+            main_window.instruction_value_5.valueChanged.disconnect()
+            main_window.instruction_value_6.valueChanged.disconnect()
+            main_window.instruction_value_7.valueChanged.disconnect()
+        except TypeError:
+            pass
+
+        # Assign each pointer value from the instruction
+        assign_pointer_to_ui(GSCEV.pointers_values_ui, pointer_data_info, number_of_pointers)
+
+        # Connect the instruction values
+        main_window.instruction_value_0.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 0))
+        main_window.instruction_value_1.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 1))
+        main_window.instruction_value_2.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 2))
+        main_window.instruction_value_3.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 3))
+        main_window.instruction_value_4.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 4))
+        main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
+        main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
+        main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
 
 
 def on_instruction_value_changed(main_window, value_index):
@@ -208,57 +339,5 @@ def on_instruction_value_changed(main_window, value_index):
     pointer_data_info = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers[index_intruction]
 
     # Store the value modified into the pointer in memory. Check if the pointer value is in integer or float, to convert it to the proper format
-    pointer_value_ui = GSCEV.pointer_values_ui[value_index].value()
+    pointer_value_ui = GSCEV.pointers_values_ui[value_index].value()
     pointer_data_info.pointers_data[value_index].value_GSDT = int(pointer_value_ui) if pointer_data_info.pointers_data[value_index].type_GSDT == b'\x0A' else pointer_value_ui
-
-
-def action_change_character(event, main_window, option):
-
-    # Get the current character
-    # Chara ID for stage properties
-    if option == 0:
-        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT
-    # Chara ID for subtitle properties
-    else:
-        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT
-
-    # Check if the current character is the same as the selected in the window, so we can clean the window
-    if GSCEV.old_chara != char_id:
-
-        # Restore the color of the old selected character
-        select_chara_roster_window_label = main_window.selectCharaGscUI.frame.findChild(QLabel, "label_" + str(GSCEV.old_chara))
-        select_chara_roster_window_label.setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
-
-        # Store the current character
-        GSCEV.old_chara = char_id
-
-    # Change color for the selected character in chara roster window
-    select_chara_roster_window_label = main_window.selectCharaGscUI.frame.findChild(QLabel, "label_" + str(char_id))
-    select_chara_roster_window_label.setStyleSheet(GSCEV.styleSheetSelectCharaGscCyanWindow)
-
-    # Set the option selected
-    GSCEV.char_id_option_selected = option
-
-    # Show the select chara roster window
-    main_window.selectCharaGscWindow.show()
-
-
-def action_modify_character(event, main_window, chara_id):
-
-    # Check the option selected
-    if GSCEV.char_id_option_selected == 0:
-        # Change character id
-        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT = chara_id
-
-        # Change character image
-        main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
-
-    else:
-        # Change character id
-        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT = chara_id
-
-        # Change character image
-        main_window.char_id_subtitle_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
-
-    # Close Window
-    main_window.selectCharaGscWindow.close()
