@@ -177,7 +177,7 @@ def get_pointer_data_info_name(event_instruction):
         try:
             name = "P: " + GSCEV.instructions_names[1]["%02X" % event_instruction.number_of_pointers]
         except KeyError:
-            name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))
+            name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
 
     return name
 
