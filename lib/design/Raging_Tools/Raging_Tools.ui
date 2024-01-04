@@ -8256,10 +8256,10 @@
        <widget class="QFrame" name="stage_properties">
         <property name="geometry">
          <rect>
-          <x>10</x>
+          <x>100</x>
           <y>10</y>
-          <width>981</width>
-          <height>131</height>
+          <width>891</width>
+          <height>151</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -8414,67 +8414,13 @@
           </property>
          </widget>
         </widget>
-        <widget class="QFrame" name="intruction_010C09">
-         <property name="geometry">
-          <rect>
-           <x>210</x>
-           <y>20</y>
-           <width>91</width>
-           <height>51</height>
-          </rect>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::WinPanel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <widget class="QSpinBox" name="num_characters_value">
-          <property name="geometry">
-           <rect>
-            <x>20</x>
-            <y>20</y>
-            <width>41</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <number>0</number>
-          </property>
-          <property name="maximum">
-           <number>20</number>
-          </property>
-          <property name="value">
-           <number>0</number>
-          </property>
-         </widget>
-         <widget class="QLabel" name="num_characters_text">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>0</y>
-            <width>71</width>
-            <height>20</height>
-           </rect>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total number of characters in the story mode event&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Nº characters</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-         </widget>
-        </widget>
         <widget class="QFrame" name="instruction_010F0B_01060C">
          <property name="geometry">
           <rect>
-           <x>310</x>
+           <x>390</x>
            <y>20</y>
-           <width>611</width>
-           <height>91</height>
+           <width>481</width>
+           <height>101</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -8493,13 +8439,13 @@
            </rect>
           </property>
           <property name="minimum">
-           <number>0</number>
+           <number>1</number>
           </property>
           <property name="maximum">
-           <number>19</number>
+           <number>20</number>
           </property>
           <property name="value">
-           <number>0</number>
+           <number>1</number>
           </property>
          </widget>
          <widget class="QSpinBox" name="skin_value">
@@ -8538,7 +8484,7 @@
            </rect>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The stage can hold a total of 20 characters slots for the story mode. This is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; the character id in order to select the character model, just an id in order to select one of the 20 characters for the stage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the character slot. This is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; the character id in order to select the character model, just an id slot in order to select one of the 20 characters for the stage.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Character</string>
@@ -8557,7 +8503,7 @@
            </rect>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Character id. This id will be used in order to select the character you want to show in the stage&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Character id. This id will be used in order to select the model you want to show in the stage&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Char Id</string>
@@ -8639,7 +8585,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_l_image_2">
           <property name="geometry">
            <rect>
-            <x>522</x>
+            <x>396</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8661,7 +8607,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_d_value_2">
           <property name="geometry">
            <rect>
-            <x>472</x>
+            <x>346</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8746,7 +8692,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_text_2">
           <property name="geometry">
            <rect>
-            <x>462</x>
+            <x>336</x>
             <y>0</y>
             <width>71</width>
             <height>21</height>
@@ -8762,7 +8708,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_r_image_2">
           <property name="geometry">
            <rect>
-            <x>434</x>
+            <x>308</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8784,7 +8730,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_push_image_2">
           <property name="geometry">
            <rect>
-            <x>566</x>
+            <x>440</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8806,7 +8752,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_up_value_2">
           <property name="geometry">
            <rect>
-            <x>384</x>
+            <x>258</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8891,7 +8837,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_d_image_2">
           <property name="geometry">
            <rect>
-            <x>478</x>
+            <x>352</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8913,7 +8859,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_l_value_2">
           <property name="geometry">
            <rect>
-            <x>516</x>
+            <x>390</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8998,7 +8944,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_up_image_2">
           <property name="geometry">
            <rect>
-            <x>390</x>
+            <x>264</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -9020,7 +8966,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_push_value_2">
           <property name="geometry">
            <rect>
-            <x>560</x>
+            <x>434</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -9105,7 +9051,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_r_value_2">
           <property name="geometry">
            <rect>
-            <x>428</x>
+            <x>302</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -9190,8 +9136,8 @@
          <widget class="QCheckBox" name="damaged_costume">
           <property name="geometry">
            <rect>
-            <x>260</x>
-            <y>20</y>
+            <x>10</x>
+            <y>70</y>
             <width>111</width>
             <height>17</height>
            </rect>
@@ -9201,14 +9147,173 @@
           </property>
          </widget>
         </widget>
+        <widget class="QFrame" name="intruction_010C09">
+         <property name="geometry">
+          <rect>
+           <x>210</x>
+           <y>20</y>
+           <width>171</width>
+           <height>51</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <widget class="QSpinBox" name="player_character_value">
+          <property name="geometry">
+           <rect>
+            <x>20</x>
+            <y>20</y>
+            <width>41</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>20</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="player_character_text">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>0</y>
+            <width>71</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the character slot as player 1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Character P1</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="cpu_character_text">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>0</y>
+            <width>81</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the character slot as CPU&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Character CPU</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="cpu_character_value">
+          <property name="geometry">
+           <rect>
+            <x>110</x>
+            <y>20</y>
+            <width>41</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>20</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QFrame" name="instruction_08650300">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>80</y>
+           <width>191</width>
+           <height>61</height>
+          </rect>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <widget class="QLabel" name="char_id_partner_text">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>111</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Character partner id for player 1. This id will be used in order to select the model you want to show in the stage (only in cutscene)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Character partner Id</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="char_id_partner_slot">
+          <property name="geometry">
+           <rect>
+            <x>130</x>
+            <y>10</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap>../../character_parameters_editor/images/fourSlot/pl_slot.png</pixmap>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="char_id_partner_value">
+          <property name="geometry">
+           <rect>
+            <x>130</x>
+            <y>10</y>
+            <width>41</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="scaledContents">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </widget>
        </widget>
        <widget class="QFrame" name="subtitles_properties">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>160</y>
+          <y>170</y>
           <width>361</width>
-          <height>221</height>
+          <height>211</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -9221,7 +9326,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>10</y>
+           <y>0</y>
            <width>111</width>
            <height>16</height>
           </rect>
@@ -9427,9 +9532,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>400</y>
+          <y>390</y>
           <width>981</width>
-          <height>351</height>
+          <height>371</height>
          </rect>
         </property>
         <property name="frameShape">
@@ -9442,7 +9547,7 @@
          <property name="geometry">
           <rect>
            <x>10</x>
-           <y>10</y>
+           <y>0</y>
            <width>101</width>
            <height>16</height>
           </rect>
@@ -9950,6 +10055,57 @@
          </property>
          <property name="text">
           <string>Add</string>
+         </property>
+        </widget>
+       </widget>
+       <widget class="QFrame" name="definitions">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>81</width>
+          <height>51</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::WinPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <widget class="QSpinBox" name="initial_gsac_event_value">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>20</y>
+           <width>61</width>
+           <height>22</height>
+          </rect>
+         </property>
+         <property name="maximum">
+          <number>999999</number>
+         </property>
+         <property name="value">
+          <number>10000</number>
+         </property>
+        </widget>
+        <widget class="QLabel" name="initial_gsac_event_text">
+         <property name="geometry">
+          <rect>
+           <x>10</x>
+           <y>0</y>
+           <width>61</width>
+           <height>16</height>
+          </rect>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the GSAC ID to load when the game loads this gsc file. Remember that if you select an ID that doesn't exists, the game will crash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>First GSAC</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </widget>

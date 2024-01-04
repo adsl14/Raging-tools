@@ -12,10 +12,16 @@ def action_change_character(event, main_window, option):
     # Get the current character
     # Chara ID for stage properties
     if option == 0:
-        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT
+        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[2].value_GSDT
     # Chara ID for subtitle properties
-    else:
+    elif option == 1:
         char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT
+    # Chara ID for partner
+    else:
+        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[0].value_GSDT
+
+    # Check if the chara_id is 4294967295 (empty value), so we convert the value to the proper format for ui
+    char_id = char_id if char_id != 4294967295 else 101
 
     # Check if the current character is the same as the selected in the window, so we can clean the window
     if GSCEV.old_chara != char_id:
@@ -40,20 +46,29 @@ def action_change_character(event, main_window, option):
 
 def action_modify_character(event, main_window, chara_id):
 
+    # Check if the chara_id is 101 (empty value), so we convert the value to the proper format in memory
+    chara_id_value = chara_id if chara_id < 100 else 4294967295
+
     # Check the option selected
     if GSCEV.char_id_option_selected == 0:
         # Change character id
-        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[2].value_GSDT = chara_id
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[2].value_GSDT = chara_id_value
 
         # Change character image
         main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
 
-    else:
+    elif GSCEV.char_id_option_selected == 1:
         # Change character id
-        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT = chara_id
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT = chara_id_value
 
         # Change character image
         main_window.char_id_subtitle_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
+    else:
+        # Change character id
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[0].value_GSDT = chara_id_value
+
+        # Change character image
+        main_window.char_id_partner_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
 
     # Close Window
     main_window.selectCharaGscWindow.close()
@@ -250,6 +265,15 @@ def action_remove_instruction_logic(main_window):
             main_window.events_instructions_list.model().removeRow(index_intruction)
 
 
+def on_initial_gsac_event_changed(main_window):
+
+    # Convert the value to hex
+    hex_value = '{:08x}'.format(main_window.initial_gsac_event_value.value())
+    # Store the value from ui into the class
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[0].data.pointers[0].secundary_number_of_pointers = int(hex_value[-2:], 16)
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[0].data.pointers[0].unk0x04 = bytes.fromhex(hex_value[-4:-2])
+
+
 def on_map_changed(main_window):
     # Store the value from ui into the class
     GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[0].pointers_data[0].value_GSDT = main_window.map_name_value.currentIndex()
@@ -260,9 +284,14 @@ def on_music_changed(main_window):
     GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[0].pointers_data[1].value_GSDT = main_window.music_value.value()
 
 
-def on_num_characters_changed(main_window):
+def on_player_slot_changed(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[1].pointers_data[7].value_GSDT = main_window.num_characters_value.value()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[1].pointers_data[1].value_GSDT = main_window.player_character_value.value()
+
+
+def on_cpu_slot_changed(main_window):
+    # Store the value from ui into the class
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[1].pointers_data[7].value_GSDT = main_window.cpu_character_value.value()
 
 
 def on_character_id_changed(main_window):
@@ -270,45 +299,42 @@ def on_character_id_changed(main_window):
     # Get gsac_3
     gsac_3 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3]
 
-    # Change character value according how is stored in memory
-    character_value = main_window.character_value.value() + 1
-
     # Skin
-    main_window.skin_value.setValue(gsac_3.data.pointers[3 + (2 * character_value)].pointers_data[3].value_GSDT)
+    main_window.skin_value.setValue(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[3].value_GSDT)
     # Battle damaged
-    main_window.damaged_costume.setChecked(gsac_3.data.pointers[3 + (2 * character_value)].pointers_data[4].value_GSDT)
+    main_window.damaged_costume.setChecked(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[4].value_GSDT)
     # Health
-    main_window.gsc_health_value.setValue(gsac_3.data.pointers[3 + (2 * character_value)].pointers_data[7].value_GSDT)
+    main_window.gsc_health_value.setValue(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[7].value_GSDT)
     # Character
-    main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3 + (2 * character_value)]
+    main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())]
                                                                                                                .pointers_data[2].value_GSDT).zfill(3) + ".png")))
     # Blast attacks
-    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * character_value)].pointers_data[1].value_GSDT
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[1].value_GSDT
     main_window.ico_boost_stick_r_up_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
-    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * character_value)].pointers_data[2].value_GSDT
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[2].value_GSDT
     main_window.ico_boost_stick_r_d_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
-    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * character_value)].pointers_data[3].value_GSDT
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[3].value_GSDT
     main_window.ico_boost_stick_r_l_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
-    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * character_value)].pointers_data[4].value_GSDT
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[4].value_GSDT
     main_window.ico_boost_stick_r_r_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
-    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * character_value)].pointers_data[5].value_GSDT
+    value_gsdt = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[5].value_GSDT
     main_window.ico_boost_stick_r_push_value_2.setCurrentIndex(value_gsdt + 1 if value_gsdt != 4294967295 else 0)
 
 
 def on_skin_changed(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[3].value_GSDT = main_window.skin_value.value()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[3].value_GSDT = main_window.skin_value.value()
 
 
 def on_damaged_costume(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[4].value_GSDT = int(main_window.damaged_costume.isChecked()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[4].value_GSDT = int(main_window.damaged_costume.isChecked()
                                                                                                                                                         is True)
 
 
 def on_gsc_health_value_changed(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * (main_window.character_value.value() + 1))].pointers_data[7].value_GSDT = main_window.gsc_health_value.value()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[7].value_GSDT = main_window.gsc_health_value.value()
 
 
 def on_ico_boost_stick_value_changed(main_window, stick_number):
@@ -337,7 +363,7 @@ def on_ico_boost_stick_value_changed(main_window, stick_number):
         value = combobox_index - 1
 
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * (main_window.character_value.value() + 1))].pointers_data[stick_number].value_GSDT = value
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[4 + (2 * main_window.character_value.value())].pointers_data[stick_number].value_GSDT = value
 
 
 def on_text_id_changed(main_window):

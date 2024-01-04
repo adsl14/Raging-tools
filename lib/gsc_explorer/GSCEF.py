@@ -11,11 +11,11 @@ from lib.gsc_explorer.classes.GSCF.GSCFHeader import GscfHeader
 from lib.gsc_explorer.classes.GSDT.GSDTHeader import GsdtHeader
 from lib.gsc_explorer.classes.GSHD.GSHDData import GshdData
 from lib.gsc_explorer.classes.GSHD.GSHDHeader import GshdHeader
-from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_num_characters_changed, on_skin_changed, on_damaged_costume, \
+from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_changed, on_cpu_slot_changed, on_skin_changed, on_damaged_costume, \
     on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, \
     on_pointer_subtitle_list_view_changed, on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic, \
     action_events_instructions_list_down_button_logic, action_events_instructions_list_up_button_logic, action_gsac_events_list_up_button_logic, action_gsac_events_list_down_button_logic, \
-    action_remove_gsac_logic
+    action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -203,16 +203,27 @@ def initialize_gsce(main_window):
     # Load the Select Chara window for RB1
     GSCEV.mini_portraits_image_select_chara_window = main_window.selectCharaGscUI.frame.findChildren(QLabel)
     for i in range(0, 73):
-        label_id_image = GSCEV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
-        GSCEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + label_id_image.zfill(3) + ".bmp")))
-        GSCEV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(action_modify_character, main_window=main_window, chara_id=i)
+        label_id_image = int(GSCEV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1])
+        GSCEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + str(label_id_image).zfill(3) + ".bmp")))
+        GSCEV.mini_portraits_image_select_chara_window[i].mousePressEvent = functools.partial(action_modify_character, main_window=main_window, chara_id=label_id_image)
         GSCEV.mini_portraits_image_select_chara_window[i].setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+    # Enable empty slot
+    label_id_image = int(GSCEV.mini_portraits_image_select_chara_window[100].objectName().split("_")[-1])
+    GSCEV.mini_portraits_image_select_chara_window[100].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + str(label_id_image).zfill(3) + ".bmp")))
+    GSCEV.mini_portraits_image_select_chara_window[100].mousePressEvent = functools.partial(action_modify_character, main_window=main_window, chara_id=label_id_image)
+    GSCEV.mini_portraits_image_select_chara_window[100].setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+
     # Disable the rest of slots
-    for i in range(73, 101):
+    for i in range(73, 100):
         label_id_image = GSCEV.mini_portraits_image_select_chara_window[i].objectName().split("_")[-1]
         GSCEV.mini_portraits_image_select_chara_window[i].setPixmap(QPixmap(os.path.join(GSCEV.path_small_images, "chara_chips_" + label_id_image.zfill(3) + ".bmp")))
         GSCEV.mini_portraits_image_select_chara_window[i].setEnabled(False)
         GSCEV.mini_portraits_image_select_chara_window[i].setStyleSheet(GSCEV.styleSheetSelectCharaGscBlackWindow)
+
+    # Prepare the char_id_partner_slot
+    main_window.char_id_partner_slot.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_image, "pl_slot.png")))
+    main_window.char_id_partner_value.mousePressEvent = functools.partial(action_change_character, main_window=main_window, option=2)
+
     # Prepare the char_id_slot
     main_window.char_id_slot.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_image, "pl_slot.png")))
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(0).zfill(3) + ".png")))
@@ -237,14 +248,21 @@ def initialize_gsce(main_window):
 def listen_events_logic(main_window, flag):
 
     if flag:
+
+        # GSAC 0
+        # Set the initial gsac event to load
+        main_window.initial_gsac_event_value.valueChanged.connect(lambda: on_initial_gsac_event_changed(main_window))
+
         # GSAC 3
         # Set the map value
         main_window.map_name_value.currentIndexChanged.connect(lambda: on_map_changed(main_window))
         # Set the music value
         main_window.music_value.valueChanged.connect(lambda: on_music_changed(main_window))
 
-        # Set the number of characters value
-        main_window.num_characters_value.valueChanged.connect(lambda: on_num_characters_changed(main_window))
+        # Set the character slot as player
+        main_window.player_character_value.valueChanged.connect(lambda: on_player_slot_changed(main_window))
+        # Set the character slot as cpu
+        main_window.cpu_character_value.valueChanged.connect(lambda: on_cpu_slot_changed(main_window))
 
         # Set the character id
         main_window.character_value.valueChanged.connect(lambda: on_character_id_changed(main_window))
@@ -280,14 +298,21 @@ def listen_events_logic(main_window, flag):
     else:
 
         try:
+
+            # GSAC 0
+            # Set the initial gsac event to load
+            main_window.initial_gsac_event_value.valueChanged.disconnect()
+
             # GSAC 3
             # Set the map value
             main_window.map_name_value.disconnect()
             # Set the music value
             main_window.music_value.disconnect()
 
-            # Set the number of characters value
-            main_window.num_characters_value.disconnect()
+            # Set the character slot as player
+            main_window.player_character_value.valueChanged.disconnect()
+            # Set the character slot as player
+            main_window.cpu_character_value.disconnect()
 
             # Set the character id
             main_window.character_value.valueChanged.disconnect()

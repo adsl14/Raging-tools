@@ -8,7 +8,15 @@ from lib.gsc_explorer.GSCEV import GSCEV
 def store_parameters_gsc_explorer(main_window):
 
     # --------
-    # # Stage properties (GSAC3)
+    # Definitions (GSAC0)
+    # --------
+    gsac_0 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[0]
+    # Initial gsac event to load
+    main_window.initial_gsac_event_value.setValue(int.from_bytes(gsac_0.data.pointers[0].secundary_number_of_pointers.to_bytes(1, 'little') + gsac_0.data.pointers[0].unk0x04, "little"))
+
+
+    # --------
+    # Stage properties (GSAC3)
     # --------
     gsac_3 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3]
     # Map value
@@ -16,11 +24,16 @@ def store_parameters_gsc_explorer(main_window):
     # Music value
     main_window.music_value.setValue(gsac_3.data.pointers[0].pointers_data[1].value_GSDT)
 
-    # Number of characters value
-    main_window.num_characters_value.setValue(gsac_3.data.pointers[1].pointers_data[7].value_GSDT)
+    # Character slot as p1
+    main_window.player_character_value.setValue(gsac_3.data.pointers[1].pointers_data[1].value_GSDT)
+    # Character slot as cpu
+    main_window.cpu_character_value.setValue(gsac_3.data.pointers[1].pointers_data[7].value_GSDT)
+
+    # Character (store in gui, only the first one)
+    main_window.char_id_partner_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3].pointers_data[0].value_GSDT).zfill(3) + ".png")))
 
     # Character id (select only the first one)
-    main_window.character_value.setValue(0)
+    main_window.character_value.setValue(1)
     # Skin (store in gui, only the first one)
     main_window.skin_value.setValue(gsac_3.data.pointers[5].pointers_data[3].value_GSDT)
     # Battle damaged (store in gui, only the first one)
