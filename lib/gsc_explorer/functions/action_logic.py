@@ -294,6 +294,15 @@ def on_cpu_slot_changed(main_window):
     GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[1].pointers_data[7].value_GSDT = main_window.cpu_character_value.value()
 
 
+def on_partner_skin_changed(main_window):
+    # Store the value from ui into the class
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[1].value_GSDT = main_window.skin_partner_value.value()
+
+
+def on_partner_damaged_costume(main_window):
+    # Store the value from ui into the class
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[2].value_GSDT = int(main_window.damaged_partner_costume.isChecked() is True)
+
 def on_character_id_changed(main_window):
 
     # Get gsac_3

@@ -9126,6 +9126,9 @@
             <height>17</height>
            </rect>
           </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activate damaged costume. If a character doesn't have any damaged costume, the game will crash by activating this option&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>Damaged costume</string>
           </property>
@@ -9247,7 +9250,7 @@
           <rect>
            <x>10</x>
            <y>80</y>
-           <width>191</width>
+           <width>361</width>
            <height>61</height>
           </rect>
          </property>
@@ -9276,7 +9279,7 @@
          <widget class="QLabel" name="char_id_partner_slot">
           <property name="geometry">
            <rect>
-            <x>130</x>
+            <x>120</x>
             <y>10</y>
             <width>41</width>
             <height>41</height>
@@ -9295,7 +9298,7 @@
          <widget class="QLabel" name="char_id_partner_value">
           <property name="geometry">
            <rect>
-            <x>130</x>
+            <x>120</x>
             <y>10</y>
             <width>41</width>
             <height>41</height>
@@ -9306,6 +9309,51 @@
           </property>
           <property name="scaledContents">
            <bool>true</bool>
+          </property>
+         </widget>
+         <widget class="QLabel" name="skin_partner_text">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>0</y>
+            <width>41</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Skin id of the partner character to show in the stage. Make sure you select a skin that the character has, otherwise it will crash the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Skin</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QSpinBox" name="skin_partner_value">
+          <property name="geometry">
+           <rect>
+            <x>180</x>
+            <y>20</y>
+            <width>42</width>
+            <height>22</height>
+           </rect>
+          </property>
+         </widget>
+         <widget class="QCheckBox" name="damaged_partner_costume">
+          <property name="geometry">
+           <rect>
+            <x>240</x>
+            <y>20</y>
+            <width>111</width>
+            <height>17</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Activate damaged costume. If a character doesn't have any damaged costume, the game will crash by activating this option&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Damaged costume</string>
           </property>
          </widget>
         </widget>

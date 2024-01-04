@@ -31,6 +31,10 @@ def store_parameters_gsc_explorer(main_window):
 
     # Character (store in gui, only the first one)
     main_window.char_id_partner_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3].pointers_data[0].value_GSDT).zfill(3) + ".png")))
+    # Skin (store in gui, only the first one)
+    main_window.skin_partner_value.setValue(gsac_3.data.pointers[3].pointers_data[1].value_GSDT)
+    # Battle damaged (store in gui, only the first one)
+    main_window.damaged_partner_costume.setChecked(gsac_3.data.pointers[3].pointers_data[2].value_GSDT)
 
     # Character id (select only the first one)
     main_window.character_value.setValue(1)
