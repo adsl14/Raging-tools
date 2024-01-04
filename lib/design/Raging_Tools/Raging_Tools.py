@@ -2731,7 +2731,7 @@ class Ui_MainWindow(object):
         self.cpu_character_value.setGeometry(QtCore.QRect(110, 20, 41, 22))
         self.cpu_character_value.setMinimum(1)
         self.cpu_character_value.setMaximum(20)
-        self.cpu_character_value.setProperty("value", 1)
+        self.cpu_character_value.setProperty("value", 2)
         self.cpu_character_value.setObjectName("cpu_character_value")
         self.instruction_08650300 = QtWidgets.QFrame(self.stage_properties)
         self.instruction_08650300.setGeometry(QtCore.QRect(10, 80, 191, 61))

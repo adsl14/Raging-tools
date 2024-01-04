@@ -123,8 +123,8 @@ def initialize_gsce(main_window):
     gsac_header.id = 4294967293
     gsac_data = GsacData()
     gsac_data.pointers.append(create_pointer_data_info(b'\x01', 3, 8, b'\x00', [[b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
-    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 12, 9, b'\x00', [[b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
-                                                                                 [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
+    gsac_data.pointers.append(create_pointer_data_info(b'\x01', 12, 9, b'\x00', [[b'\x0A', 0, b'\x00'], [b'\x0A', 1, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
+                                                                                 [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 2, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00'],
                                                                                  [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
     gsac_data.pointers.append(create_pointer_data_info(b'\x01', 0, 10, b'\x00', []))
     gsac_data.pointers.append(create_pointer_data_info(b'\x08', 101, 3, b'\x00', [[b'\x0A', 4294967295, b'\x00'], [b'\x0A', 0, b'\x00'], [b'\x0A', 0, b'\x00']]))
