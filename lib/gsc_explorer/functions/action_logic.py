@@ -304,7 +304,7 @@ def on_character_id_changed(main_window):
     # Battle damaged
     main_window.damaged_costume.setChecked(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[4].value_GSDT)
     # Health
-    main_window.gsc_health_value.setValue(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[7].value_GSDT)
+    main_window.gsc_health_value.setValue(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[8].value_GSDT)
     # Character
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())]
                                                                                                                .pointers_data[2].value_GSDT).zfill(3) + ".png")))
@@ -334,7 +334,7 @@ def on_damaged_costume(main_window):
 
 def on_gsc_health_value_changed(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[7].value_GSDT = main_window.gsc_health_value.value()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[8].value_GSDT = int(main_window.gsc_health_value.value())
 
 
 def on_ico_boost_stick_value_changed(main_window, stick_number):

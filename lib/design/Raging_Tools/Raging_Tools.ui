@@ -8419,7 +8419,7 @@
           <rect>
            <x>390</x>
            <y>20</y>
-           <width>481</width>
+           <width>491</width>
            <height>101</height>
           </rect>
          </property>
@@ -8456,22 +8456,6 @@
             <width>42</width>
             <height>22</height>
            </rect>
-          </property>
-         </widget>
-         <widget class="QSpinBox" name="gsc_health_value">
-          <property name="geometry">
-           <rect>
-            <x>200</x>
-            <y>20</y>
-            <width>42</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="maximum">
-           <number>100</number>
-          </property>
-          <property name="value">
-           <number>100</number>
           </property>
          </widget>
          <widget class="QLabel" name="character_text">
@@ -8533,15 +8517,15 @@
            <rect>
             <x>190</x>
             <y>0</y>
-            <width>61</width>
-            <height>16</height>
+            <width>81</width>
+            <height>20</height>
            </rect>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health in percentage type value&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Amount of health&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Health (%)</string>
+           <string>Health</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -8585,7 +8569,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_l_image_2">
           <property name="geometry">
            <rect>
-            <x>396</x>
+            <x>410</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8607,7 +8591,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_d_value_2">
           <property name="geometry">
            <rect>
-            <x>346</x>
+            <x>360</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8692,7 +8676,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_text_2">
           <property name="geometry">
            <rect>
-            <x>336</x>
+            <x>350</x>
             <y>0</y>
             <width>71</width>
             <height>21</height>
@@ -8708,7 +8692,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_r_image_2">
           <property name="geometry">
            <rect>
-            <x>308</x>
+            <x>322</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8730,7 +8714,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_push_image_2">
           <property name="geometry">
            <rect>
-            <x>440</x>
+            <x>454</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8752,7 +8736,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_up_value_2">
           <property name="geometry">
            <rect>
-            <x>258</x>
+            <x>272</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8837,7 +8821,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_d_image_2">
           <property name="geometry">
            <rect>
-            <x>352</x>
+            <x>366</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8859,7 +8843,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_l_value_2">
           <property name="geometry">
            <rect>
-            <x>390</x>
+            <x>404</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -8944,7 +8928,7 @@
          <widget class="QLabel" name="ico_boost_stick_r_up_image_2">
           <property name="geometry">
            <rect>
-            <x>264</x>
+            <x>278</x>
             <y>30</y>
             <width>31</width>
             <height>31</height>
@@ -8966,7 +8950,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_push_value_2">
           <property name="geometry">
            <rect>
-            <x>434</x>
+            <x>448</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -9051,7 +9035,7 @@
          <widget class="QComboBox" name="ico_boost_stick_r_r_value_2">
           <property name="geometry">
            <rect>
-            <x>302</x>
+            <x>316</x>
             <y>60</y>
             <width>41</width>
             <height>22</height>
@@ -9144,6 +9128,25 @@
           </property>
           <property name="text">
            <string>Damaged costume</string>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="gsc_health_value">
+          <property name="geometry">
+           <rect>
+            <x>190</x>
+            <y>20</y>
+            <width>81</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>27.000000000000000</double>
           </property>
          </widget>
         </widget>

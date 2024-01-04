@@ -39,7 +39,7 @@ def store_parameters_gsc_explorer(main_window):
     # Battle damaged (store in gui, only the first one)
     main_window.damaged_costume.setChecked(gsac_3.data.pointers[5].pointers_data[4].value_GSDT)
     # Health (store in gui, only the first one)
-    main_window.gsc_health_value.setValue(gsac_3.data.pointers[5].pointers_data[7].value_GSDT)
+    main_window.gsc_health_value.setValue(gsac_3.data.pointers[5].pointers_data[8].value_GSDT)
     # Character (store in gui, only the first one)
     main_window.char_id_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[5].pointers_data[2].value_GSDT).zfill(3) + ".png")))
     # Blast attacks
