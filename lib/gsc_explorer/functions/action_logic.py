@@ -18,7 +18,7 @@ def action_change_character(event, main_window, option):
         char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[4].data.pointers[1 + main_window.pointer_subtitle_list_view.currentIndex().row()].pointers_data[3].value_GSDT
     # Chara ID for partner
     else:
-        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[0].value_GSDT
+        char_id = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[2 + main_window.character_partner_value.value()].pointers_data[0].value_GSDT
 
     # Check if the chara_id is 4294967295 (empty value), so we convert the value to the proper format for ui
     char_id = char_id if char_id != 4294967295 else 101
@@ -65,7 +65,7 @@ def action_modify_character(event, main_window, chara_id):
         main_window.char_id_subtitle_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
     else:
         # Change character id
-        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[0].value_GSDT = chara_id_value
+        GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[2 + main_window.character_partner_value.value()].pointers_data[0].value_GSDT = chara_id_value
 
         # Change character image
         main_window.char_id_partner_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(chara_id).zfill(3) + ".png")))
@@ -294,14 +294,32 @@ def on_cpu_slot_changed(main_window):
     GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[1].pointers_data[7].value_GSDT = main_window.cpu_character_value.value()
 
 
+def on_partner_character_id_changed(main_window):
+
+    # Get gsac_3
+    gsac_3 = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3]
+
+    # Skin
+    main_window.skin_partner_value.setValue(gsac_3.data.pointers[2 + main_window.character_partner_value.value()].pointers_data[1].value_GSDT)
+    # Battle damaged
+    main_window.damaged_partner_costume.setChecked(gsac_3.data.pointers[2 + main_window.character_partner_value.value()].pointers_data[2].value_GSDT)
+    # Health
+    main_window.gsc_health_value.setValue(gsac_3.data.pointers[3 + (2 * main_window.character_value.value())].pointers_data[8].value_GSDT)
+    # Character
+    main_window.char_id_partner_value.setPixmap(QPixmap(os.path.join(GSCEV.path_slot_small_images, "sc_chara_s_" + str(gsac_3.data.pointers[2 + main_window.character_partner_value.value()]
+                                                                                                                       .pointers_data[0].value_GSDT).zfill(3) + ".png")))
+
+
 def on_partner_skin_changed(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[1].value_GSDT = main_window.skin_partner_value.value()
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[2 + main_window.character_partner_value.value()].pointers_data[1].value_GSDT = main_window.skin_partner_value.value()
 
 
 def on_partner_damaged_costume(main_window):
     # Store the value from ui into the class
-    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[3].pointers_data[2].value_GSDT = int(main_window.damaged_partner_costume.isChecked() is True)
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[3].data.pointers[2 + main_window.character_partner_value.value()].pointers_data[2].value_GSDT = \
+        int(main_window.damaged_partner_costume.isChecked() is True)
+
 
 def on_character_id_changed(main_window):
 

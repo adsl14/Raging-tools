@@ -8259,7 +8259,7 @@
           <x>100</x>
           <y>10</y>
           <width>891</width>
-          <height>151</height>
+          <height>181</height>
          </rect>
         </property>
         <property name="sizePolicy">
@@ -9250,8 +9250,8 @@
           <rect>
            <x>10</x>
            <y>80</y>
-           <width>361</width>
-           <height>61</height>
+           <width>211</width>
+           <height>91</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -9263,9 +9263,9 @@
          <widget class="QLabel" name="char_id_partner_text">
           <property name="geometry">
            <rect>
-            <x>10</x>
-            <y>20</y>
-            <width>111</width>
+            <x>70</x>
+            <y>0</y>
+            <width>81</width>
             <height>16</height>
            </rect>
           </property>
@@ -9273,14 +9273,14 @@
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Character partner id for player 1. This id will be used in order to select the model you want to show in the stage (only in cutscene)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Character partner Id</string>
+           <string>Chara partner Id</string>
           </property>
          </widget>
          <widget class="QLabel" name="char_id_partner_slot">
           <property name="geometry">
            <rect>
-            <x>120</x>
-            <y>10</y>
+            <x>90</x>
+            <y>20</y>
             <width>41</width>
             <height>41</height>
            </rect>
@@ -9298,8 +9298,8 @@
          <widget class="QLabel" name="char_id_partner_value">
           <property name="geometry">
            <rect>
-            <x>120</x>
-            <y>10</y>
+            <x>90</x>
+            <y>20</y>
             <width>41</width>
             <height>41</height>
            </rect>
@@ -9314,7 +9314,7 @@
          <widget class="QLabel" name="skin_partner_text">
           <property name="geometry">
            <rect>
-            <x>180</x>
+            <x>160</x>
             <y>0</y>
             <width>41</width>
             <height>16</height>
@@ -9333,7 +9333,7 @@
          <widget class="QSpinBox" name="skin_partner_value">
           <property name="geometry">
            <rect>
-            <x>180</x>
+            <x>160</x>
             <y>20</y>
             <width>42</width>
             <height>22</height>
@@ -9343,8 +9343,8 @@
          <widget class="QCheckBox" name="damaged_partner_costume">
           <property name="geometry">
            <rect>
-            <x>240</x>
-            <y>20</y>
+            <x>10</x>
+            <y>70</y>
             <width>111</width>
             <height>17</height>
            </rect>
@@ -9356,13 +9356,51 @@
            <string>Damaged costume</string>
           </property>
          </widget>
+         <widget class="QSpinBox" name="character_partner_value">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>20</y>
+            <width>42</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>2</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+         </widget>
+         <widget class="QLabel" name="character_partner_text">
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>0</y>
+            <width>51</width>
+            <height>16</height>
+           </rect>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the character partner slot. This is &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; the character id in order to select the character model, just an id slot in order to select the partmer player (1) or cpu partner (2)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Character</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </widget>
        </widget>
        <widget class="QFrame" name="subtitles_properties">
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>170</y>
+          <y>200</y>
           <width>361</width>
           <height>211</height>
          </rect>
@@ -9583,9 +9621,9 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>390</y>
+          <y>420</y>
           <width>981</width>
-          <height>371</height>
+          <height>341</height>
          </rect>
         </property>
         <property name="frameShape">

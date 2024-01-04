@@ -15,7 +15,7 @@ from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_cha
     on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, \
     on_pointer_subtitle_list_view_changed, on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic, \
     action_events_instructions_list_down_button_logic, action_events_instructions_list_up_button_logic, action_gsac_events_list_up_button_logic, action_gsac_events_list_down_button_logic, \
-    action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed, on_partner_skin_changed, on_partner_damaged_costume
+    action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed, on_partner_skin_changed, on_partner_damaged_costume, on_partner_character_id_changed
 from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info
 from lib.packages import os
 
@@ -264,6 +264,8 @@ def listen_events_logic(main_window, flag):
         # Set the character slot as cpu
         main_window.cpu_character_value.valueChanged.connect(lambda: on_cpu_slot_changed(main_window))
 
+        # Set the character id
+        main_window.character_partner_value.valueChanged.connect(lambda: on_partner_character_id_changed(main_window))
         # Set the character partner skin
         main_window.skin_partner_value.valueChanged.connect(lambda: on_partner_skin_changed(main_window))
         # Set the partner battle damaged
@@ -319,6 +321,8 @@ def listen_events_logic(main_window, flag):
             # Set the character slot as player
             main_window.cpu_character_value.disconnect()
 
+            # Set the character id
+            main_window.character_partner_value.valueChanged.disconnect()
             # Set the character partner skin
             main_window.skin_partner_value.valueChanged.disconnect()
             # Set the partner battle damaged
