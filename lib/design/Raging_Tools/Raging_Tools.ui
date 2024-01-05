@@ -9707,9 +9707,9 @@
          <property name="geometry">
           <rect>
            <x>630</x>
-           <y>81</y>
+           <y>41</y>
            <width>341</width>
-           <height>221</height>
+           <height>271</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -10068,12 +10068,187 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_10">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>180</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_10">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
+            <y>160</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 10</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_11">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>180</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_11">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
+            <y>160</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 11</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_14">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>230</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_13">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>120</x>
+            <y>230</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_14">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
+            <y>210</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 14</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_13">
+          <property name="geometry">
+           <rect>
+            <x>126</x>
+            <y>210</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 13</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_12">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>230</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_12">
+          <property name="geometry">
+           <rect>
+            <x>16</x>
+            <y>210</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 12</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
         </widget>
         <widget class="QLabel" name="instruction_text">
          <property name="geometry">
           <rect>
            <x>630</x>
-           <y>50</y>
+           <y>10</y>
            <width>341</width>
            <height>21</height>
           </rect>

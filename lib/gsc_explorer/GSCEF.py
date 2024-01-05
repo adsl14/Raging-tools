@@ -303,6 +303,11 @@ def listen_events_logic(main_window, flag):
         main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
         main_window.instruction_value_8.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 8))
         main_window.instruction_value_9.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 9))
+        main_window.instruction_value_10.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 10))
+        main_window.instruction_value_11.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 11))
+        main_window.instruction_value_12.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 12))
+        main_window.instruction_value_13.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 13))
+        main_window.instruction_value_14.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 14))
 
     else:
 
@@ -362,6 +367,11 @@ def listen_events_logic(main_window, flag):
             main_window.instruction_value_7.valueChanged.disconnect()
             main_window.instruction_value_8.valueChanged.disconnect()
             main_window.instruction_value_9.valueChanged.disconnect()
+            main_window.instruction_value_10.valueChanged.disconnect()
+            main_window.instruction_value_11.valueChanged.disconnect()
+            main_window.instruction_value_12.valueChanged.disconnect()
+            main_window.instruction_value_13.valueChanged.disconnect()
+            main_window.instruction_value_14.valueChanged.disconnect()
 
         except TypeError:
             pass

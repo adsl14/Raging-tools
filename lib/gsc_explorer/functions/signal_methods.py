@@ -95,9 +95,9 @@ def store_parameters_gsc_explorer(main_window):
         main_window.remove_instruction_button.setEnabled(False)
 
     # Disable all the parameters value ui
-    for i in range(0, 10):
-        if GSCEV.pointers_values_ui[i].isEnabled():
-            GSCEV.pointers_values_ui[i].setEnabled(False)
+    for pointer_value_ui in GSCEV.pointers_values_ui:
+        if pointer_value_ui.isEnabled():
+            pointer_value_ui.setEnabled(False)
 
     # Add all gsac events to the list view
     for gsac in GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]:

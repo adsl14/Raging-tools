@@ -158,7 +158,7 @@ def assign_pointer_to_ui(pointers_values_ui, pointer_data_info, number_of_pointe
             pointers_values_ui[i].setMinimum(-4294967295.000000)
         pointers_values_ui[i].setValue(pointer_data_info.pointers_data[i].value_GSDT)
     # Disable the rest of pointer values in ui
-    for i in range(number_of_pointers, 10):
+    for i in range(number_of_pointers, len(pointers_values_ui)):
         # Enable the pointer value
         if pointers_values_ui[i].isEnabled:
             pointers_values_ui[i].setEnabled(False)
