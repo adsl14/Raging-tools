@@ -9709,7 +9709,7 @@
            <x>630</x>
            <y>81</y>
            <width>341</width>
-           <height>171</height>
+           <height>221</height>
           </rect>
          </property>
          <property name="frameShape">
@@ -9996,6 +9996,76 @@
           </property>
           <property name="maximum">
            <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_8">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>230</x>
+            <y>130</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_8">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
+            <y>110</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 8</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QDoubleSpinBox" name="instruction_value_9">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="geometry">
+           <rect>
+            <x>10</x>
+            <y>180</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_9">
+          <property name="geometry">
+           <rect>
+            <x>16</x>
+            <y>160</y>
+            <width>91</width>
+            <height>20</height>
+           </rect>
+          </property>
+          <property name="text">
+           <string>Value 9</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
           </property>
          </widget>
         </widget>

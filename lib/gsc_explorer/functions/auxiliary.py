@@ -158,7 +158,7 @@ def assign_pointer_to_ui(pointers_values_ui, pointer_data_info, number_of_pointe
             pointers_values_ui[i].setMinimum(-4294967295.000000)
         pointers_values_ui[i].setValue(pointer_data_info.pointers_data[i].value_GSDT)
     # Disable the rest of pointer values in ui
-    for i in range(number_of_pointers, 8):
+    for i in range(number_of_pointers, 10):
         # Enable the pointer value
         if pointers_values_ui[i].isEnabled:
             pointers_values_ui[i].setEnabled(False)
@@ -169,13 +169,13 @@ def get_pointer_data_info_name(event_instruction):
     # Function "0x01"
     if event_instruction.type == b'\x01':
         try:
-            name = "F: " + GSCEV.instructions_names[0]["%02X" % event_instruction.secundary_number_of_pointers]
+            name = "F: " + GSCEV.instructions_names[0][event_instruction.secundary_number_of_pointers]
         except KeyError:
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
         try:
-            name = "P: " + GSCEV.instructions_names[1]["%02X" % event_instruction.number_of_pointers]
+            name = "P: " + GSCEV.instructions_names[1][event_instruction.number_of_pointers]
         except KeyError:
             name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
 

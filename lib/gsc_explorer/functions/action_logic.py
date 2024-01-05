@@ -475,7 +475,7 @@ def on_gsac_events_list_changed(main_window):
                 main_window.remove_instruction_button.setEnabled(False)
 
             # Disable all the parameters value ui
-            for i in range(0, 8):
+            for i in range(0, 10):
                 if GSCEV.pointers_values_ui[i].isEnabled():
                     GSCEV.pointers_values_ui[i].setEnabled(False)
 
@@ -511,6 +511,8 @@ def on_events_instructions_list_changed(main_window):
             main_window.instruction_value_5.valueChanged.disconnect()
             main_window.instruction_value_6.valueChanged.disconnect()
             main_window.instruction_value_7.valueChanged.disconnect()
+            main_window.instruction_value_8.valueChanged.disconnect()
+            main_window.instruction_value_9.valueChanged.disconnect()
         except TypeError:
             pass
 
@@ -526,6 +528,8 @@ def on_events_instructions_list_changed(main_window):
         main_window.instruction_value_5.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 5))
         main_window.instruction_value_6.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 6))
         main_window.instruction_value_7.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 7))
+        main_window.instruction_value_8.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 8))
+        main_window.instruction_value_9.valueChanged.connect(lambda: on_instruction_value_changed(main_window, 9))
 
     except AttributeError:
 
@@ -537,7 +541,7 @@ def on_events_instructions_list_changed(main_window):
             main_window.remove_instruction_button.setEnabled(False)
 
         # Disable all the parameters value ui
-        for i in range(0, 8):
+        for i in range(0, 10):
             if GSCEV.pointers_values_ui[i].isEnabled():
                 GSCEV.pointers_values_ui[i].setEnabled(False)
 

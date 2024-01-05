@@ -95,7 +95,7 @@ def store_parameters_gsc_explorer(main_window):
         main_window.remove_instruction_button.setEnabled(False)
 
     # Disable all the parameters value ui
-    for i in range(0, 8):
+    for i in range(0, 10):
         if GSCEV.pointers_values_ui[i].isEnabled():
             GSCEV.pointers_values_ui[i].setEnabled(False)
 
