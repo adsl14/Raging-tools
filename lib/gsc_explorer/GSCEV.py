@@ -27,9 +27,10 @@ class GSCEV:
     # Dictionary of values for each instruction [Functions (0x01), Properties (0x08)]. The key in the dictionary is in decimal
     instructions_names = [dict({1: "Initialize cutscene", 2: "End of event", 27: "Pause until next iteration", 30: "Apply sound effect", 32: "Dialogue (cutscene)", 34: "Show character",
                                 35: "Character position (cutscene)", 36: "Move character", 38: "Character position (gameplay)", 39: "Character animation", 40: "Character face", 44: "Move eyes",
-                                49: "Activate aura", 52: "Camera (start)", 53: "Camera (end)", 56: "Fade out", 57: "Fade in", 61: "Apply Visual filter", 64: "Apply visual speed effect",
+                                48: "Activate idle aura", 49: "Activate charge aura", 52: "Camera (start)", 53: "Camera (end)", 56: "Fade out", 57: "Fade in", 61: "Apply Visual filter",
+                                64: "Apply visual speed effect",
                                 67: "Apply black effect", 76: "Cutscene mode"}),
-                          dict({97: "Trigger GSAC event", 112: "Next audio to reproduce", 118: "Dialogue (gameplay)", 116: "Cutscene mode"})]
+                          dict({97: "Trigger GSAC event", 112: "Next audio to reproduce", 118: "Dialogue (gameplay)", 116: "Define ingame start"})]
 
     # Color for the borders
     styleSheetSelectCharaGscBlackWindow = "QLabel {border : 3px solid black;}"
