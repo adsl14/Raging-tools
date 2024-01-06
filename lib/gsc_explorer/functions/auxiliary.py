@@ -169,15 +169,43 @@ def get_pointer_data_info_name(event_instruction):
     # Function "0x01"
     if event_instruction.type == b'\x01':
         try:
-            name = "F: " + GSCEV.instructions_names[0][event_instruction.secundary_number_of_pointers]
+            name = "F: " + GSCEV.gsc_breakdown_json["Functions"][str(event_instruction.secundary_number_of_pointers)]["Name"]
         except KeyError:
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
         try:
-            name = "P: " + GSCEV.instructions_names[1][event_instruction.number_of_pointers]
+            name = "F: " + GSCEV.gsc_breakdown_json["Properties"][str(event_instruction.number_of_pointers)]["Name"]
         except KeyError:
             name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
 
     return name
+
+
+def create_html_web(file_export_path, gsc_breakdown_json):
+
+    with open(file_export_path, mode='w') as output_file:
+        output_file.write("<!DOCTYPE html>\n")
+        output_file.write("<html>\n")
+
+        output_file.write("\t<head>\n")
+
+        output_file.write("\t</head>\n")
+
+        output_file.write("\t<body>\n")
+        output_file.write("\t\t<h1 id=#FUNC-PROP>Functions and properties</h1>\n")
+
+        output_file.write("\t\t<div>\n")
+        output_file.write("\t\t\t<ul>\n")
+        output_file.write("\t\t\t\t<li><a href=\"#FUNC\">Functions</a></li>\n")
+        output_file.write("\t\t\t\t<li><a href=\"#PROP\">Properties</a></li>\n")
+        output_file.write("\t\t\t</ul>\n")
+        output_file.write("\t\t</div>\n")
+
+        output_file.write("\t\t<h1 id=#FUNC>Functions</h1>\n")
+
+        output_file.write("\t\t<h1 id=#PROP>Properties</h1>\n")
+
+        output_file.write("\t</body>\n")
+        output_file.write("</html>\n")
 
