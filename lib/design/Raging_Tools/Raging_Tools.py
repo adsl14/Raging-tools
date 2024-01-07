@@ -3756,7 +3756,7 @@ class Ui_MainWindow(object):
         self.actionSingle_encrypt.setText(_translate("MainWindow", "Single"))
         self.actionAll_encrypt.setText(_translate("MainWindow", "All"))
         self.actionTexturesSpec.setText(_translate("MainWindow", "Textures spec"))
-        self.actionGSC_RB1_functions.setText(_translate("MainWindow", "GSC RB1 functions"))
+        self.actionGSC_RB1_functions.setText(_translate("MainWindow", "RB1 GSC breakdown"))
 
 
 if __name__ == "__main__":

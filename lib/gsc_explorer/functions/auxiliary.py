@@ -199,11 +199,13 @@ def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data
 
         parameter_html = "\n" + "\t\t\t\t" + parameter["Name"] + " (" + parameter["Type"] + "). "
         parameter_html = parameter_html + parameter["Description"] + "\n"
+        parameter_html = parameter_html + "\t\t\t\t<ol start=\"0\">\n"
         for value in parameter["Values"]:
-            parameter_html = parameter_html + "\t\t\t\t<li>" + value["Description"] + " = "
+            parameter_html = parameter_html + "\t\t\t\t\t<li>" + value["Description"] + " = "
             for one_posible_value in value["Value"]:
                 parameter_html = parameter_html + str(one_posible_value) + ", "
             parameter_html = parameter_html[:-2] + "</li>\n"
+        parameter_html = parameter_html + "\t\t\t\t</ol>"
         parameter_html = parameter_html[:-1] + "\n"
         parameters_html = parameters_html + "\t\t\t<dd>" + parameter_html + "\t\t\t</dd>\n"
 
@@ -219,6 +221,14 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
         outf.write("<html>\n")
 
         outf.write("\t<head>\n")
+
+        outf.write("\t<title>Raging Blast 1 GSC breakdown</title>")
+
+        outf.write("\t<style>\n")
+        outf.write("\tbody {\n")
+        outf.write("\t\tbackground-color: #92a8d1;\n")
+        outf.write("\t}\n")
+        outf.write("\t</style>\n")
 
         outf.write("\t</head>\n")
 
@@ -294,6 +304,12 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
 
         # Write each function
         outf.write(functions_html)
+
+        outf.write("\t<h3>References</h3>\n")
+        outf.write("\t<ul>\n")
+        outf.write("<li><a href=\"https://vivethemodder.github.io/complete-gsc-breakdown/index.html\" target=\"_blank\">vivethemodder GSC breakdown website</a>, "
+                   "where this website is based on and where it explains how gsc structure works.</li>")
+        outf.write("\t</ul>\n")
 
         outf.write("\t</body>\n")
         outf.write("</html>\n")

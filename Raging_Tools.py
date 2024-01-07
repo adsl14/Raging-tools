@@ -1496,7 +1496,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     '<b><a href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b>, ' 
                     '<b>316austin316</b>, <b><a href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>, ' 
                     '<b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>, '
-                    '<b><a href=https://www.youtube.com/@KurayamiSaidai/videos>Saidai</a></b> for their contributions.</li>'
+                    '<b><a href=https://www.youtube.com/@KurayamiSaidai>Saidai</a></b>, '
+                    '<b><a href=https://www.youtube.com/@ViveTheModder>Vive</a></b> for their contributions.</li>'
                     '<li>To the <a href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()

@@ -10668,7 +10668,7 @@
   </action>
   <action name="actionGSC_RB1_functions">
    <property name="text">
-    <string>GSC RB1 functions</string>
+    <string>RB1 GSC breakdown</string>
    </property>
   </action>
  </widget>
