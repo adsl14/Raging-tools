@@ -10345,7 +10345,7 @@
         </widget>
         <widget class="QPushButton" name="add_gsac_event_button">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="geometry">
           <rect>
@@ -10542,6 +10542,7 @@
      <string>Help</string>
     </property>
     <addaction name="actionTexturesSpec"/>
+    <addaction name="actionGSC_RB1_functions"/>
    </widget>
    <addaction name="menuFIle"/>
    <addaction name="menuUtilities"/>
@@ -10663,6 +10664,11 @@
   <action name="actionTexturesSpec">
    <property name="text">
     <string>Textures spec</string>
+   </property>
+  </action>
+  <action name="actionGSC_RB1_functions">
+   <property name="text">
+    <string>GSC RB1 functions</string>
    </property>
   </action>
  </widget>

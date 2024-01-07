@@ -3033,7 +3033,7 @@ class Ui_MainWindow(object):
         self.remove_gsac_event_button.setGeometry(QtCore.QRect(110, 280, 51, 23))
         self.remove_gsac_event_button.setObjectName("remove_gsac_event_button")
         self.add_gsac_event_button = QtWidgets.QPushButton(self.events_properties)
-        self.add_gsac_event_button.setEnabled(False)
+        self.add_gsac_event_button.setEnabled(True)
         self.add_gsac_event_button.setGeometry(QtCore.QRect(40, 280, 51, 21))
         self.add_gsac_event_button.setObjectName("add_gsac_event_button")
         self.remove_instruction_button = QtWidgets.QPushButton(self.events_properties)
@@ -3133,6 +3133,8 @@ class Ui_MainWindow(object):
         self.actionAll_encrypt.setObjectName("actionAll_encrypt")
         self.actionTexturesSpec = QtWidgets.QAction(MainWindow)
         self.actionTexturesSpec.setObjectName("actionTexturesSpec")
+        self.actionGSC_RB1_functions = QtWidgets.QAction(MainWindow)
+        self.actionGSC_RB1_functions.setObjectName("actionGSC_RB1_functions")
         self.menuFIle.addAction(self.actionOpen)
         self.menuFIle.addAction(self.actionSave)
         self.menuFIle.addSeparator()
@@ -3159,6 +3161,7 @@ class Ui_MainWindow(object):
         self.menuUtilities.addAction(self.menuPacker.menuAction())
         self.menuUtilities.addAction(self.menuConverter.menuAction())
         self.menuHelp.addAction(self.actionTexturesSpec)
+        self.menuHelp.addAction(self.actionGSC_RB1_functions)
         self.menubar.addAction(self.menuFIle.menuAction())
         self.menubar.addAction(self.menuUtilities.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
@@ -3753,6 +3756,7 @@ class Ui_MainWindow(object):
         self.actionSingle_encrypt.setText(_translate("MainWindow", "Single"))
         self.actionAll_encrypt.setText(_translate("MainWindow", "All"))
         self.actionTexturesSpec.setText(_translate("MainWindow", "Textures spec"))
+        self.actionGSC_RB1_functions.setText(_translate("MainWindow", "GSC RB1 functions"))
 
 
 if __name__ == "__main__":

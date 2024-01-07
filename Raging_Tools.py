@@ -19,8 +19,9 @@ from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
 from lib.design.select_chara.select_general_chara_roster import Select_General_Chara_Roster
 from lib.gsc_explorer import GSCEF
+from lib.gsc_explorer.GSCEV import GSCEV
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
-from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted
+from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted, webbrowser
 from lib.functions import del_rw, ask_pack_compression_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_stpk_properties
 # vram explorer
 from lib.vram_explorer.VEV import VEV
@@ -288,6 +289,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Help tab
         self.actionTexturesSpec.triggered.connect(self.action_texture_spec_logic)
+        self.actionGSC_RB1_functions.triggered.connect(self.action_GSC_RB1_functions_logic)
 
         # About tab
         self.actionAuthor.triggered.connect(self.action_author_logic)
@@ -1452,6 +1454,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         </tbody>\
         <div>&nbsp;</div>')
         msg.exec()
+
+    def action_GSC_RB1_functions_logic(self):
+        webbrowser.open(GSCEV.path_gsc_breakdown_html)
 
     def closeEvent(self, event):
         if os.path.exists(PEV.temp_folder):
