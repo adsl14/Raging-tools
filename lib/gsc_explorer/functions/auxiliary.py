@@ -1,3 +1,5 @@
+from PyQt5.QtGui import QStandardItem
+
 from lib.packages import struct
 
 from lib.gsc_explorer.GSCEV import GSCEV
@@ -179,10 +181,22 @@ def get_pointer_data_info_name(event_instruction):
     return name
 
 
-def write_parameters_in_html(list_of_parameters):
+def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data_info):
 
     parameters_html = ""
     for parameter in list_of_parameters:
+
+        # Create a pointer data object, so we can store each single parameter inside the current function
+        pointer_data = PointerData()
+        if parameter["Type"] == "int":
+            pointer_data.type_GSDT = b'\x0A'
+            pointer_data.value_GSDT = 0
+        else:
+            pointer_data.type_GSDT = b'\x1A'
+            pointer_data.value_GSDT = 0.0
+        pointer_data.unk0x03 = b'\x00'
+        pointer_data_info.pointers_data.append(pointer_data)
+
         parameter_html = "\n" + "\t\t\t\t" + parameter["Name"] + " (" + parameter["Type"] + "). "
         parameter_html = parameter_html + parameter["Description"] + "\n"
         for value in parameter["Values"]:
@@ -196,7 +210,7 @@ def write_parameters_in_html(list_of_parameters):
     return parameters_html
 
 
-def create_gsc_rb1_html_web(file_export_path, gsc_breakdown_json):
+def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdown_json):
 
     functions_html = ""
 
@@ -215,13 +229,22 @@ def create_gsc_rb1_html_web(file_export_path, gsc_breakdown_json):
         outf.write("\t\t<h1 id=\"#FUNC\">Functions</h1>\n")
         outf.write("\t\t<ul>\n")
         for function_id in gsc_breakdown_json:
+
+            # Create a new pointer data info, so it can be added in the gsac functions and properties list window
+            num_parameters = len(gsc_breakdown_json[function_id]["Parameters"])
+            pointer_data_info = PointerDataInfo()
+            pointer_data_info.type = b'\x01'
+            pointer_data_info.number_of_pointers = num_parameters
+            pointer_data_info.secundary_number_of_pointers = int(function_id)
+            pointer_data_info.unk0x04 = b'\x00'
+
             outf.write("\t\t\t<li><a href=\"#FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</a></li>\n")
             functions_html = functions_html + "\t\t<h2 id=\"FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</h2>\n"
             functions_html = functions_html + "\t\t<dl>\n"
 
             functions_html = functions_html + "\t\t\t<dt>Hex interpretation</dt>\n"
-            code_hex = "0x01" + '{:02x}'.format(len(gsc_breakdown_json[function_id]["Parameters"]))
-            parameters_html = write_parameters_in_html(gsc_breakdown_json[function_id]["Parameters"])
+            code_hex = "0x01" + '{:02x}'.format(num_parameters)
+            parameters_html = write_parameters_in_html_and_functions_list(gsc_breakdown_json[function_id]["Parameters"], pointer_data_info)
             code_hex = code_hex + '{:02x}'.format(int(function_id)) + "00"
             functions_html = functions_html + "\t\t\t<dd><code>" + code_hex + "</code></dd>\n"
 
@@ -233,14 +256,36 @@ def create_gsc_rb1_html_web(file_export_path, gsc_breakdown_json):
                 parameters_html = "\t\t\t<dd>None</dd>\n"
             functions_html = functions_html + parameters_html + "\t\t</dl>\n"
 
+            # Add the function to the list
+            item = QStandardItem(gsc_breakdown_json[function_id]["Name"])
+            item.setData(pointer_data_info)
+            item.setEditable(False)
+            main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)
+
             properties_html = ""
             for properties in gsc_breakdown_json[function_id]["Properties"]:
+
+                # If the function has properties, we will add them
+                num_parameters = len(properties["Parameters"])
+                pointer_data_info = PointerDataInfo()
+                pointer_data_info.type = b'\x08'
+                pointer_data_info.number_of_pointers = int.from_bytes(properties["Name"].encode('utf-8'), byteorder='little', signed=False)
+                pointer_data_info.secundary_number_of_pointers = num_parameters
+                pointer_data_info.unk0x04 = b'\x00'
+
                 properties_html = properties_html + "\t\t\t<dt>" + properties["Name"] + " type (<code>" + "0x08" + properties["Name"].encode("utf-8").hex() + \
-                                  '{:02x}'.format(len(properties["Parameters"])) + "00</code>)" + "</dt>\n"
+                                  '{:02x}'.format(num_parameters) + "00</code>)" + "</dt>\n"
                 properties_html = properties_html + "\t\t\t<dd>"
                 properties_html = properties_html + properties["Description"] + "</dd>\n"
-                parameters_html = write_parameters_in_html(properties["Parameters"])
+                parameters_html = write_parameters_in_html_and_functions_list(properties["Parameters"], pointer_data_info)
                 properties_html = properties_html + parameters_html + "\t\t\t</dd>\n"
+
+                # Add the property to the list
+                item = QStandardItem("Property " + properties["Name"])
+                item.setData(pointer_data_info)
+                item.setEditable(False)
+                main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)
+
             if properties_html != "":
                 functions_html = functions_html + "\t\t\t<h3>Properties</h3>\n"
                 functions_html = functions_html + "\t\t<dl>\n"

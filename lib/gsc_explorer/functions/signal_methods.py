@@ -85,6 +85,10 @@ def store_parameters_gsc_explorer(main_window):
         main_window.gsac_events_list_up_button.setEnabled(False)
         main_window.gsac_events_list_down_button.setEnabled(False)
         main_window.remove_gsac_event_button.setEnabled(False)
+        main_window.add_instruction_button.setEnabled(False)
+        main_window.remove_instruction_button.setEnabled(False)
+        main_window.events_instructions_list_up_button.setEnabled(False)
+        main_window.events_instructions_list_down_button.setEnabled(False)
 
     main_window.events_instructions_list.model().clear()
     # Disable some buttons if there won't be any more instructions

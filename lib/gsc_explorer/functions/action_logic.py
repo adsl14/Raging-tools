@@ -185,7 +185,10 @@ def action_add_gsac_logic(main_window):
                     item.setData(gsac)
                     item.setEditable(False)
                     main_window.gsac_events_list.model().appendRow(item)
+
                 # Select the current gsac entry
+                if index_gsac < 0:
+                    index_gsac = 0
                 main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(index_gsac, 0))
 
                 break
@@ -291,6 +294,15 @@ def action_events_instructions_list_down_button_logic(main_window):
         main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(index_intruction + 1, 0))
 
 
+def action_add_instruction_logic(main_window):
+
+    # Set the first entry as the selected index
+    main_window.GSCFunctionUI.functions_properties_list_add.setCurrentIndex(main_window.GSCFunctionUI.functions_properties_list_add.model().index(0, 0))
+
+    # Show the gsc functions window
+    main_window.GSCFunctionWindow.show()
+
+
 def action_remove_instruction_logic(main_window):
 
     # Ask the user if is sure to remove the texture
@@ -325,6 +337,66 @@ def action_remove_instruction_logic(main_window):
 
             # Remove from the array of instructions in the list
             main_window.events_instructions_list.model().removeRow(index_intruction)
+
+
+def action_function_properties_list_add_logic(main_window):
+
+    # Get the current gsac entry
+    index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+    # Get the current pointer instruction
+    index_intruction = main_window.events_instructions_list.currentIndex().row()
+
+    # Get the pointers for the specific gasc entry
+    pointers = main_window.gsac_events_list.model().item(index_gsac).data().data.pointers
+
+    # Get current the function that the user has added
+    index_intruction_to_add = main_window.GSCFunctionUI.functions_properties_list_add.currentIndex().row()
+    pointer_to_add = main_window.GSCFunctionUI.functions_properties_list_add.model().item(index_intruction_to_add).data()
+
+    # Remove the instruction in memory and visual list, creating a new array
+    main_window.events_instructions_list.model().clear()
+    new_pointers = []
+    for i in range(0, index_intruction + 1):
+        name = get_pointer_data_info_name(pointers[i])
+        item = QStandardItem(name)
+        item.setData(pointers[i])
+        item.setEditable(False)
+        new_pointers.append(pointers[i])
+        main_window.events_instructions_list.model().appendRow(item)
+
+    # Add the new instruction below
+    name = get_pointer_data_info_name(pointer_to_add)
+    item = QStandardItem(name)
+    item.setData(pointer_to_add)
+    item.setEditable(False)
+    new_pointers.append(pointer_to_add)
+    main_window.events_instructions_list.model().appendRow(item)
+
+    for i in range(index_intruction + 1, len(pointers)):
+        name = get_pointer_data_info_name(pointers[i])
+        item = QStandardItem(name)
+        item.setData(pointers[i])
+        item.setEditable(False)
+        new_pointers.append(pointers[i])
+        main_window.events_instructions_list.model().appendRow(item)
+
+    # Add the new pointers to memory
+    GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5 + index_gsac].data.pointers = new_pointers
+
+    # Select the current insturction entry
+    if index_intruction < 0:
+        index_intruction = 0
+    main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(index_intruction, 0))
+
+    # Close the gsc functions window
+    main_window.GSCFunctionWindow.close()
+
+
+def action_function_properties_list_close_logic(main_window):
+
+    # Close the gsc functions window
+    main_window.GSCFunctionWindow.close()
 
 
 def on_initial_gsac_event_changed(main_window):
@@ -517,24 +589,18 @@ def on_gsac_events_list_changed(main_window):
             main_window.gsac_events_list_up_button.setEnabled(True)
             main_window.gsac_events_list_down_button.setEnabled(True)
             main_window.remove_gsac_event_button.setEnabled(True)
+            main_window.add_instruction_button.setEnabled(True)
 
         if num_instructions > 0:
-            # Enable the buttons if they're disabled
-            if not main_window.remove_instruction_button.isEnabled():
-                # Enable the buttons
-                main_window.events_instructions_list_up_button.setEnabled(True)
-                main_window.events_instructions_list_down_button.setEnabled(True)
-                main_window.remove_instruction_button.setEnabled(True)
-
             # Select the first instruction
             main_window.events_instructions_list.setCurrentIndex(main_window.events_instructions_list.model().index(0, 0))
         else:
             # Disable some buttons if there won't be any more instructions
             if main_window.remove_instruction_button.isEnabled():
                 # Disable the buttons
+                main_window.remove_instruction_button.setEnabled(False)
                 main_window.events_instructions_list_up_button.setEnabled(False)
                 main_window.events_instructions_list_down_button.setEnabled(False)
-                main_window.remove_instruction_button.setEnabled(False)
 
             # Disable all the parameters value ui
             for pointer_value_ui in GSCEV.pointers_values_ui:
@@ -548,6 +614,10 @@ def on_gsac_events_list_changed(main_window):
             main_window.gsac_events_list_up_button.setEnabled(False)
             main_window.gsac_events_list_down_button.setEnabled(False)
             main_window.remove_gsac_event_button.setEnabled(False)
+            main_window.add_instruction_button.setEnabled(False)
+            main_window.remove_instruction_button.setEnabled(False)
+            main_window.events_instructions_list_up_button.setEnabled(False)
+            main_window.events_instructions_list_down_button.setEnabled(False)
 
 
 def on_events_instructions_list_changed(main_window):
@@ -561,6 +631,13 @@ def on_events_instructions_list_changed(main_window):
 
         # Get number of pointers (pointers that are not 08 in their first byte, means the number of pointers_data is in the second byte, otherwise the third byte)
         number_of_pointers = pointer_data_info.number_of_pointers if pointer_data_info.type != b'\x08' else pointer_data_info.secundary_number_of_pointers
+
+        # Disable some buttons if there won't be any more instructions
+        if not main_window.remove_instruction_button.isEnabled():
+            # Enable the buttons
+            main_window.events_instructions_list_up_button.setEnabled(True)
+            main_window.events_instructions_list_down_button.setEnabled(True)
+            main_window.remove_instruction_button.setEnabled(True)
 
         # Disconnect the instruction values
         try:

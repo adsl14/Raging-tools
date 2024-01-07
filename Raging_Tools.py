@@ -12,6 +12,7 @@ from lib.character_parameters_editor.functions.IP.signal_methods import add_arra
     set_first_index_animation_type_value, set_character_info, enable_individual_parameters_tab
 from lib.character_parameters_editor.functions.RE.signal_methods import initialize_current_character_image_RE, delete_image_slot_RE, change_image_slot_RE, enable_tabs_RE
 from lib.design.Raging_Tools.Raging_Tools import *
+from lib.design.gsc_functions_and_properties.gsc_functions_and_properties import GSC_RB1_selection
 from lib.design.material_children.material_children import Material_Child_Editor
 from lib.design.output_format.output_format import Output_Format
 from lib.design.progress_bar.progress_bar import Progress_Bar
@@ -328,6 +329,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.progressBarWindow = QtWidgets.QDialog()
         self.progressBarUI = Progress_Bar()
         self.progressBarUI.setupUi(self.progressBarWindow)
+        # Select function gsc window
+        self.GSCFunctionWindow = QtWidgets.QDialog()
+        self.GSCFunctionUI = GSC_RB1_selection()
+        self.GSCFunctionUI.setupUi(self.GSCFunctionWindow)
 
         # --- vram explorer ---
         VEF.initialize_ve(self)

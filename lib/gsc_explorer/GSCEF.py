@@ -16,8 +16,9 @@ from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_cha
     on_gsc_health_value_changed, action_change_character, action_modify_character, on_character_id_changed, on_ico_boost_stick_value_changed, on_text_id_changed, \
     on_pointer_subtitle_list_view_changed, on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic, \
     action_events_instructions_list_down_button_logic, action_events_instructions_list_up_button_logic, action_gsac_events_list_up_button_logic, action_gsac_events_list_down_button_logic, \
-    action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed, on_partner_skin_changed, on_partner_damaged_costume, on_partner_character_id_changed, action_add_gsac_logic
-from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info, create_gsc_rb1_html_web
+    action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed, on_partner_skin_changed, on_partner_damaged_costume, on_partner_character_id_changed, action_add_gsac_logic, \
+    action_add_instruction_logic, action_function_properties_list_close_logic, action_function_properties_list_add_logic
+from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info, create_gsc_rb1_list_html_list_add
 from lib.packages import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -188,7 +189,12 @@ def initialize_gsce(main_window):
     # Enable buttons for instructions
     main_window.events_instructions_list_up_button.clicked.connect(lambda: action_events_instructions_list_up_button_logic(main_window))
     main_window.events_instructions_list_down_button.clicked.connect(lambda: action_events_instructions_list_down_button_logic(main_window))
+    main_window.add_instruction_button.clicked.connect(lambda: action_add_instruction_logic(main_window))
     main_window.remove_instruction_button.clicked.connect(lambda: action_remove_instruction_logic(main_window))
+    # Create a model for the functions and properties list window
+    main_window.GSCFunctionUI.functions_properties_list_add.setModel(QStandardItemModel())
+    main_window.GSCFunctionUI.add_function_button.clicked.connect(lambda: action_function_properties_list_add_logic(main_window))
+    main_window.GSCFunctionUI.cancel_function_button.clicked.connect(lambda: action_function_properties_list_close_logic(main_window))
 
     # gsdt
     gsdt_header = GsdtHeader()
@@ -248,7 +254,7 @@ def initialize_gsce(main_window):
         # return a json object
         GSCEV.gsc_breakdown_json = json.load(input_file)
         # Create an html web based in this json
-        create_gsc_rb1_html_web(GSCEV.path_gsc_breakdown_html, GSCEV.gsc_breakdown_json)
+        create_gsc_rb1_list_html_list_add(main_window, GSCEV.path_gsc_breakdown_html, GSCEV.gsc_breakdown_json)
 
     # Enable all signals
     listen_events_logic(main_window, True)

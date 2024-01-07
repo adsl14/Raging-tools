@@ -67,7 +67,7 @@
             },
             {
               "Name": "Slot ID",
-              "Type": "integer",
+              "Type": "int",
               "Description": "Select the slot that plays the player",
               "Values": [
                 {
@@ -91,7 +91,7 @@
           "Parameters": [
             {
               "Name": "Health ID",
-              "Type": "integer",
+              "Type": "int",
               "Description": "Ammount of health in order to trigger the next GSAC",
               "Values": [
                 {
@@ -110,7 +110,7 @@
             },
             {
               "Name": "GSAC ID",
-              "Type": "integer",
+              "Type": "int",
               "Description": "The ID for the next GSAC to load",
               "Values": []
             }
@@ -122,13 +122,13 @@
           "Parameters": [
             {
               "Name": "",
-              "Type": "",
+              "Type": "int",
               "Description": "",
               "Values": []
             },
             {
               "Name": "",
-              "Type": "",
+              "Type": "int",
               "Description": "",
               "Values": []
             }
@@ -166,7 +166,7 @@
           "Parameters": [
             {
               "Name": "Audio ID",
-              "Type": "integer",
+              "Type": "int",
               "Description": "The audio ID to reproduce",
               "Values": []
             }
@@ -204,7 +204,7 @@
       "Parameters": [
         {
           "Name": "Actor_ID",
-          "Type": "Integer",
+          "Type": "int",
           "Description": "Select the actor to apply changes",
           "Values": [
             {
@@ -219,7 +219,7 @@
         },
         {
           "Name": "Character partner",
-          "Type": "Integer",
+          "Type": "int",
           "Description": "Enable the character partner associated with the actor",
           "Values": [
             {
