@@ -169,43 +169,93 @@ def get_pointer_data_info_name(event_instruction):
     # Function "0x01"
     if event_instruction.type == b'\x01':
         try:
-            name = "F: " + GSCEV.gsc_breakdown_json["Functions"][str(event_instruction.secundary_number_of_pointers)]["Name"]
+            name = GSCEV.gsc_breakdown_json[str(event_instruction.secundary_number_of_pointers)]["Name"]
         except KeyError:
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
+        '''
         try:
-            name = "F: " + GSCEV.gsc_breakdown_json["Properties"][str(event_instruction.number_of_pointers)]["Name"]
+            name = "P: " + GSCEV.gsc_breakdown_json[str(event_instruction.number_of_pointers)]["Name"]
         except KeyError:
             name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
+        '''
+        name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
 
     return name
 
 
-def create_html_web(file_export_path, gsc_breakdown_json):
+def write_parameters_in_html(list_of_parameters):
 
-    with open(file_export_path, mode='w') as output_file:
-        output_file.write("<!DOCTYPE html>\n")
-        output_file.write("<html>\n")
+    parameters_html = ""
+    for parameter in list_of_parameters:
+        parameter_html = "\n" + "\t\t\t\t" + parameter["Name"] + " (" + parameter["Type"] + "). "
+        parameter_html = parameter_html + parameter["Description"] + "\n"
+        for value in parameter["Values"]:
+            parameter_html = parameter_html + "\t\t\t\t<li>" + value["Description"] + " = "
+            for one_posible_value in value["Value"]:
+                parameter_html = parameter_html + str(one_posible_value) + ", "
+            parameter_html = parameter_html[:-2] + "</li>\n"
+        parameter_html = parameter_html[:-1] + "\n"
+        parameters_html = parameters_html + "\t\t\t<dd>" + parameter_html + "\t\t\t</dd>\n"
 
-        output_file.write("\t<head>\n")
+    return parameters_html
 
-        output_file.write("\t</head>\n")
 
-        output_file.write("\t<body>\n")
-        output_file.write("\t\t<h1 id=#FUNC-PROP>Functions and properties</h1>\n")
+def create_gsc_rb1_html_web(file_export_path, gsc_breakdown_json):
 
-        output_file.write("\t\t<div>\n")
-        output_file.write("\t\t\t<ul>\n")
-        output_file.write("\t\t\t\t<li><a href=\"#FUNC\">Functions</a></li>\n")
-        output_file.write("\t\t\t\t<li><a href=\"#PROP\">Properties</a></li>\n")
-        output_file.write("\t\t\t</ul>\n")
-        output_file.write("\t\t</div>\n")
+    functions_html = ""
 
-        output_file.write("\t\t<h1 id=#FUNC>Functions</h1>\n")
+    with open(file_export_path, mode='w') as outf:
+        outf.write("<!DOCTYPE html>\n")
+        outf.write("<html>\n")
 
-        output_file.write("\t\t<h1 id=#PROP>Properties</h1>\n")
+        outf.write("\t<head>\n")
 
-        output_file.write("\t</body>\n")
-        output_file.write("</html>\n")
+        outf.write("\t</head>\n")
+
+        outf.write("\t<body>\n")
+        outf.write("\t\t<h1 id=#FUNC-PROP>Functions and properties</h1>\n")
+
+        # Function index
+        outf.write("\t\t<h1 id=\"#FUNC\">Functions</h1>\n")
+        outf.write("\t\t<ul>\n")
+        for function_id in gsc_breakdown_json:
+            outf.write("\t\t\t<li><a href=\"#FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</a></li>\n")
+            functions_html = functions_html + "\t\t<h2 id=\"FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</h2>\n"
+            functions_html = functions_html + "\t\t<dl>\n"
+
+            functions_html = functions_html + "\t\t\t<dt>Hex interpretation</dt>\n"
+            code_hex = "0x01" + '{:02x}'.format(len(gsc_breakdown_json[function_id]["Parameters"]))
+            parameters_html = write_parameters_in_html(gsc_breakdown_json[function_id]["Parameters"])
+            code_hex = code_hex + '{:02x}'.format(int(function_id)) + "00"
+            functions_html = functions_html + "\t\t\t<dd><code>" + code_hex + "</code></dd>\n"
+
+            functions_html = functions_html + "\t\t\t<dt>Description</dt>\n"
+            functions_html = functions_html + "\t\t\t<dd>" + gsc_breakdown_json[function_id]["Description"] + "</dd>\n"
+
+            functions_html = functions_html + "\t\t\t<dt>Parameters</dt>\n"
+            if parameters_html == "":
+                parameters_html = "\t\t\t<dd>None</dd>\n"
+            functions_html = functions_html + parameters_html + "\t\t</dl>\n"
+
+            properties_html = ""
+            for properties in gsc_breakdown_json[function_id]["Properties"]:
+                properties_html = properties_html + "\t\t\t<dt>" + properties["Name"] + " type (<code>" + "0x08" + properties["Name"].encode("utf-8").hex() + \
+                                  '{:02x}'.format(len(properties["Parameters"])) + "00</code>)" + "</dt>\n"
+                properties_html = properties_html + "\t\t\t<dd>"
+                properties_html = properties_html + properties["Description"] + "</dd>\n"
+                parameters_html = write_parameters_in_html(properties["Parameters"])
+                properties_html = properties_html + parameters_html + "\t\t\t</dd>\n"
+            if properties_html != "":
+                functions_html = functions_html + "\t\t\t<h3>Properties</h3>\n"
+                functions_html = functions_html + "\t\t<dl>\n"
+                functions_html = functions_html + properties_html + "\t\t</dl>\n"
+        outf.write("\t\t</ul>\n")
+
+        # Write each function
+        outf.write(functions_html)
+
+        outf.write("\t</body>\n")
+        outf.write("</html>\n")
 

@@ -1,115 +1,310 @@
 {
-	"Functions": {
-        "1": {
-          "Name": "Initialize cutscene",
-          "Description": "Define cutscene entry."
-        },
-        "2": {
-          "Name": "End of event",
-          "Description": "Define the end of the current gsac entry."
-        },
-        "27": {
-          "Name": "Pause until next iteration",
-          "Description": "It will pause the execution until the time drops",
-          "Parameters": [
-            {
-              "Name": "Time",
-              "Type": "Float",
-              "Description": "The ammount of time you want to stop the execution"
-            }
-          ]
-        },
-        "30": {
-          "Name": "Apply sound effect"
-        },
-        "32": {
-          "Name": "Dialogue (cutscene)"
-        },
-        "34": {
-          "Name": "Show character"
-        },
-        "35": {
-          "Name": "Character position (cutscene)"
-        },
-        "36": {
-          "Name": "Move character"
-        },
-        "38": {
-          "Name": "Character position (gameplay)"
-        },
-        "39": {
-          "Name": "Character animation"
-        },
-        "40": {
-          "Name": "Character face"
-        },
-        "44": {
-          "Name": "Move eyes"
-        },
-        "48": {
-          "Name": "Activate idle aura"
-        },
-        "49": {
-          "Name": "Activate charge aura"
-        },
-        "52": {
-          "Name": "Camera (start)"
-        },
-        "53": {
-          "Name": "Camera (end)"
-        },
-        "56": {
-          "Name": "Fade out"
-        },
-        "57": {
-          "Name": "Fade in"
-        },
-        "61": {
-          "Name": "Apply Visual filter"
-        },
-        "64": {
-          "Name": "Apply visual speed effect"
-        },
-        "67": {
-          "Name": "Apply black effect"
-        },
-        "76": {
-          "Name": "Cutscene mode"
+    "1": {
+      "Name": "Initialize cutscene",
+      "Description": "Define cutscene entry.",
+      "Parameters": [],
+      "Properties": [
+        {
+          "Name": "t",
+          "Description": "The gsac starts in cutscene mode.",
+          "Parameters": []
         }
-      },
-	"Properties": {
-        "97": {
-          "Name": "Trigger GSAC event",
-          "Description": "Controls what is the following GSAC when the enemy reach a certain ammount of health.",
+      ]
+    },
+    "2": {
+      "Name": "End of event",
+      "Description": "Define the end of the current gsac entry.",
+      "Parameters": [],
+      "Properties": []
+    },
+    "5": {
+      "Name": "Function 5",
+      "Description": "",
+      "Parameters": [],
+      "Properties": [
+        {
+          "Name": "t",
+          "Description": "The gsac starts in gameplay mode.",
           "Parameters": [
             {
-              "Name": "Ammount of health to trigger",
-              "Type": "Integer",
+              "Name": "Condition ID",
+              "Type": "integer",
+              "Description": "Select what will do the gsac when enters the gameplay",
               "Values": [
                 {
-                  "Description": "Current health",
-                  "Value": 0
+                  "Description": "Regular start",
+                  "Value": [0, 20]
                 },
                 {
-                  "Description": "1 sphere of health",
-                  "Value": 88
+                  "Description": "Starts immediately",
+                  "Value": [2]
                 },
                 {
-                  "Description": "2 spheres of health",
-                  "Value": 87
+                  "Description": "Ends battle as a win",
+                  "Value": [3]
+                },
+                {
+                  "Description": "Ends battle as a lose",
+                  "Value": [4]
+                },
+                {
+                  "Description": "Change player's slot",
+                  "Value": [7]
+                },
+                {
+                  "Description": "Transform player 1",
+                  "Value": [9]
+                },
+                {
+                  "Description": "Change cpu's slot",
+                  "Value": [14]
+                },
+                {
+                  "Description": "Transform player 1",
+                  "Value": [16]
+                }
+              ]
+            },
+            {
+              "Name": "Slot ID",
+              "Type": "integer",
+              "Description": "Select the slot that plays the player",
+              "Values": [
+                {
+                  "Description": "Slot ID",
+                  "Value": ["From 1 to 20"]
                 }
               ]
             }
           ]
-        },
-        "112": {
-          "Name": "Next audio to reproduce"
-        },
-        "116": {
-          "Name": "Define ingame start"
-        },
-        "118": {
-          "Name": "Dialogue (gameplay)"
         }
+      ]
+    },
+    "7": {
+      "Name": "Function 7",
+      "Description": "Load next GSAC",
+      "Parameters": [],
+      "Properties": [
+        {
+          "Name": "a",
+          "Description": "Controls what is the following GSAC when enemy reach a certain ammount of health",
+          "Parameters": [
+            {
+              "Name": "Health ID",
+              "Type": "integer",
+              "Description": "Ammount of health in order to trigger the next GSAC",
+              "Values": [
+                {
+                  "Description": "Current health",
+                  "Value": [0]
+                },
+                {
+                  "Description": "1 sphere of health",
+                  "Value": [88]
+                },
+                {
+                  "Description": "2 spheres of health",
+                  "Value": [87]
+                }
+              ]
+            },
+            {
+              "Name": "GSAC ID",
+              "Type": "integer",
+              "Description": "The ID for the next GSAC to load",
+              "Values": []
+            }
+          ]
+        },
+        {
+          "Name": "v",
+          "Description": "Controls audio and dialogue during gameplay (when player or cpu gets hurted)",
+          "Parameters": [
+            {
+              "Name": "",
+              "Type": "",
+              "Description": "",
+              "Values": []
+            },
+            {
+              "Name": "",
+              "Type": "",
+              "Description": "",
+              "Values": []
+            }
+          ]
+        }
+      ]
+    },
+    "27": {
+      "Name": "Pause until next iteration",
+      "Description": "It will pause the execution until the time drops",
+      "Parameters": [
+        {
+          "Name": "Time",
+          "Type": "float",
+          "Description": "The ammount of time you want to stop the execution",
+          "Values": []
+        }
+      ],
+      "Properties": []
+    },
+    "30": {
+      "Name": "Apply sound effect",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "32": {
+      "Name": "Dialogue (cutscene)",
+      "Description": "",
+      "Parameters": [],
+      "Properties": [
+        {
+          "Name": "p",
+          "Description": "Following audio to reproduce",
+          "Parameters": [
+            {
+              "Name": "Audio ID",
+              "Type": "integer",
+              "Description": "The audio ID to reproduce",
+              "Values": []
+            }
+          ]
+        }
+      ]
+    },
+    "34": {
+      "Name": "Show character",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "35": {
+      "Name": "Character position (cutscene)",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "36": {
+      "Name": "Move character",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "38": {
+      "Name": "Character position (gameplay)",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "39": {
+      "Name": "Character animation",
+      "Description": "Play the animation for the character",
+      "Parameters": [
+        {
+          "Name": "Actor_ID",
+          "Type": "Integer",
+          "Description": "Select the actor to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": [0]
+            },
+            {
+              "Description": "CPU",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Character partner",
+          "Type": "Integer",
+          "Description": "Enable the character partner associated with the actor",
+          "Values": [
+            {
+              "Description": "Disable",
+              "Value": [0]
+            },
+            {
+              "Description": "Enable",
+              "Value": [1]
+            }
+          ]
+        }
+      ],
+      "Properties": []
+    },
+    "40": {
+      "Name": "Character face",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "44": {
+      "Name": "Move eyes",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "48": {
+      "Name": "Activate idle aura",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "49": {
+      "Name": "Activate charge aura",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "52": {
+      "Name": "Camera (start)",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "53": {
+      "Name": "Camera (end)",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "56": {
+      "Name": "Fade out",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "57": {
+      "Name": "Fade in",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "61": {
+      "Name": "Apply Visual filter",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "64": {
+      "Name": "Apply visual speed effect",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "67": {
+      "Name": "Apply black effect",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
+    "76": {
+      "Name": "Cutscene mode",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
     }
 }

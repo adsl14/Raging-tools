@@ -17,7 +17,7 @@ from lib.gsc_explorer.functions.action_logic import on_map_changed, on_music_cha
     on_pointer_subtitle_list_view_changed, on_cutscene_changed, on_events_instructions_list_changed, on_gsac_events_list_changed, on_instruction_value_changed, action_remove_instruction_logic, \
     action_events_instructions_list_down_button_logic, action_events_instructions_list_up_button_logic, action_gsac_events_list_up_button_logic, action_gsac_events_list_down_button_logic, \
     action_remove_gsac_logic, on_player_slot_changed, on_initial_gsac_event_changed, on_partner_skin_changed, on_partner_damaged_costume, on_partner_character_id_changed
-from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info, create_html_web
+from lib.gsc_explorer.functions.auxiliary import read_pointer_data_info, write_pointer_data_info, create_pointer_data_info, create_gsc_rb1_html_web
 from lib.packages import os
 
 from PyQt5.QtCore import QObject, pyqtSignal
@@ -247,7 +247,7 @@ def initialize_gsce(main_window):
         # return a json object
         GSCEV.gsc_breakdown_json = json.load(input_file)
         # Create an html web based in this json
-        create_html_web(GSCEV.path_gsc_breakdown_html, GSCEV.gsc_breakdown_json)
+        create_gsc_rb1_html_web(GSCEV.path_gsc_breakdown_html, GSCEV.gsc_breakdown_json)
 
     # Enable all signals
     listen_events_logic(main_window, True)

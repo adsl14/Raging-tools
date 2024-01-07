@@ -3688,7 +3688,7 @@ class Ui_MainWindow(object):
         self.gsac_events_list_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>List of GSAC entries</p></body></html>"))
         self.gsac_events_list_text.setText(_translate("MainWindow", "GSAC events"))
         self.events_instructions_text.setToolTip(_translate("MainWindow", "<html><head/><body><p>List of functions and properties of one GSAC</p></body></html>"))
-        self.events_instructions_text.setText(_translate("MainWindow", "Functions (F) and Properties (P)"))
+        self.events_instructions_text.setText(_translate("MainWindow", "Functions and Properties"))
         self.instruction_text_0.setText(_translate("MainWindow", "Value 0"))
         self.instruction_text_1.setText(_translate("MainWindow", "Value 1"))
         self.instruction_text_2.setText(_translate("MainWindow", "Value 2"))
