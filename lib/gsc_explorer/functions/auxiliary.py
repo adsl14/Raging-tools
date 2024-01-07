@@ -174,12 +174,6 @@ def get_pointer_data_info_name(event_instruction):
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
-        '''
-        try:
-            name = "P: " + GSCEV.gsc_breakdown_json[str(event_instruction.number_of_pointers)]["Name"]
-        except KeyError:
-            name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
-        '''
         name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
 
     return name
