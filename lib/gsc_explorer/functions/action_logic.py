@@ -1,8 +1,9 @@
+from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
 from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui, get_pointer_data_info_name
 from lib.packages import os
 
 from PyQt5.QtGui import QPixmap, QStandardItem
-from PyQt5.QtWidgets import QLabel, QMessageBox
+from PyQt5.QtWidgets import QLabel, QMessageBox, QInputDialog
 
 from lib.gsc_explorer.GSCEV import GSCEV
 
@@ -130,6 +131,67 @@ def action_gsac_events_list_down_button_logic(main_window):
 
         # Select the next instruction
         main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(index_gsac + 1, 0))
+
+
+def action_add_gsac_logic(main_window):
+
+    while True:
+        # Ask the user the id
+        value, ok_pressed = QInputDialog.getInt(main_window, "GSAC ID", "Insert the ID for the new GSAC event entry:", 10000, 10000, 99999)
+
+        found_id = False
+        # The user entered a number
+        if ok_pressed:
+            # Search if there is a repeated ID
+            for i in range(0, main_window.gsac_events_list.model().rowCount()):
+                if value == int(main_window.gsac_events_list.model().item(i).text()):
+                    found_id = True
+                    break
+
+            # There is an ID already added
+            if found_id:
+                # Wrong ID value
+                msg = QMessageBox()
+                msg.setWindowTitle("Error")
+                msg.setWindowIcon(main_window.ico_image)
+                msg.setText("The ID inserted is already used in another GSAC entry")
+                msg.exec()
+            # We add the new entry
+            else:
+
+                # Get the current gsac entry
+                index_gsac = main_window.gsac_events_list.currentIndex().row()
+
+                # Get the gsac entries
+                gsac_entries = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]
+
+                # Add the new gsac entry in memory, creating a new array. We will add it after the current selected gsac entry
+                new_gsac_entries = []
+                for i in range(0, index_gsac + 1):
+                    new_gsac_entries.append(gsac_entries[i])
+                gsac_header = GsacHeader()
+                gsac_header.unk0x04 = b'\x10\x00\x00\x00'
+                gsac_header.id = value
+                new_gsac_entries.append(gsac_header)
+                for i in range(index_gsac + 1, len(gsac_entries)):
+                    new_gsac_entries.append(gsac_entries[i])
+                GSCEV.gsc_file.gscf_header.gscd_header.gsac_array = GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[:5] + new_gsac_entries
+
+                # Clean the list in the gsac events
+                main_window.gsac_events_list.model().clear()
+                # Add the elements again
+                for gsac in GSCEV.gsc_file.gscf_header.gscd_header.gsac_array[5:]:
+                    item = QStandardItem(str(gsac.id))
+                    item.setData(gsac)
+                    item.setEditable(False)
+                    main_window.gsac_events_list.model().appendRow(item)
+                # Select the current gsac entry
+                main_window.gsac_events_list.setCurrentIndex(main_window.gsac_events_list.model().index(index_gsac, 0))
+
+                break
+        # The user cancel the addition, we stop asking
+        else:
+            break
 
 
 def action_remove_gsac_logic(main_window):
