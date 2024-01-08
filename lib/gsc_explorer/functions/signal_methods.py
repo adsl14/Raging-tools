@@ -14,7 +14,6 @@ def store_parameters_gsc_explorer(main_window):
     # Initial gsac event to load
     main_window.initial_gsac_event_value.setValue(int.from_bytes(gsac_0.data.pointers[0].secundary_number_of_pointers.to_bytes(1, 'little') + gsac_0.data.pointers[0].unk0x04, "little"))
 
-
     # --------
     # Stage properties (GSAC3)
     # --------
