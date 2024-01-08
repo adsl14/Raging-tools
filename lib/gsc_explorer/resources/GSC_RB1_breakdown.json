@@ -112,7 +112,7 @@
             {
               "Name": "Character ID",
               "Type": "int",
-              "Description": "Select character ID model so cpu transform into",
+              "Description": "Select character ID model cpu transform into",
               "Values": [
                 {
                   "Description": "One of these values can be used",
@@ -244,13 +244,13 @@
           ]
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "int",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "int",
           "Description": "",
           "Values": []
@@ -401,61 +401,61 @@
       "Description": "Moves the character model in real time",
       "Parameters": [
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "int",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "int",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "int",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
         },
         {
-          "Name": "",
+          "Name": "Unknown",
           "Type": "float",
           "Description": "",
           "Values": []
