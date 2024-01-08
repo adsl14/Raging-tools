@@ -846,39 +846,39 @@
           "Values": []
         },
         {
-          "Name": "Position X",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in X axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Position Y",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in Y axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Position Z",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in Z axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation X",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in X axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation Y",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in Y axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation Z",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in Z axis the camera",
+          "Description": "",
           "Values": []
         }
       ],
@@ -901,39 +901,39 @@
           "Values": []
         },
         {
-          "Name": "Position X",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in X axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Position Y",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in Y axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Position Z",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Move in Z axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation X",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in X axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation Y",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in Y axis the camera",
+          "Description": "",
           "Values": []
         },
         {
-          "Name": "Rotation Z",
+          "Name": "Unknown",
           "Type": "float",
-          "Description": "Rotate in Z axis the camera",
+          "Description": "",
           "Values": []
         }
       ],
