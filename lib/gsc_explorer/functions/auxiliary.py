@@ -154,9 +154,9 @@ def assign_pointer_to_ui(pointers_values_ui, pointer_data_info, number_of_pointe
         # Check if the pointer is an integer, so we change the number of decimals and minimun value
         if pointer_data_info.pointers_data[i].type_GSDT == b'\x0A':
             pointers_values_ui[i].setDecimals(0)
-            pointers_values_ui[i].setMinimum(0.0)
+            pointers_values_ui[i].setMinimum(0)
         else:
-            pointers_values_ui[i].setDecimals(2)
+            pointers_values_ui[i].setDecimals(3)
             pointers_values_ui[i].setMinimum(-4294967295.000000)
         pointers_values_ui[i].setValue(pointer_data_info.pointers_data[i].value_GSDT)
     # Disable the rest of pointer values in ui

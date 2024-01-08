@@ -9746,6 +9746,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -9780,6 +9783,9 @@
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -9816,6 +9822,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -9850,6 +9859,9 @@
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -9886,6 +9898,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -9920,6 +9935,9 @@
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -9956,6 +9974,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -9991,6 +10012,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -10009,6 +10033,9 @@
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -10045,6 +10072,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -10079,6 +10109,9 @@
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -10115,6 +10148,9 @@
             <height>22</height>
            </rect>
           </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
           </property>
@@ -10138,17 +10174,20 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
-         <widget class="QDoubleSpinBox" name="instruction_value_14">
+         <widget class="QDoubleSpinBox" name="instruction_value_12">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
-            <x>230</x>
+            <x>10</x>
             <y>230</y>
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -10157,36 +10196,17 @@
            <double>4294967295.000000000000000</double>
           </property>
          </widget>
-         <widget class="QDoubleSpinBox" name="instruction_value_13">
-          <property name="enabled">
-           <bool>false</bool>
-          </property>
+         <widget class="QLabel" name="instruction_text_12">
           <property name="geometry">
            <rect>
-            <x>120</x>
-            <y>230</y>
-            <width>101</width>
-            <height>22</height>
-           </rect>
-          </property>
-          <property name="minimum">
-           <double>-4294967295.000000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>4294967295.000000000000000</double>
-          </property>
-         </widget>
-         <widget class="QLabel" name="instruction_text_14">
-          <property name="geometry">
-           <rect>
-            <x>236</x>
+            <x>16</x>
             <y>210</y>
             <width>91</width>
             <height>20</height>
            </rect>
           </property>
           <property name="text">
-           <string>Value 14</string>
+           <string>Value 12</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -10208,17 +10228,20 @@
            <set>Qt::AlignCenter</set>
           </property>
          </widget>
-         <widget class="QDoubleSpinBox" name="instruction_value_12">
+         <widget class="QDoubleSpinBox" name="instruction_value_13">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="geometry">
            <rect>
-            <x>10</x>
+            <x>120</x>
             <y>230</y>
             <width>101</width>
             <height>22</height>
            </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
           </property>
           <property name="minimum">
            <double>-4294967295.000000000000000</double>
@@ -10227,17 +10250,39 @@
            <double>4294967295.000000000000000</double>
           </property>
          </widget>
-         <widget class="QLabel" name="instruction_text_12">
+         <widget class="QDoubleSpinBox" name="instruction_value_14">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="geometry">
            <rect>
-            <x>16</x>
+            <x>230</x>
+            <y>230</y>
+            <width>101</width>
+            <height>22</height>
+           </rect>
+          </property>
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="minimum">
+           <double>-4294967295.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>4294967295.000000000000000</double>
+          </property>
+         </widget>
+         <widget class="QLabel" name="instruction_text_14">
+          <property name="geometry">
+           <rect>
+            <x>236</x>
             <y>210</y>
             <width>91</width>
             <height>20</height>
            </rect>
           </property>
           <property name="text">
-           <string>Value 12</string>
+           <string>Value 14</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
