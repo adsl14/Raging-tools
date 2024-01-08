@@ -184,7 +184,6 @@ def get_pointer_data_info_name(event_instruction):
 def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data_info):
 
     parameters_html = ""
-    parameters_html = parameters_html + "\t\t\t<ol start=\"0\">\n"
     for parameter in list_of_parameters:
 
         # Create a pointer data object, so we can store each single parameter inside the current function
@@ -209,7 +208,6 @@ def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data
         parameter_html = parameter_html + "\t\t\t\t\t</ul>"
         parameter_html = parameter_html[:-1] + "\n"
         parameters_html = parameters_html + "\t\t\t\t<li>" + parameter_html + "\t\t\t\t</li>\n"
-    parameters_html = parameters_html + "\t\t\t</ol>\n"
 
     return parameters_html
 
@@ -266,6 +264,9 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
             functions_html = functions_html + "\t\t\t<dt>Parameters</dt>\n"
             if parameters_html == "":
                 parameters_html = "\t\t\t<dd>None</dd>\n"
+            else:
+                parameters_html = "\t\t\t<ol start=\"0\">\n" + parameters_html
+                parameters_html = parameters_html + "\t\t\t</ol>\n"
             functions_html = functions_html + parameters_html + "\t\t</dl>\n"
 
             # Add the function to the list
@@ -290,6 +291,9 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 properties_html = properties_html + "\t\t\t<dd>"
                 properties_html = properties_html + properties["Description"] + "</dd>\n"
                 parameters_html = write_parameters_in_html_and_functions_list(properties["Parameters"], pointer_data_info)
+                if parameters_html != "":
+                    parameters_html = "\t\t\t<ol start=\"0\">\n" + parameters_html
+                    parameters_html = parameters_html + "\t\t\t</ol>\n"
                 properties_html = properties_html + parameters_html
 
                 # Add the property to the list
