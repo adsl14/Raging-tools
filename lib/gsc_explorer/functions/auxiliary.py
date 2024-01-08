@@ -184,6 +184,7 @@ def get_pointer_data_info_name(event_instruction):
 def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data_info):
 
     parameters_html = ""
+    parameters_html = parameters_html + "\t\t\t<ol start=\"0\">\n"
     for parameter in list_of_parameters:
 
         # Create a pointer data object, so we can store each single parameter inside the current function
@@ -197,17 +198,18 @@ def write_parameters_in_html_and_functions_list(list_of_parameters, pointer_data
         pointer_data.unk0x03 = b'\x00'
         pointer_data_info.pointers_data.append(pointer_data)
 
-        parameter_html = "\n" + "\t\t\t\t" + parameter["Name"] + " (" + parameter["Type"] + "). "
+        parameter_html = "\n" + "\t\t\t\t\t" + parameter["Name"] + " (" + parameter["Type"] + "). "
         parameter_html = parameter_html + parameter["Description"] + "\n"
-        parameter_html = parameter_html + "\t\t\t\t<ol start=\"0\">\n"
+        parameter_html = parameter_html + "\t\t\t\t\t<ul>\n"
         for value in parameter["Values"]:
-            parameter_html = parameter_html + "\t\t\t\t\t<li>" + value["Description"] + " = "
+            parameter_html = parameter_html + "\t\t\t\t\t\t<li>" + value["Description"] + " = "
             for one_posible_value in value["Value"]:
                 parameter_html = parameter_html + str(one_posible_value) + ", "
             parameter_html = parameter_html[:-2] + "</li>\n"
-        parameter_html = parameter_html + "\t\t\t\t</ol>"
+        parameter_html = parameter_html + "\t\t\t\t\t</ul>"
         parameter_html = parameter_html[:-1] + "\n"
-        parameters_html = parameters_html + "\t\t\t<dd>" + parameter_html + "\t\t\t</dd>\n"
+        parameters_html = parameters_html + "\t\t\t\t<li>" + parameter_html + "\t\t\t\t</li>\n"
+    parameters_html = parameters_html + "\t\t\t</ol>\n"
 
     return parameters_html
 
@@ -288,7 +290,7 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 properties_html = properties_html + "\t\t\t<dd>"
                 properties_html = properties_html + properties["Description"] + "</dd>\n"
                 parameters_html = write_parameters_in_html_and_functions_list(properties["Parameters"], pointer_data_info)
-                properties_html = properties_html + parameters_html + "\t\t\t</dd>\n"
+                properties_html = properties_html + parameters_html
 
                 # Add the property to the list
                 item = QStandardItem("Property " + properties["Name"])
