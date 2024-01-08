@@ -120,10 +120,10 @@ def write_pointer_data_info(pointer_data_info, data, data_size, gsdt_data, gsdt_
     return data, data_size, gsdt_data, gsdt_data_size, gsdt_data_array_size
 
 
-def create_pointer_data_info(type, number_of_pointers, secundary_number_of_pointers, unk0x04, pointers_data_values):
+def create_pointer_data_info(type_pointer, number_of_pointers, secundary_number_of_pointers, unk0x04, pointers_data_values):
 
     pointer_data_info = PointerDataInfo()
-    pointer_data_info.type = type
+    pointer_data_info.type = type_pointer
     pointer_data_info.number_of_pointers = number_of_pointers
     pointer_data_info.secundary_number_of_pointers = secundary_number_of_pointers
     pointer_data_info.unk0x04 = unk0x04
@@ -134,11 +134,11 @@ def create_pointer_data_info(type, number_of_pointers, secundary_number_of_point
     return pointer_data_info
 
 
-def create_pointer_data(type_GSDT, value_GSDT, unk0x03):
+def create_pointer_data(type_gsdt, value_gsdt, unk0x03):
 
     pointer_data = PointerData()
-    pointer_data.type_GSDT = type_GSDT
-    pointer_data.value_GSDT = value_GSDT
+    pointer_data.type_GSDT = type_gsdt
+    pointer_data.value_GSDT = value_gsdt
     pointer_data.unk0x03 = unk0x03
 
     return pointer_data
@@ -286,8 +286,8 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 pointer_data_info.secundary_number_of_pointers = num_parameters
                 pointer_data_info.unk0x04 = b'\x00'
 
-                properties_html = properties_html + "\t\t\t<dt>" + properties["Name"] + " type (<code>" + "0x08" + properties["Name"].encode("utf-8").hex() + \
-                                  '{:02x}'.format(num_parameters) + "00</code>)" + "</dt>\n"
+                properties_html = properties_html + "\t\t\t<dt>" + properties["Name"] + " type (<code>" + "0x08" + \
+                    properties["Name"].encode("utf-8").hex() + '{:02x}'.format(num_parameters) + "00</code>)" + "</dt>\n"
                 properties_html = properties_html + "\t\t\t<dd>"
                 properties_html = properties_html + properties["Description"] + "</dd>\n"
                 parameters_html = write_parameters_in_html_and_functions_list(properties["Parameters"], pointer_data_info)
@@ -320,3 +320,18 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
         outf.write("\t</body>\n")
         outf.write("</html>\n")
 
+
+def copy_pointer_data_info(new_pointer_data_info, old_pointer_data_info):
+
+    # Copy all the data from old pointer to new pointer object
+    new_pointer_data_info.type = old_pointer_data_info.type
+    new_pointer_data_info.number_of_pointers = old_pointer_data_info.number_of_pointers
+    new_pointer_data_info.secundary_number_of_pointers = old_pointer_data_info.secundary_number_of_pointers
+    new_pointer_data_info.unk0x04 = old_pointer_data_info.unk0x04
+
+    for old_pointer_data in old_pointer_data_info.pointers_data:
+        new_pointer_data = PointerData()
+        new_pointer_data.type_GSDT = old_pointer_data.type_GSDT
+        new_pointer_data.unk0x03 = old_pointer_data.unk0x03
+        new_pointer_data.value_GSDT = old_pointer_data.value_GSDT
+        new_pointer_data_info.pointers_data.append(new_pointer_data)

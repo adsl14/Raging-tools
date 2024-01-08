@@ -1,5 +1,6 @@
 from lib.gsc_explorer.classes.GSAC.GSACHeader import GsacHeader
-from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui, get_pointer_data_info_name
+from lib.gsc_explorer.classes.GSAC.PointerDataInfo import PointerDataInfo
+from lib.gsc_explorer.functions.auxiliary import assign_pointer_to_ui, get_pointer_data_info_name, copy_pointer_data_info
 from lib.packages import os
 
 from PyQt5.QtGui import QPixmap, QStandardItem
@@ -352,7 +353,7 @@ def action_function_properties_list_add_logic(main_window):
 
     # Get current the function that the user has added
     index_intruction_to_add = main_window.GSCFunctionUI.functions_properties_list_add.currentIndex().row()
-    pointer_to_add = main_window.GSCFunctionUI.functions_properties_list_add.model().item(index_intruction_to_add).data()
+    pointer_to_copy = main_window.GSCFunctionUI.functions_properties_list_add.model().item(index_intruction_to_add).data()
 
     # Remove the instruction in memory and visual list, creating a new array
     main_window.events_instructions_list.model().clear()
@@ -365,7 +366,9 @@ def action_function_properties_list_add_logic(main_window):
         new_pointers.append(pointers[i])
         main_window.events_instructions_list.model().appendRow(item)
 
-    # Add the new instruction below
+    # Add the new instruction below. We create a brand-new pointer
+    pointer_to_add = PointerDataInfo()
+    copy_pointer_data_info(pointer_to_add, pointer_to_copy)
     name = get_pointer_data_info_name(pointer_to_add)
     item = QStandardItem(name)
     item.setData(pointer_to_add)
