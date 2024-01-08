@@ -253,7 +253,7 @@ def initialize_gsce(main_window):
     with open(GSCEV.path_gsc_breakdown_json, mode='r') as input_file:
         # return a json object
         GSCEV.gsc_breakdown_json = json.load(input_file)
-        # Create an html web based in this json
+        # Create a html web based in this json
         create_gsc_rb1_list_html_list_add(main_window, GSCEV.path_gsc_breakdown_html, GSCEV.gsc_breakdown_json)
 
     # Enable all signals
