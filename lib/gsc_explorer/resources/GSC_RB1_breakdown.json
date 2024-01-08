@@ -19,7 +19,7 @@
     },
     "5": {
       "Name": "Function 5",
-      "Description": "",
+      "Description": "It defines how the gameplay starts",
       "Parameters": [],
       "Properties": [
         {
@@ -28,7 +28,7 @@
           "Parameters": [
             {
               "Name": "Condition ID",
-              "Type": "integer",
+              "Type": "int",
               "Description": "Select what will do the gsac when enters the gameplay",
               "Values": [
                 {
@@ -56,11 +56,11 @@
                   "Value": [9]
                 },
                 {
-                  "Description": "Change cpu's slot",
+                  "Description": "Change cpu slot",
                   "Value": [14]
                 },
                 {
-                  "Description": "Transform player 1",
+                  "Description": "Transform cpu",
                   "Value": [16]
                 }
               ]
@@ -71,8 +71,63 @@
               "Description": "Select the slot that plays the player",
               "Values": [
                 {
-                  "Description": "Slot ID",
+                  "Description": "One of these values can be used",
                   "Value": ["From 1 to 20"]
+                }
+              ]
+            },
+            {
+              "Name": "Character ID",
+              "Type": "int",
+              "Description": "Select character ID model so player transform into",
+              "Values": [
+                {
+                  "Description": "One of these values can be used",
+                  "Value": ["From 0 to 72"]
+                }
+              ]
+            },
+            {
+              "Name": "Blast ID",
+              "Type": "int",
+              "Description": "Id blast attack that player will start executing",
+              "Values": [
+                {
+                  "Description": "One of these values can be used",
+                  "Value": ["From 0 to 13"]
+                }
+              ]
+            },
+            {
+              "Name": "Slot ID",
+              "Type": "int",
+              "Description": "Select the slot that plays the cpu",
+              "Values": [
+                {
+                  "Description": "One of these values can be used",
+                  "Value": ["From 1 to 20"]
+                }
+              ]
+            },
+            {
+              "Name": "Character ID",
+              "Type": "int",
+              "Description": "Select character ID model so cpu transform into",
+              "Values": [
+                {
+                  "Description": "One of these values can be used",
+                  "Value": ["From 0 to 72"]
+                }
+              ]
+            },
+            {
+              "Name": "Blast ID",
+              "Type": "int",
+              "Description": "Id blast attack that cpu will start executing",
+              "Values": [
+                {
+                  "Description": "One of these values can be used",
+                  "Value": ["From 0 to 13"]
                 }
               ]
             }
@@ -87,12 +142,12 @@
       "Properties": [
         {
           "Name": "a",
-          "Description": "Controls what is the following GSAC when enemy reach a certain ammount of health",
+          "Description": "Controls what is the following GSAC when enemy reach a certain amount of health",
           "Parameters": [
             {
               "Name": "Health ID",
               "Type": "int",
-              "Description": "Ammount of health in order to trigger the next GSAC",
+              "Description": "Amount of health in order to trigger the next GSAC",
               "Values": [
                 {
                   "Description": "Current health",
@@ -121,15 +176,15 @@
           "Description": "Controls audio and dialogue during gameplay (when player or cpu gets hurted)",
           "Parameters": [
             {
-              "Name": "",
+              "Name": "Condition ID",
               "Type": "int",
-              "Description": "",
+              "Description": "What's the condition so it triggers the dialogue and audio",
               "Values": []
             },
             {
-              "Name": "",
+              "Name": "Audio ID",
               "Type": "int",
-              "Description": "",
+              "Description": "The audio to reproduce",
               "Values": []
             }
           ]
@@ -143,7 +198,7 @@
         {
           "Name": "Time",
           "Type": "float",
-          "Description": "The ammount of time you want to stop the execution",
+          "Description": "The amount of time you want to stop the execution",
           "Values": []
         }
       ],
@@ -151,14 +206,56 @@
     },
     "30": {
       "Name": "Apply sound effect",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Reproduce a sound effect",
+      "Parameters": [
+        {
+          "Name": "Audio ID",
+          "Type": "int",
+          "Description": "The audio to reproduce",
+          "Values": [
+            {
+              "Description": "Sound effect 5",
+              "Value": [5]
+            }
+          ]
+        }
+      ],
       "Properties": []
     },
     "32": {
       "Name": "Dialogue (cutscene)",
-      "Description": "",
-      "Parameters": [],
+      "Description": "It defines the dialogue, audio, lips and what character slot is talking",
+      "Parameters": [
+        {
+          "Name": "ID",
+          "Type": "int",
+          "Description": "Text and lips animations",
+          "Values": []
+        },
+        {
+          "Name": "Slot ID",
+          "Type": "int",
+          "Description": "Select the slot of the character",
+          "Values": [
+            {
+              "Description": "One of these values can be used",
+              "Value": ["From 1 to 20"]
+            }
+          ]
+        },
+        {
+          "Name": "",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": [
         {
           "Name": "p",
@@ -176,26 +273,252 @@
     },
     "34": {
       "Name": "Show character",
-      "Description": "",
-      "Parameters": [],
+      "Description": "It will show or hide a character or the partner",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the player or cpu to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": ["0"]
+            },
+            {
+              "Description": "CPU",
+              "Value": ["1"]
+            }
+          ]
+        },
+        {
+          "Name": "Enable partner",
+          "Type": "int",
+          "Description": "Enable the character partner",
+          "Values": [
+            {
+              "Description": "Enable main character",
+              "Value": ["0"]
+            },
+            {
+              "Description": "Enable partner character",
+              "Value": ["1"]
+            }
+          ]
+        },
+        {
+          "Name": "Enable visual character",
+          "Type": "int",
+          "Description": "Show or hide character in scene",
+          "Values": [
+            {
+              "Description": "Hide",
+              "Value": ["0"]
+            },
+            {
+              "Description": "Show",
+              "Value": ["1"]
+            }
+          ]
+        }
+      ],
       "Properties": []
     },
     "35": {
       "Name": "Character position (cutscene)",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Defines the position of the character in the scene",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the player or cpu to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": ["0"]
+            },
+            {
+              "Description": "CPU",
+              "Value": ["1"]
+            }
+          ]
+        },
+        {
+          "Name": "Enable partner",
+          "Type": "int",
+          "Description": "Enable the character partner",
+          "Values": [
+            {
+              "Description": "Enable main character",
+              "Value": ["0"]
+            },
+            {
+              "Description": "Enable partner character",
+              "Value": ["1"]
+            }
+          ]
+        },
+        {
+          "Name": "Position X",
+          "Type": "float",
+          "Description": "Move in X axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Position Y",
+          "Type": "float",
+          "Description": "Move in Y axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Position Z",
+          "Type": "float",
+          "Description": "Move in Z axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation X",
+          "Type": "float",
+          "Description": "Rotate in X axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Y",
+          "Type": "float",
+          "Description": "Rotate in Y axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotate in Z axis the character",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "36": {
       "Name": "Move character",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Moves the character model in real time",
+      "Parameters": [
+        {
+          "Name": "",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "38": {
       "Name": "Character position (gameplay)",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Defines the position of the character in gameplay",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the player or cpu to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": [0]
+            },
+            {
+              "Description": "CPU",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Position X",
+          "Type": "float",
+          "Description": "Move in X axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Position Y",
+          "Type": "float",
+          "Description": "Move in Y axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Position Z",
+          "Type": "float",
+          "Description": "Move in Z axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation X",
+          "Type": "float",
+          "Description": "Rotate in X axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Y",
+          "Type": "float",
+          "Description": "Rotate in Y axis the character",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotate in Z axis the character",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "39": {
@@ -203,7 +526,7 @@
       "Description": "Play the animation for the character",
       "Parameters": [
         {
-          "Name": "Actor_ID",
+          "Name": "Actor ID",
           "Type": "int",
           "Description": "Select the actor to apply changes",
           "Values": [
@@ -231,14 +554,126 @@
               "Value": [1]
             }
           ]
+        },
+        {
+          "Name": "Speed",
+          "Type": "float",
+          "Description": "Select speed of the animation",
+          "Values": []
+        },
+        {
+          "Name": "Activate glow",
+          "Type": "int",
+          "Description": "Enable the glow of the character",
+          "Values": [
+            {
+              "Description": "Disable",
+              "Value": [0]
+            },
+            {
+              "Description": "Enable",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Animation ID",
+          "Type": "int",
+          "Description": "Select the animation to execute",
+          "Values": [
+            {
+              "Description": "Idle",
+              "Value": [0]
+            },
+            {
+              "Description": "Idle fly",
+              "Value": [1]
+            },
+            {
+              "Description": "Charge in",
+              "Value": [2]
+            },
+            {
+              "Description": "Charge loop",
+              "Value": [3]
+            },
+            {
+              "Description": "Low health idle",
+              "Value": [5]
+            },
+            {
+              "Description": "Defeated loop (face down)",
+              "Value": [8]
+            },
+            {
+              "Description": "Defeated in (face down)",
+              "Value": [9]
+            }
+          ]
         }
       ],
       "Properties": []
     },
     "40": {
       "Name": "Character face",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Select the face for the character",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the actor to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": [0]
+            },
+            {
+              "Description": "CPU",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Character partner",
+          "Type": "int",
+          "Description": "Enable the character partner associated with the actor",
+          "Values": [
+            {
+              "Description": "Disable",
+              "Value": [0]
+            },
+            {
+              "Description": "Enable",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Animation ID",
+          "Type": "int",
+          "Description": "Select the type of face animation",
+          "Values": [
+            {
+              "Description": "Sweat",
+              "Value": [2]
+            },
+            {
+              "Description": "Smile",
+              "Value": [4]
+            },
+            {
+              "Description": "Sweat and smile",
+              "Value": [6]
+            }
+          ]
+        }
+      ],
       "Properties": []
     },
     "44": {
