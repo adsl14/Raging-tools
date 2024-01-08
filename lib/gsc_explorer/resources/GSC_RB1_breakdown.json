@@ -678,67 +678,389 @@
     },
     "44": {
       "Name": "Move eyes",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Defines what character and how move eyes",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "48": {
       "Name": "Activate idle aura",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Activates or disable the idle aura of the character during cutscene",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the player or cpu to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": [0]
+            },
+            {
+              "Description": "CPU",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Enable partner",
+          "Type": "int",
+          "Description": "Enable the character partner",
+          "Values": [
+            {
+              "Description": "Enable main character",
+              "Value": [0]
+            },
+            {
+              "Description": "Enable partner character",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Enable aura",
+          "Type": "int",
+          "Description": "Enable or disable",
+          "Values": [
+            {
+              "Description": "Enable",
+              "Value": [1]
+            },
+            {
+              "Description": "Disable",
+              "Value": [0]
+            }
+          ]
+        }
+      ],
       "Properties": []
     },
     "49": {
       "Name": "Activate charge aura",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Activates or disable the charge aura of the character during cutscene",
+      "Parameters": [
+        {
+          "Name": "Actor ID",
+          "Type": "int",
+          "Description": "Select the player or cpu to apply changes",
+          "Values": [
+            {
+              "Description": "Player 1",
+              "Value": [0]
+            },
+            {
+              "Description": "CPU",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Enable partner",
+          "Type": "int",
+          "Description": "Enable the character partner",
+          "Values": [
+            {
+              "Description": "Enable main character",
+              "Value": [0]
+            },
+            {
+              "Description": "Enable partner character",
+              "Value": [1]
+            }
+          ]
+        },
+        {
+          "Name": "Enable aura",
+          "Type": "int",
+          "Description": "Enable or disable",
+          "Values": [
+            {
+              "Description": "Enable",
+              "Value": [1]
+            },
+            {
+              "Description": "Disable",
+              "Value": [0]
+            }
+          ]
+        }
+      ],
       "Properties": []
     },
     "52": {
       "Name": "Camera (start)",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Defines the position of the camera",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Position X",
+          "Type": "float",
+          "Description": "Move in X axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Position Y",
+          "Type": "float",
+          "Description": "Move in Y axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Position Z",
+          "Type": "float",
+          "Description": "Move in Z axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation X",
+          "Type": "float",
+          "Description": "Rotate in X axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Y",
+          "Type": "float",
+          "Description": "Rotate in Y axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotate in Z axis the camera",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "53": {
       "Name": "Camera (end)",
-      "Description": "",
-      "Parameters": [],
+      "Description": "Defines the final position of the camera. If you define 'Camera (start)', the camera will move from 'Camera (start)' point to 'Camera (end)' point",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Position X",
+          "Type": "float",
+          "Description": "Move in X axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Position Y",
+          "Type": "float",
+          "Description": "Move in Y axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Position Z",
+          "Type": "float",
+          "Description": "Move in Z axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation X",
+          "Type": "float",
+          "Description": "Rotate in X axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Y",
+          "Type": "float",
+          "Description": "Rotate in Y axis the camera",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotate in Z axis the camera",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "56": {
       "Name": "Fade out",
-      "Description": "",
-      "Parameters": [],
+      "Description": "White out transition between scenes",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "57": {
       "Name": "Fade in",
-      "Description": "",
-      "Parameters": [],
+      "Description": "White in transition between scenes",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "61": {
       "Name": "Apply Visual filter",
-      "Description": "",
-      "Parameters": [],
+      "Description": "It applies a filter to the scene",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "64": {
       "Name": "Apply visual speed effect",
-      "Description": "",
-      "Parameters": [],
+      "Description": "It applies a visual speed effect to the scene",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "67": {
       "Name": "Apply black effect",
-      "Description": "",
-      "Parameters": [],
+      "Description": "It applies the black background at top and bottom",
+      "Parameters": [
+        {
+          "Name": "Unknown",
+          "Type": "int",
+          "Description": "",
+          "Values": []
+        },
+        {
+          "Name": "Unknown",
+          "Type": "float",
+          "Description": "",
+          "Values": []
+        }
+      ],
       "Properties": []
     },
     "76": {
       "Name": "Cutscene mode",
-      "Description": "",
+      "Description": "Defines that the gsac will have cutscene functions",
       "Parameters": [],
       "Properties": []
     }
