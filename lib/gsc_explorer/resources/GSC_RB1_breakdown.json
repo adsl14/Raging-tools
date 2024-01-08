@@ -846,39 +846,39 @@
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position X",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the X axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position Y",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the Y axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position Z",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the Z axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Rotation Z",
           "Type": "float",
-          "Description": "",
+          "Description": "Rotates camera in Z axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Rotation X",
           "Type": "float",
-          "Description": "",
+          "Description": "Rotates camera in X axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Rotation Y",
           "Type": "float",
-          "Description": "",
+          "Description": "Rotates camera in Y axis",
           "Values": []
         }
       ],
@@ -889,15 +889,9 @@
       "Description": "Defines the final position of the camera. If you define 'Camera (start)', the camera will move from 'Camera (start)' point to 'Camera (end)' point",
       "Parameters": [
         {
-          "Name": "Unknown",
+          "Name": "Time",
           "Type": "float",
-          "Description": "",
-          "Values": []
-        },
-        {
-          "Name": "Unknown",
-          "Type": "int",
-          "Description": "",
+          "Description": "How much time the camera will take to move from one position to another",
           "Values": []
         },
         {
@@ -907,33 +901,39 @@
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position X",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the X axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position Y",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the Y axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Position Z",
           "Type": "float",
-          "Description": "",
+          "Description": "Move the camera to the Z axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Rotation Z",
           "Type": "float",
-          "Description": "",
+          "Description": "Rotates camera in Z axis",
           "Values": []
         },
         {
-          "Name": "Unknown",
+          "Name": "Rotation X",
           "Type": "float",
-          "Description": "",
+          "Description": "Rotates camera in X axis",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Y",
+          "Type": "float",
+          "Description": "Rotates camera in Y axis",
           "Values": []
         }
       ],
