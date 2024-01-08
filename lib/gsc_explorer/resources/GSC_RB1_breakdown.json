@@ -864,12 +864,6 @@
           "Values": []
         },
         {
-          "Name": "Rotation Z",
-          "Type": "float",
-          "Description": "Rotates camera in Z axis",
-          "Values": []
-        },
-        {
           "Name": "Rotation X",
           "Type": "float",
           "Description": "Rotates camera in X axis",
@@ -879,6 +873,12 @@
           "Name": "Rotation Y",
           "Type": "float",
           "Description": "Rotates camera in Y axis",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotates camera in Z axis",
           "Values": []
         }
       ],
@@ -919,12 +919,6 @@
           "Values": []
         },
         {
-          "Name": "Rotation Z",
-          "Type": "float",
-          "Description": "Rotates camera in Z axis",
-          "Values": []
-        },
-        {
           "Name": "Rotation X",
           "Type": "float",
           "Description": "Rotates camera in X axis",
@@ -934,6 +928,12 @@
           "Name": "Rotation Y",
           "Type": "float",
           "Description": "Rotates camera in Y axis",
+          "Values": []
+        },
+        {
+          "Name": "Rotation Z",
+          "Type": "float",
+          "Description": "Rotates camera in Z axis",
           "Values": []
         }
       ],
