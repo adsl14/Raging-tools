@@ -848,19 +848,19 @@
         {
           "Name": "Position X",
           "Type": "float",
-          "Description": "Move the camera to the X axis",
+          "Description": "Move the camera in X axis",
           "Values": []
         },
         {
           "Name": "Position Y",
           "Type": "float",
-          "Description": "Move the camera to the Y axis",
+          "Description": "Move the camera in Y axis",
           "Values": []
         },
         {
           "Name": "Position Z",
           "Type": "float",
-          "Description": "Move the camera to the Z axis",
+          "Description": "Move the camera in Z axis",
           "Values": []
         },
         {
@@ -903,19 +903,19 @@
         {
           "Name": "Position X",
           "Type": "float",
-          "Description": "Move the camera to the X axis",
+          "Description": "Move the camera in X axis",
           "Values": []
         },
         {
           "Name": "Position Y",
           "Type": "float",
-          "Description": "Move the camera to the Y axis",
+          "Description": "Move the camera in Y axis",
           "Values": []
         },
         {
           "Name": "Position Z",
           "Type": "float",
-          "Description": "Move the camera to the Z axis",
+          "Description": "Move the camera in Z axis",
           "Values": []
         },
         {
