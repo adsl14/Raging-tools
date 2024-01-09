@@ -8,8 +8,8 @@ It gathers several tools that were made previously, like [Vram Explorer](https:/
 
 Compatibility list
 ```
-Dragon Ball Raging Blast (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
-Dragon Ball Raging Blast 2 (PS3 and Xbox 360)
+Dragon Ball Raging Blast (PS3 and Xbox 360) -> Only Vram Explorer, Pak Explorer and Gsc Explorer
+Dragon Ball Raging Blast 2 (PS3 and Xbox 360) -> Except Gsc Explorer
 Dragon Ball Z Ultimate Tenkaichi (PS3 and Xbox 360) -> Only Vram Explorer and Pak Explorer
 Dragon Ball Z Zenkai Battle (uncompressed files) -> Only Vram Explorer and Pak Explorer
 ```
@@ -103,7 +103,7 @@ Select the format depending of the type of files that will be inside the pak fil
 Like the previous task, you can unpack or pack, a file or folder respectively, a single one or massivelly.
 
 <img src="images/utilities_tab_packer_unpack.jpg" alt="utilities_tab_packer_unpack" width="40%">
-<img src="images/utilities_tab_packer_pack.jpg" alt="utilities_tab_packer_unpack" width="36%">
+<img src="images/utilities_tab_packer_pack.jpg" alt="utilities_tab_packer_unpack" width="33.1%">
 
 ### Converter
 
@@ -114,13 +114,14 @@ and convert all of them, to the <i>JSON</i> format. The same goes if you want to
 to <i>SPA</i>
 
 <img src="images/utilities_tab_converter_spa.jpg" alt="utilities_tab_converter_spa" width="40%">
-<img src="images/utilities_tab_converter_json.jpg" alt="utilities_tab_converter_json" width="34%">
+<img src="images/utilities_tab_converter_json.jpg" alt="utilities_tab_converter_json" width="34.8%">
 
 ## Help
 
-In this tab you can check some guides that explain, in a more detail way,
+In this tab you can check some guides that will explain, in a more detail way,
 some specifications to take account in order to avoid crashes when running 
-the game in real hardware.
+the game in real hardware. There is also a guide of the functions used in the GSC files. It's recommended
+to check it in order to use those functions propertly.
 
 <img src="images/help_tab.jpg" alt="help_tab" width="30%">
 
@@ -266,3 +267,16 @@ In this tab you can edit the roster, by adding, removing or swapping characters 
 
 In order to use this tab, you have open the <i>cs_chip.zpak</i> located in <i>st_pack_progress_pt_ps3.afs and 
 st_pack_progress_pt_x360.afs (Raging Blast 2)</i>.
+
+## Gsc Explorer
+
+<img src="images/gsc_explorer_main.jpg" alt="gsc_explorer_image" width="50%">
+
+In this tab you can edit the gsc files from the story mode of Raging Blast 1.
+You can edit cameras, animations, stages, music, characters, etc
+
+In order to use this tab, you have open the <i>bc_voice_XYZ_lps_JP.zpak</i> (Where XYZ are generic numbers) 
+located in <i>st_pack_game_pt_ps3.afs and st_pack_game_pt_x360.afs (Raging Blast 1)</i>.
+
+<b>NOTE</b>: It's highly recommended to check in the <i>Help</i>, the web page <i>RB1 GSC Breakdown</i> in
+order to know each function meaning before attempting to edit the story mode.
