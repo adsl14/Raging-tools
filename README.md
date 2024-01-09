@@ -273,10 +273,12 @@ st_pack_progress_pt_x360.afs (Raging Blast 2)</i>.
 <img src="images/gsc_explorer_main.jpg" alt="gsc_explorer_image" width="50%">
 
 In this tab you can edit the gsc files from the story mode of Raging Blast 1.
-You can edit cameras, animations, stages, music, characters, etc
+You can edit the order of instructions, adding removing or editing cameras, 
+animations, stage, music, characters, etc
 
-In order to use this tab, you have open the <i>bc_voice_XYZ_lps_JP.zpak</i> (Where XYZ are generic numbers) 
-located in <i>st_pack_game_pt_ps3.afs and st_pack_game_pt_x360.afs (Raging Blast 1)</i>.
+In order to use this tab, you have open the <i>GSC-DBC-XYZ-000.gsc</i> (Where XYZ are generic numbers) 
+which is inside the file <i>bc_voice_XYZ_lps_JP.zpak</i>, located in <i>st_pack_game_pt_ps3.afs and 
+st_pack_game_pt_x360.afs (Raging Blast 1)</i>.
 
 <b>NOTE</b>: It's highly recommended to check in the <i>Help</i>, the web page <i>RB1 GSC Breakdown</i> in
 order to know each function meaning before attempting to edit the story mode.
