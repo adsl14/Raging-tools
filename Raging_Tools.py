@@ -1481,9 +1481,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setText(
             "<ul>"
             "<li><b>Raging tools 1.9</b> by "
-            "<a href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
+            "<a style=\'color: #b78620\' href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>The tutorial of how to work with the tool or get the source code, can be found here: "
-            "<a href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
+            "<a style=\'color: #b78620\' href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
             "</ul>")
         msg.exec()
 
@@ -1493,17 +1493,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowTitle("Credits")
         msg.setWindowIcon(self.ico_image)
         msg.setText('<ul>' 
-                    '<li>To <b>revelation (revel8n)</b> from <a href=https://forum.xentax.com>XeNTaX</a>'
+                    '<li>To <b>revelation (revel8n)</b> from <a style=\'color: #b78620\' href=https://forum.xentax.com>XeNTaX</a>'
                     ' forum who made the compress/uncompress tool <i>d'
                     'brb_compressor.exe</i> and for his contributions.</li>'
-                    '<li>To <b><a href=https://github.com/ascomods>Ascomods</a></b>, '
-                    '<b><a href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b>, '
-                    '<b><a href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b>, ' 
-                    '<b>316austin316</b>, <b><a href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>, ' 
-                    '<b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>, '
-                    '<b><a href=https://www.youtube.com/@KurayamiSaidai>Saidai</a></b>, '
-                    '<b><a href=https://www.youtube.com/@ViveTheModder>Vive</a></b> for their contributions.</li>'
-                    '<li>To the <a href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>'
+                    '<li>To <b><a style=\'color: #b78620\' href=https://github.com/ascomods>Ascomods</a></b>, '
+                    '<b><a style=\'color: #b78620\' href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b>, '
+                    '<b><a style=\'color: #b78620\' href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b>, ' 
+                    '<b>316austin316</b>, <b><a style=\'color: #b78620\' href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>, ' 
+                    '<b><a style=\'color: #b78620\' href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>, '
+                    '<b><a style=\'color: #b78620\' href=https://www.youtube.com/@KurayamiSaidai>Saidai</a></b>, '
+                    '<b><a style=\'color: #b78620\' href=https://www.youtube.com/@ViveTheModder>Vive</a></b> for their contributions.</li>'
+                    '<li>To the <a style=\'color: #b78620\' href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>'
                     '</ul>')
         msg.exec()
 
