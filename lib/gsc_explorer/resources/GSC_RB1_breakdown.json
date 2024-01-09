@@ -837,7 +837,7 @@
     },
     "52": {
       "Name": "Camera (start)",
-      "Description": "Defines the position of the camera",
+      "Description": "Defines the position of the camera and also the pivot where the camera is aiming",
       "Parameters": [
         {
           "Name": "Unknown",
@@ -846,39 +846,39 @@
           "Values": []
         },
         {
-          "Name": "Position X",
+          "Name": "Camera position X",
           "Type": "float",
           "Description": "Move the camera in X axis",
           "Values": []
         },
         {
-          "Name": "Position Y",
+          "Name": "Camera position Y",
           "Type": "float",
           "Description": "Move the camera in Y axis",
           "Values": []
         },
         {
-          "Name": "Position Z",
+          "Name": "Camera position Z",
           "Type": "float",
           "Description": "Move the camera in Z axis",
           "Values": []
         },
         {
-          "Name": "Rotation X",
+          "Name": "Pivot position X",
           "Type": "float",
-          "Description": "Rotates camera in X axis",
+          "Description": "Moves the pivot in X axis",
           "Values": []
         },
         {
-          "Name": "Rotation Y",
+          "Name": "Pivot position Y",
           "Type": "float",
-          "Description": "Rotates camera in Y axis",
+          "Description": "Moves the pivot in Y axis",
           "Values": []
         },
         {
-          "Name": "Rotation Z",
+          "Name": "Pivot position Z",
           "Type": "float",
-          "Description": "Rotates camera in Z axis",
+          "Description": "Moves the pivot in Z axis",
           "Values": []
         }
       ],
@@ -886,7 +886,7 @@
     },
     "53": {
       "Name": "Camera (end)",
-      "Description": "Defines the final position of the camera. If you define 'Camera (start)', the camera will move from 'Camera (start)' point to 'Camera (end)' point",
+      "Description": "Defines the final position of the camera and pivot. If you define also 'Camera (start)', the camera will move from 'Camera (start)' point to 'Camera (end)' point. The same with the pivot",
       "Parameters": [
         {
           "Name": "Time",
@@ -901,39 +901,39 @@
           "Values": []
         },
         {
-          "Name": "Position X",
+          "Name": "Camera position X",
           "Type": "float",
           "Description": "Move the camera in X axis",
           "Values": []
         },
         {
-          "Name": "Position Y",
+          "Name": "Camera position Y",
           "Type": "float",
           "Description": "Move the camera in Y axis",
           "Values": []
         },
         {
-          "Name": "Position Z",
+          "Name": "Camera position Z",
           "Type": "float",
           "Description": "Move the camera in Z axis",
           "Values": []
         },
         {
-          "Name": "Rotation X",
+          "Name": "Pivot position X",
           "Type": "float",
-          "Description": "Rotates camera in X axis",
+          "Description": "Moves the pivot in X axis",
           "Values": []
         },
         {
-          "Name": "Rotation Y",
+          "Name": "Pivot position Y",
           "Type": "float",
-          "Description": "Rotates camera in Y axis",
+          "Description": "Moves the pivot in Y axis",
           "Values": []
         },
         {
-          "Name": "Rotation Z",
+          "Name": "Pivot position Z",
           "Type": "float",
-          "Description": "Rotates camera in Z axis",
+          "Description": "Moves the pivot in Z axis",
           "Values": []
         }
       ],
