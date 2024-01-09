@@ -63,7 +63,7 @@ def action_import_2_logic(main_window):
         copyfile(path_new_file, path_original_file)
 
         # Changed background color in order to show that file has been changed
-        item.setBackground(QColor('#7fc97f'))
+        item.setBackground(QColor('#004D26'))
 
         # Change old path
         main_window.old_path_file = path_new_file

@@ -268,6 +268,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Icon
         self.ico_image = QtGui.QIcon("lib/design/Raging_Tools/Raging_Tools.ico")
 
+        # Dark theme
+        self.dark_theme_stylesheet = QtCore.QFile(os.path.join('lib', 'design', 'resources', 'stylesheet', 'Combinear.qss'))
+        if self.dark_theme_stylesheet.open(QtCore.QIODevice.ReadOnly):
+            self.dark_theme_stylesheet = self.dark_theme_stylesheet.readAll().data().decode()
+
         # File tab
         self.actionOpen.triggered.connect(self.action_open_logic)
         self.actionSave.triggered.connect(self.action_save_logic)
@@ -1513,5 +1518,9 @@ if __name__ == "__main__":
     window.selectCharaGscWindow.setWindowIcon(window.ico_image)
     window.MaterialChildEditorWindow.setWindowIcon(window.ico_image)
     window.progressBarWindow.setWindowIcon(window.ico_image)
+
+    # Load stylesheet
+    app.setStyleSheet(window.dark_theme_stylesheet)
+
     window.show()
     app.exec_()
