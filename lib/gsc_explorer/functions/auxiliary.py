@@ -224,11 +224,34 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
 
         outf.write("\t<title>Raging Blast 1 GSC breakdown</title>")
 
-        outf.write("\t<style>\n")
-        outf.write("\tbody {\n")
-        outf.write("\t\tbackground-color: #92a8d1;\n")
-        outf.write("\t}\n")
-        outf.write("\t</style>\n")
+        outf.write("\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"css/bootstrap.css\"/>\n")
+        outf.write("\t\t<link rel=\"stylesheet\" type=\"text/css\" href=\"css/style.css\"/>\n")
+        outf.write("\t\t<link rel=\"stylesheet\" href=\"https://fonts.googleapis.com/css?family=Open+Sans:400,700|Poppins:400,600,700&display=swap\"/>\n")
+
+        outf.write("\t\t<style>\n")
+
+        outf.write("\t\t\tbody {\n")
+        outf.write("\t\t\t\tcolor: #b5b5b5; background-color: #1b1b1b;\n")
+        outf.write("\t\t\t}\n")
+
+        outf.write("\t\t\tcode {\n")
+        outf.write("\t\t\t\tcolor: #b63e20;\n")
+        outf.write("\t\t\t}\n")
+
+        outf.write("\t\t\ta {\n")
+        outf.write("\t\t\t\tcolor: #b78620;\n")
+        outf.write("\t\t\t}\n")
+
+        outf.write("\t\t\ta:hover {\n")
+        outf.write("\t\t\t\tcolor: #5484e3;\n")
+        outf.write("\t\t\t}\n")
+
+        outf.write("\t\t\ta:visited {\n")
+        outf.write("\t\t\t\tcolor: #7f54e3;\n")
+        outf.write("\t\t\t}\n")
+
+        outf.write("\t\t</style>\n")
+
 
         outf.write("\t</head>\n")
 
