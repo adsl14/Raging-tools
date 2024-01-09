@@ -3189,7 +3189,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Raging Tools 1.9 - by adsl14"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Raging Tools 2.0 - by adsl14"))
         self.addButton.setText(_translate("MainWindow", "Add..."))
         self.exportAllButton.setText(_translate("MainWindow", "Export all..."))
         self.removeButton.setText(_translate("MainWindow", "Remove"))
