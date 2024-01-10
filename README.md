@@ -16,15 +16,16 @@ Dragon Ball Z Zenkai Battle (uncompressed files) -> Only Vram Explorer and Pak E
 
 Credits:
 <ul> 
-  <li>To <b>revelation (revel8n)</b> from <a href=https://forum.xentax.com>XeNTaX</a> forum who made the 
-compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</li>
-  <li>To <b><a href=https://github.com/ascomods>Ascomods</a></b>, 
-    <b><a href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b>,
-    <b><a href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b>, 
-    <b>316austin316</b>, <b><a href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>, 
-    <b><a href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>,
-    <b><a href=https://www.youtube.com/@KurayamiSaidai/videos>Saidai</a></b> for their contributions.</li>
-  <li>To the <a href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>
+    <li>To <b>revelation (revel8n)</b> from <a style='color: #b78620' href=https://forum.xentax.com>XeNTaX</a>
+forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i> and for his contributions.</li>
+    <li>To <b><a style='color: #b78620' href=https://github.com/ascomods>Ascomods</a></b>,
+    <b><a style='color: #b78620' href=https://www.youtube.com/c/HiroTenkaichi>HiroTex</a></b>,
+    <b><a style='color: #b78620' href=https://www.youtube.com/c/SamuelDBZMAM>SamuelDoesStuff</a></b>,
+    <b>316austin316</b>, <b><a style='color: #b78620' href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>,
+    <b><a style='color: #b78620' href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>,
+    <b><a style='color: #b78620' href=https://www.youtube.com/@KurayamiSaidai>Saidai</a></b>,
+    <b><a style='color: #b78620' href=https://www.youtube.com/@ViveTheModder>Vive</a></b> for their contributions.</li>
+    <li>To the <a style='color: #b78620' href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>
 </ul>
 
 ## Requisites
