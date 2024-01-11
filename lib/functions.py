@@ -56,14 +56,8 @@ def create_stpk_properties(main_window, num_pak_files):
 
         # vram/ioram
         if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
-            separator_size = 64
             unk0x0c = bytes.fromhex("00 00 00 80")
-            if num_pak_files > 1:
-                for i in range(1, num_pak_files):
-                    if i % 2 != 0:
-                        separator_size = separator_size - 48
-                    else:
-                        separator_size = separator_size + 80
+            separator_size = PEV.separator_sizes_ps3_vram_ioram[(num_pak_files-1) % 8]
         # Other and spr
         else:
             unk0x0c = bytes.fromhex("00 00 00 10")
