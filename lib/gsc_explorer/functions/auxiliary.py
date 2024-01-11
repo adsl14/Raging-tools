@@ -176,7 +176,7 @@ def get_pointer_data_info_name(event_instruction):
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
-        name = str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:].replace("\'", "")
+        name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:].replace("\'", "")
         found = False
         try:
             # Search the property inside each function
@@ -189,7 +189,7 @@ def get_pointer_data_info_name(event_instruction):
                 if found:
                     break
         except KeyError:
-            name = "Property " + name
+            pass
     return name
 
 
