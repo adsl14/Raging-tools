@@ -7,6 +7,7 @@
         {
           "Name": "t",
           "Description": "The gsac starts in cutscene mode.",
+          "Short-description": "",
           "Parameters": []
         }
       ]
@@ -25,6 +26,7 @@
         {
           "Name": "t",
           "Description": "The gsac starts in gameplay mode.",
+          "Short-description": "",
           "Parameters": [
             {
               "Name": "Condition ID",
@@ -143,6 +145,7 @@
         {
           "Name": "a",
           "Description": "Controls what is the following GSAC when enemy reach a certain amount of health",
+          "Short-description": "",
           "Parameters": [
             {
               "Name": "Health ID",
@@ -174,6 +177,7 @@
         {
           "Name": "v",
           "Description": "Controls audio and dialogue during gameplay (when player or cpu gets hurted)",
+          "Short-description": "",
           "Parameters": [
             {
               "Name": "Condition ID",
@@ -260,6 +264,7 @@
         {
           "Name": "p",
           "Description": "Following audio to reproduce",
+          "Short-description": "",
           "Parameters": [
             {
               "Name": "Audio ID",

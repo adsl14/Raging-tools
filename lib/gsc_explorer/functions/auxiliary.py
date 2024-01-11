@@ -176,8 +176,20 @@ def get_pointer_data_info_name(event_instruction):
             name = "Function " + str(event_instruction.secundary_number_of_pointers)
     # Properties "0x08"
     else:
-        name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:]
-
+        name = str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:].replace("\'", "")
+        found = False
+        try:
+            # Search the property inside each function
+            for function_name in GSCEV.gsc_breakdown_json:
+                for property_func in GSCEV.gsc_breakdown_json[function_name]["Properties"]:
+                    if property_func["Name"] == name and len(property_func["Parameters"]) == event_instruction.secundary_number_of_pointers:
+                        name = property_func["Short-description"] if property_func["Short-description"] != "" else "Property " + name
+                        found = True
+                        break
+                if found:
+                    break
+        except KeyError:
+            name = "Property " + name
     return name
 
 
@@ -252,7 +264,6 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
 
         outf.write("\t\t</style>\n")
 
-
         outf.write("\t</head>\n")
 
         outf.write("\t<body>\n")
@@ -310,7 +321,7 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 pointer_data_info.unk0x04 = b'\x00'
 
                 properties_html = properties_html + "\t\t\t<dt>" + properties["Name"] + " type (<code>" + "0x08" + \
-                    properties["Name"].encode("utf-8").hex() + '{:02x}'.format(num_parameters) + "00</code>)" + "</dt>\n"
+                    properties["Name"].encode("utf-8").hex() + '{:02x}'.format(num_parameters) + "00</code>) " + properties["Short-description"] + "</dt>\n"
                 properties_html = properties_html + "\t\t\t<dd>"
                 properties_html = properties_html + properties["Description"] + "</dd>\n"
                 parameters_html = write_parameters_in_html_and_functions_list(properties["Parameters"], pointer_data_info)
@@ -320,7 +331,7 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 properties_html = properties_html + parameters_html
 
                 # Add the property to the list
-                item = QStandardItem("Property " + properties["Name"])
+                item = QStandardItem("Property " + properties["Name"] if properties["Short-description"] == "" else properties["Short-description"])
                 item.setData(pointer_data_info)
                 item.setEditable(False)
                 main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)
