@@ -171,25 +171,28 @@ def get_pointer_data_info_name(event_instruction):
     # Function "0x01"
     if event_instruction.type == b'\x01':
         try:
-            name = GSCEV.gsc_breakdown_json[str(event_instruction.secundary_number_of_pointers)]["Name"]
+            name = GSCEV.gsc_breakdown_json[str(event_instruction.secundary_number_of_pointers)]["Name"] if GSCEV.gsc_breakdown_json[str(event_instruction.secundary_number_of_pointers)]["Name"] != \
+                                                                                                            "" else str(event_instruction.secundary_number_of_pointers)
         except KeyError:
-            name = "Function " + str(event_instruction.secundary_number_of_pointers)
+            name = str(event_instruction.secundary_number_of_pointers)
+        name = "Function " + name
     # Properties "0x08"
     else:
-        name = "Property " + str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:].replace("\'", "")
+        name = str(event_instruction.number_of_pointers.to_bytes(1, 'little'))[1:].replace("\'", "")
         found = False
         try:
             # Search the property inside each function
             for function_name in GSCEV.gsc_breakdown_json:
                 for property_func in GSCEV.gsc_breakdown_json[function_name]["Properties"]:
                     if property_func["Name"] == name and len(property_func["Parameters"]) == event_instruction.secundary_number_of_pointers:
-                        name = property_func["Short-description"] if property_func["Short-description"] != "" else "Property " + name
+                        name = property_func["Short-description"] if property_func["Short-description"] != "" else name
                         found = True
                         break
                 if found:
                     break
         except KeyError:
             pass
+        name = "Property " + name
     return name
 
 
@@ -282,8 +285,9 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
             pointer_data_info.secundary_number_of_pointers = int(function_id)
             pointer_data_info.unk0x04 = b'\x00'
 
-            outf.write("\t\t\t<li><a href=\"#FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</a></li>\n")
-            functions_html = functions_html + "\t\t<h2 id=\"FUNC_" + function_id + "\">" + gsc_breakdown_json[function_id]["Name"] + "</h2>\n"
+            name = gsc_breakdown_json[function_id]["Name"] if gsc_breakdown_json[function_id]["Name"] != "" else str(function_id)
+            outf.write("\t\t\t<li><a href=\"#FUNC_" + function_id + "\">" + name + "</a></li>\n")
+            functions_html = functions_html + "\t\t<h2 id=\"FUNC_" + function_id + "\">" + name + "</h2>\n"
             functions_html = functions_html + "\t\t<dl>\n"
 
             functions_html = functions_html + "\t\t\t<dt>Hex interpretation</dt>\n"
@@ -304,7 +308,7 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
             functions_html = functions_html + parameters_html + "\t\t</dl>\n"
 
             # Add the function to the list
-            item = QStandardItem(gsc_breakdown_json[function_id]["Name"])
+            item = QStandardItem("Function " + name)
             item.setData(pointer_data_info)
             item.setEditable(False)
             main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)
@@ -331,7 +335,9 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 properties_html = properties_html + parameters_html
 
                 # Add the property to the list
-                item = QStandardItem(properties["Short-description"] if properties["Short-description"] != "" else "Property " + properties["Name"])
+                name = properties["Short-description"] if properties["Short-description"] != "" else properties["Name"]
+                name = "Property " + name
+                item = QStandardItem(name)
                 item.setData(pointer_data_info)
                 item.setEditable(False)
                 main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)

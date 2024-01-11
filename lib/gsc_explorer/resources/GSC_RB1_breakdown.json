@@ -18,8 +18,14 @@
       "Parameters": [],
       "Properties": []
     },
+    "3": {
+      "Name": "",
+      "Description": "",
+      "Parameters": [],
+      "Properties": []
+    },
     "5": {
-      "Name": "Function 5",
+      "Name": "",
       "Description": "It defines how the gameplay starts",
       "Parameters": [],
       "Properties": [
@@ -138,7 +144,7 @@
       ]
     },
     "7": {
-      "Name": "Function 7",
+      "Name": "",
       "Description": "Load next GSAC",
       "Parameters": [],
       "Properties": [
