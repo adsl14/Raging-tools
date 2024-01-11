@@ -331,7 +331,7 @@ def create_gsc_rb1_list_html_list_add(main_window, file_export_path, gsc_breakdo
                 properties_html = properties_html + parameters_html
 
                 # Add the property to the list
-                item = QStandardItem("Property " + properties["Name"] if properties["Short-description"] == "" else properties["Short-description"])
+                item = QStandardItem(properties["Short-description"] if properties["Short-description"] != "" else "Property " + properties["Name"])
                 item.setData(pointer_data_info)
                 item.setEditable(False)
                 main_window.GSCFunctionUI.functions_properties_list_add.model().appendRow(item)
