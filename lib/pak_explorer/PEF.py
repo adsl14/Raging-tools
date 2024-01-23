@@ -494,7 +494,7 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
         data = file.read(4)
 
         # If data is STPK, means is a pak file that has inside multiple paks files
-        if data == b'STPK':
+        if data == PEV.STPK:
 
             # Create a folder with the name of the file that is already opened (main pak)
             # If is the main pak of all paks, it will create the folder in the temp folder
