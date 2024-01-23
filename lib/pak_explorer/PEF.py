@@ -418,15 +418,6 @@ class WorkerPef(QObject):
         # 2 is because the number of tasks (pack and compressing)
         sub_step_progress = self.step_progress_pack / 2
 
-        # Due to we have issues with the permissions in the SPTK file from  drb_compressor, we move the pak file
-        # to the folder 'old_pak', so we can create a new packed file
-        old_pak_folder = ""
-        if PEV.stpz_file:
-            old_pak_folder = os.path.join(PEV.temp_folder, "old_pak")
-            if not os.path.exists(old_pak_folder):
-                os.mkdir(old_pak_folder)
-            move(PEV.pak_file_path, os.path.join(old_pak_folder, os.path.basename(PEV.pak_file_path)))
-
         # Path where the folder with files are located
         folder_input = os.path.join(PEV.temp_folder, os.path.basename(PEV.pak_file_path).split(".")[0])
 
@@ -451,10 +442,6 @@ class WorkerPef(QObject):
         show_progress_value(self, sub_step_progress)
         # Disable read only
         os.chmod(self.path_output_file, stat.S_IWRITE)
-
-        # Remove the 'old_pak' folder
-        if PEV.stpz_file:
-            rmtree(old_pak_folder, onerror=del_rw)
 
         # Finish the thread
         self.finished.emit()
