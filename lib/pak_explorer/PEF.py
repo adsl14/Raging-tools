@@ -607,7 +607,7 @@ def pack(main_window, path_folder, path_output_file, filenames, num_filenames, n
 
                 # Get the original data and size
                 data_aux = file_pointer.read()
-                size_o = len(data_aux)
+                size_o = file_pointer.tell()
 
                 # Number of bytes in order to complete a 16 bytes line
                 result = size_o % 16
