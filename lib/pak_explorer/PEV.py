@@ -9,9 +9,13 @@ class PEV:
     STPK = b'STPK'
     stpz_file = False
 
-    # Pack flag accept/cancel
-    accept_button_pushed_pack_format_window = False
-    ps3_version = False
+    # dummy data
+    DUMMY = b'DUMM'
+    dummy_extension = ".dum"
+
+    # type pak file
+    TYPE = b'TYPE'
+    type_extension = ".typ"
 
     # List of number of bytes for padding (PS3 -> vram/ioram)
     separator_sizes_ps3_vram_ioram = [64, 16, 96, 48, 0, 80, 32, 112]
@@ -27,3 +31,10 @@ class PEV:
 
     # Total number of files in pak_explorer
     number_files = 0
+
+    # List of the Raging Blast series games that we will use it to ask the user for the compression structure
+    endianess_structure = ["Raging Blast 1 & 2", "Ultimate Tenkaichi"]
+
+    # Asking base message when we need to ask the user from differents options
+    message_endianess_structure = "Choose the compression structure:"
+    endianess_structure_result = []

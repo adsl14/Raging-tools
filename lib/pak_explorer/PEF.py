@@ -14,12 +14,11 @@ from lib.character_parameters_editor.classes.CameraCutscene import CameraCutscen
 from lib.character_parameters_editor.classes.CharacterInfo import CharacterInfo
 from lib.character_parameters_editor.classes.Slot import Slot
 from lib.functions import show_progress_value, del_rw, create_stpk_properties
-from lib.packages import rmtree, re, natsorted, move, os, stat, QLabel, QStandardItemModel
+from lib.packages import rmtree, re, natsorted, os, stat, QLabel, QStandardItemModel
 from lib.character_parameters_editor.CPEV import CPEV
 from lib.character_parameters_editor.classes.Character import Character
 from lib.pak_explorer.PEV import PEV
-from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic, accept_button_pack_format_logic, \
-    cancel_button_pack_format_logic
+from lib.pak_explorer.functions.action_logic import action_open_temp_folder_button_logic, action_export_all_2_logic, action_export_2_logic, action_import_2_logic
 
 
 # Step 1: Create a worker class
@@ -427,14 +426,13 @@ class WorkerPef(QObject):
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
         path_output_file = folder_input + ".pak"
         self.progressText.emit("Packing file...")
-        separator_size, separator, unk0x0c = create_stpk_properties(self.main_window, num_pak_files)
-        pack(self.main_window, folder_input, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c)
+        pack(self.main_window, folder_input, path_output_file, filenames, num_filenames, num_pak_files)
         show_progress_value(self, sub_step_progress)
 
         # Generate the final file for the game
         # Check endianess
         compressing_endian_format = ""
-        if self.main_window.packFormatUI.type_game.currentIndex() == 1:
+        if PEV.endianess_structure_result[0] == PEV.endianess_structure[1]:
             compressing_endian_format = "-ut"
         self.progressText.emit("Compressing file...")
         args = os.path.join(PEV.dbrb_compressor_path) + " \"" + path_output_file + "\" \"" + self.path_output_file + "\" \"" + compressing_endian_format + "\""
@@ -465,10 +463,6 @@ def initialize_pe(main_window):
     # Import button
     main_window.importButton_2.clicked.connect(lambda: action_import_2_logic(main_window))
 
-    # Load the Pack format window
-    main_window.packFormatUI.accept_pack_format.clicked.connect(lambda: accept_button_pack_format_logic(main_window))
-    main_window.packFormatUI.cancel_pack_format.clicked.connect(lambda: cancel_button_pack_format_logic(main_window))
-
     # Disable pak explorer tab
     main_window.pak_explorer.setEnabled(False)
 
@@ -496,9 +490,9 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
             os.mkdir(folder_path)
 
             # Get the number of subpak files that has the main pak file
-            file.seek(4, 1)
+            unk0x04 = file.read(4)
             num_files = int.from_bytes(file.read(4), byteorder="big")
-            file.seek(4, 1)
+            stpk_type = file.read(4)
 
             # Write each subpak file
             for i in range(0, num_files):
@@ -524,11 +518,41 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
                 with open(new_file_path, mode="wb") as output_file:
                     output_file.write(data)
 
+                # --- CREATING DUMMY DATA ----
+                if i+1 < num_files:
+                    # Get dummy size
+                    offset_dummy = file.tell()
+                    file.seek(offset_aux)
+                    offset = int.from_bytes(file.read(4), byteorder="big")
+                    dummy_size = offset - offset_dummy
+
+                    # Check number of bytes in order to complete a 16 bytes line. We're doing this since we don't really need all the dummy bytes in dummy file
+                    result = offset_dummy % 16
+                    if result != 0:
+                        num_bytes_mod_16 = 16 - result
+                    else:
+                        num_bytes_mod_16 = result
+                    dummy_size = dummy_size - num_bytes_mod_16
+
+                    if dummy_size > 0:
+                        dummy_file_path = os.path.join(folder_path, str(i) + ";" + name_splitted[0] + PEV.dummy_extension)
+                        with open(dummy_file_path, mode="wb") as output_dummy_file:
+                            output_dummy_file.write(PEV.DUMMY)
+                            for _ in range(0, dummy_size):
+                                output_dummy_file.write(b'\x00')
+
                 # Prepare the pointer of the main pak file for the next subpak file
                 file.seek(offset_aux)
 
                 # Call the function again
                 unpack(new_file_path, name_splitted[1], "", list_view_2, worker_pef)
+
+            # --- CREATING TYPE PAK ----
+            path_type_pak_file = os.path.join(path_file_without_basename, folder_name + PEV.type_extension)
+            with open(path_type_pak_file, mode='wb') as output_type_pak_file:
+                output_type_pak_file.write(PEV.TYPE)
+                output_type_pak_file.write(unk0x04)
+                output_type_pak_file.write(stpk_type)
 
         # means the pak file doesn't have subpak.
         else:
@@ -557,10 +581,11 @@ def unpack(path_file, extension, main_temp_folder, list_view_2, worker_pef):
             PEV.number_files += 1
 
 
-def pack(main_window, path_folder, path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c):
+def pack(main_window, path_folder, path_output_file, filenames, num_filenames, num_pak_files):
 
     # Create the headers and data vars
-    header_0 = b'STPK' + bytes.fromhex("00 00 00 01") + num_pak_files.to_bytes(4, 'big') + unk0x0c
+    unk0x04, stpk_type, separator_size, separator = create_stpk_properties(num_pak_files, path_folder)
+    header_0 = b'STPK' + unk0x04 + num_pak_files.to_bytes(4, 'big') + stpk_type
     header = b''
     data = b''
 
@@ -586,11 +611,16 @@ def pack(main_window, path_folder, path_output_file, filenames, num_filenames, n
             num_sub_filenames = len(sub_filenames)
             num_subpak_files = int(sub_filenames[-1].split(";")[0]) + 1
             sub_path_output_file = sub_folder_path + ".pak"
-            sub_separator_size, sub_separator, sub_unk0x0c = create_stpk_properties(main_window, num_subpak_files)
-            pack(main_window, sub_folder_path, sub_path_output_file, sub_filenames, num_sub_filenames, num_subpak_files, sub_separator_size, sub_separator, sub_unk0x0c)
+            pack(main_window, sub_folder_path, sub_path_output_file, sub_filenames, num_sub_filenames, num_subpak_files)
 
         else:
             with open(os.path.join(path_folder, filename), mode="rb") as file_pointer:
+
+                # Check if is a dummy or type file
+                data_header = file_pointer.read(4)
+                if data_header == PEV.DUMMY or data_header == PEV.TYPE:
+                    continue
+                file_pointer.seek(0)
 
                 # Get the original data and size
                 data_aux = file_pointer.read()
@@ -603,11 +633,22 @@ def pack(main_window, path_folder, path_output_file, filenames, num_filenames, n
                 else:
                     num_bytes_mod_16 = result
 
-                # Add the '00' to the end of data in order to append the full data to the pack file.
+                # Add the "00" to the end of data in order to append the full data to the pack file.
                 # Also, change the size
                 for j in range(0, num_bytes_mod_16):
                     data_aux = data_aux + bytes.fromhex("00")
                 size = size_o + num_bytes_mod_16
+
+                # --- READING DUMMY DATA ----
+                dummy_path = os.path.join(path_folder, filename.split(".")[0] + PEV.dummy_extension)
+                dummy_data = b''
+                if os.path.exists(dummy_path):
+                    with open(dummy_path, mode='rb') as dummy_input_file:
+                        data_header = dummy_input_file.read(4)
+                        if data_header == PEV.DUMMY:
+                            dummy_data = dummy_input_file.read()
+                            dummy_size = dummy_input_file.tell() - 4
+                            size = size + dummy_size
 
             # Calculate offset fot the subpak (the last var is because of the separator)
             offset = stpk_header_size + size_total_block_header_subpak + acumulated_sizes + separator_size
@@ -625,7 +666,7 @@ def pack(main_window, path_folder, path_output_file, filenames, num_filenames, n
                 filename = filename[:extra_bytes]
 
             header = header + offset.to_bytes(4, "big") + size_o.to_bytes(4, "big") + bytes.fromhex("00 00 00 00 00 00 00 00") + filename
-            data = data + data_aux
+            data = data + data_aux + dummy_data
 
     # Create the pak file
     pak_file = header_0 + header + separator + pak_file + data

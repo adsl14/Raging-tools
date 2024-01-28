@@ -17,81 +17,48 @@ def del_rw(name_method, path, error):
     return name_method, error
 
 
-def ask_pack_compression_structure(main_window, ask_packing_only=False, ask_compression_only=False):
+def create_stpk_properties(num_pak_files, path_folder):
 
-    # Ask the user the packing and compression format (separator between header and data)
-    PEV.accept_button_pushed_pack_format_window = False
-
-    if ask_packing_only:
-        main_window.packFormatUI.console_version.setEnabled(True)
-        main_window.packFormatUI.type_format_pack.setEnabled(True)
-        main_window.packFormatUI.type_game.setEnabled(False)
-        main_window.packFormatUI.console_version.setCurrentIndex(0)
-        main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
-    elif ask_compression_only:
-        main_window.packFormatUI.console_version.setEnabled(False)
-        main_window.packFormatUI.type_format_pack.setEnabled(False)
-        main_window.packFormatUI.type_game.setEnabled(True)
-        main_window.packFormatUI.type_game.setCurrentIndex(0)
-    else:
-        main_window.packFormatUI.console_version.setEnabled(True)
-        main_window.packFormatUI.type_format_pack.setEnabled(True)
-        main_window.packFormatUI.type_game.setEnabled(True)
-        main_window.packFormatUI.console_version.setCurrentIndex(0)
-        main_window.packFormatUI.type_format_pack.setCurrentIndex(0)
-        main_window.packFormatUI.type_game.setCurrentIndex(0)
-
-    main_window.packFormatWindow.activateWindow()
-    main_window.packFormatWindow.exec()
-
-
-def create_stpk_properties(main_window, num_pak_files):
-
+    # Create the headers and data vars
+    type_path = path_folder + PEV.type_extension
+    unk0x04 = b'\x00\x00\x00\x01'
+    stpk_type = b'\x00\x00\x00\x10'
     separator = b''
     separator_size = 0
 
-    # Calculate the separator size
-    # PS3
-    if main_window.packFormatUI.console_version.currentIndex() == 0:
+    # Check if the type pak file exists
+    if os.path.exists(type_path):
+        with open(type_path, mode='rb') as type_pak_input_file:
+            data_header = type_pak_input_file.read(4)
+            if data_header == PEV.TYPE:
+                unk0x04 = type_pak_input_file.read(4)
+                stpk_type = type_pak_input_file.read(4)
 
-        # vram/ioram
-        if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
-            unk0x0c = bytes.fromhex("00 00 00 80")
-            separator_size = PEV.separator_sizes_ps3_vram_ioram[(num_pak_files-1) % 8]
-        # Other and spr
-        else:
-            unk0x0c = bytes.fromhex("00 00 00 10")
-    # XBOX 360
-    else:
+    if unk0x04 != b'' and stpk_type != b'':
+        # vram/ioram (PS3)
+        if stpk_type == b'\x00\x00\x00\x80':
+            separator_size = PEV.separator_sizes_ps3_vram_ioram[(num_pak_files - 1) % 8]
+        # vram/ioram or Mix (XBOX 360)
+        elif stpk_type == b'\x00\x00\x10\x00' or stpk_type == b'\x00\x00\x08\x00':
+            total_reduce = (num_pak_files - 1) * 48
+            stpk_type_value = int.from_bytes(stpk_type, 'big')
 
-        # vram/ioram
-        if main_window.packFormatUI.type_format_pack.currentIndex() == 0:
-            separator_size = 4032
-            unk0x0c = bytes.fromhex("00 00 10 00")
-            if num_pak_files > 1:
-                for i in range(1, num_pak_files):
-                    separator_size = separator_size - 48
-        # Other
-        elif main_window.packFormatUI.type_format_pack.currentIndex() == 2:
-            separator_size = 1984
-            unk0x0c = bytes.fromhex("00 00 08 00")
-            if num_pak_files > 1:
-                for i in range(1, num_pak_files):
-                    separator_size = separator_size - 48
-
-                    # If the separator size is less than 0, we break the loop and assign the size to 0
-                    if separator_size < 0:
-                        separator_size = 0
-                        break
-        # spr
-        else:
-            unk0x0c = bytes.fromhex("00 00 00 10")
+            # If the value when calculating the separator is negative, we recalculate again
+            stpk_type_value_aux = stpk_type_value
+            count = 2
+            while True:
+                if stpk_type_value_aux < total_reduce:
+                    stpk_type_value_aux = stpk_type_value * count
+                    count = count + 1
+                else:
+                    break
+            separator_size = stpk_type_value_aux - 64 - total_reduce
 
     # Create the separator
     for _ in range(separator_size):
         separator = separator + bytes.fromhex("00")
 
-    return separator_size, separator, unk0x0c
+    return unk0x04, stpk_type, separator_size, separator
 
 
 def check_entry_module(entry, entry_size, module):
@@ -111,7 +78,7 @@ def get_name_from_file(file, offset):
     file.seek(offset)
     name = ""
 
-    # Read the file until we find the '00' byte value
+    # Read the file until we find the "00" byte value
     while True:
 
         # Read one char
@@ -137,7 +104,7 @@ def get_name_from_file(file, offset):
 
         # The texture name is already stored. We clean it
         else:
-            # Get the name splitted by '.'
+            # Get the name split by '.'
             name_splitted = name.split(".")
             tam_name_splitted = len(name_splitted)
             name = ""
@@ -176,7 +143,7 @@ def read_spa_file(spa_path):
         name_offset = file.read(4)
         spa_file.spa_header.unk0x08 = file.read(4)
 
-        # If there is data in the first 4 bytes which starts with b'\x00\x00\x00\x00
+        # If there is data in the first 4 bytes which starts with b'\x00\x00\x00\x00'
         # and the byte in position 8 to 12 is 5 (ID of is a spa maybe?) we continue reading
         if spa_file.spa_header.unk0x00 == b'\x00\x00\x00\x00' and spa_file.spa_header.unk0x08 == b'\x00\x00\x00\x05':
 

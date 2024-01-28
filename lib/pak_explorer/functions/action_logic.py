@@ -67,17 +67,3 @@ def action_import_2_logic(main_window):
 
         # Change old path
         main_window.old_path_file = path_new_file
-
-
-def accept_button_pack_format_logic(main_window):
-
-    PEV.accept_button_pushed_pack_format_window = True
-
-    main_window.packFormatWindow.close()
-
-
-def cancel_button_pack_format_logic(main_window):
-
-    PEV.accept_button_pushed_pack_format_window = False
-
-    main_window.packFormatWindow.close()

@@ -98,6 +98,14 @@ datetime of creation.
 <i>Packer</i> will unpack the files that are packed as a <i>.pak</i>, or pack a folder with files, creating a output
 as a <i>.pak</i> file.
 
+When unpacking, it will create a folder with all the files that the <i>pak</i> has within. For each
+<i>pak</i> file, it will create a <i>.typ</i> in order to store the type of pak file (if is
+a vram pak file, spr pak file, etc). This information will be used for packing, so it avoids crashes 
+in console. Also, for some data, it will create a <i>dummy</i> file with the extension <i>.dum</i> which have the
+necessary number of bytes for padding the correspond data when packing. This is important
+in order to make the <i>.pak</i> file compatible with console, so be awared of removing those if you 
+encounter one of them.
+
 When packing, it will ask you what format do you want to pack the file. 
 Select the format depending of the type of files that will be inside the pak file.
 

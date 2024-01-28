@@ -14,7 +14,6 @@ from lib.character_parameters_editor.functions.RE.signal_methods import initiali
 from lib.design.Raging_Tools.Raging_Tools import *
 from lib.design.gsc_functions_and_properties.gsc_functions_and_properties import GSC_RB1_selection
 from lib.design.material_children.material_children import Material_Child_Editor
-from lib.design.output_format.output_format import Output_Format
 from lib.design.progress_bar.progress_bar import Progress_Bar
 from lib.design.select_chara.select_chara import Select_Chara
 from lib.design.select_chara.select_chara_roster import Select_Chara_Roster
@@ -23,7 +22,7 @@ from lib.gsc_explorer import GSCEF
 from lib.gsc_explorer.GSCEV import GSCEV
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted, webbrowser
-from lib.functions import del_rw, ask_pack_compression_structure, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, create_stpk_properties
+from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -180,8 +179,7 @@ class WorkerMainWindow(QObject):
         filenames = natsorted(os.listdir(self.path_file), key=lambda y: y.lower())
         num_filenames = len(filenames)
         num_pak_files = int(filenames[-1].split(";")[0]) + 1
-        separator_size, separator, unk0x0c = create_stpk_properties(self.main_window, num_pak_files)
-        PEF.pack(self.main_window, self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files, separator_size, separator, unk0x0c)
+        PEF.pack(self.main_window, self.path_file, self.path_output_file, filenames, num_filenames, num_pak_files)
 
         show_progress_value(self, step_progress)
 
@@ -195,8 +193,10 @@ class WorkerMainWindow(QObject):
         self.end_progress = sub_step_progress
         for i in range(0, total_files):
             self.path_file = os.path.join(self.folder_path, path_files[i])
-            self.path_output_file = os.path.join(self.folder_output_path, path_files[i] + ".pak")
-            self.single_pack_file()
+            # Check if the file inside is a folder
+            if os.path.isdir(self.path_file):
+                self.path_output_file = os.path.join(self.folder_output_path, path_files[i] + ".pak")
+                self.single_pack_file()
 
         self.finished.emit()
 
@@ -326,10 +326,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.MaterialChildEditorWindow = QtWidgets.QDialog()
         self.MaterialChildEditorUI = Material_Child_Editor()
         self.MaterialChildEditorUI.setupUi(self.MaterialChildEditorWindow)
-        # Pack format window
-        self.packFormatWindow = QtWidgets.QDialog()
-        self.packFormatUI = Output_Format()
-        self.packFormatUI.setupUi(self.packFormatWindow)
         # Progress bar
         self.progressBarWindow = QtWidgets.QDialog()
         self.progressBarUI = Progress_Bar()
@@ -912,10 +908,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             if self.operate_character_xyz_m_frame.isEnabled():
 
                                 # Ask the user the packing format
-                                ask_pack_compression_structure(self)
+                                PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                                        PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
                                 # Save all the info (only if the user wants to)
-                                if PEV.accept_button_pushed_pack_format_window:
+                                if PEV.endianess_structure_result[1]:
                                     print("Writing values in the file...")
                                     self.run_save_operate_character_and_pack(path_output_file)
 
@@ -924,10 +921,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             elif self.general_parameters_frame.isEnabled() and GPV.character_list_edited:
 
                                 # Ask the user the packing format
-                                ask_pack_compression_structure(self)
+                                PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                                        PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
                                 # pack file (only if the user wants to)
-                                if PEV.accept_button_pushed_pack_format_window:
+                                if PEV.endianess_structure_result[1]:
                                     self.run_save_general_parameters_and_pack(path_output_file)
 
                             # --- cs_chip ---
@@ -935,10 +933,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                             elif self.cs_chip.isEnabled() and REV.slots_edited:
 
                                 # Ask the user the packing format
-                                ask_pack_compression_structure(self)
+                                PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                                        PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
-                                # Save all the info (only if the user wants to)
-                                if PEV.accept_button_pushed_pack_format_window:
+                                # pack file (only if the user wants to)
+                                if PEV.endianess_structure_result[1]:
                                     print("Writing values in the file...")
                                     self.run_save_cs_chip_and_pack(path_output_file)
 
@@ -953,20 +952,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         elif answer == msg.No:
 
                             # Ask the user the packing format
-                            ask_pack_compression_structure(self)
+                            PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                                    PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
                             # pack file (only if the user wants to)
-                            if PEV.accept_button_pushed_pack_format_window:
+                            if PEV.endianess_structure_result[1]:
                                 self.run_save_pe_to_data(path_output_file)
 
                 # We save the data from the 'pak explorer' tab
                 elif self.pak_explorer.isEnabled():
 
                     # Ask the user the packing format
-                    ask_pack_compression_structure(self)
+                    PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                            PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
                     # pack file (only if the user wants to)
-                    if PEV.accept_button_pushed_pack_format_window:
+                    if PEV.endianess_structure_result[1]:
                         self.run_save_pe_to_data(path_output_file)
                 else:
                     msg = QMessageBox()
@@ -1204,37 +1205,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if folder_import_path:
 
-            # Ask the user the packing format
-            ask_pack_compression_structure(self, ask_packing_only=True)
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = folder_import_path
+            self.worker.path_output_file = folder_import_path + ".pak"
+            self.worker.main_window = self
 
-            # pack file (only if the user wants to)
-            if PEV.accept_button_pushed_pack_format_window:
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.single_pack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
 
-                # Step 2: Create a QThread object
-                self.thread = QThread()
-                # Step 3: Create a worker object
-                self.worker = WorkerMainWindow()
-                # Step 4: Move worker to the thread
-                self.worker.moveToThread(self.thread)
-                # Step 5: Connect signals and slots
-                self.worker.path_file = folder_import_path
-                self.worker.path_output_file = folder_import_path + ".pak"
-                self.worker.main_window = self
-
-                self.worker.start_progress = 0.0
-                self.worker.end_progress = 100.0
-                self.thread.started.connect(self.worker.single_pack_file)
-                self.worker.finished.connect(self.thread.quit)
-                self.worker.finished.connect(self.worker.deleteLater)
-                self.thread.finished.connect(self.thread.deleteLater)
-                self.worker.progressValue.connect(self.report_progress_value)
-                self.worker.progressText.connect(self.report_progress_text)
-                # Step 6: Start the thread
-                self.progressBarWindow.show()
-                self.thread.start()
-
-                # Reset progressbar
-                self.reset_progress_bar()
+            # Reset progressbar
+            self.reset_progress_bar()
 
     def action_multiple_pack_logic(self):
 
@@ -1243,43 +1238,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if folder_import_path:
 
-            # Ask the user the packing format
-            ask_pack_compression_structure(self, ask_packing_only=True)
+            # Create output folder
+            folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
 
-            # pack file (only if the user wants to)
-            if PEV.accept_button_pushed_pack_format_window:
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.main_window = self
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.multiple_pack_file)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
 
-                # Create output folder
-                folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
-                # If exists, we remove everything inside and create the folder again
-                if os.path.exists(folder_output_path):
-                    shutil.rmtree(folder_output_path)
-                os.mkdir(folder_output_path)
-
-                # Step 2: Create a QThread object
-                self.thread = QThread()
-                # Step 3: Create a worker object
-                self.worker = WorkerMainWindow()
-                # Step 4: Move worker to the thread
-                self.worker.moveToThread(self.thread)
-                # Step 5: Connect signals and slots
-                self.worker.main_window = self
-                self.worker.folder_path = folder_import_path
-                self.worker.folder_output_path = folder_output_path
-                self.worker.start_progress = 0.0
-                self.worker.end_progress = 100.0
-                self.thread.started.connect(self.worker.multiple_pack_file)
-                self.worker.finished.connect(self.thread.quit)
-                self.worker.finished.connect(self.worker.deleteLater)
-                self.thread.finished.connect(self.thread.deleteLater)
-                self.worker.progressValue.connect(self.report_progress_value)
-                self.worker.progressText.connect(self.report_progress_text)
-                # Step 6: Start the thread
-                self.progressBarWindow.show()
-                self.thread.start()
-
-                # Reset progressbar
-                self.reset_progress_bar()
+            # Reset progressbar
+            self.reset_progress_bar()
 
     def action_single_encrypt_decrypt_logic(self):
 
@@ -1294,14 +1283,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             MainWindow.old_path_file = path_file
 
             # Ask the user the compression format (only when we're compressing)
-            PEV.accept_button_pushed_pack_format_window = True
+            PEV.endianess_structure_result = [PEV.endianess_structure[0], True]
             with open(path_file, mode='rb') as file:
                 file_tag = file.read(4)
                 if file_tag != b'STPZ':
-                    ask_pack_compression_structure(self, ask_compression_only=True)
+                    PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                            PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
             # encrypt or decrypt file (only if the user wants to)
-            if PEV.accept_button_pushed_pack_format_window:
+            if PEV.endianess_structure_result[1]:
                 # Step 2: Create a QThread object
                 self.thread = QThread()
                 # Step 3: Create a worker object
@@ -1327,7 +1317,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # Check endianess
                 self.worker.compressing_endian_format = ""
-                if self.packFormatUI.type_game.currentIndex() == 1:
+                if PEV.endianess_structure_result[0] == PEV.endianess_structure[1]:
                     self.worker.compressing_endian_format = "-ut"
 
                 self.worker.start_progress = 0.0
@@ -1352,11 +1342,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         if folder_import_path:
 
-            # Ask the user the compression format
-            ask_pack_compression_structure(self, ask_compression_only=True)
+            # Ask the user the packing format
+            PEV.endianess_structure_result = QInputDialog().getItem(self, "compression structure",
+                                                                    PEV.message_endianess_structure, PEV.endianess_structure, editable=False, current=0)
 
-            # encrypt or decrypt file (only if the user wants to)
-            if PEV.accept_button_pushed_pack_format_window:
+            # pack file (only if the user wants to)
+            if PEV.endianess_structure_result[1]:
 
                 # Create output folder
                 folder_output_path = folder_import_path + datetime.now().strftime("_%d-%m-%Y_%H-%M-%S")
@@ -1377,7 +1368,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
                 # Check endianess
                 self.worker.compressing_endian_format = ""
-                if self.packFormatUI.type_game.currentIndex() == 1:
+                if PEV.endianess_structure_result[0] == PEV.endianess_structure[1]:
                     self.worker.compressing_endian_format = "-ut"
 
                 self.worker.start_progress = 0.0
