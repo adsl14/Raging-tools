@@ -908,6 +908,8 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                                     # Modify the spa that is stored in the array memory
                                     animation_array[i][animation_type_index].spa_header = spa_file.spa_header
                                     animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].scne_entries = spa_file.scne_entries
+                                    animation_array[i][animation_type_index].camera_entries = spa_file.camera_entries
                                     animation_array[i][animation_type_index].size = spa_file.size
                                     animation_array[i][animation_type_index].modified = True
 
@@ -930,6 +932,8 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                                     # Modify the spa that is stored in the array memory
                                     animation_array[i][animation_type_index].spa_header = spa_file.spa_header
                                     animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].scne_entries = spa_file.scne_entries
+                                    animation_array[i][animation_type_index].camera_entries = spa_file.camera_entries
                                     animation_array[i][animation_type_index].size = spa_file.size
                                     animation_array[i][animation_type_index].modified = True
                                 else:
@@ -951,6 +955,8 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                                     # Modify the spa that is stored in the array memory
                                     animation_array[i][animation_type_index].spa_header = spa_file.spa_header
                                     animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                                    animation_array[i][animation_type_index].scne_entries = spa_file.scne_entries
+                                    animation_array[i][animation_type_index].camera_entries = spa_file.camera_entries
                                     animation_array[i][animation_type_index].size = spa_file.size
                                     animation_array[i][animation_type_index].modified = True
 
@@ -1021,6 +1027,8 @@ def import_animation(main_window, file_export_path, animation_array, animation_t
                             # Modify the spa that is stored in the array memory
                             animation_array[i][animation_type_index].spa_header = spa_file.spa_header
                             animation_array[i][animation_type_index].bone_entries = spa_file.bone_entries
+                            animation_array[i][animation_type_index].scne_entries = spa_file.scne_entries
+                            animation_array[i][animation_type_index].camera_entries = spa_file.camera_entries
                             animation_array[i][animation_type_index].size = spa_file.size
                             animation_array[i][animation_type_index].modified = True
 
