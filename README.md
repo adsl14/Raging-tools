@@ -24,7 +24,8 @@ forum who made the compress/uncompress tool <i>dbrb_compressor.exe</i> and for h
     <b>316austin316</b>, <b><a style='color: #b78620' href=https://twitter.com/SSJLVegeta>SSJLVegeta</a></b>,
     <b><a style='color: #b78620' href=https://www.youtube.com/channel/UC4fHq0fbRMtkcW8ImfQO0Ew>LBFury</a></b>,
     <b><a style='color: #b78620' href=https://www.youtube.com/@KurayamiSaidai>Saidai</a></b>,
-    <b><a style='color: #b78620' href=https://www.youtube.com/@ViveTheModder>Vive</a></b> for their contributions.</li>
+    <b><a style='color: #b78620' href=https://www.youtube.com/@ViveTheModder>Vive</a></b>
+    and <b>Geko</b> for their contributions.</li>
     <li>To the <a style='color: #b78620' href=https://discord.gg/nShbGxDQsx>Raging Blast Modding community</a>.</li>
 </ul>
 
