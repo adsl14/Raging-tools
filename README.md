@@ -83,7 +83,8 @@ an encryption or decryption, so there is no need to specify what you need to do.
 For the single file option, the tool will generate the output in the same path where the input is located. 
 When is a decryption, the output file will be <i>.pak</i>. 
 When is a encryption, it will ask you  what game format do you want
-the output (Ultimate Tenkaichi or Raging Blast series). After that, the file output will be written in <i>.zpak</i>.
+the output (Ultimate Tenkaichi or Raging Blast series). After that, 
+the file output will be written in <i>.zpak</i>.
 
 For the multiple files option, the tool will ask you the path of the 
 folder where the files you want to encrypt or decrypt and also the game format (if there is a file that needs a decryption,
@@ -107,8 +108,10 @@ necessary number of bytes for padding the correspond data when packing. This is 
 in order to make the <i>.pak</i> file compatible with console, so be awared of removing those if you 
 encounter one of them.
 
-When packing, it will ask you what format do you want to pack the file. 
-Select the format depending of the type of files that will be inside the pak file.
+When packing, it will pack each folder and the correspond <i>.typ</i> file in order to generate
+the pack file propertly, according to the structure define in the <i>.typ</i> file, avoiding crashes 
+in console. If the tool doesn't find the specific <i>.typ</i> file, it will generate
+the pack file with default structure values.
 
 Like the previous task, you can unpack or pack, a file or folder respectively, a single one or massivelly.
 
@@ -197,8 +200,8 @@ propertly. When the algorithm finishes, the tool will show the full path of the 
 
 You can export the files, import a new one, export all the files or open the folder where those files are located.
 
-When saving, it will ask you the format of the pak output file. To make it compatible with the console version, select
-the proper options according to the pak file you're editing.
+When saving, it will ask you what game format do you want  
+the output (Ultimate Tenkaichi or Raging Blast series).
 
 ## Character Parameters Editor
 
