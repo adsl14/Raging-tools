@@ -6,7 +6,7 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_animation_per_transformation_changed, on_amount_ki_fusion_changed, on_animation_per_fusion_changed, \
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
     on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic, action_export_signature_button_logic, \
-    action_import_signature_button_logic, on_name_text_changed, on_sub_name_text_changed
+    action_import_signature_button_logic, on_name_text_changed, on_sub_name_text_changed, on_blast_attack_name_and_description_pause_menu_changed, on_blast_attack_id_pause_menu_changed
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
@@ -186,6 +186,11 @@ def listen_events_logic(main_window, flag):
         # Set the text sub-name id for the character select character
         main_window.sub_name_value.valueChanged.connect(lambda: on_sub_name_text_changed(main_window))
 
+        # Set the text name and description for blast attack pause menu
+        main_window.blast_attack_id_value.currentIndexChanged.connect(lambda: on_blast_attack_id_pause_menu_changed(main_window))
+        main_window.blast_attack_name_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 0))
+        main_window.blast_attack_description_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 1))
+
     else:
         try:
             # Set the health
@@ -252,6 +257,11 @@ def listen_events_logic(main_window, flag):
             # Set the text sub-name id for the character select character
             main_window.sub_name_value.valueChanged.disconnect()
 
+            # Set the text name and description for blast attack pause menu
+            main_window.blast_attack_id_value.currentIndexChanged.disconnect()
+            main_window.blast_attack_name_id_value.valueChanged.disconnect()
+            main_window.blast_attack_description_id_value.valueChanged.disconnect()
+
         except TypeError:
             pass
 
@@ -275,6 +285,9 @@ def enable_disable_operate_resident_param_values(main_window, flag):
     # --- Character info values ---
     main_window.operate_parameters_frame.setEnabled(flag)
 
+    # --- Blast attack names in pause menu ---
+    main_window.move_list_blast_exp_table_frame.setEnabled(flag)
+
 
 def enable_disable_db_font_pad_ps3_values(main_window, flag):
     # db font pad values
@@ -286,7 +299,7 @@ def enable_disable_cs_main_values(main_window, flag):
     main_window.text_names_chara_frame.setEnabled(flag)
 
 
-def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
+def read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table):
     # --- character_inf ---
     # Health
     character.health = int.from_bytes(subpak_file_character_inf.read(4), byteorder='big')
@@ -398,6 +411,12 @@ def read_operate_resident_param(character, subpak_file_character_inf, subpak_fil
     subpak_file_skill.seek(4, 1)
     character.signature_values += subpak_file_skill.read(84)
 
+    # --- move_list_blast_exp_table ---
+    character.character_position_blast_pause_menu = subpak_file_move_list_blast_table.tell()
+    for i in range(0, 14):
+        character.blast_attacks_pause_menu_text.append([int.from_bytes(subpak_file_move_list_blast_table.read(2), byteorder='big'),
+                                                        int.from_bytes(subpak_file_move_list_blast_table.read(2), byteorder='big')])
+
 
 def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
     # --- resident_character_param ---
@@ -432,7 +451,7 @@ def read_cs_main(character, subpak_file_cs_main):
     subpak_file_cs_main.seek(68, os.SEEK_CUR)
 
 
-def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill):
+def write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table):
     # Move to the visual parameters character
     subpak_file_character_inf.seek(character.position_visual_parameters)
 
@@ -499,6 +518,12 @@ def write_operate_resident_param(character, subpak_file_character_inf, subpak_fi
     # Skip the following four bytes because it's just only the ID of the character
     subpak_file_skill.seek(4, 1)
     subpak_file_skill.write(character.signature_values[4:])
+
+    # --- move_list_blast_exp_table ---
+    subpak_file_move_list_blast_table.seek(character.character_position_blast_pause_menu)
+    for i in range(0, 14):
+        subpak_file_move_list_blast_table.write(character.blast_attacks_pause_menu_text[i][0].to_bytes(2, byteorder="big"))
+        subpak_file_move_list_blast_table.write(character.blast_attacks_pause_menu_text[i][1].to_bytes(2, byteorder="big"))
 
 
 def write_db_font_pad_ps3(character, subpak_file_resident_character_param):

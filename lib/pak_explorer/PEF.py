@@ -114,11 +114,15 @@ class WorkerPef(QObject):
             GPV.resident_character_inf_path = self.main_window.listView_2.model().item(3, 0).text()
             GPV.resident_transformer_i_path = self.main_window.listView_2.model().item(11, 0).text()
             GPV.resident_skill_path = self.main_window.listView_2.model().item(16, 0).text()
+            GPV.move_list_blast_exp_table_path = self.main_window.listView_2.model().item(367, 0).text()
             subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
             subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
             subpak_file_skill = open(GPV.resident_skill_path, mode="rb")
+            subpak_file_move_list_blast_table = open(GPV.move_list_blast_exp_table_path, mode="rb")
             # Moves to the position 4 in the skill file since there starts the information for the first character
             subpak_file_skill.seek(4)
+            # Moves to the position 16 in the blast attack pause menu file since there starts the information for the first character
+            subpak_file_move_list_blast_table.seek(16)
 
             # Read the data from the files and store the parameters
             sub_step_progress = step_progress / 100
@@ -135,14 +139,14 @@ class WorkerPef(QObject):
                 character.position_trans = i * GPV.sizeTrans
 
                 # Store the information in the object and append to a list
-                read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i,
-                                            subpak_file_skill)
+                read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table)
                 GPV.character_list.append(character)
 
             # Close the files
             subpak_file_character_inf.close()
             subpak_file_transformer_i.close()
             subpak_file_skill.close()
+            subpak_file_move_list_blast_table.close()
 
             # Initialize main roster
             self.initialize_character_slot_changer_signal.emit(self.main_window)
@@ -354,7 +358,7 @@ class WorkerPef(QObject):
             subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
             subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
             subpak_file_skill = open(GPV.resident_skill_path, mode="rb+")
-            subpak_file_skill.seek(4)
+            subpak_file_move_list_blast_table = open(GPV.move_list_blast_exp_table_path, mode="rb+")
 
             print("Writing values in the file...")
             # Change the transformations in the file
@@ -363,13 +367,13 @@ class WorkerPef(QObject):
                 show_progress_value(self, sub_step_progress)
 
                 # Save all the info for each character
-                write_operate_resident_param(character, subpak_file_character_inf,
-                                             subpak_file_transformer_i, subpak_file_skill)
+                write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table)
 
             # Close the files
             subpak_file_character_inf.close()
             subpak_file_transformer_i.close()
             subpak_file_skill.close()
+            subpak_file_move_list_blast_table.close()
 
         # --- db_font_pad_ps3 ---
         elif GPV.db_font_pad_XYZ_s_d:

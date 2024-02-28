@@ -28,6 +28,10 @@ class Character:
 		self.position_skill = 0
 		self.signature_values = b''
 
+		# Values for the file move_list_blast_exp_table_path
+		self.character_position_blast_pause_menu = 16
+		self.blast_attacks_pause_menu_text = [] * 14
+
 		# Values for the file db_font_pad_PS3_s.zpak
 		self.position_resident_character_param = 0
 		self.aura_type = 0

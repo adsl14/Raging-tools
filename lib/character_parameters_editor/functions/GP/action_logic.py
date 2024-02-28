@@ -232,6 +232,11 @@ def action_change_character(event, main_window, index=None):
             main_window.fusion4_animation_value.setCurrentIndex(main_window.fusion4_animation_value.findData
                                                                 (GPV.character_list[index].fusions_animation[3]))
 
+            # Show blast attack pause menu
+            main_window.blast_attack_id_value.setCurrentIndex(0)
+            main_window.blast_attack_name_id_value.setValue(GPV.character_list[index].blast_attacks_pause_menu_text[0][0])
+            main_window.blast_attack_description_id_value.setValue(GPV.character_list[index].blast_attacks_pause_menu_text[0][1])
+
         # The user has opened the file db_fond_pad
         elif GPV.db_font_pad_XYZ_s_d:
 
@@ -731,6 +736,36 @@ def on_sub_name_text_changed(main_window):
     else:
         value = main_window.sub_name_value.value()
     GPV.character_list[GPV.chara_selected].character_sub_name_text_id = value
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_blast_attack_id_pause_menu_changed(main_window):
+
+    # Disable functions
+    try:
+        main_window.blast_attack_name_id_value.valueChanged.disconnect()
+        main_window.blast_attack_description_id_value.valueChanged.disconnect()
+    except TypeError:
+        pass
+
+    main_window.blast_attack_name_id_value.setValue(GPV.character_list[GPV.chara_selected].blast_attacks_pause_menu_text[main_window.blast_attack_id_value.currentIndex()][0])
+    main_window.blast_attack_description_id_value.setValue(GPV.character_list[GPV.chara_selected].blast_attacks_pause_menu_text[main_window.blast_attack_id_value.currentIndex()][1])
+
+    # Enable functions again
+    main_window.blast_attack_name_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 0))
+    main_window.blast_attack_description_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 1))
+
+
+def on_blast_attack_name_and_description_pause_menu_changed(main_window, description):
+
+    if description:
+        value = main_window.blast_attack_description_id_value.value()
+    else:
+        value = main_window.blast_attack_name_id_value.value()
+    GPV.character_list[GPV.chara_selected].blast_attacks_pause_menu_text[main_window.blast_attack_id_value.currentIndex()][description] = value
 
     # If the character was edited before, we won't append the index to our array of characters edited once
     if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
