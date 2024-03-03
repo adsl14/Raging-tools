@@ -161,6 +161,10 @@ def initialize_buttons_events_operate_GP(main_window, character_zero):
     main_window.blast_attack_id_value.setCurrentIndex(0)
     main_window.blast_attack_name_id_value.setValue(character_zero.blast_attacks_pause_menu_text[0][0])
     main_window.blast_attack_description_id_value.setValue(character_zero.blast_attacks_pause_menu_text[0][1])
+
+    # Show blast attack in game
+    main_window.blast_attack_id_ingame_value.setCurrentIndex(0)
+    main_window.blast_attack_name_id_ingame_value.setValue(character_zero.blast_attacks_id_text_in_game[0])
     
     
 def enable_tabs_operate_GP(main_window):

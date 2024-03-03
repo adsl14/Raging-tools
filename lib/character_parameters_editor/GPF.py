@@ -6,7 +6,8 @@ from lib.character_parameters_editor.functions.GP.action_logic import action_cha
     on_animation_per_transformation_changed, on_amount_ki_fusion_changed, on_animation_per_fusion_changed, \
     on_aura_type_changed, action_edit_trans_fusion_slot, on_up_blast_attack_logic, on_p_blast_attack_logic, \
     on_l_blast_attack_logic, on_d_blast_attack_logic, on_r_blast_attack_logic, action_export_signature_button_logic, \
-    action_import_signature_button_logic, on_name_text_changed, on_sub_name_text_changed, on_blast_attack_name_and_description_pause_menu_changed, on_blast_attack_id_pause_menu_changed
+    action_import_signature_button_logic, on_name_text_changed, on_sub_name_text_changed, on_blast_attack_name_and_description_pause_menu_changed, on_blast_attack_id_pause_menu_changed, \
+    on_blast_attack_id_ingame_changed, on_blast_attack_name_ingame_changed
 from lib.packages import QLabel, QPixmap, functools, os, struct
 
 
@@ -191,6 +192,10 @@ def listen_events_logic(main_window, flag):
         main_window.blast_attack_name_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 0))
         main_window.blast_attack_description_id_value.valueChanged.connect(lambda: on_blast_attack_name_and_description_pause_menu_changed(main_window, 1))
 
+        # Set the text name for blast attack in game
+        main_window.blast_attack_id_ingame_value.currentIndexChanged.connect(lambda: on_blast_attack_id_ingame_changed(main_window))
+        main_window.blast_attack_name_id_ingame_value.valueChanged.connect(lambda: on_blast_attack_name_ingame_changed(main_window))
+
     else:
         try:
             # Set the health
@@ -261,6 +266,10 @@ def listen_events_logic(main_window, flag):
             main_window.blast_attack_id_value.currentIndexChanged.disconnect()
             main_window.blast_attack_name_id_value.valueChanged.disconnect()
             main_window.blast_attack_description_id_value.valueChanged.disconnect()
+
+            # Set the text name for blast attack in game
+            main_window.blast_attack_id_ingame_value.currentIndexChanged.disconnect()
+            main_window.blast_attack_name_id_ingame_value.valueChanged.disconnect()
 
         except TypeError:
             pass
@@ -418,6 +427,18 @@ def read_operate_resident_param(character, subpak_file_character_inf, subpak_fil
                                                         int.from_bytes(subpak_file_move_list_blast_table.read(2), byteorder='big')])
 
 
+def read_font_convert(subpak_file_font_convert):
+
+    while True:
+        data = subpak_file_font_convert.read(4)
+        if not data:
+            break
+        character_id = int.from_bytes(data, byteorder='big')
+        blast_attack_id = int.from_bytes(subpak_file_font_convert.read(4), byteorder='big')
+        blast_attack_id_text = int.from_bytes(subpak_file_font_convert.read(4), byteorder='big')
+        GPV.character_list[character_id].blast_attacks_id_text_in_game[blast_attack_id] = blast_attack_id_text
+
+
 def read_db_font_pad_ps3(character, subpak_file_resident_character_param):
     # --- resident_character_param ---
     # Aura type
@@ -524,6 +545,20 @@ def write_operate_resident_param(character, subpak_file_character_inf, subpak_fi
     for i in range(0, 14):
         subpak_file_move_list_blast_table.write(character.blast_attacks_pause_menu_text[i][0].to_bytes(2, byteorder="big"))
         subpak_file_move_list_blast_table.write(character.blast_attacks_pause_menu_text[i][1].to_bytes(2, byteorder="big"))
+
+
+def write_font_convert(subpak_file_font_convert):
+
+    # Loop in each character (write also the fictitious character)
+    for i in range(0, 101):
+        character = GPV.character_list[i]
+        # Loop in each blast attack stored
+        for j in range(0, 14):
+            # If a blast attack text id is greater or equal to 0, we will add the entry to the file
+            if character.blast_attacks_id_text_in_game[j] > -1:
+                subpak_file_font_convert.write(i.to_bytes(4, byteorder="big"))
+                subpak_file_font_convert.write(j.to_bytes(4, byteorder="big"))
+                subpak_file_font_convert.write(character.blast_attacks_id_text_in_game[j].to_bytes(4, byteorder="big"))
 
 
 def write_db_font_pad_ps3(character, subpak_file_resident_character_param):

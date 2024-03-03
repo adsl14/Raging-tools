@@ -5,7 +5,8 @@ from PyQt5.QtWidgets import QListView, QComboBox, QMainWindow, QWidget
 from lib.character_parameters_editor.IPV import IPV
 from lib.character_parameters_editor.REF import read_cs_chip_file, write_cs_chip_file
 from lib.character_parameters_editor.IPF import read_single_character_parameters, write_single_character_parameters
-from lib.character_parameters_editor.GPF import read_operate_resident_param, read_db_font_pad_ps3, write_db_font_pad_ps3, write_operate_resident_param, read_cs_main, write_cs_main
+from lib.character_parameters_editor.GPF import read_operate_resident_param, read_db_font_pad_ps3, write_db_font_pad_ps3, write_operate_resident_param, read_cs_main, write_cs_main, read_font_convert, \
+    write_font_convert
 from lib.character_parameters_editor.GPV import GPV
 from lib.character_parameters_editor.REV import REV
 from lib.character_parameters_editor.classes.Animation import Animation
@@ -114,10 +115,12 @@ class WorkerPef(QObject):
             GPV.resident_character_inf_path = self.main_window.listView_2.model().item(3, 0).text()
             GPV.resident_transformer_i_path = self.main_window.listView_2.model().item(11, 0).text()
             GPV.resident_skill_path = self.main_window.listView_2.model().item(16, 0).text()
+            GPV.font_convert_path = self.main_window.listView_2.model().item(34, 0).text()
             GPV.move_list_blast_exp_table_path = self.main_window.listView_2.model().item(367, 0).text()
             subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb")
             subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb")
             subpak_file_skill = open(GPV.resident_skill_path, mode="rb")
+            subpak_file_font_convert = open(GPV.font_convert_path, mode="rb")
             subpak_file_move_list_blast_table = open(GPV.move_list_blast_exp_table_path, mode="rb")
             # Moves to the position 4 in the skill file since there starts the information for the first character
             subpak_file_skill.seek(4)
@@ -142,10 +145,17 @@ class WorkerPef(QObject):
                 read_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table)
                 GPV.character_list.append(character)
 
+            # Store font_convert blast attacks id text in-game (we append a fictitious character since this file has a character ID of 100) after the loop block since we will
+            # create the file from scratch when saving
+            character = Character()
+            GPV.character_list.append(character)
+            read_font_convert(subpak_file_font_convert)
+
             # Close the files
             subpak_file_character_inf.close()
             subpak_file_transformer_i.close()
             subpak_file_skill.close()
+            subpak_file_font_convert.close()
             subpak_file_move_list_blast_table.close()
 
             # Initialize main roster
@@ -358,6 +368,7 @@ class WorkerPef(QObject):
             subpak_file_character_inf = open(GPV.resident_character_inf_path, mode="rb+")
             subpak_file_transformer_i = open(GPV.resident_transformer_i_path, mode="rb+")
             subpak_file_skill = open(GPV.resident_skill_path, mode="rb+")
+            subpak_file_font_convert = open(GPV.font_convert_path, mode="wb")
             subpak_file_move_list_blast_table = open(GPV.move_list_blast_exp_table_path, mode="rb+")
 
             print("Writing values in the file...")
@@ -369,10 +380,14 @@ class WorkerPef(QObject):
                 # Save all the info for each character
                 write_operate_resident_param(character, subpak_file_character_inf, subpak_file_transformer_i, subpak_file_skill, subpak_file_move_list_blast_table)
 
+            # Write from scratch the file entirely
+            write_font_convert(subpak_file_font_convert)
+
             # Close the files
             subpak_file_character_inf.close()
             subpak_file_transformer_i.close()
             subpak_file_skill.close()
+            subpak_file_font_convert.close()
             subpak_file_move_list_blast_table.close()
 
         # --- db_font_pad_ps3 ---

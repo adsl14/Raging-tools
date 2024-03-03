@@ -237,6 +237,10 @@ def action_change_character(event, main_window, index=None):
             main_window.blast_attack_name_id_value.setValue(GPV.character_list[index].blast_attacks_pause_menu_text[0][0])
             main_window.blast_attack_description_id_value.setValue(GPV.character_list[index].blast_attacks_pause_menu_text[0][1])
 
+            # Show blast attack in game
+            main_window.blast_attack_id_ingame_value.setCurrentIndex(0)
+            main_window.blast_attack_name_id_ingame_value.setValue(GPV.character_list[index].blast_attacks_id_text_in_game[0])
+
         # The user has opened the file db_fond_pad
         elif GPV.db_font_pad_XYZ_s_d:
 
@@ -761,11 +765,35 @@ def on_blast_attack_id_pause_menu_changed(main_window):
 
 def on_blast_attack_name_and_description_pause_menu_changed(main_window, description):
 
+    # Check if we're editing the ID text for the description of the blast attack or only the name
     if description:
         value = main_window.blast_attack_description_id_value.value()
     else:
         value = main_window.blast_attack_name_id_value.value()
     GPV.character_list[GPV.chara_selected].blast_attacks_pause_menu_text[main_window.blast_attack_id_value.currentIndex()][description] = value
+
+    # If the character was edited before, we won't append the index to our array of characters edited once
+    if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:
+        GPV.character_list_edited.append(GPV.character_list[GPV.chara_selected])
+
+
+def on_blast_attack_id_ingame_changed(main_window):
+
+    # Disable functions
+    try:
+        main_window.blast_attack_name_id_ingame_value.valueChanged.disconnect()
+    except TypeError:
+        pass
+
+    main_window.blast_attack_name_id_ingame_value.setValue(GPV.character_list[GPV.chara_selected].blast_attacks_id_text_in_game[main_window.blast_attack_id_ingame_value.currentIndex()])
+
+    # Enable functions again
+    main_window.blast_attack_name_id_ingame_value.valueChanged.connect(lambda: on_blast_attack_name_ingame_changed(main_window))
+
+
+def on_blast_attack_name_ingame_changed(main_window):
+
+    GPV.character_list[GPV.chara_selected].blast_attacks_id_text_in_game[main_window.blast_attack_id_ingame_value.currentIndex()] = main_window.blast_attack_name_id_ingame_value.value()
 
     # If the character was edited before, we won't append the index to our array of characters edited once
     if GPV.character_list[GPV.chara_selected] not in GPV.character_list_edited:

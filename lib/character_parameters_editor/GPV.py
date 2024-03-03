@@ -1,5 +1,3 @@
-
-
 class GPV:
 
     # Flag that will tell us if the user has loaded the operate_character_parameters or, db_font_pad_PS3_s_d and db_font_pad_X360_s_d
@@ -9,6 +7,7 @@ class GPV:
     resident_character_inf_path = ""
     resident_transformer_i_path = ""
     resident_skill_path = ""
+    font_convert_path = ""
     move_list_blast_exp_table_path = ""
     game_resident_character_param = ""
     cs_main_dat = ""

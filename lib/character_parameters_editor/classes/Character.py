@@ -28,6 +28,9 @@ class Character:
 		self.position_skill = 0
 		self.signature_values = b''
 
+		# Values for the file font_convert_path
+		self.blast_attacks_id_text_in_game = [-1] * 14
+
 		# Values for the file move_list_blast_exp_table_path
 		self.character_position_blast_pause_menu = 16
 		self.blast_attacks_pause_menu_text = [] * 14
