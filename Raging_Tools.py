@@ -10,7 +10,7 @@ from lib.character_parameters_editor.functions.GP.signal_methods import initiali
 from lib.character_parameters_editor.functions.IP.auxiliary import change_animation_bones_section, read_transformation_effect
 from lib.character_parameters_editor.functions.IP.signal_methods import add_array_of_animation, show_first_item_camera, set_blast_combo_box, show_first_item_blast, set_camera_type, \
     set_first_index_animation_type_value, set_character_info, enable_individual_parameters_tab
-from lib.character_parameters_editor.functions.RE.signal_methods import initialize_current_character_image_RE, delete_image_slot_RE, change_image_slot_RE, enable_tabs_RE
+from lib.character_parameters_editor.functions.RE.signal_methods import initialize_current_character_image_RE, delete_image_slot_RE, change_image_slot_RE, enable_tabs_RE, change_stylesheet_qlabel_slot_RE
 from lib.design.Raging_Tools.Raging_Tools import *
 from lib.design.gsc_functions_and_properties.gsc_functions_and_properties import GSC_RB1_selection
 from lib.design.material_children.material_children import Material_Child_Editor
@@ -467,6 +467,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.worker.initialize_current_character_image_RE_signal.connect(initialize_current_character_image_RE)
         self.worker.delete_image_slot_RE_signal.connect(delete_image_slot_RE)
         self.worker.change_image_slot_RE_signal.connect(change_image_slot_RE)
+        self.worker.change_stylesheet_qlabel_slot_RE_signal.connect(change_stylesheet_qlabel_slot_RE)
         self.worker.enable_tabs_RE_signal.connect(enable_tabs_RE)
 
         # Progress bar signals

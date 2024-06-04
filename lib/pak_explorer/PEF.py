@@ -55,6 +55,7 @@ class WorkerPef(QObject):
     initialize_current_character_image_RE_signal = pyqtSignal(QMainWindow)
     delete_image_slot_RE_signal = pyqtSignal(Slot)
     change_image_slot_RE_signal = pyqtSignal(Slot, str)
+    change_stylesheet_qlabel_slot_RE_signal = pyqtSignal(QLabel, str)
     enable_tabs_RE_signal = pyqtSignal(QMainWindow)
 
     finished = pyqtSignal()
@@ -270,14 +271,14 @@ class WorkerPef(QObject):
         # Check if the file is cs_chip
         elif data == CPEV.cs_chip:
 
-            # reset the values only if we activate again the roster editor tab
-            if not REV.roster_editor_first_activation:
+            # reset the values only if the user has interacted with the roster
+            if REV.slot_chara_selected != -1:
 
                 # Get the slot of the selected character and the slot of the selected transformation
                 slot_chara = REV.slots_characters[REV.slot_chara_selected]
-                slot_chara.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+                self.change_stylesheet_qlabel_slot_RE_signal.emit(slot_chara.qlabel_object, CPEV.styleSheetSelectSlotRoster)
                 slot_trans = REV.slots_transformations[REV.slot_trans_selected]
-                slot_trans.qlabel_object.setStyleSheet(CPEV.styleSheetSelectSlotRoster)
+                self.change_stylesheet_qlabel_slot_RE_signal.emit(slot_trans.qlabel_object, CPEV.styleSheetSelectSlotRoster)
 
                 # Reset only the background color for the slot that was selected before (selecting character in cyan, or
                 # selecting transformation in red)
@@ -286,13 +287,13 @@ class WorkerPef(QObject):
                     select_chara_roster_window_label = self.main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
                                                                                                             str(slot_chara.
                                                                                                                 chara_id))
-                    select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+                    self.change_stylesheet_qlabel_slot_RE_signal.emit(select_chara_roster_window_label, CPEV.styleSheetSlotRosterWindow)
                 else:
 
                     select_chara_roster_window_label = self.main_window.selectCharaRosterUI.frame.findChild(QLabel, "label_" +
                                                                                                             str(slot_trans.
                                                                                                                 chara_id))
-                    select_chara_roster_window_label.setStyleSheet(CPEV.styleSheetSlotRosterWindow)
+                    self.change_stylesheet_qlabel_slot_RE_signal.emit(select_chara_roster_window_label, CPEV.styleSheetSlotRosterWindow)
 
                 # Reset the rest of the vars
                 REV.slots_edited.clear()
@@ -301,8 +302,6 @@ class WorkerPef(QObject):
                 REV.slot_chara_selected = -1
                 REV.slot_trans_selected = -1
                 REV.selecting_character = True
-            else:
-                REV.roster_editor_first_activation = False
 
             # Read all the data from the files and store it in the global vars from REV.
             read_cs_chip_file(self, step_progress, self.main_window)

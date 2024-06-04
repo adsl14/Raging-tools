@@ -79,8 +79,9 @@ def read_cs_chip_file(worker_pef, step_progress, main_window):
                 worker_pef.progressText.emit("Reading character ID: " + str(i))
                 show_progress_value(worker_pef, sub_step_progress)
 
-                # get a slot object
+                # get a slot object and initialize
                 slot_character = REV.slots_characters[i]
+                slot_character.reset()
 
                 # Read the byte and store the values
                 data = file_cs_chip.read(1)
@@ -101,9 +102,6 @@ def read_cs_chip_file(worker_pef, step_progress, main_window):
                     # Deactivate the null slot image
                     image_name = ""
                     worker_pef.delete_image_slot_RE_signal.emit(slot_character)
-
-                    # Change to 101 so the ID is the same as noise image
-                    slot_character.chara_id = 101
 
                 # Change the image slot
                 worker_pef.change_image_slot_RE_signal.emit(slot_character, image_name)

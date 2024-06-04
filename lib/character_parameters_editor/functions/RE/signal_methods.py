@@ -9,12 +9,8 @@ from lib.character_parameters_editor.REV import REV
 def initialize_current_character_image_RE(main_window):
 
     main_window.portrait_2.setPixmap(QPixmap(""))
-    for i in range(0, REV.num_slots_characters):
-        slot = REV.slots_characters[i]
-        slot.reset()
     for i in range(0, REV.num_slots_transformations):
         slot = REV.slots_transformations[i]
-        slot.reset()
         slot.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, "chara_chips_101.bmp")))
 
 
@@ -25,6 +21,10 @@ def delete_image_slot_RE(slot_character):
 
 def change_image_slot_RE(slot_character, image_name):
     slot_character.qlabel_object.setPixmap(QPixmap(os.path.join(CPEV.path_small_images, image_name)))
+
+
+def change_stylesheet_qlabel_slot_RE(qlabel_slot_chara, style_name):
+    qlabel_slot_chara.setStyleSheet(style_name)
 
 
 def enable_tabs_RE(main_window):
@@ -47,6 +47,6 @@ def enable_tabs_RE(main_window):
     # Disable all the buttons (character parameters editor -> operate_character_XXX_m)
     if main_window.operate_character_xyz_m_frame.isEnabled():
         main_window.operate_character_xyz_m_frame.setEnabled(False)
-    # Disable all the buttons (character parameters editor -> cs_chip)
+    # Enable all the buttons (character parameters editor -> cs_chip)
     if not main_window.cs_chip.isEnabled():
         main_window.cs_chip.setEnabled(True)
