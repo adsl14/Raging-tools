@@ -125,13 +125,14 @@ def write_cs_chip_file(worker_pef, step_progress):
                 file_cs_chip.seek(slot.position_cs_chip)
                 file_cs_chip.write(slot.chara_id.to_bytes(1, byteorder="big"))
 
-                # Write in cs_form
-                file_cs_form.seek(slot.position_cs_form + 11)
-                file_cs_form.write(slot.num_transformations.to_bytes(1, byteorder="big"))
-                file_cs_form.write(b'\x00\x00\x00' + slot.chara_id.to_bytes(1, byteorder="big"))
+                # Write in cs_form only if we find the chara id from cs_chip in cs_form
+                if slot.position_cs_form != -1:
+                    file_cs_form.seek(slot.position_cs_form + 11)
+                    file_cs_form.write(slot.num_transformations.to_bytes(1, byteorder="big"))
+                    file_cs_form.write(b'\x00\x00\x00' + slot.chara_id.to_bytes(1, byteorder="big"))
 
-                for transformation in slot.transformations_id:
-                    if transformation != 101:
-                        file_cs_form.write(b'\x00\x00\x00' + transformation.to_bytes(1, byteorder="big"))
-                    else:
-                        file_cs_form.write(b'\xFF\xFF\xFF\xFF')
+                    for transformation in slot.transformations_id:
+                        if transformation != 101:
+                            file_cs_form.write(b'\x00\x00\x00' + transformation.to_bytes(1, byteorder="big"))
+                        else:
+                            file_cs_form.write(b'\xFF\xFF\xFF\xFF')

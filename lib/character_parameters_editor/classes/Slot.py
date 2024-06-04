@@ -7,7 +7,7 @@ class Slot:
         # Position in the file cs_form for a slot
         self.position_cs_form = -1
         # Number of transformations that has the slot
-        self.num_transformations = -1
+        self.num_transformations = 0
         # ID of the character
         self.chara_id = 101
         # ID for each transformation slot (101 is Noise image)
@@ -23,7 +23,7 @@ class Slot:
         # Position in the file cs_form for a slot
         self.position_cs_form = -1
         # Number of transformations that has the slot
-        self.num_transformations = -1
+        self.num_transformations = 0
         # ID of the character
         self.chara_id = 101
         # ID for each transformation slot (101 is Noise image)
