@@ -2,3 +2,4 @@ natsort==7.1.1
 numpy==1.21.1
 pyglet==2.0.5
 pyqt5==5.15.4
+pyqt5-sip==12.12.2
