@@ -132,7 +132,8 @@ to <i>SPA</i>
 
 ## Help
 
-In this tab you can check some guides that will explain, in a more detail way,
+In this tab you can check if there is a new version of the tool and 
+some guides that will explain, in a more detail way,
 some specifications to take account in order to avoid crashes when running 
 the game in real hardware. There is also a guide of the functions used in the GSC files. It's recommended
 to check it in order to use those functions propertly.
