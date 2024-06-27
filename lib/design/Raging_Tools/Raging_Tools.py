@@ -3232,6 +3232,8 @@ class Ui_MainWindow(object):
         self.actionTexturesSpec.setObjectName("actionTexturesSpec")
         self.actionGSC_RB1_functions = QtWidgets.QAction(MainWindow)
         self.actionGSC_RB1_functions.setObjectName("actionGSC_RB1_functions")
+        self.actionCheck_for_updates = QtWidgets.QAction(MainWindow)
+        self.actionCheck_for_updates.setObjectName("actionCheck_for_updates")
         self.menuFIle.addAction(self.actionOpen)
         self.menuFIle.addAction(self.actionSave)
         self.menuFIle.addSeparator()
@@ -3257,6 +3259,8 @@ class Ui_MainWindow(object):
         self.menuUtilities.addAction(self.menuCompressor.menuAction())
         self.menuUtilities.addAction(self.menuPacker.menuAction())
         self.menuUtilities.addAction(self.menuConverter.menuAction())
+        self.menuHelp.addAction(self.actionCheck_for_updates)
+        self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionTexturesSpec)
         self.menuHelp.addAction(self.actionGSC_RB1_functions)
         self.menubar.addAction(self.menuFIle.menuAction())
@@ -3896,6 +3900,7 @@ class Ui_MainWindow(object):
         self.actionAll_encrypt.setText(_translate("MainWindow", "All"))
         self.actionTexturesSpec.setText(_translate("MainWindow", "Textures spec"))
         self.actionGSC_RB1_functions.setText(_translate("MainWindow", "RB1 GSC breakdown"))
+        self.actionCheck_for_updates.setText(_translate("MainWindow", "Check for updates"))
 
 
 if __name__ == "__main__":

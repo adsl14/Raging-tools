@@ -10942,6 +10942,8 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionCheck_for_updates"/>
+    <addaction name="separator"/>
     <addaction name="actionTexturesSpec"/>
     <addaction name="actionGSC_RB1_functions"/>
    </widget>
@@ -11070,6 +11072,11 @@
   <action name="actionGSC_RB1_functions">
    <property name="text">
     <string>RB1 GSC breakdown</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>

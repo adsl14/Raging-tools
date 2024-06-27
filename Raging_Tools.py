@@ -22,7 +22,8 @@ from lib.gsc_explorer import GSCEF
 from lib.gsc_explorer.GSCEV import GSCEV
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted, webbrowser
-from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value
+from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, check_syntax_version, show_update_available_message, \
+    show_up_to_date_message
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -254,6 +255,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     old_path_file = ""
     # QIcon instance
     ico_image = None
+    # Message
+    enable_up_to_date_message = False
     # Extensions
     extension_zpak = "Zpack files (*.zpak)"
     extension_spr_vram = "Spr/Vram files (*._)"
@@ -294,6 +297,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionAll_encrypt_decrypt.triggered.connect(self.action_multiple_encrypt_decrypt_logic)
 
         # Help tab
+        self.actionCheck_for_updates.triggered.connect(self.action_check_for_updates_logic)
         self.actionTexturesSpec.triggered.connect(self.action_texture_spec_logic)
         self.actionGSC_RB1_functions.triggered.connect(self.action_GSC_RB1_functions_logic)
 
@@ -1387,6 +1391,48 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 # Reset progressbar
                 self.reset_progress_bar()
 
+    def action_check_for_updates_logic(self):
+
+        # Get current version from this tool
+        current_version = self.windowTitle().split(" ")[2]
+
+        # Get from GitHub the last tag release and write it in a file
+        os.system('git describe --tags --abbrev=0 > last_release_project.txt')
+        last_version = '0.0'
+        with open("last_release_project.txt", mode='r') as file_input:
+            last_version = file_input.read()[1:]
+
+        # Remove the file we have created before
+        if os.path.exists("last_release_project.text"):
+            os.remove("last_release_project.text")
+
+        last_version = '2.0.1'
+
+        # Check if the version string syntax is correct
+        current_version_splitted = current_version.split(".")
+        check_syntax_version(current_version_splitted)
+        last_version_splitted = last_version.split(".")
+        check_syntax_version(last_version_splitted)
+
+        # Check if the tool has an update
+        # Check first digit
+        if int(current_version_splitted[0]) == int(last_version_splitted[0]):
+            # Check second digit
+            if int(current_version_splitted[1]) == int(last_version_splitted[1]):
+                # Check third digit
+                if int(current_version_splitted[2]) < int(last_version_splitted[2]):
+                    show_update_available_message(self, current_version, last_version)
+                elif self.enable_up_to_date_message:
+                    show_up_to_date_message(self)
+            elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
+                show_update_available_message(self, current_version, last_version)
+            elif self.enable_up_to_date_message:
+                show_up_to_date_message(self)
+        elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
+            show_update_available_message(self, current_version, last_version)
+        elif self.enable_up_to_date_message:
+            show_up_to_date_message(self)
+
     def action_texture_spec_logic(self):
         msg = QMessageBox()
         msg.setTextFormat(1)
@@ -1472,7 +1518,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg.setWindowIcon(self.ico_image)
         msg.setText(
             "<ul>"
-            "<li><b>Raging tools 2.0</b> by "
+            "<li><b>Raging tools " + self.windowTitle().split(" ")[2] + "</b> by "
             "<a style=\'color: #b78620\' href=https://www.youtube.com/channel/UCkZajFypIgQL6mI6OZLEGXw>adsl14</a></li>"
             "<li>The tutorial of how to work with the tool or get the source code, can be found here: "
             "<a style=\'color: #b78620\' href=https://github.com/adsl14/Raging-tools>Raging tools GitHub page</a><li>"
@@ -1514,6 +1560,10 @@ if __name__ == "__main__":
 
     # Load stylesheet
     app.setStyleSheet(window.dark_theme_stylesheet)
+
+    # Check GitHub version
+    window.action_check_for_updates_logic()
+    window.enable_up_to_date_message = True
 
     window.show()
     app.exec_()

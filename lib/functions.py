@@ -1,6 +1,8 @@
 import json
 import struct
 
+from PyQt5.QtWidgets import QMessageBox
+
 from lib.character_parameters_editor.classes.BONE.BoneEntry import BoneEntry
 from lib.character_parameters_editor.classes.CAMERA.CameraEntry import CameraEntry
 from lib.character_parameters_editor.classes.SCNE.ScneEntry import ScneEntry
@@ -894,3 +896,40 @@ def show_progress_value(worker, step_progress):
 
     # Update start progress
     worker.start_progress = end_progress
+
+
+def check_syntax_version(version_splitted):
+
+    num_digits = len(version_splitted)
+
+    # Check if each char is a digit
+    for i in range(0, num_digits):
+        if not version_splitted[i].isdigit():
+            version_splitted[i] = '0'
+
+    # Check if we have a digit in each point
+    for _ in range(num_digits, 3):
+        version_splitted.append('0')
+
+
+def show_update_available_message(main_window, current_version, last_version):
+
+    msg = QMessageBox()
+    msg.setTextFormat(1)
+    msg.setWindowTitle("Update available")
+    msg.setWindowIcon(main_window.ico_image)
+    msg.setText('A new version of <i>Raging Tools</i> is available!<br><br>'
+                'Current version: <b>' + current_version + '</b><br>'
+                'Last version: <b>' + last_version + '</b><br><br>'
+                'Get the new release <b><a style=\'color: #b78620\' href=https://github.com/adsl14/Raging-tools/releases/tag/v' + last_version + '>here</a>!</b>')
+    msg.exec()
+
+
+def show_up_to_date_message(main_window):
+
+    msg = QMessageBox()
+    msg.setTextFormat(1)
+    msg.setWindowTitle("Version up to date")
+    msg.setWindowIcon(main_window.ico_image)
+    msg.setText('Your version is up to date!')
+    msg.exec()
