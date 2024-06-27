@@ -1082,8 +1082,8 @@ class WorkerVef(QObject):
             string_table_size += 1 + len(name)
 
             # Write the watermark
-            string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
-            string_table_size += 1 + len(VEV.watermark_message)
+            string_table += b'\x00' + (VEV.watermark_message + self.main_window.windowTitle().split(" ")[2]).encode('utf-8')
+            string_table_size += 1 + len(VEV.watermark_message + self.main_window.windowTitle().split(" ")[2])
 
             # Check if the entry_info, the module of 16 is 0
             entry_info, entry_info_size, padding_size = check_entry_module(entry_info, entry_info_size,
@@ -1116,8 +1116,8 @@ class WorkerVef(QObject):
                 string_table = input_spr_file.read(VEV.sprp_file.sprp_header.string_table_size)
                 string_table_size = VEV.sprp_file.sprp_header.string_table_size
                 # Write the watermark
-                string_table += b'\x00' + VEV.watermark_message.encode('utf-8')
-                string_table_size += 1 + len(VEV.watermark_message)
+                string_table += b'\x00' + (VEV.watermark_message + self.main_window.windowTitle().split(" ")[2]).encode('utf-8')
+                string_table_size += 1 + len(VEV.watermark_message + self.main_window.windowTitle().split(" ")[2])
                 # Check if the string_table_size, the module of 16 is 0
                 string_table, string_table_size, padding_size = check_entry_module(string_table,
                                                                                    string_table_size,
