@@ -46,6 +46,8 @@ pyqt5-sip 12.12.2
 ```
 You can install these packages by running ```pip install -r packages.txt```
   </li>
+  <li><i>Git</i>. If you're not sure if you have <i>Git</i> already installed in your computer, or you want to install it,
+  you can check it <b><a href=https://github.com/git-guides/install-git>here</a>.</b></li>
   <li>A graphic card that is compatible with OpenGL 4.0 or higher is required for <i>Vram Explorer</i>.
   If you're using an <b>Intel Graphic card</b>, make sure the version of the drivers is 21.20.16.4627 or higher, otherwise, <i> Vram Explorer </i> won't show any <i>dds</i> texture. 
   You can update Intel drivers <b><a href=https://www.intel.la/content/www/xl/es/support/detect.html>here</a></b>.</li>
