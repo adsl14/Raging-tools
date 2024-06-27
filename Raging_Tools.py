@@ -1403,8 +1403,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             last_version = file_input.read()[1:]
 
         # Remove the file we have created before
-        if os.path.exists("last_release_project.text"):
-            os.remove("last_release_project.text")
+        if os.path.exists("last_release_project.txt"):
+            os.remove("last_release_project.txt")
 
         # Check if the version string syntax is correct
         current_version_splitted = current_version.split(".")
