@@ -223,29 +223,31 @@ def action_remove_logic(main_window):
             # Update the index for the data_entry
             current_index_list_view = main_window.listView.selectionModel().currentIndex().row()
 
+            # Get the texture data
+            removed_sprp_data_entry = main_window.listView.model().item(current_index_list_view, 0).data()
+
             # Remove from the array of textures in the window list
             main_window.listView.model().removeRow(current_index_list_view)
 
             # Remove from the array of textures in the material section
             VEF.listen_events_logic(main_window, False)
-            current_index_material_texture_index = current_index_list_view + 1
 
             # Search the material layer that is using the texture removed to assign the empty offset one
             # in the material layer
-            name_offset_removed = main_window.textureVal.itemData(current_index_material_texture_index)
             for i in range(0, main_window.materialVal.count()):
                 mtrl_entry_data = main_window.materialVal.itemData(i)
                 for j in range(0, main_window.layerVal.count()):
                     layer = mtrl_entry_data.data_info.data.layers[j]
-                    if layer.source_name_offset == name_offset_removed:
+                    if layer.source_name_offset == removed_sprp_data_entry.data_info.name_offset:
                         layer.source_name_offset = 0
 
             # Remove the offset texture name from the texture material section
             # If the current texture selected in the combo box is the same index as the texture we're removing
             # we leave the combo box to be in the index 0
-            if main_window.textureVal.currentIndex() == current_index_material_texture_index:
+            if main_window.textureVal.itemData(main_window.textureVal.currentIndex()) == removed_sprp_data_entry.data_info.name_offset:
                 main_window.textureVal.setCurrentIndex(0)
-            main_window.textureVal.removeItem(current_index_material_texture_index)
+            # Search the texture we want to remove in the material texture section
+            main_window.textureVal.removeItem(main_window.textureVal.findData(removed_sprp_data_entry.data_info.name_offset))
             VEF.listen_events_logic(main_window, True)
 
             # Disable some the buttons if there won't be any more texture
@@ -493,11 +495,10 @@ def action_remove_material_logic(main_window):
             # Remove the offset material name from the model part material section
             # If the current material is selected in the combo box is the same index as the material we're removing
             # we leave the combo box to be in the index 0
-            if main_window.materialModelPartVal.currentIndex() == current_index_material_model+1:
+            if main_window.materialModelPartVal.itemData(main_window.materialModelPartVal.currentIndex()) == material_name_offset:
                 main_window.materialModelPartVal.setCurrentIndex(0)
 
-            main_window.materialModelPartVal.removeItem(current_index_material_model + 1)
-
+            main_window.materialModelPartVal.removeItem(main_window.materialModelPartVal.findData(material_name_offset))
             VEF.listen_events_logic(main_window, True)
 
 
