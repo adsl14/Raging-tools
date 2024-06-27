@@ -1406,8 +1406,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if os.path.exists("last_release_project.text"):
             os.remove("last_release_project.text")
 
-        last_version = '2.0.1'
-
         # Check if the version string syntax is correct
         current_version_splitted = current_version.split(".")
         check_syntax_version(current_version_splitted)
