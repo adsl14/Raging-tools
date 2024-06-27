@@ -1400,7 +1400,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         os.system('git describe --tags --abbrev=0 > last_release_project.txt')
         last_version = '0.0'
         with open("last_release_project.txt", mode='r') as file_input:
-            last_version = file_input.read()[1:]
+            last_version = file_input.read()[1:].replace('\n','')
 
         # Remove the file we have created before
         if os.path.exists("last_release_project.txt"):
