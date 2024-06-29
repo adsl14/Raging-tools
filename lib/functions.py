@@ -912,6 +912,45 @@ def check_syntax_version(version_splitted):
         version_splitted.append('0')
 
 
+def compare_version(main_window, last_version):
+
+    # Get current version from this tool
+    current_version = main_window.windowTitle().split(" ")[2]
+
+    # Check if we have retrieve the last version on git
+    if last_version != '':
+        # Check if the version string syntax is correct
+        current_version_splitted = current_version.split(".")
+        check_syntax_version(current_version_splitted)
+        last_version_splitted = last_version.split(".")
+        check_syntax_version(last_version_splitted)
+
+        # Check if the tool has an update
+        # Check first digit
+        if int(current_version_splitted[0]) == int(last_version_splitted[0]):
+            # Check second digit
+            if int(current_version_splitted[1]) == int(last_version_splitted[1]):
+                # Check third digit
+                if int(current_version_splitted[2]) < int(last_version_splitted[2]):
+                    show_update_available_message(main_window, current_version, last_version)
+                elif main_window.enable_up_to_date_message:
+                    show_up_to_date_message(main_window)
+            elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
+                show_update_available_message(main_window, current_version, last_version)
+            elif main_window.enable_up_to_date_message:
+                show_up_to_date_message(main_window)
+        elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
+            show_update_available_message(main_window, current_version, last_version)
+        elif main_window.enable_up_to_date_message:
+            show_up_to_date_message(main_window)
+    else:
+        show_version_checker_error_message(main_window)
+
+    # Only show the 'up to date' the second time this checker is running
+    if not main_window.enable_up_to_date_message:
+        main_window.enable_up_to_date_message = True
+
+
 def show_update_available_message(main_window, current_version, last_version):
 
     msg = QMessageBox()
