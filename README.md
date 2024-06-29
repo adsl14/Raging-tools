@@ -134,8 +134,9 @@ to <i>SPA</i>
 
 ## Help
 
-In this tab you can check if there is a new version of the tool and 
-some guides that will explain, in a more detail way,
+In this tab you can check if there is a new version of the tool (you need <i>Git</i> installed for this.
+You can check if you have <i>Git</i> installed <b><a href=https://github.com/git-guides/install-git>here</a></b>)
+and some guides that will explain, in a more detail way,
 some specifications to take account in order to avoid crashes when running 
 the game in real hardware. There is also a guide of the functions used in the GSC files. It's recommended
 to check it in order to use those functions propertly.
