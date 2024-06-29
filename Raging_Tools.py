@@ -262,7 +262,11 @@ class WorkerMainWindow(QObject):
         # Open the file where the last tag is stored
         if os.path.exists("packed-refs"):
             with open("packed-refs", mode='r') as file_input:
-                self.last_version = file_input.readlines()[-1].split("/")[-1][1:].replace("\n", "")
+                # Try if the file downloaded has a proper format
+                try:
+                    self.last_version = file_input.readlines()[-1].split("/")[-1][1:].replace("\n", "")
+                except IndexError:
+                    self.last_version = ''
             os.remove("packed-refs")
 
         # Show progress
