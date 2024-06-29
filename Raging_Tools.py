@@ -23,7 +23,7 @@ from lib.gsc_explorer.GSCEV import GSCEV
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted, webbrowser
 from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, check_syntax_version, show_update_available_message, \
-    show_up_to_date_message
+    show_up_to_date_message, show_version_checker_error_message
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -1398,38 +1398,42 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # Get from GitHub the last tag release and write it in a file
         os.system('git describe --tags --abbrev=0 > last_release_project.txt')
-        last_version = '0.0'
-        with open("last_release_project.txt", mode='r') as file_input:
-            last_version = file_input.read()[1:].replace('\n','')
 
-        # Remove the file we have created before
+        # Open the file and remove it after reading it
+        last_version = ''
         if os.path.exists("last_release_project.txt"):
+            with open("last_release_project.txt", mode='r') as file_input:
+                last_version = file_input.read()[1:].replace('\n', '')
             os.remove("last_release_project.txt")
 
-        # Check if the version string syntax is correct
-        current_version_splitted = current_version.split(".")
-        check_syntax_version(current_version_splitted)
-        last_version_splitted = last_version.split(".")
-        check_syntax_version(last_version_splitted)
+        # Check if we have retrieve the last version on git
+        if last_version != '':
+            # Check if the version string syntax is correct
+            current_version_splitted = current_version.split(".")
+            check_syntax_version(current_version_splitted)
+            last_version_splitted = last_version.split(".")
+            check_syntax_version(last_version_splitted)
 
-        # Check if the tool has an update
-        # Check first digit
-        if int(current_version_splitted[0]) == int(last_version_splitted[0]):
-            # Check second digit
-            if int(current_version_splitted[1]) == int(last_version_splitted[1]):
-                # Check third digit
-                if int(current_version_splitted[2]) < int(last_version_splitted[2]):
+            # Check if the tool has an update
+            # Check first digit
+            if int(current_version_splitted[0]) == int(last_version_splitted[0]):
+                # Check second digit
+                if int(current_version_splitted[1]) == int(last_version_splitted[1]):
+                    # Check third digit
+                    if int(current_version_splitted[2]) < int(last_version_splitted[2]):
+                        show_update_available_message(self, current_version, last_version)
+                    elif self.enable_up_to_date_message:
+                        show_up_to_date_message(self)
+                elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
                     show_update_available_message(self, current_version, last_version)
                 elif self.enable_up_to_date_message:
                     show_up_to_date_message(self)
-            elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
+            elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
                 show_update_available_message(self, current_version, last_version)
             elif self.enable_up_to_date_message:
                 show_up_to_date_message(self)
-        elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
-            show_update_available_message(self, current_version, last_version)
-        elif self.enable_up_to_date_message:
-            show_up_to_date_message(self)
+        else:
+            show_version_checker_error_message(self)
 
     def action_texture_spec_logic(self):
         msg = QMessageBox()

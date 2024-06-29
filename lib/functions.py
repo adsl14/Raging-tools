@@ -925,6 +925,17 @@ def show_update_available_message(main_window, current_version, last_version):
     msg.exec()
 
 
+def show_version_checker_error_message(main_window):
+
+    msg = QMessageBox()
+    msg.setTextFormat(1)
+    msg.setWindowTitle("Version checker error")
+    msg.setWindowIcon(main_window.ico_image)
+    msg.setText('We couldn\'t check the last version on GitHub. Did you check if you have <i>Git</i> installed? '
+                'You can check it <b><a style=\'color: #b78620\' href=https://github.com/git-guides/install-git>here</a></b>.')
+    msg.exec()
+
+
 def show_up_to_date_message(main_window):
 
     msg = QMessageBox()
