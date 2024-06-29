@@ -248,6 +248,66 @@ class WorkerMainWindow(QObject):
 
         self.finished.emit()
 
+    def check_update(self):
+
+        # Only 1 task
+        step_progress = self.end_progress
+
+        # Show text
+        self.progressText.emit("Checking updates... ")
+
+        # Get current version from this tool
+        current_version = self.main_window.windowTitle().split(" ")[2]
+
+        # Get from GitHub the last tag release and write it in a file
+        os.system('git ls-remote --tags --refs https://github.com/adsl14/Raging-tools.git > packed-refs')
+
+        # Open the file where the last tag is stored
+        last_version = ''
+        if os.path.exists("packed-refs"):
+            with open("packed-refs", mode='r') as file_input:
+                last_version = file_input.readlines()[-1].split("/")[-1][1:].replace("\n", "")
+            os.remove("packed-refs")
+
+        # Show progress
+        show_progress_value(self, step_progress)
+
+        # Check if we have retrieve the last version on git
+        if last_version != '':
+            # Check if the version string syntax is correct
+            current_version_splitted = current_version.split(".")
+            check_syntax_version(current_version_splitted)
+            last_version_splitted = last_version.split(".")
+            check_syntax_version(last_version_splitted)
+
+            # Check if the tool has an update
+            # Check first digit
+            if int(current_version_splitted[0]) == int(last_version_splitted[0]):
+                # Check second digit
+                if int(current_version_splitted[1]) == int(last_version_splitted[1]):
+                    # Check third digit
+                    if int(current_version_splitted[2]) < int(last_version_splitted[2]):
+                        show_update_available_message(self.main_window, current_version, last_version)
+                    elif self.main_window.enable_up_to_date_message:
+                        show_up_to_date_message(self.main_window)
+                elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
+                    show_update_available_message(self.main_window, current_version, last_version)
+                elif self.main_window.enable_up_to_date_message:
+                    show_up_to_date_message(self.main_window)
+            elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
+                show_update_available_message(self.main_window, current_version, last_version)
+            elif self.main_window.enable_up_to_date_message:
+                show_up_to_date_message(self.main_window)
+        else:
+            show_version_checker_error_message(self.main_window)
+
+        # Only show the 'up to date' the second time this checker is running
+        if not self.main_window.enable_up_to_date_message:
+            self.main_window.enable_up_to_date_message = True
+
+        # Finish the thread
+        self.finished.emit()
+
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
@@ -1393,47 +1453,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def action_check_for_updates_logic(self):
 
-        # Get current version from this tool
-        current_version = self.windowTitle().split(" ")[2]
+        # Step 2: Create a QThread object
+        self.thread = QThread()
+        # Step 3: Create a worker object
+        self.worker = WorkerMainWindow()
+        # Step 4: Move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # Step 5: Connect signals and slots
+        self.worker.main_window = self
 
-        # Get from GitHub the last tag release and write it in a file
-        os.system('git describe --tags --abbrev=0 > last_release_project.txt')
+        self.worker.start_progress = 0.0
+        self.worker.end_progress = 100.0
+        self.thread.started.connect(self.worker.check_update)
+        self.worker.finished.connect(self.thread.quit)
+        self.worker.finished.connect(self.worker.deleteLater)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.worker.progressValue.connect(self.report_progress_value)
+        self.worker.progressText.connect(self.report_progress_text)
+        # Step 6: Start the thread
+        self.progressBarWindow.show()
+        self.thread.start()
 
-        # Open the file and remove it after reading it
-        last_version = ''
-        if os.path.exists("last_release_project.txt"):
-            with open("last_release_project.txt", mode='r') as file_input:
-                last_version = file_input.read()[1:].replace('\n', '')
-            os.remove("last_release_project.txt")
-
-        # Check if we have retrieve the last version on git
-        if last_version != '':
-            # Check if the version string syntax is correct
-            current_version_splitted = current_version.split(".")
-            check_syntax_version(current_version_splitted)
-            last_version_splitted = last_version.split(".")
-            check_syntax_version(last_version_splitted)
-
-            # Check if the tool has an update
-            # Check first digit
-            if int(current_version_splitted[0]) == int(last_version_splitted[0]):
-                # Check second digit
-                if int(current_version_splitted[1]) == int(last_version_splitted[1]):
-                    # Check third digit
-                    if int(current_version_splitted[2]) < int(last_version_splitted[2]):
-                        show_update_available_message(self, current_version, last_version)
-                    elif self.enable_up_to_date_message:
-                        show_up_to_date_message(self)
-                elif int(current_version_splitted[1]) < int(last_version_splitted[1]):
-                    show_update_available_message(self, current_version, last_version)
-                elif self.enable_up_to_date_message:
-                    show_up_to_date_message(self)
-            elif int(current_version_splitted[0]) < int(last_version_splitted[0]):
-                show_update_available_message(self, current_version, last_version)
-            elif self.enable_up_to_date_message:
-                show_up_to_date_message(self)
-        else:
-            show_version_checker_error_message(self)
+        # Reset progressbar
+        self.reset_progress_bar()
 
     def action_texture_spec_logic(self):
         msg = QMessageBox()
@@ -1565,7 +1607,6 @@ if __name__ == "__main__":
 
     # Check GitHub version
     window.action_check_for_updates_logic()
-    window.enable_up_to_date_message = True
 
     window.show()
     app.exec_()
