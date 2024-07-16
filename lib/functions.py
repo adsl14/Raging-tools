@@ -330,25 +330,42 @@ def convert_afl_to_txt_file(worker, afl_path, txt_path, step_progress):
 
     # Read the data of the afl
     with open(afl_path, mode="rb") as file:
-        # Move to the point where the number of entries are located
-        file.seek(12, os.SEEK_CUR)
-        num_entries = int.from_bytes(file.read(4), "little")
+        unk0x00 = file.read(4)
+        unk0x04 = file.read(4)
+        unk0x08 = file.read(4)
+        # Check if is a valid AFL file
+        if unk0x00 == b'AFL\x00' and unk0x04 == b'\x01\x00\x00\x00' and unk0x08 == b'\xFF\xFF\xFF\xFF':
+            # Read number of files
+            num_entries = int.from_bytes(file.read(4), "little")
 
-        # Calculate the sub progress by using the number of entries
-        sub_step_progress = step_progress / num_entries
+            # Calculate the sub progress by using the number of entries
+            sub_step_progress = step_progress / num_entries
+        # AFL is corrupted
+        else:
+            num_entries = 0
+            sub_step_progress = step_progress
 
-        # Write each name in the txt file
+        # Write each name in the txt file. If the afl file is corrupted, we write an empty txt file
         with open(txt_path, mode="w") as output_file:
 
             # Get each name
-            for i in range(0, num_entries):
+            if num_entries > 0:
+                for i in range(0, num_entries - 1):
+                    entry_name = file.read(32).replace(b'\x00', b'').decode('utf-8')
+
+                    # Write the entry name in the txt file
+                    output_file.write(entry_name + "\n")
+
+                    # Show progress
+                    show_progress_value(worker, sub_step_progress)
+
                 entry_name = file.read(32).replace(b'\x00', b'').decode('utf-8')
 
-                # Write the entry name in the txt file
-                output_file.write(entry_name + "\n")
+                # Write the last entry name in the txt file
+                output_file.write(entry_name)
 
-                # Show progress
-                show_progress_value(worker, sub_step_progress)
+            # Show progress
+            show_progress_value(worker, sub_step_progress)
 
 
 def convert_txt_to_afl_file(worker, txt_path, afl_path, step_progress):
