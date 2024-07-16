@@ -326,6 +326,71 @@ def read_spa_file(spa_path):
     return spa_file
 
 
+def convert_afl_to_txt_file(worker, afl_path, txt_path, step_progress):
+
+    # Read the data of the afl
+    with open(afl_path, mode="rb") as file:
+        # Move to the point where the number of entries are located
+        file.seek(12, os.SEEK_CUR)
+        num_entries = int.from_bytes(file.read(4), "little")
+
+        # Calculate the sub progress by using the number of entries
+        sub_step_progress = step_progress / num_entries
+
+        # Write each name in the txt file
+        with open(txt_path, mode="w") as output_file:
+
+            # Get each name
+            for i in range(0, num_entries):
+                entry_name = file.read(32).replace(b'\x00', b'').decode('utf-8')
+
+                # Write the entry name in the txt file
+                output_file.write(entry_name + "\n")
+
+                # Show progress
+                show_progress_value(worker, sub_step_progress)
+
+
+def convert_txt_to_afl_file(worker, txt_path, afl_path, step_progress):
+
+    # Read the data of the txt
+    with open(txt_path, mode="r") as file:
+        # Get number of entries
+        num_entries = sum(1 for _ in file)
+
+        # Calculate the sub progress by using the number of entries
+        sub_step_progress = step_progress / num_entries
+
+        # Write each name in the txt file
+        file.seek(0)
+        header = b'AFL\x00' + b'\x01\x00\x00\x00' + b'\xFF\xFF\xFF\xFF' + num_entries.to_bytes(4, 'little')
+        data = b''
+        with open(afl_path, mode="wb") as output_file:
+
+            # Get each name
+            for i in range(0, num_entries):
+                entry_name = file.readline().replace("\n", "").encode('utf-8')
+
+                # The max number of char for the name is 32, but since some tools crashes when there is a char in position 32, instead we'll replace the last char as \x00.
+                # If the name entry is greater than 32, we will cut from the end to the start of the string, until we reach a number of 31 chars (we will give preference to the extension of the name)
+                name_size = len(entry_name)
+                if name_size > 31:
+                    entry_name = entry_name[name_size - 31:]
+                    name_size = 31
+
+                difference = 32 - name_size
+                for j in range(0, difference):
+                    entry_name = entry_name + b'\00'
+
+                # Write the entry name in the afl file
+                data = data + entry_name
+
+                # Show progress
+                show_progress_value(worker, sub_step_progress)
+
+            # Write output
+            output_file.write(header + data)
+
 def write_spa_file(spa_file):
 
     header_data = b''

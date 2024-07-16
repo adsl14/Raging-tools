@@ -123,14 +123,17 @@ Like the previous task, you can unpack or pack, a file or folder respectively, a
 
 ### Converter
 
-In this tab, you can convert the files to another format. The options are <i>SPA</i> and <i>JSON</i>
+In this tab, you can convert the files to another format. The options are <i>SPA</i>, <i>JSON</i>, 
+<i>AFL</i> and <i>TXT</i>
 
 You can convert a single <i>SPA</i> to a <JSON> file, or select a folder with some <i>SPA</i> files
 and convert all of them, to the <i>JSON</i> format. The same goes if you want to convert from <i>JSON</i>
-to <i>SPA</i>
+to <i>SPA</i>, or from <i>AFL</i> to <i>TXT</i> and vice-versa.
 
-<img src="images/utilities_tab_converter_spa.jpg" alt="utilities_tab_converter_spa" width="40%">
+<img src="images/utilities_tab_converter_spa.jpg" alt="utilities_tab_converter_spa" width="35.4%">
 <img src="images/utilities_tab_converter_json.jpg" alt="utilities_tab_converter_json" width="34.8%">
+<img src="images/utilities_tab_converter_afl.jpg" alt="utilities_tab_converter_afl" width="35.8%">
+<img src="images/utilities_tab_converter_txt.jpg" alt="utilities_tab_converter_txt" width="34.5%">
 
 ## Help
 

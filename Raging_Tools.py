@@ -22,7 +22,7 @@ from lib.gsc_explorer import GSCEF
 from lib.gsc_explorer.GSCEV import GSCEV
 from lib.gsc_explorer.functions.signal_methods import store_parameters_gsc_explorer
 from lib.packages import os, rmtree, QFileDialog, QMessageBox, stat, shutil, datetime, natsorted, webbrowser
-from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, compare_version
+from lib.functions import del_rw, read_spa_file, write_json_bone_file, read_json_bone_file, write_spa_file, show_progress_value, compare_version, convert_afl_to_txt_file, convert_txt_to_afl_file
 # vram explorer
 from lib.vram_explorer.VEV import VEV
 from lib.vram_explorer import VEF
@@ -115,6 +115,34 @@ class WorkerMainWindow(QObject):
         # Finish the thread
         self.finished.emit()
 
+    def convert_AFL_to_TXT(self):
+
+        # Show text
+        self.progressText.emit("Converting " + os.path.basename(self.path_file))
+
+        # Create the new output
+        output_path = os.path.join(os.path.dirname(self.path_output_file), os.path.basename(self.path_file).split(".")[0] + "." + "txt")
+
+        # Read afl and write each entry in the txt file
+        convert_afl_to_txt_file(self, self.path_file, output_path, self.end_progress)
+
+        # Finish the thread
+        self.finished.emit()
+
+    def convert_TXT_to_AFL(self):
+
+        # Show text
+        self.progressText.emit("Converting " + os.path.basename(self.path_file))
+
+        # Create the new output
+        output_path = os.path.join(os.path.dirname(self.path_output_file), os.path.basename(self.path_file).split(".")[0] + "." + "afl")
+
+        # Read afl and write each entry in the txt file
+        convert_txt_to_afl_file(self, self.path_file, output_path, self.end_progress)
+
+        # Finish the thread
+        self.finished.emit()
+
     def convert_multiple_SPA_to_multiple_JSON(self):
 
         path_files = os.listdir(self.folder_path)
@@ -138,6 +166,32 @@ class WorkerMainWindow(QObject):
             self.path_file = os.path.join(self.folder_path, path_files[i])
             self.path_output_file = os.path.join(self.folder_output_path, path_files[i])
             self.convert_JSON_to_SPA()
+
+        self.finished.emit()
+
+    def convert_multiple_AFL_to_multiple_TXT(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        sub_step_progress = self.end_progress / total_files
+        self.end_progress = sub_step_progress
+        for i in range(0, total_files):
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+            self.path_output_file = os.path.join(self.folder_output_path, path_files[i])
+            self.convert_AFL_to_TXT()
+
+        self.finished.emit()
+
+    def convert_multiple_TXT_to_multiple_AFL(self):
+
+        path_files = os.listdir(self.folder_path)
+        total_files = len(path_files)
+        sub_step_progress = self.end_progress / total_files
+        self.end_progress = sub_step_progress
+        for i in range(0, total_files):
+            self.path_file = os.path.join(self.folder_path, path_files[i])
+            self.path_output_file = os.path.join(self.folder_output_path, path_files[i])
+            self.convert_TXT_to_AFL()
 
         self.finished.emit()
 
@@ -312,8 +366,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # Converter
         self.actionto_JSON.triggered.connect(self.action_SPA_to_JSON_logic)
         self.actionto_SPA.triggered.connect(self.action_JSON_to_SPA_logic)
+        self.actionto_TXT.triggered.connect(self.action_AFL_to_TXT_logic)
+        self.actionto_AFL.triggered.connect(self.action_TXT_to_AFL_logic)
         self.actionto_multiple_JSON.triggered.connect(self.action_multiple_SPA_to_multiple_JSON_logic)
         self.actionto_multiple_SPA.triggered.connect(self.action_multiple_JSON_to_multiple_SPA_logic)
+        self.actionto_multiple_TXT.triggered.connect(self.action_multiple_AFL_to_multiple_TXT_logic)
+        self.actionto_multiple_AFL.triggered.connect(self.action_multiple_TXT_to_multiple_AFL_logic)
         # Packer
         self.actionSingle_pack.triggered.connect(self.action_single_pack_logic)
         self.actionAll_pack.triggered.connect(self.action_multiple_pack_logic)
@@ -1081,6 +1139,74 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # Reset progressbar
             self.reset_progress_bar()
 
+    def action_AFL_to_TXT_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self, "Open afl file", MainWindow.old_path_file, "afl file (*.afl)")[0]
+
+        if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = path_file
+            self.worker.path_output_file = path_file
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_AFL_to_TXT)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_TXT_to_AFL_logic(self):
+
+        # Open the file
+        path_file = QFileDialog.getOpenFileName(self, "Open txt file", MainWindow.old_path_file, "text file (*.txt)")[0]
+
+        if os.path.exists(path_file):
+
+            # Save the path_file to our aux var old_path_file
+            MainWindow.old_path_file = path_file
+
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.path_file = path_file
+            self.worker.path_output_file = path_file
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_TXT_to_AFL)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
     def action_multiple_SPA_to_multiple_JSON_logic(self):
 
         # Ask the user from where to import the files into the tool
@@ -1144,6 +1270,80 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.worker.start_progress = 0.0
             self.worker.end_progress = 100.0
             self.thread.started.connect(self.worker.convert_multiple_JSON_to_multiple_SPA)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_AFL_to_multiple_TXT_logic(self):
+
+        # Ask the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where afl files are located")
+
+        if folder_import_path:
+
+            # Create output folder
+            folder_output_path = folder_import_path + "_" + "txt"
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_multiple_AFL_to_multiple_TXT)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.worker.progressValue.connect(self.report_progress_value)
+            self.worker.progressText.connect(self.report_progress_text)
+            # Step 6: Start the thread
+            self.progressBarWindow.show()
+            self.thread.start()
+
+            # Reset progressbar
+            self.reset_progress_bar()
+
+    def action_multiple_TXT_to_multiple_AFL_logic(self):
+
+        # Ask the user from where to import the files into the tool
+        folder_import_path = QFileDialog.getExistingDirectory(self, "Folder where txt files are located")
+
+        if folder_import_path:
+
+            # Create output folder
+            folder_output_path = folder_import_path + "_" + "afl"
+            # If exists, we remove everything inside and create the folder again
+            if os.path.exists(folder_output_path):
+                shutil.rmtree(folder_output_path)
+            os.mkdir(folder_output_path)
+            # Step 2: Create a QThread object
+            self.thread = QThread()
+            # Step 3: Create a worker object
+            self.worker = WorkerMainWindow()
+            # Step 4: Move worker to the thread
+            self.worker.moveToThread(self.thread)
+            # Step 5: Connect signals and slots
+            self.worker.folder_path = folder_import_path
+            self.worker.folder_output_path = folder_output_path
+            self.worker.start_progress = 0.0
+            self.worker.end_progress = 100.0
+            self.thread.started.connect(self.worker.convert_multiple_TXT_to_multiple_AFL)
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)

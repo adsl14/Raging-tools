@@ -10897,8 +10897,24 @@
       <addaction name="actionto_SPA"/>
       <addaction name="actionto_multiple_SPA"/>
      </widget>
+     <widget class="QMenu" name="menuAFL">
+      <property name="title">
+       <string>AFL</string>
+      </property>
+      <addaction name="actionto_TXT"/>
+      <addaction name="actionto_multiple_TXT"/>
+     </widget>
+     <widget class="QMenu" name="menuTXT">
+      <property name="title">
+       <string>TXT</string>
+      </property>
+      <addaction name="actionto_AFL"/>
+      <addaction name="actionto_multiple_AFL"/>
+     </widget>
      <addaction name="menuSPA"/>
      <addaction name="menuJSON"/>
+     <addaction name="menuAFL"/>
+     <addaction name="menuTXT"/>
     </widget>
     <widget class="QMenu" name="menuPacker">
      <property name="title">
@@ -11077,6 +11093,26 @@
   <action name="actionCheck_for_updates">
    <property name="text">
     <string>Check for updates</string>
+   </property>
+  </action>
+  <action name="actionto_TXT">
+   <property name="text">
+    <string>to TXT</string>
+   </property>
+  </action>
+  <action name="actionto_multiple_TXT">
+   <property name="text">
+    <string>to multiple TXT</string>
+   </property>
+  </action>
+  <action name="actionto_AFL">
+   <property name="text">
+    <string>to AFL</string>
+   </property>
+  </action>
+  <action name="actionto_multiple_AFL">
+   <property name="text">
+    <string>to multiple AFL</string>
    </property>
   </action>
  </widget>
