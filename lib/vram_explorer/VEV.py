@@ -27,14 +27,17 @@ class VEV:
     vram_separator_16 = b''
     vram_separator_32 = b''
     vram_separator_48 = b''
+    vram_separator_64 = b''
     vram_separator_80 = b''
     for i in range(0, 80):
-        if i < 48:
-            vram_separator_48 += b'\x00'
-            if i < 32:
-                vram_separator_32 += b'\x00'
-                if i < 16:
-                    vram_separator_16 += b'\x00'
+        if i < 64:
+            vram_separator_64 += b'\x00'
+            if i < 48:
+                vram_separator_48 += b'\x00'
+                if i < 32:
+                    vram_separator_32 += b'\x00'
+                    if i < 16:
+                        vram_separator_16 += b'\x00'
         vram_separator_80 += b'\x00'
 
     # Sizes for the material
