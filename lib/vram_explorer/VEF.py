@@ -1400,6 +1400,24 @@ def open_spr_file(worker_vef, end_progress, main_window, model, spr_path):
                     item.setEditable(False)
                     model.appendRow(item)
 
+                    # DEPURATION: This shows for each texture loaded, their properties. Uncomment if you want to print it in console
+                    # if model.rowCount() >= 2:
+                    #     sprp_data_entry_aux = model.item(model.rowCount() - 2, 0).data()
+                    #     print("padding: " + str(tx2d_info.data_offset - sprp_data_entry_aux.data_info.data.data_offset - sprp_data_entry_aux.data_info.data.data_size))
+                    # print("-----------------------------")
+                    # print("name: " + sprp_data_entry.data_info.name)
+                    # print("related_2_encoding: " + str(tx2d_info.related_2_encoding))
+                    # print("data_offset: " + str(tx2d_info.data_offset))
+                    # print("unk0x08: " + str(tx2d_info.unk0x08))
+                    # print("data_size: " + str(tx2d_info.data_size))
+                    # print("width: " + str(tx2d_info.width))
+                    # print("height: " + str(tx2d_info.height))
+                    # print("unk0x14: " + str(tx2d_info.unk0x14))
+                    # print("mip_maps: " + str(tx2d_info.mip_maps))
+                    # print("unk0x18: " + str(tx2d_info.unk0x18))
+                    # print("unk0x1c: " + str(tx2d_info.unk0x1c))
+                    # print("dxt_encoding: " + get_encoding_name(tx2d_info.dxt_encoding))
+
                 # Save the data when is the type MTRL
                 elif sprp_type_entry.data_type == b"MTRL":
 
@@ -1797,13 +1815,16 @@ def generate_tx2d_entry(worker_vef, step_report, main_window, vram_path_modified
                 if not tx2d_data_entry.data_info.data.tx2d_vram.data_unswizzle_ps3:
                     # We're dealing with a shader. We have to change the endian
                     if tx2d_info.height == 1:
-                        # Since is a shader, it if is for a Xbox file, we need to change the 'related2encoding' value
+                        # Since it's a shader, if is for a Xbox file, we need to change the 'related2encoding' value
                         # Otherwise will make the character with black shaders
                         if VEV.header_type_spr_file == b'SPR3':
                             related_2_encoding = 130
                         output_vram_file.write(change_endian(tx2d_info.tx2d_vram.data[54:]))
                     else:
                         output_vram_file.write(tx2d_info.tx2d_vram.data[54:])
+                        # Write the vram separator
+                        if vram_separator and i < num_textures - 1:
+                            write_separator_vram(output_vram_file, tx2d_data_entry)
                 else:
                     # Write in disk the data swizzled
                     with open("tempSwizzledImage", mode="wb") as file:
