@@ -20,17 +20,27 @@ def write_separator_vram(output_vram_file, data_entry):
 
     # The texture is a square
     if data_entry.data_info.data.width == data_entry.data_info.data.height:
-        if data_entry.data_info.data.dxt_encoding == 8:
+        # If the encoding is dxt1, we write a separator of 80 bytes
+        if data_entry.data_info.data.dxt_encoding == 8 or data_entry.data_info.data.dxt_encoding == 15:
             output_vram_file.write(VEV.vram_separator_80)
         # We check if the Mipmaps are greater than 1. If that's so, we write a separator
         elif data_entry.data_info.data.mip_maps > 1:
-            output_vram_file.write(VEV.vram_separator_48)
+            # If the encoding is not RBGA, we write a separator of 48 bytes
+            if data_entry.data_info.data.dxt_encoding != 0:
+                output_vram_file.write(VEV.vram_separator_48)
+            # The encoding is RGBA, we write a separator of 64 bytes
+            else:
+                output_vram_file.write(VEV.vram_separator_64)
     # The texture is not a square.
     # We check if the Mipmaps are greater than 1. If that's so, we write a separator
     elif data_entry.data_info.data.mip_maps > 1:
         # If the encoding is dxt1, we write a separator of 32 bytes
-        if data_entry.data_info.data.dxt_encoding == 8:
-            output_vram_file.write(VEV.vram_separator_32)
+        if data_entry.data_info.data.dxt_encoding == 8 or data_entry.data_info.data.dxt_encoding == 15:
+            # If the mipmaps are not 9 or height is not 256, we write a separator of 32 bytes. Otherwise we write 64 bytes
+            if data_entry.data_info.data.mip_maps != 9 or data_entry.data_info.data.height != 256:
+                output_vram_file.write(VEV.vram_separator_32)
+            else:
+                output_vram_file.write(VEV.vram_separator_64)
         # If the mipmaps are not 9 or height is not 256, we write a separator of 80 bytes
         elif data_entry.data_info.data.mip_maps != 9 or data_entry.data_info.data.height != 256:
             output_vram_file.write(VEV.vram_separator_80)
